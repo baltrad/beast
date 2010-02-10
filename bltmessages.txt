@@ -1,0 +1,21 @@
+NAME: BltDexDataMessage
+TYPE: PUBLIC IN/OUT
+HTTP-format:
+part 1:
+<bltdexdata />
+part 2:
+ODIM H5 file
+
+Java class: eu.baltrad.beast.message.BltDexDataMessage
+Members: filename
+------------------------
+NAME: BltDataMessage
+TYPE: INTERNAL
+
+Java class: eu.baltrad.beast.message.BltDataMessage
+Members: xxxx.File
+------------------------
+NAME: BltAlertMessage
+TYPE: PUBLIC IN/OUT
+Java class: eu.baltrad.beast.message.BltAlertMessage
+

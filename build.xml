@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2009-2010 Swedish Meteorological and Hydrological Institute, SMHI,
+
+This file is part of the Beast library.
+
+Beast library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Beast library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the Beast library library.  If not, see http://www.gnu.org/licenses.
+-->
+<project name="beast" default="dist" basedir=".">
+  <property file="build.properties" />
+
+  <property name="app.name" value="beast" />
+  <property name="app.version" value="0.1-dev" />
+  <property name="app.root.dir" value="${basedir}" />
+  <property name="build.dir" value="${basedir}/build" />
+  <property name="build.classes.dir" value="${build.dir}/classes" />
+  <property name="build.test.dir" value="${build.dir}/test" />
+  <property name="build.coverage.dir" value="${build.dir}/coverage" />
+  <property name="build.instrument.dir" value="${build.dir}/instrument" />
+  <property name="dist.dir" value="${basedir}/dist" />
+  <property name="source.dir" value="${basedir}/src" />
+  <property name="lib.dir" value="${basedir}/lib" />	
+  <property name="compile.debug" value="true" />
+  <property name="compile.optimize" value="true" />
+
+  <path id="lib.path">
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar"/>
+      <exclude name="ant/*.jar" />
+      <exclude name="junit/*.jar"/>
+      <exclude name="easymock/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="test.lib.path">
+    <fileset dir="${lib.dir}">
+      <include name="junit/*.jar"/>
+      <include name="ant-junit/*.jar"/>
+      <include name="easymock/*.jar"/>
+    </fileset>
+  </path>
+	
+  <!-- This loads cobertura, code coverage -->
+  <property name="cobertura.dir" value="${lib.dir}/cobertura" />
+  <path id="cobertura.classpath">
+    <fileset dir="${cobertura.dir}">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+	
+  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+	
+  <!-- Generates the deliverable -->
+  <target name="dist" depends="clean,compile,compile.test,unittest">
+    <mkdir dir="${dist.dir}" />
+    <jar jarfile="${dist.dir}/${app.name}-${app.version}.jar"
+         basedir="${build.classes.dir}"/>
+  </target>
+	
+  <!-- Compile the code -->
+  <target name="compile" depends="prepare">
+    <mkdir dir="${build.classes.dir}"/>
+    <javac srcdir="${source.dir}"
+           encoding="8859_1"
+    	   deprecation="on"
+  	   debug="${compile.debug}"
+  	   optimize="${compile.optimize}"
+  	   destdir="${build.classes.dir}">
+      <classpath refid="lib.path"/>
+    </javac>
+  </target>
+
+  <!-- Compile the code -->
+  <target name="compile.test">
+    <mkdir dir="${build.test.dir}"/>
+    <javac srcdir="${app.root.dir}/test"
+           encoding="8859_1"
+           deprecation="on"
+           debug="${compile.debug}"
+           optimize="${compile.optimize}"
+           destdir="${build.test.dir}">
+    	<classpath location="${build.classes.dir}"/>
+      <classpath refid="lib.path"/>
+      <classpath refid="test.lib.path"/>
+    </javac>
+  	
+    <!-- copy any resources -->
+    <copy todir="${build.test.dir}">
+      <fileset dir="${app.root.dir}/test">
+        <include name="**/*.xml"/>
+        <include name="**/*.properties"/>
+      </fileset>
+    </copy>
+  </target>
+	
+  <target name="unittest">
+    <mkdir dir="${dist.dir}/junit-reports" />
+    <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
+      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+      <formatter type="xml"/> 
+      <classpath refid="test.lib.path"/>
+      <classpath location="${build.classes.dir}"/>
+      <classpath refid="lib.path"/>
+      <classpath location="${build.test.dir}" />
+      <batchtest fork="yes" todir="${dist.dir}/junit-reports">
+        <fileset dir="${build.test.dir}" includes="**/*Test.class" excludes="**/HDF5*.class"/>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="instrument.coverage">
+    <delete dir="${build.instrument.dir}" />
+    <delete file="${build.coverage.dir}/cobertura.ser" />
+    <mkdir dir="${build.instrument.dir}" />
+    <mkdir dir="${build.coverage.dir}" />
+  	
+    <cobertura-instrument todir="${build.instrument.dir}" datafile="${build.coverage.dir}/cobertura.ser">
+      <includeClasses regex=".*" />
+    	<fileset dir="${build.classes.dir}">
+    		<include name="**/*.class" />
+    	</fileset>
+    </cobertura-instrument>   
+  </target>
+  
+  <target name="unittest.coverage" depends="instrument.coverage">
+    <mkdir dir="${dist.dir}/junit-reports" />
+    <mkdir dir="${dist.dir}/coverage-reports" />
+    <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
+      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+      <sysproperty key="net.sourceforge.cobertura.datafile"  file="${build.coverage.dir}/cobertura.ser" /> <!-- For instrumentation -->
+      <formatter type="plain"/> 
+      <classpath location="${build.instrument.dir}" /> <!-- For instrumentation -->
+      <classpath refid="test.lib.path"/>
+      <classpath location="${build.classes.dir}"/>
+      <classpath refid="lib.path"/>
+      <classpath location="${build.test.dir}" />
+      <classpath refid="cobertura.classpath" />
+      <batchtest fork="yes" todir="${dist.dir}/junit-reports">
+        <fileset dir="${build.test.dir}" includes="**/*Test.class" excludes="**/HDF5*.class"/>
+      </batchtest>
+    </junit>
+		
+    <cobertura-report format="xml" destdir="${dist.dir}/coverage-reports" datafile="${build.coverage.dir}/cobertura.ser">
+      <fileset dir="${source.dir}">
+        <include name="**/*.java" />
+        <exclude name="**/*Stub.java" />
+      </fileset>
+    </cobertura-report>		
+  </target>
+	
+  <!-- clean directories for building -->
+  <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete dir="${dist.dir}" />
+  </target>
+	
+  <!-- Prepare for compilation and jar-generation, copy files -->
+  <target name="prepare">
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${build.classes.dir}" />
+    <mkdir dir="${build.test.dir}" />
+
+  	<!-- Copy misc extra files that resides in the src into classes -->
+    <copy todir="${build.classes.dir}" preservelastmodified="true">
+      <fileset dir="${source.dir}">
+        <include name="**/*.properties"/>
+        <include name="**/*.handlers"/>
+        <include name="**/*.schemas"/>
+        <include name="**/*.xml"/>
+        <include name="**/*.dtd"/>
+        <include name="**/*.xsd"/>
+        <include name="**/*.vm"/>
+        <include name="**/*.ftl"/>
+        <include name="**/*.types"/>
+      </fileset>
+    </copy>
+  </target>
+</project>
+
