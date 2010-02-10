@@ -16,20 +16,13 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.manager;
+package eu.baltrad.beast.adaptor;
 
-import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.router.IRoute;
 
 /**
- * The message manager that will distribute the messages to
- * the available adaptors/routes.
  * @author Anders Henja
  */
-public class BltMessageManager implements IBltMessageManager {
-  /**
-   * @see IBltMessageManager#manage(IBltMessage)
-   */
-  public void manage(IBltMessage message) {
-    //adaptor.manage(message);
-  }
+public interface IAdaptor {
+  public void handle(IRoute msg);
 }

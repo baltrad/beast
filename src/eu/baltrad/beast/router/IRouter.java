@@ -16,20 +16,25 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.manager;
+package eu.baltrad.beast.router;
+
+import java.util.List;
 
 import eu.baltrad.beast.message.IBltMessage;
 
 /**
- * The message manager that will distribute the messages to
- * the available adaptors/routes.
+ * Creates the route(s) for a message that should be sent. I.e. one message
+ * can actually be intended for more than one target.
  * @author Anders Henja
  */
-public class BltMessageManager implements IBltMessageManager {
+public interface IRouter {
   /**
-   * @see IBltMessageManager#manage(IBltMessage)
+   * Creates zero or more routed messages depending on the message and
+   * what routing definitions there are. It should be noticed that it is
+   * up to the routing definition/rule what the route contains so basically,
+   * when passing in a message, the route might actually contain a different message.
+   * @param msg the msg to generate routes from
+   * @return a list of routes
    */
-  public void manage(IBltMessage message) {
-    //adaptor.manage(message);
-  }
+  public List<IRoute> getRoutes(IBltMessage msg);
 }
