@@ -16,7 +16,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.parser;
+package eu.baltrad.beast.message;
 
 import eu.baltrad.beast.message.MessageParserException;
 import junit.framework.TestCase;
