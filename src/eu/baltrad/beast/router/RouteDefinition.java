@@ -29,7 +29,7 @@ import eu.baltrad.beast.rules.IRule;
  * route(s) that should be affected.
  * @author Anders Henja
  */
-public class RoutingDefinition {
+public class RouteDefinition {
   /**
    * The rule that defines this route
    */

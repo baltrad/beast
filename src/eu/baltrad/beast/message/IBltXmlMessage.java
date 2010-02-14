@@ -35,7 +35,7 @@ public interface IBltXmlMessage {
   public void fromDocument(Document dom);
   
   /**
-   * Creates an xml string from this object.
+   * Creates an dom document from this object.
    * @return the xml string
    */
   public Document toDocument();

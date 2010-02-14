@@ -30,9 +30,9 @@ import junit.framework.TestCase;
 /**
  * @author Anders Henja
  */
-public class RoutingDefinitionTest extends TestCase {
+public class RouteDefinitionTest extends TestCase {
   public void testSetGetRule() {
-    RoutingDefinition classUnderTest = new RoutingDefinition();
+    RouteDefinition classUnderTest = new RouteDefinition();
     IRule rule = new IRule() {
       public String getDefinition() {return null;}
       public String getType() {return null;}
@@ -46,21 +46,21 @@ public class RoutingDefinitionTest extends TestCase {
   }
   
   public void testSetGetAuthor() {
-    RoutingDefinition classUnderTest = new RoutingDefinition();
+    RouteDefinition classUnderTest = new RouteDefinition();
     assertNull(classUnderTest.getAuthor());
     classUnderTest.setAuthor("nisse");
     assertEquals("nisse", classUnderTest.getAuthor());
   }
   
   public void testSetIsActive() {
-    RoutingDefinition classUnderTest = new RoutingDefinition();
+    RouteDefinition classUnderTest = new RouteDefinition();
     assertEquals(true, classUnderTest.isActive());
     classUnderTest.setActive(false);
     assertEquals(false, classUnderTest.isActive());
   }
   
   public void testSetGetRecipients() {
-    RoutingDefinition classUnderTest = new RoutingDefinition();
+    RouteDefinition classUnderTest = new RouteDefinition();
     List<String> recipients = new ArrayList<String>();
     assertNotNull(classUnderTest.getRecipients());
     classUnderTest.setRecipients(recipients);
@@ -69,7 +69,7 @@ public class RoutingDefinitionTest extends TestCase {
   }
   
   public void testSetGetName() {
-    RoutingDefinition classUnderTest = new RoutingDefinition();
+    RouteDefinition classUnderTest = new RouteDefinition();
     assertNull(classUnderTest.getName());
     classUnderTest.setName("nisse");
     assertEquals("nisse", classUnderTest.getName());
@@ -83,7 +83,7 @@ public class RoutingDefinitionTest extends TestCase {
     IBltMessage resmsg = new IBltMessage() {};
     irule.handle(msg);
     iruleControl.setReturnValue(resmsg);
-    RoutingDefinition classUnderTest = new RoutingDefinition();
+    RouteDefinition classUnderTest = new RouteDefinition();
     classUnderTest.setRule(irule);
     
     iruleControl.replay();
@@ -101,7 +101,7 @@ public class RoutingDefinitionTest extends TestCase {
     IRule irule = (IRule)iruleControl.getMock();
     
     IBltMessage msg = new IBltMessage() {};
-    RoutingDefinition classUnderTest = new RoutingDefinition();
+    RouteDefinition classUnderTest = new RouteDefinition();
     classUnderTest.setRule(irule);
     classUnderTest.setActive(false);
     
@@ -119,7 +119,7 @@ public class RoutingDefinitionTest extends TestCase {
     MockControl iruleControl = MockControl.createControl(IRule.class);
     IRule irule = (IRule)iruleControl.getMock();
     
-    RoutingDefinition classUnderTest = new RoutingDefinition();
+    RouteDefinition classUnderTest = new RouteDefinition();
     classUnderTest.setRule(irule);
     
     iruleControl.replay();
