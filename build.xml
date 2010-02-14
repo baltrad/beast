@@ -40,6 +40,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <exclude name="ant/*.jar" />
       <exclude name="junit/*.jar"/>
       <exclude name="easymock/*.jar"/>
+      <exclude name="cobertura/*.jar"/>
     </fileset>
   </path>
 
