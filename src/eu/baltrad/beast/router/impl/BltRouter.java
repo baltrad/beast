@@ -27,6 +27,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.message.IBltMessage;
@@ -46,7 +47,7 @@ public class BltRouter implements IRouter, IRouterManager {
   /**
    * The JDBC template managing the database connectivity.
    */
-  private SimpleJdbcTemplate template = null;
+  private SimpleJdbcOperations template = null;
 
   /**
    * The route definitions.
@@ -66,6 +67,15 @@ public class BltRouter implements IRouter, IRouterManager {
     template = new SimpleJdbcTemplate(source);
   }
 
+  /**
+   * Sets the jdbc template, mostly used for testing since {@link #setDataSource(DataSource)} will create
+   * a simple jdbc template.
+   * @param template the template
+   */
+  void setJdbcTemplate(SimpleJdbcOperations template) {
+    this.template = template;
+  }
+  
   /**
    * Sets the rule factory.
    * @param factory the factory to set
@@ -153,11 +163,7 @@ public class BltRouter implements IRouter, IRouterManager {
           "  values (?,?,?,?,?,?)",
           new Object[]{def.getName(), type, def.getAuthor(), def.getDescription(), 
               def.isActive(), definition});
-      List<String> recipients = def.getRecipients();
-      for (String rec: recipients) {
-        template.update("insert into router_dest (name, recipient) values (?,?)",
-          new Object[]{def.getName(), rec});
-      }      
+      storeRecipients(def.getName(), def.getRecipients());
     } catch (Throwable t) {
       throw new RuleException("Failed to add router rule definition: " + t.getMessage(), t);
     }
@@ -176,11 +182,7 @@ public class BltRouter implements IRouter, IRouterManager {
       template.update("update router_rules set type=?, author=?, description=?, active=?, definition=? where name=?", 
           new Object[]{type, def.getAuthor(), def.getDescription(), def.isActive(), definition, def.getName()});
       template.update("delete from router_dest where name=?", def.getName());
-      List<String> recipients = def.getRecipients();
-      for (String rec: recipients) {
-        template.update("insert into router_dest (name, recipient) values (?,?)",
-          new Object[]{def.getName(), rec});
-      }
+      storeRecipients(def.getName(), def.getRecipients());
     } catch (Throwable t) {
       throw new RuleException("Failed to update router rule definition: " + t.getMessage(), t);
     }
@@ -226,6 +228,18 @@ public class BltRouter implements IRouter, IRouterManager {
         
     for (RouteDefinition def: definitions) {
       def.setRecipients(getRecipients(def.getName()));
+    }
+  }
+  
+  /**
+   * Stores the recipients
+   * @param name - the route definition name
+   * @param recipients a list of recipients
+   */
+  protected void storeRecipients(String name, List<String> recipients) {
+    for (String rec: recipients) {
+      template.update("insert into router_dest (name, recipient) values (?,?)",
+        new Object[]{name, rec});
     }
   }
   

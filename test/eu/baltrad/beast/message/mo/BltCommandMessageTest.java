@@ -22,6 +22,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import eu.baltrad.beast.message.MessageParserException;
+
 import junit.framework.TestCase;
 
 /**
@@ -42,6 +44,13 @@ public class BltCommandMessageTest extends TestCase {
     assertEquals("bltcommand", result.getRootElement().getName());
     assertEquals("ls -la", result.valueOf("//bltcommand/command"));
   }
+
+  public void testToDocument_noCmdString() {
+    BltCommandMessage classUnderTest = new BltCommandMessage();
+    Document result = classUnderTest.toDocument();
+    assertEquals("bltcommand", result.getRootElement().getName());
+    assertEquals("", result.valueOf("//bltcommand/command"));
+  }
   
   public void testFromDocument() {
     Document document = DocumentHelper.createDocument();
@@ -51,5 +60,18 @@ public class BltCommandMessageTest extends TestCase {
     BltCommandMessage classUnderTest = new BltCommandMessage();
     classUnderTest.fromDocument(document);
     assertEquals("ls -la", classUnderTest.getCommand());
+  }
+  
+  public void testFromDocument_notBltCommand() {
+    Document document = DocumentHelper.createDocument();
+    Element el = document.addElement("bltxcommand");
+    el.addElement("command").addText("ls -la");
+    BltCommandMessage classUnderTest = new BltCommandMessage();
+    try {
+      classUnderTest.fromDocument(document);
+      fail("Expected MessageParserException");
+    } catch (MessageParserException e) {
+      // pass
+    }
   }
 }

@@ -24,11 +24,13 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.Route;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.RuleException;
 
 
 /**
@@ -84,5 +86,111 @@ public class BltRouterTest extends TestCase {
     Route routeResult = result.get(0);
     assertEquals("Adaptor1", routeResult.getDestination());
     assertSame(rule2message, routeResult.getMessage());
+  }
+  
+  public void testDeleteDefinition() {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    
+    jdbc.update(null, new Object[]{});
+    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
+    jdbcControl.setReturnValue(0);
+
+    jdbc.update(null, new Object[]{});
+    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
+    jdbcControl.setReturnValue(0);
+
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setDefinitions(new ArrayList<RouteDefinition>());
+    jdbcControl.replay();
+
+    // execute test
+    classUnderTest.deleteDefinition("X");
+    
+    // verify
+    jdbcControl.verify();
+  }
+  
+  public void testDeleteDefinition_throwsException() {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    
+    jdbc.update(null, new Object[]{});
+    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
+    jdbcControl.setReturnValue(0);
+
+    jdbc.update(null, new Object[]{});
+    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
+    jdbcControl.setThrowable(new RuntimeException());
+
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setJdbcTemplate(jdbc);
+    jdbcControl.replay();
+
+    // execute test
+    try {
+      classUnderTest.deleteDefinition("X");
+      fail("Expected RuleException");
+    } catch (RuleException e) {
+      // pass
+    }
+    
+    // verify
+    jdbcControl.verify();
+  }  
+  
+  public void testGetDefinitions() throws Exception {
+    List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(defs);
+    
+    assertSame(defs, classUnderTest.getDefinitions());
+  }
+  
+  public void testGetDefinition() throws Exception {
+    List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
+    RouteDefinition d1 = new RouteDefinition();
+    d1.setName("D1");
+    RouteDefinition d2 = new RouteDefinition();
+    d2.setName("D2");
+    defs.add(d1);
+    defs.add(d2);
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(defs);
+    
+    RouteDefinition result = classUnderTest.getDefinition("D2");
+    assertSame(d2, result);
+  }
+  
+  
+  
+  public void testStoreRecipients() throws Exception {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    
+    List<String> recipients = new ArrayList<String>();
+    recipients.add("X1");
+    recipients.add("X2");
+    
+    jdbc.update(null, new Object[]{});
+    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
+    jdbcControl.setReturnValue(0);
+    jdbc.update(null, new Object[]{});
+    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
+    jdbcControl.setReturnValue(0);
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setJdbcTemplate(jdbc);
+
+    jdbcControl.replay();
+    
+    // execute
+    classUnderTest.storeRecipients("D1", recipients);
+    
+    // verify
+    jdbcControl.verify();
   }
 }

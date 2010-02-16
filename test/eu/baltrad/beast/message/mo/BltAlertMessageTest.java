@@ -22,6 +22,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import eu.baltrad.beast.message.MessageParserException;
+
 import junit.framework.TestCase;
 
 /**
@@ -94,6 +96,20 @@ public class BltAlertMessageTest extends TestCase {
     classUnderTest.fromDocument(document);
     assertEquals("", classUnderTest.getCode());
     assertEquals("severe", classUnderTest.getMessage());
+  }
+  
+  public void testFromDocument_notBltAlert() {
+    Document document = DocumentHelper.createDocument();
+    Element el = document.addElement("bltxalert");
+    el.addElement("message").addText("severe");
+
+    BltAlertMessage classUnderTest = new BltAlertMessage();
+    try {
+      classUnderTest.fromDocument(document);
+      fail("Expected MessageParserException");
+    } catch (MessageParserException e) {
+      // pass
+    }
   }
 
 }
