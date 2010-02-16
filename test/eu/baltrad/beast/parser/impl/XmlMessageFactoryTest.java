@@ -74,4 +74,18 @@ public class XmlMessageFactoryTest extends TestCase {
       //pass
     }
   }  
+
+  public void testCreateMessage_noSuchClass() {
+    Map<String,String> map = new HashMap<String, String>();
+    map.put(BltAlertMessage.BLT_ALERT, "no.such.class.COM");
+    XmlMessageFactory classUnderTest = new XmlMessageFactory();
+    classUnderTest.setRegistry(map);
+    
+    try {
+      classUnderTest.createMessage(BltAlertMessage.BLT_ALERT);
+      fail("Expected XmlMessageFactoryException");
+    } catch (XmlMessageFactoryException e) {
+      //pass
+    }
+  }  
 }
