@@ -55,6 +55,11 @@ public class RouteDefinition {
    */
   private String name = null;
   
+  /**
+   * Description of this route definition.
+   */
+  private String description = null;
+  
   public IBltMessage handle(IBltMessage msg) {
     if (msg == null) {
       throw new NullPointerException("msg == null");
@@ -133,5 +138,19 @@ public class RouteDefinition {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * @param description the description to set
+   */
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  /**
+   * @return the description
+   */
+  public String getDescription() {
+    return description;
   }
 }

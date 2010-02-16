@@ -18,7 +18,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message;
 
-import eu.baltrad.beast.message.MessageParserException;
 import junit.framework.TestCase;
 
 /**

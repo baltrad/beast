@@ -31,9 +31,12 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="dist.dir" value="${basedir}/dist" />
   <property name="source.dir" value="${basedir}/src" />
   <property name="lib.dir" value="${basedir}/lib" />	
+  <property name="etc.dir" value="${basedir}/etc" />
   <property name="compile.debug" value="true" />
   <property name="compile.optimize" value="true" />
 
+  <property file="${etc.dir}/testdb.properties" />
+	
   <path id="lib.path">
     <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
@@ -121,6 +124,16 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     </junit>
   </target>
 
+  <target name="create-testdb">
+    <sql classpath="${lib.dir}/${db.jar}"
+         driver="${db.driver}"
+         url="${db.url}"
+         userid="${db.user}" 
+         password="${db.pwd}" >
+      <transaction src="${etc.dir}/create_testdb.sql"/>
+    </sql>
+  </target>
+	
   <target name="instrument.coverage">
     <delete dir="${build.instrument.dir}" />
     <delete file="${build.coverage.dir}/cobertura.ser" />
