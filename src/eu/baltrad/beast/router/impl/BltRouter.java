@@ -20,6 +20,8 @@ package eu.baltrad.beast.router.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -28,9 +30,9 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.beast.router.IRoute;
 import eu.baltrad.beast.router.IRouter;
 import eu.baltrad.beast.router.IRouterManager;
+import eu.baltrad.beast.router.Route;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleFactory;
@@ -72,15 +74,34 @@ public class BltRouter implements IRouter, IRouterManager {
     this.factory = factory;
   }
   
+  /**
+   * Sets a known list of definitions for this router. Used
+   * for test purposes, otherwise this data is retrieved from
+   * the database.
+   * @param definitions - a list of definitions.
+   */
+  void setDefinitions(List<RouteDefinition> definitions) {
+    this.definitions = definitions;
+  }
+  
 	/**
 	 * Creates a list of zero or more routes.
 	 * @param msg - the message that should result in the route(s).
 	 * @return a list of zero or more routes.
 	 */
 	@Override
-	public synchronized List<IRoute> getRoutes(IBltMessage msg) {
-		// TODO Auto-generated method stub
-		return null;
+	public synchronized List<Route> getRoutes(IBltMessage msg) {
+	  List<Route> result = new ArrayList<Route>();
+	  for (RouteDefinition d: definitions) {
+	    IBltMessage nmsg = d.getRule().handle(msg);
+	    if (nmsg != null) {
+	      Iterator<String> i = d.getRecipients().iterator();
+	      while (i.hasNext()) {
+	        result.add(new Route(i.next(), nmsg));
+	      }
+	    }
+	  }
+		return result;
 	}
 
   /**

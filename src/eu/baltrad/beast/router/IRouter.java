@@ -36,5 +36,5 @@ public interface IRouter {
    * @param msg the msg to generate routes from
    * @return a list of routes
    */
-  public List<IRoute> getRoutes(IBltMessage msg);
+  public List<Route> getRoutes(IBltMessage msg);
 }

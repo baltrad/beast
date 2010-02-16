@@ -18,11 +18,11 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
-import eu.baltrad.beast.router.IRoute;
+import eu.baltrad.beast.router.Route;
 
 /**
  * @author Anders Henja
  */
 public interface IAdaptor {
-  public void handle(IRoute msg);
+  public void handle(Route msg);
 }

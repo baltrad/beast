@@ -18,8 +18,30 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.router;
 
+import junit.framework.TestCase;
+import eu.baltrad.beast.message.IBltMessage;
+
+
 /**
  * @author Anders Henja
  */
-public interface IRoute {
+public class RouteTest extends TestCase {
+  public void testConstructor() {
+    IBltMessage msg = new IBltMessage(){};
+    Route classUnderTest = new Route("ABC", msg);
+    assertEquals("ABC", classUnderTest.getDestination());
+    assertSame(msg, classUnderTest.getMessage());
+  }
+  
+  public void testDestination() {
+    Route classUnderTest = new Route();
+    classUnderTest.setDestination("ABC");
+    assertEquals("ABC", classUnderTest.getDestination());
+  }
+  
+  public void testMessage() {
+    IBltMessage msg = new IBltMessage(){};
+    Route classUnderTest = new Route("ABC", msg);
+    assertSame(msg, classUnderTest.getMessage());
+  }
 }
