@@ -18,17 +18,40 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
-import eu.baltrad.beast.router.Route;
-
 /**
  * @author Anders Henja
  */
-public interface IAdaptor {
+public class AdaptorException extends RuntimeException {
   /**
-   * Handles a route. If this adaptor could not handle the route an AdaptorException should be
-   * thrown.
-   * @param route the route to handle
-   * @throws AdaptorException
+   * The default serial uid 
    */
-  public void handle(Route route);
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * @see RuntimeException#RuntimeException()
+   */
+  public AdaptorException() {
+    super();
+  }
+  
+  /**
+   * @see RuntimeException#RuntimeException(String)
+   */
+  public AdaptorException(String message) {
+    super(message);
+  }
+
+  /**
+   * @see RuntimeException#RuntimeException(Throwable)
+   */
+  public AdaptorException(Throwable t) {
+    super(t);
+  }
+
+  /**
+   * @see RuntimeException#RuntimeException(String, Throwable)
+   */
+  public AdaptorException(String message, Throwable t) {
+    super(message, t);
+  }
 }

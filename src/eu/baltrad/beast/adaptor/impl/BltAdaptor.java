@@ -16,19 +16,41 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.adaptor;
+package eu.baltrad.beast.adaptor.impl;
 
+import java.util.Map;
+
+import eu.baltrad.beast.adaptor.AdaptorException;
+import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.router.Route;
 
 /**
  * @author Anders Henja
  */
-public interface IAdaptor {
+public class BltAdaptor implements IAdaptor {
   /**
-   * Handles a route. If this adaptor could not handle the route an AdaptorException should be
-   * thrown.
-   * @param route the route to handle
-   * @throws AdaptorException
+   * The registered adaptors
    */
-  public void handle(Route route);
+  private Map<String, IAdaptor> adaptors = null;
+  
+  /**
+   * Sets the adaptors, mostly used for test purposes. The adaptors
+   * are read from the database.
+   * @param adaptors the adaptors
+   */
+  void setAdaptors(Map<String, IAdaptor> adaptors) {
+    this.adaptors = adaptors;
+  }
+  
+  /**
+   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)
+   */
+  @Override
+  public void handle(Route route) {
+    IAdaptor adaptor = adaptors.get(route.getDestination());
+    if (adaptor == null) {
+      throw new AdaptorException("No adaptor able to handle the route");
+    }
+    adaptor.handle(route);
+  }
 }

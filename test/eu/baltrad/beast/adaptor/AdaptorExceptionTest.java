@@ -18,17 +18,32 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
-import eu.baltrad.beast.router.Route;
+import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  */
-public interface IAdaptor {
-  /**
-   * Handles a route. If this adaptor could not handle the route an AdaptorException should be
-   * thrown.
-   * @param route the route to handle
-   * @throws AdaptorException
-   */
-  public void handle(Route route);
+public class AdaptorExceptionTest extends TestCase {
+  public void testConstructor() {
+    AdaptorException classUnderTest = new AdaptorException();
+    assertTrue(classUnderTest instanceof RuntimeException);
+  }
+  
+  public void testStringConstructor() {
+    AdaptorException classUnderTest = new AdaptorException("something");
+    assertEquals("something", classUnderTest.getMessage());
+  }
+  
+  public void testThrowableConstructor() {
+    RuntimeException x = new RuntimeException("something");
+    AdaptorException classUnderTest = new AdaptorException(x);
+    assertEquals("something", classUnderTest.getCause().getMessage());
+  }
+  
+  public void testStringThrowableConstructor() {
+    RuntimeException x = new RuntimeException("something");
+    AdaptorException classUnderTest = new AdaptorException("else", x);
+    assertEquals("else", classUnderTest.getMessage());
+    assertEquals("something", classUnderTest.getCause().getMessage());
+  }
 }
