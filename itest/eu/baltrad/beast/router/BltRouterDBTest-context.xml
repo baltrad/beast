@@ -20,9 +20,8 @@
     <property name="username" value="${db.user}"/>
     <property name="password" value="${db.pwd}"/>
   </bean>
+
+  <bean id="dataFactory" class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory"/>
   
-  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" autowire="byType">
-  </bean>
-
-
+  <bean id="testHelper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType" />
 </beans>

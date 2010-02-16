@@ -25,7 +25,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.message.IBltMessage;
@@ -149,8 +148,24 @@ public class BltRouter implements IRouter, IRouterManager {
    */
   @Override
   public synchronized void updateDefinition(RouteDefinition def) {
-    // TODO Auto-generated method stub
-    
+    IRule rule = def.getRule();
+    String type = rule.getType();
+    String definition = rule.getDefinition();
+    try {
+      template.update("update router_rules set type=?, author=?, description=?, active=?, definition=? where name=?", 
+          new Object[]{type, def.getAuthor(), def.getDescription(), def.isActive(), definition, def.getName()});
+      template.update("delete from router_dest where name=?", def.getName());
+      List<String> recipients = def.getRecipients();
+      for (String rec: recipients) {
+        template.update("insert into router_dest (name, recipient) values (?,?)",
+          new Object[]{def.getName(), rec});
+      }
+    } catch (Throwable t) {
+      throw new RuleException("Failed to update router rule definition: " + t.getMessage(), t);
+    }
+    // If all went well, then replace the existing definition with the new one.
+    removeDefinitionFromList(def.getName());
+    definitions.add(def);
   }
   
   /**

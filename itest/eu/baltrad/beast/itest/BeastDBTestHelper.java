@@ -1,15 +1,19 @@
 package eu.baltrad.beast.itest;
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 
 import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
+import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
+import org.dbunit.dataset.datatype.IDataTypeFactory;
 import org.dbunit.dataset.excel.XlsDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.springframework.context.ApplicationContext;
@@ -36,10 +40,47 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 
 /**
+ * Singleton helper function...
  * @author Anders Henja
- *
  */
 public class BeastDBTestHelper {
+  private DataSource source = null;
+  private IDataTypeFactory factory = null;
+  
+  /**
+   * Default constructor
+   */
+  public BeastDBTestHelper() {
+  }
+  
+  /**
+   * Setter for setting a data type factory used by dbunit
+   * @param factory - the factory
+   */
+  public void setDataFactory(IDataTypeFactory factory) {
+    this.factory = factory;
+  }
+  
+  /**
+   * Setter for setting the data source that should be used.
+   * @param source the data source
+   */
+  public void setDataSource(DataSource source) {
+    this.source = source;
+  }
+  
+  /**
+   * Returns an IDatabaseConnection
+   * @param conn a database connection
+   * @return the IDatabase connection
+   * @throws Exception
+   */
+  protected IDatabaseConnection getConnection(Connection conn) throws Exception {
+    IDatabaseConnection connection = new DatabaseConnection(conn);
+    connection.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, factory);    
+    return connection;
+  }
+  
   /**
    * Extracts only the class name (no package included).
    * @param clz the class
@@ -53,6 +94,14 @@ public class BeastDBTestHelper {
       nm = nm.substring(li+1);
     }
     return nm;
+  }
+  
+  /**
+   * The data source
+   * @return the data source
+   */
+  public DataSource getSource() {
+    return this.source;
   }
   
   /**
@@ -73,10 +122,10 @@ public class BeastDBTestHelper {
    * @param source
    * @param tc
    */
-  public static void cleanInsert(DataSource source, TestCase tc) throws Exception {
+  public void cleanInsert(TestCase tc) throws Exception {
     Connection conn = source.getConnection();
     try {
-      IDatabaseConnection connection = new DatabaseConnection(conn);
+      IDatabaseConnection connection = getConnection(conn);
       DatabaseOperation.CLEAN_INSERT.execute(connection, getXlsDataset(tc, null));
     } finally {
       DataSourceUtils.releaseConnection(conn, source);
@@ -91,7 +140,7 @@ public class BeastDBTestHelper {
    * @return the dataset
    * @throws Exception
    */
-  public static XlsDataSet getXlsDataset(TestCase tc, String extras) throws Exception {
+  public XlsDataSet getXlsDataset(TestCase tc, String extras) throws Exception {
     String cln = getClassName(tc.getClass());
     String cname = cln;
     if (extras != null) {
@@ -109,10 +158,10 @@ public class BeastDBTestHelper {
    * @return the table
    * @throws Exception
    */
-  public static ITable getDatabaseTable(DataSource source, String name) throws Exception {
+  public ITable getDatabaseTable(String name) throws Exception {
     Connection conn = source.getConnection();
     try {
-      IDatabaseConnection connection = new DatabaseConnection(conn);
+      IDatabaseConnection connection = getConnection(conn);
       IDataSet dataset = connection.createDataSet();
       return dataset.getTable(name);
     } finally {
@@ -128,8 +177,19 @@ public class BeastDBTestHelper {
    * @return the table
    * @throws Exception
    */
-  public static ITable getXlsTable(TestCase tc, String extras, String name) throws Exception {
+  public ITable getXlsTable(TestCase tc, String extras, String name) throws Exception {
     IDataSet dataset = getXlsDataset(tc, extras);
     return dataset.getTable(name);
+  }
+  
+  /**
+   * Prints the classpath for debugging purposes.
+   */
+  public void printClasspath() {
+    ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
+    URL[] urls = ((URLClassLoader)sysClassLoader).getURLs();
+    for(int i=0; i< urls.length; i++) {
+      System.out.println("CP: " + urls[i].getFile());
+    }         
   }
 }

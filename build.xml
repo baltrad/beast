@@ -17,7 +17,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 -->
-<project name="beast" default="dist" basedir=".">
+<project name="beast" default="build" basedir=".">
   <property file="build.properties" />
 
   <property name="app.name" value="beast" />
@@ -26,6 +26,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="build.dir" value="${basedir}/build" />
   <property name="build.classes.dir" value="${build.dir}/classes" />
   <property name="build.test.dir" value="${build.dir}/test" />
+  <property name="build.itest.dir" value="${build.dir}/itest" />
   <property name="build.coverage.dir" value="${build.dir}/coverage" />
   <property name="build.instrument.dir" value="${build.dir}/instrument" />
   <property name="dist.dir" value="${basedir}/dist" />
@@ -64,13 +65,19 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   </path>
 	
   <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
-	
+
   <!-- Generates the deliverable -->
-  <target name="dist" depends="clean,compile,compile.test,unittest">
+  <target name="build" depends="clean,compile">
     <mkdir dir="${dist.dir}" />
     <jar jarfile="${dist.dir}/${app.name}-${app.version}.jar"
          basedir="${build.classes.dir}"/>
   </target>
+	
+  <!-- same as running build and execute.test -->
+  <target name="distribution" depends="build, execute.test" />
+
+  <!-- This is the overall build script that can be used to get a full build & test sequence --> 
+  <target name="hudson" depends="build,test.coverage" />
 	
   <!-- Compile the code -->
   <target name="compile" depends="prepare">
@@ -85,7 +92,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     </javac>
   </target>
 
-  <!-- Compile the code -->
+  <!-- UNIT TEST PART -->
   <target name="compile.test">
     <mkdir dir="${build.test.dir}"/>
     <javac srcdir="${app.root.dir}/test"
@@ -108,32 +115,82 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       </fileset>
     </copy>
   </target>
-	
-  <target name="unittest">
+
+  <target name="prepare.test" depends="compile.test">
     <mkdir dir="${dist.dir}/junit-reports" />
-    <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
+  </target>	
+	
+  <target name="execute.test" depends="prepare.test">
+	<mkdir dir="${dist.dir}/junit-reports" />
+	<junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
+	  <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+	  <formatter type="xml"/> 
+	  <classpath refid="test.lib.path"/>
+	  <classpath location="${build.classes.dir}"/>
+	  <classpath refid="lib.path"/>
+	  <classpath location="${build.test.dir}" />
+	  <batchtest fork="yes" todir="${dist.dir}/junit-reports">
+	    <fileset dir="${build.test.dir}" includes="**/*Test.class" excludes="**/HDF5*.class"/>
+	  </batchtest>
+	</junit>
+  </target>
+
+  <!-- INTEGRATION TEST PART -->
+  <target name="compile.itest">
+    <mkdir dir="${build.itest.dir}"/>
+    <javac srcdir="${app.root.dir}/itest"
+           encoding="8859_1"
+           deprecation="on"
+           debug="${compile.debug}"
+           optimize="${compile.optimize}"
+           destdir="${build.itest.dir}">
+      <classpath location="${build.classes.dir}"/>
+      <classpath refid="lib.path"/>
+      <classpath refid="test.lib.path"/>
+    </javac>
+
+    <!-- copy any resources -->
+    <copy todir="${build.itest.dir}">
+      <fileset dir="${app.root.dir}/itest">
+        <include name="**/*.xml"/>
+        <include name="**/*.xls"/>
+        <include name="**/*.properties"/>
+        <include name="**/*.groovy"/>
+      </fileset>
+    </copy>
+  </target>	
+
+  <!-- prepares the setup so that it is possible to run the junit integration tests -->
+  <target name="prepare.itest" depends="create-testdb, compile.itest">
+	<mkdir dir="${dist.dir}/junit-reports" />
+	<copy file="${etc.dir}/testdb.properties" todir="${build.classes.dir}"/>
+  </target>
+
+  <target name="create-testdb">
+	<sql classpath="${lib.dir}/${db.jar}"
+	     driver="${db.driver}"
+	     url="${db.url}"
+	     userid="${db.user}" 
+	     password="${db.pwd}" >
+	  <transaction src="${etc.dir}/create_testdb.sql"/>
+	</sql>
+  </target>
+	
+  <target name="execute.itest" depends="prepare.itest">
+    <junit dir="${build.itest.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
       <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
       <formatter type="xml"/> 
       <classpath refid="test.lib.path"/>
       <classpath location="${build.classes.dir}"/>
       <classpath refid="lib.path"/>
-      <classpath location="${build.test.dir}" />
+      <classpath location="${build.itest.dir}" />
       <batchtest fork="yes" todir="${dist.dir}/junit-reports">
-        <fileset dir="${build.test.dir}" includes="**/*Test.class" excludes="**/HDF5*.class"/>
+        <fileset dir="${build.itest.dir}" includes="**/*Test.class"/>
       </batchtest>
     </junit>
-  </target>
+  </target>	
 
-  <target name="create-testdb">
-    <sql classpath="${lib.dir}/${db.jar}"
-         driver="${db.driver}"
-         url="${db.url}"
-         userid="${db.user}" 
-         password="${db.pwd}" >
-      <transaction src="${etc.dir}/create_testdb.sql"/>
-    </sql>
-  </target>
-	
+  <!-- CODE COVERAGE -->
   <target name="instrument.coverage">
     <delete dir="${build.instrument.dir}" />
     <delete file="${build.coverage.dir}/cobertura.ser" />
@@ -149,7 +206,6 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   </target>
   
   <target name="unittest.coverage" depends="instrument.coverage">
-    <mkdir dir="${dist.dir}/junit-reports" />
     <mkdir dir="${dist.dir}/coverage-reports" />
     <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
       <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
@@ -162,10 +218,39 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <classpath location="${build.test.dir}" />
       <classpath refid="cobertura.classpath" />
       <batchtest fork="yes" todir="${dist.dir}/junit-reports">
-        <fileset dir="${build.test.dir}" includes="**/*Test.class" excludes="**/HDF5*.class"/>
+        <fileset dir="${build.test.dir}" includes="**/*Test.class"/>
       </batchtest>
     </junit>
 		
+    <cobertura-report format="xml" destdir="${dist.dir}/coverage-reports" datafile="${build.coverage.dir}/cobertura.ser">
+      <fileset dir="${source.dir}">
+        <include name="**/*.java" />
+        <exclude name="**/*Stub.java" />
+      </fileset>
+    </cobertura-report>		
+  </target>
+
+  <!-- performs coverage from running all tests (unit tests, integration tests-->
+  <target name="test.coverage" depends="prepare.test,prepare.itest,instrument.coverage">
+    <mkdir dir="${dist.dir}/junit-reports" />
+    <mkdir dir="${dist.dir}/coverage-reports" />
+    <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
+      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+      <sysproperty key="net.sourceforge.cobertura.datafile"  file="${build.coverage.dir}/cobertura.ser" /> <!-- For instrumentation -->
+      <formatter type="plain"/> 
+      <classpath location="${build.instrument.dir}" /> <!-- For instrumentation -->
+      <classpath refid="test.lib.path"/>
+      <classpath location="${build.classes.dir}"/>
+      <classpath refid="lib.path"/>
+      <classpath location="${build.test.dir}" />
+      <classpath location="${build.itest.dir}" />
+      <classpath refid="cobertura.classpath" />
+      <batchtest fork="yes" todir="${dist.dir}/junit-reports">
+        <fileset dir="${build.test.dir}" includes="**/*Test.class"/>
+        <fileset dir="${build.itest.dir}" includes="**/*Test.class"/>
+      </batchtest>
+    </junit>
+			
     <cobertura-report format="xml" destdir="${dist.dir}/coverage-reports" datafile="${build.coverage.dir}/cobertura.ser">
       <fileset dir="${source.dir}">
         <include name="**/*.java" />

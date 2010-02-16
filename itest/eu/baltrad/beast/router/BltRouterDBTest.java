@@ -21,8 +21,6 @@ package eu.baltrad.beast.router;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
@@ -42,17 +40,13 @@ import eu.baltrad.beast.rules.IRuleFactory;
  */
 public class BltRouterDBTest extends TestCase {
   private BltRouter classUnderTest = null;
-  
   private ApplicationContext context = null;
-  private DataSource source = null;
+  private BeastDBTestHelper helper = null;
   
   public BltRouterDBTest(String name) {
     super(name);
     context = BeastDBTestHelper.loadContext(this);
-    source = (DataSource)context.getBean("dataSource");
-    if (source == null) {
-      throw new RuntimeException("Could not initialize testcases");
-    }
+    helper = (BeastDBTestHelper)context.getBean("testHelper");
   }
 
   private class DummyRule implements IRule {
@@ -85,9 +79,9 @@ public class BltRouterDBTest extends TestCase {
    * Setup of test
    */
   public void setUp() throws Exception {
-    BeastDBTestHelper.cleanInsert(source, this);
+    helper.cleanInsert(this);
     classUnderTest = new BltRouter();
-    classUnderTest.setDataSource(source);
+    classUnderTest.setDataSource(helper.getSource());
     classUnderTest.setRuleFactory(new DummyFactory());
     classUnderTest.afterPropertiesSet();
   }
@@ -105,16 +99,16 @@ public class BltRouterDBTest extends TestCase {
    * @throws Exception
    */
   protected void verifyDatabaseTables(String extras) throws Exception {
-    ITable expected = BeastDBTestHelper.getXlsTable(this, extras, "router_rules");
-    ITable actual = BeastDBTestHelper.getDatabaseTable(source, "router_rules");
+    ITable expected = helper.getXlsTable(this, extras, "router_rules");
+    ITable actual = helper.getDatabaseTable("router_rules");
     Assertion.assertEquals(expected, actual);
 
-    expected = BeastDBTestHelper.getXlsTable(this, extras, "adaptors");
-    actual = BeastDBTestHelper.getDatabaseTable(source, "adaptors");
+    expected = helper.getXlsTable(this, extras, "adaptors");
+    actual = helper.getDatabaseTable("adaptors");
     Assertion.assertEquals(expected, actual);
 
-    expected = BeastDBTestHelper.getXlsTable(this, extras, "router_dest");
-    actual = BeastDBTestHelper.getDatabaseTable(source, "router_dest");
+    expected = helper.getXlsTable(this, extras, "router_dest");
+    actual = helper.getDatabaseTable("router_dest");
     Assertion.assertEquals(expected, actual);
   }
 
@@ -169,6 +163,26 @@ public class BltRouterDBTest extends TestCase {
   }
   
   public void testUpdateDefinition() throws Exception {
-    fail("NOOO");
+    RouteDefinition def = classUnderTest.getDefinition("X2");
+    def.setDescription("scoobys test");
+    def.setActive(false);
+    def.setAuthor("scooby");
+    IRule rule = new DummyRule("ntest", "yada");
+    def.setRule(rule);
+    
+    List<String> recipients = new ArrayList<String>();
+    recipients.add("A2");
+    def.setRecipients(recipients);
+    
+    classUnderTest.updateDefinition(def);
+    
+    verifyDatabaseTables("updateDefinition");
+    RouteDefinition result = classUnderTest.getDefinition("X2");
+    assertEquals(false, result.isActive());
+    assertEquals("scoobys test", result.getDescription());
+    assertEquals("scooby", result.getAuthor());
+    rule = result.getRule();
+    assertEquals("ntest", rule.getType());
+    assertEquals("yada", rule.getDefinition());
   }
 }
