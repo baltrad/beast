@@ -18,7 +18,12 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.manager;
 
+import java.util.List;
+
+import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.router.IRouter;
+import eu.baltrad.beast.router.Route;
 
 /**
  * The message manager that will distribute the messages to
@@ -27,9 +32,40 @@ import eu.baltrad.beast.message.IBltMessage;
  */
 public class BltMessageManager implements IBltMessageManager {
   /**
+   * The router
+   */
+  private IRouter router = null;
+  
+  /**
+   * The main adaptor
+   */
+  private IAdaptor adaptor = null;
+  
+  /**
+   * @param router the router to set
+   */
+  public void setRouter(IRouter router) {
+    this.router = router;
+  }
+
+  /**
+   * @param adaptor the adaptor to set
+   */
+  public void setAdaptor(IAdaptor adaptor) {
+    this.adaptor = adaptor;
+  }
+
+  /**
    * @see IBltMessageManager#manage(IBltMessage)
    */
   public void manage(IBltMessage message) {
-    //adaptor.manage(message);
+    List<Route> routes = router.getRoutes(message);
+    for (Route r: routes) {
+      try {
+        adaptor.handle(r);
+      } catch (Throwable t) {
+        // no op
+      }
+    }
   }
 }

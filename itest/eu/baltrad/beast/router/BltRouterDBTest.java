@@ -32,6 +32,7 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.impl.BltRouter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleFactory;
+import eu.baltrad.beast.rules.RuleException;
 
 
 /**
@@ -161,6 +162,33 @@ public class BltRouterDBTest extends TestCase {
     RouteDefinition result = classUnderTest.getDefinition("X4");
     assertNotNull(result);
   }
+
+  public void testStoreDefinition_duplicate() throws Exception {
+    List<String> recipients = new ArrayList<String>();
+    recipients.add("A1");
+    
+    RouteDefinition def = new RouteDefinition();
+    def.setName("X1");
+    def.setActive(false);
+    def.setAuthor("tester");
+    def.setDescription("test description");
+    def.setRecipients(recipients);
+    
+    DummyRule rule = new DummyRule("test", "test definition");
+    def.setRule(rule);
+    
+    try {
+      classUnderTest.storeDefinition(def);
+      fail("Expected RuleException");
+    } catch (RuleException e) {
+      // pass
+    }
+
+    verifyDatabaseTables(null);
+    RouteDefinition result = classUnderTest.getDefinition("X1");
+    assertEquals("Karl", result.getAuthor());
+  }
+  
   
   public void testUpdateDefinition() throws Exception {
     RouteDefinition def = classUnderTest.getDefinition("X2");
