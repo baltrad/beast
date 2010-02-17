@@ -18,41 +18,37 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.impl;
 
-import java.util.Map;
-
-import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
+import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.router.Route;
 
 /**
- * The distributing adaptor which will forward each route to the appropriate 
- * adaptor.
+ * The XMLRPC adaptor
  * @author Anders Henja
  */
-public class BltAdaptor implements IAdaptor {
-  /**
-   * The registered adaptors
-   */
-  private Map<String, IAdaptor> adaptors = null;
-  
-  /**
-   * Sets the adaptors, mostly used for test purposes. The adaptors
-   * are read from the database.
-   * @param adaptors the adaptors
-   */
-  void setAdaptors(Map<String, IAdaptor> adaptors) {
-    this.adaptors = adaptors;
-  }
-  
+public class XmlRpcAdaptor implements IAdaptor {
   /**
    * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)
    */
   @Override
   public void handle(Route route) {
-    IAdaptor adaptor = adaptors.get(route.getDestination());
-    if (adaptor == null) {
-      throw new AdaptorException("No adaptor able to handle the route");
+    IBltMessage message = route.getMessage();
+    if (message.getClass() == BltCommandMessage.class) {
+      handle((BltCommandMessage)message);
     }
-    adaptor.handle(route);
   }
+
+  /**
+   * Handles a BltCommandMessage.
+   * @param message the message to handle.
+   */
+  protected void handle(BltCommandMessage message) {
+    String cmd = message.getCommand();
+  }
+  
+/**
+    Object[] objects = new Object[]{msg.getFilename(), msg.getProduct()};
+    IXMLRPCMethod method = new XMLRPCMethod(uri, "generate", objects);
+ */
 }
