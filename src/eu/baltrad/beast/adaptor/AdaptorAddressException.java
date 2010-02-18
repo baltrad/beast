@@ -16,39 +16,43 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.adaptor.impl;
-
-import eu.baltrad.beast.adaptor.IAdaptor;
-import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.beast.message.mo.BltCommandMessage;
-import eu.baltrad.beast.router.Route;
+package eu.baltrad.beast.adaptor;
 
 /**
- * The XMLRPC adaptor
+ * Thrown when there is a problem with an address.
  * @author Anders Henja
  */
-public class XmlRpcAdaptor implements IAdaptor {
+public class AdaptorAddressException extends AdaptorException {
   /**
-   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)
+   * The default serial uid 
    */
-  @Override
-  public void handle(Route route) {
-    IBltMessage message = route.getMessage();
-    if (message.getClass() == BltCommandMessage.class) {
-      handle((BltCommandMessage)message);
-    }
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * @see AdaptorException#AdaptorException()
+   */
+  public AdaptorAddressException() {
+    super();
+  }
+  
+  /**
+   * @see AdaptorException#AdaptorException(String)
+   */
+  public AdaptorAddressException(String message) {
+    super(message);
   }
 
   /**
-   * Handles a BltCommandMessage.
-   * @param message the message to handle.
+   * @see AdaptorException#AdaptorException(Throwable)
    */
-  protected void handle(BltCommandMessage message) {
-    String cmd = message.getCommand();
+  public AdaptorAddressException(Throwable t) {
+    super(t);
   }
-  
-/**
-    Object[] objects = new Object[]{msg.getFilename(), msg.getProduct()};
-    IXMLRPCMethod method = new XMLRPCMethod(uri, "generate", objects);
- */
+
+  /**
+   * @see AdaptorException#AdaptorException(String, Throwable)
+   */
+  public AdaptorAddressException(String message, Throwable t) {
+    super(message, t);
+  }
 }

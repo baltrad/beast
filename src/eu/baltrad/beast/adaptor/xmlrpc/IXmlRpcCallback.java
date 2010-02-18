@@ -16,43 +16,33 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.adaptor.impl;
+package eu.baltrad.beast.adaptor.xmlrpc;
 
-import java.util.Map;
-
-import eu.baltrad.beast.adaptor.AdaptorException;
-import eu.baltrad.beast.adaptor.IAdaptor;
-import eu.baltrad.beast.router.Route;
+import eu.baltrad.beast.message.IBltMessage;
 
 /**
- * The distributing adaptor which will forward each route to the appropriate 
- * adaptor.
+ * Callback that can be used to identify results of the
+ * {@link XmlRpcAdaptor#handle(eu.baltrad.beast.router.Route)}.
  * @author Anders Henja
  */
-public class BltAdaptor implements IAdaptor {
+public interface IXmlRpcCallback {
   /**
-   * The registered adaptors
+   * Called on success
+   * @param message - the message
+   * @param result - the result
    */
-  private Map<String, IAdaptor> adaptors = null;
+  public void success(IBltMessage message, Object result);
   
   /**
-   * Sets the adaptors, mostly used for test purposes. The adaptors
-   * are read from the database.
-   * @param adaptors the adaptors
+   * Will be called if a timeout occurs
+   * @param message the message that got a timeout
    */
-  void setAdaptors(Map<String, IAdaptor> adaptors) {
-    this.adaptors = adaptors;
-  }
+  public void timeout(IBltMessage message);
   
   /**
-   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)
+   * Will be called if an error occurs during processing of the message
+   * @param message the message that resulted in an error
+   * @param t the throwable
    */
-  @Override
-  public void handle(Route route) {
-    IAdaptor adaptor = adaptors.get(route.getDestination());
-    if (adaptor == null) {
-      throw new AdaptorException("No adaptor able to handle the route");
-    }
-    adaptor.handle(route);
-  }
+  public void error(IBltMessage message, Throwable t);
 }
