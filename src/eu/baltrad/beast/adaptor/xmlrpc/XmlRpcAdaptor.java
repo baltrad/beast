@@ -132,9 +132,13 @@ public class XmlRpcAdaptor implements IAdaptor {
           callback.success(message, result);
         }
       } catch (TimingOutCallback.TimeoutException e) {
-        callback.timeout(message);
+        if (callback != null) {
+          callback.timeout(message);
+        }
       } catch (Throwable t) {
-        callback.error(message, t);
+        if (callback != null) {
+          callback.error(message, t);
+        }
       }
     } catch (Throwable t) {
       throw new AdaptorException("Failed to execute command", t);

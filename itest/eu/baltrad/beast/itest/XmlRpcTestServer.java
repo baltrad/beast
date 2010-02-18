@@ -34,7 +34,7 @@ public class XmlRpcTestServer extends Thread implements XmlRpcHandler, XmlRpcHan
   private WebServer server = null;
   private int port = 0;
   private Object response = null;
-  private boolean stopped = false;
+  private volatile boolean stopped = false;
   private long alivetime = 5000; // Keep server running for 5000 ms as default.
   private long responseTimeout = 0;
   
@@ -67,15 +67,21 @@ public class XmlRpcTestServer extends Thread implements XmlRpcHandler, XmlRpcHan
     } catch (Throwable t) {
       t.printStackTrace();
       throw new RuntimeException("Failed to create server", t);
-    }    
+    }
     // Will start the timer that automatically shuts down the server
     super.start();
   }
   
   public synchronized void shutdown() {
     if (stopped == false) {
-      server.shutdown();
       stopped = true;
+      try {
+        // Sleep 1000ms so that any pending response can be processed before terminating
+        Thread.sleep(1000);
+      } catch (Throwable t) {
+        
+      }
+      server.shutdown();
       notify();
     }
   }

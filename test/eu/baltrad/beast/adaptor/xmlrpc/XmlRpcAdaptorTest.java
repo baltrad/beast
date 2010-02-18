@@ -23,6 +23,7 @@ import java.net.URL;
 import junit.framework.TestCase;
 
 import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.TimingOutCallback;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.easymock.MockControl;
@@ -41,8 +42,9 @@ public class XmlRpcAdaptorTest extends TestCase {
   private IXmlRpcCommandGenerator generator = null;
   private MockControl rpcClientControl = null;
   private XmlRpcClient rpcClient = null;
+  private MockControl timeoutCBControl = null;
+  private TimingOutCallback timeoutCB = null;
   private XmlRpcAdaptor classUnderTest = null;
-  
   /**
    * @see junit.framework.TestCase#setUp()
    */
@@ -53,7 +55,14 @@ public class XmlRpcAdaptorTest extends TestCase {
     generator = (IXmlRpcCommandGenerator)generatorControl.getMock();
     rpcClientControl = MockClassControl.createControl(XmlRpcClient.class);
     rpcClient = (XmlRpcClient)rpcClientControl.getMock();
-    classUnderTest = new XmlRpcAdaptor();
+    timeoutCBControl = MockClassControl.createControl(TimingOutCallback.class);
+    timeoutCB = (TimingOutCallback)timeoutCBControl.getMock();
+    
+    classUnderTest = new XmlRpcAdaptor() {
+      protected TimingOutCallback createTimeout(long timeout) {
+        return timeoutCB;
+      }      
+    };
     classUnderTest.setGenerator(generator);
     classUnderTest.setRpcClient(rpcClient);
   }
@@ -69,6 +78,8 @@ public class XmlRpcAdaptorTest extends TestCase {
     generator = null;
     rpcClientControl = null;
     rpcClient = null;
+    timeoutCBControl = null;
+    timeoutCB = null;
     classUnderTest = null;
   }
 
@@ -78,6 +89,7 @@ public class XmlRpcAdaptorTest extends TestCase {
   protected void replay() {
     generatorControl.replay();
     rpcClientControl.replay();
+    timeoutCBControl.replay();
   }
   
   /**
@@ -86,9 +98,10 @@ public class XmlRpcAdaptorTest extends TestCase {
   protected void verify() {
     generatorControl.verify();
     rpcClientControl.verify();
+    timeoutCBControl.verify();
   }
   
-  public void testHandle() throws Exception {
+  public void testHandle() throws Throwable {
     IBltMessage message = new IBltMessage(){};
     XmlRpcCommand cmd = new XmlRpcCommand();
     Object[] rpcArgs = new Object[]{};
@@ -97,8 +110,9 @@ public class XmlRpcAdaptorTest extends TestCase {
     
     generator.generate(message);
     generatorControl.setReturnValue(cmd);
-    rpcClient.executeAsync("command", rpcArgs, null);
-
+    rpcClient.executeAsync("command", rpcArgs, timeoutCB);
+    timeoutCB.waitForResponse();
+    timeoutCBControl.setReturnValue(new Integer(0));
     replay();
     
     // Execute test
@@ -140,7 +154,7 @@ public class XmlRpcAdaptorTest extends TestCase {
     
     generator.generate(message);
     generatorControl.setReturnValue(cmd);
-    rpcClient.executeAsync("command", args, null);
+    rpcClient.executeAsync("command", args, timeoutCB);
     rpcClientControl.setThrowable(new XmlRpcException("xys"));
 
     replay();
