@@ -18,47 +18,31 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
-import java.util.Map;
-
-import eu.baltrad.beast.router.Route;
-
 /**
- * The distributing adaptor which will forward each route to the appropriate 
- * adaptor.
+ * Defines what is nessecary in order to be able to configure
+ * and persist adaptor configurations.
  * @author Anders Henja
  */
-public class BltAdaptor implements IAdaptor {
+public interface IAdaptorConfigurationManager {
   /**
-   * The registered adaptors
+   * Returns the type that is managed by this configuration manager
+   * @return the type
    */
-  private Map<String, IAdaptor> adaptors = null;
+  public String getType();
   
   /**
-   * Sets the adaptors, mostly used for test purposes. The adaptors
-   * are read from the database.
-   * @param adaptors the adaptors
+   * Creates a new instance of an adaptor configuration.
+   * @param name the name of the adaptor that should be created
+   * @return a new adaptor configuration
    */
-  void setAdaptors(Map<String, IAdaptor> adaptors) {
-    this.adaptors = adaptors;
-  }
+  public IAdaptorConfiguration createConfiguration(String name);
   
   /**
-   * This adaptor does not have a name so null will be returned.
-   * @return null
+   * Persists the adaptor configuration.
+   * @param id the unique id that defines this adaptor
+   * @param configuration the configuration
+   * @return a new adaptor on success
+   * @throws AdaptorException on failure
    */
-  public String getName() {
-    return null;
-  }
-  
-  /**
-   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)
-   */
-  @Override
-  public void handle(Route route) {
-    IAdaptor adaptor = adaptors.get(route.getDestination());
-    if (adaptor == null) {
-      throw new AdaptorException("No adaptor able to handle the route");
-    }
-    adaptor.handle(route);
-  }
+  public IAdaptor store(int id, IAdaptorConfiguration configuration);
 }

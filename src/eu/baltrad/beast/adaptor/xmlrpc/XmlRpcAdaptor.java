@@ -51,6 +51,11 @@ public class XmlRpcAdaptor implements IAdaptor {
   private long timeout = 5000;
   
   /**
+   * The name of this adaptor
+   */
+  private String name = null;
+  
+  /**
    * The callback
    */
   private IXmlRpcCallback callback = null;
@@ -114,6 +119,21 @@ public class XmlRpcAdaptor implements IAdaptor {
     } catch (Throwable t) {
       throw new AdaptorAddressException("Failed to set url", t);
     }
+  }
+  
+  /**
+   * Sets the name of this adaptor
+   * @param name the name of this adaptor
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+  
+  /**
+   * @see IAdaptor#getName()
+   */
+  public String getName() {
+    return this.name;
   }
   
   /**

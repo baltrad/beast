@@ -106,7 +106,7 @@ public class BltRouterDBTest extends TestCase {
 
     expected = helper.getXlsTable(this, extras, "adaptors");
     actual = helper.getDatabaseTable("adaptors");
-    Assertion.assertEquals(expected, actual);
+    Assertion.assertEqualsIgnoreCols(expected, actual, new String[]{"adaptor_id"});
 
     expected = helper.getXlsTable(this, extras, "router_dest");
     actual = helper.getDatabaseTable("router_dest");

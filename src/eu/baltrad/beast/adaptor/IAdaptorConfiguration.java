@@ -18,47 +18,20 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
-import java.util.Map;
-
-import eu.baltrad.beast.router.Route;
-
 /**
- * The distributing adaptor which will forward each route to the appropriate 
- * adaptor.
+ * 
  * @author Anders Henja
  */
-public class BltAdaptor implements IAdaptor {
+public interface IAdaptorConfiguration {
   /**
-   * The registered adaptors
+   * Returns the name of the adaptor
+   * @return the name of the adaptor
    */
-  private Map<String, IAdaptor> adaptors = null;
+  public String getName();
   
   /**
-   * Sets the adaptors, mostly used for test purposes. The adaptors
-   * are read from the database.
-   * @param adaptors the adaptors
+   * Returns the type of the adaptor
+   * @return the type of the adaptor
    */
-  void setAdaptors(Map<String, IAdaptor> adaptors) {
-    this.adaptors = adaptors;
-  }
-  
-  /**
-   * This adaptor does not have a name so null will be returned.
-   * @return null
-   */
-  public String getName() {
-    return null;
-  }
-  
-  /**
-   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)
-   */
-  @Override
-  public void handle(Route route) {
-    IAdaptor adaptor = adaptors.get(route.getDestination());
-    if (adaptor == null) {
-      throw new AdaptorException("No adaptor able to handle the route");
-    }
-    adaptor.handle(route);
-  }
+  public String getType();
 }

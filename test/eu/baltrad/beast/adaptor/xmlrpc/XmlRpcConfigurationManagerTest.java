@@ -16,25 +16,26 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.adaptor;
+package eu.baltrad.beast.adaptor.xmlrpc;
 
-import eu.baltrad.beast.router.Route;
+import eu.baltrad.beast.adaptor.IAdaptorConfiguration;
+import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
+ *
  */
-public interface IAdaptor {
-  /**
-   * Returns the name that uniquely identifies this adaptor
-   * @return the name of the adaptor
-   */
-  public String getName();
+public class XmlRpcConfigurationManagerTest extends TestCase {
+  public void testGetType() {
+    XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
+    assertEquals("XMLRPC", classUnderTest.getType());
+  }
   
-  /**
-   * Handles a route. If this adaptor could not handle the route an AdaptorException should be
-   * thrown.
-   * @param route the route to handle
-   * @throws AdaptorException
-   */
-  public void handle(Route route);
+  public void testCreateConfiguration() {
+    XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
+    IAdaptorConfiguration result = classUnderTest.createConfiguration("ABC");
+    assertTrue(result.getClass() == XmlRpcAdaptorConfiguration.class);
+    assertEquals("ABC", result.getName());
+    assertEquals("XMLRPC", result.getType());
+  }
 }
