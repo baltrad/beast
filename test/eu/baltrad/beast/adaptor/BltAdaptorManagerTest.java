@@ -21,6 +21,7 @@ package eu.baltrad.beast.adaptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -167,7 +168,7 @@ public class BltAdaptorManagerTest extends TestCase {
     xyzManager.store(2, xyzConfiguration);
     xyzManagerControl.setReturnValue(adaptor);
 
-    classUnderTest.template = jdbcTemplate; 
+    classUnderTest.setJdbcTemplate(jdbcTemplate); 
 
     xyzManagerControl.replay();
     jdbcControl.replay();
@@ -190,7 +191,7 @@ public class BltAdaptorManagerTest extends TestCase {
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
 
-    classUnderTest.template = jdbcTemplate; 
+    classUnderTest.setJdbcTemplate(jdbcTemplate); 
 
     xyzManagerControl.replay();
     jdbcControl.replay();
@@ -227,7 +228,7 @@ public class BltAdaptorManagerTest extends TestCase {
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     
-    classUnderTest.template = jdbcTemplate; 
+    classUnderTest.setJdbcTemplate(jdbcTemplate); 
 
     xyzManagerControl.replay();
     jdbcControl.replay();
@@ -245,4 +246,44 @@ public class BltAdaptorManagerTest extends TestCase {
     jdbcControl.verify();
   }
   
+  public void testUnregister() {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
+
+    Map<String, Object> found = new HashMap<String, Object>();
+    found.put("type", "XYZ");
+    found.put("adaptor_id", new Integer(10));
+    
+    Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
+    adaptors.put("SA1", new IAdaptor() {
+      public String getName() {return null;}
+      public void handle(Route route) {}
+    });
+    
+    jdbcTemplate.queryForMap("select adaptor_id,type from adaptors where name=?",
+        new Object[]{"SA1"});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(found);
+    
+    xyzManager.remove(10);
+    
+    jdbcTemplate.update("delete from adaptors where adaptor_id=?",
+        new Object[]{10});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+
+    classUnderTest.setAdaptors(adaptors);
+    classUnderTest.setJdbcTemplate(jdbcTemplate); 
+    
+    xyzManagerControl.replay();
+    jdbcControl.replay();
+    
+    // Execute
+    classUnderTest.unregister("SA1");
+
+    // Verify
+    xyzManagerControl.verify();
+    jdbcControl.verify();
+    assertEquals(null, adaptors.get("SA1"));
+  }  
 }

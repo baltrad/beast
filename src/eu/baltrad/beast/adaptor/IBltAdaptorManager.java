@@ -35,6 +35,14 @@ public interface IBltAdaptorManager {
   public IAdaptor register(IAdaptorConfiguration configuration);
   
   /**
+   * Unregisters the adaptor with the specified name (and will also
+   * remove it from the database).
+   * @param name the name of the adaptor to unregister
+   * @throws AdaptorException on failure
+   */
+  public void unregister(String name);
+  
+  /**
    * Returns a list of the available adaptor types.
    * @return alist of the available adaptor types.
    */

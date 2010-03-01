@@ -201,6 +201,7 @@ public class XmlRpcAdaptorTest extends TestCase {
     // verify
     xmlRpcConfigControl.verify();
     assertSame(result, xmlRpcConfig);
+    assertEquals("http://localhost", classUnderTest.getURL());
   }
   
   public void testCreateUrl() throws Exception {

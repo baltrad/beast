@@ -45,4 +45,10 @@ public interface IAdaptorConfigurationManager {
    * @throws AdaptorException on failure
    */
   public IAdaptor store(int id, IAdaptorConfiguration configuration);
+  
+  /**
+   * Removes the adaptor configuration.
+   * @param id the configuration that should be removed
+   */
+  public void remove(int id);
 }

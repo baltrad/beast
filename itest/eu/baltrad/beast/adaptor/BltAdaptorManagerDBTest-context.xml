@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- Property placeholder configurer for expanding ${} into values -->
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>testdb.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+    <property name="driverClassName" value="${db.driver}"/>
+    <property name="url" value="${db.url}"/>
+    <property name="username" value="${db.user}"/>
+    <property name="password" value="${db.pwd}"/>
+  </bean>
+
+  <bean id="dataFactory" class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory"/>
+  
+  <bean id="testHelper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType" />
+  
+  <bean id="xmlrpcmgr" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcConfigurationManager" autowire="byType"/>
+  
+  <bean id="adaptorManager" class="eu.baltrad.beast.adaptor.BltAdaptorManager" autowire="byType">
+    <property name="typeRegistry">
+      <list>
+        <ref bean="xmlrpcmgr"/>
+      </list>
+    </property>
+  </bean>
+</beans>

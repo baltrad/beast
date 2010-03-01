@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorConfiguration;
 import eu.baltrad.beast.adaptor.IAdaptorConfigurationManager;
@@ -32,7 +33,7 @@ import eu.baltrad.beast.adaptor.IAdaptorConfigurationManager;
  * @author Anders Henja
  */
 public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager {
-  SimpleJdbcOperations template = null;
+  private SimpleJdbcOperations template = null;
   
   /**
    * Default constructor
@@ -46,6 +47,14 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
    */
   public void setDataSource(DataSource source) {
     this.template = new SimpleJdbcTemplate(source);
+  }
+  
+  /**
+   * Sets the jdbc template, used for testing.
+   * @param template the template to set
+   */
+  void setJdbcTemplate(SimpleJdbcOperations template) {
+    this.template = template;
   }
   
   /**
@@ -71,11 +80,31 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
   public IAdaptor store(int id, IAdaptorConfiguration configuration) {
     String url = ((XmlRpcAdaptorConfiguration)configuration).getURL();
     String name = configuration.getName();
-    template.update("insert into adaptors_xmlrpc (adaptor_id, url) values (?,?)",
-        new Object[]{id, url});
-    XmlRpcAdaptor result = new XmlRpcAdaptor();
-    result.setName(name);
-    result.setURL(url);
+    long timeout = ((XmlRpcAdaptorConfiguration)configuration).getTimeout();
+    XmlRpcAdaptor result = null;
+    try {
+      template.update("insert into adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
+          new Object[]{id, url, timeout});
+      result = new XmlRpcAdaptor();
+      result.setName(name);
+      result.setURL(url);
+      result.setTimeout(timeout);
+    } catch (Throwable t) {
+      throw new AdaptorException("Could not store XMLRPC adaptor: " + name, t);
+    }
+    
     return result;
+  }
+  
+  /**
+   * @see eu.baltrad.beast.adaptor.IAdaptorConfigurationManager#emove(int)
+   */
+  @Override
+  public void remove(int id) {
+    try {
+      template.update("delete adaptors_xmlrpc where adaptor_id=?", new Object[]{id});
+    } catch (Throwable t) {
+      throw new AdaptorException("Could not remove adaptor", t);
+    }
   }
 }

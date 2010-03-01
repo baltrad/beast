@@ -49,6 +49,13 @@ public class BltAdaptor implements IAdaptor {
   public String getName() {
     return null;
   }
+
+  /**
+   * @see IAdaptor#getID()
+   */
+  public int getID() {
+    return 0;
+  }
   
   /**
    * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)

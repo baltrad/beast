@@ -28,12 +28,14 @@ public class XmlRpcAdaptorConfigurationTest extends TestCase {
     XmlRpcAdaptorConfiguration classUnderTest = new XmlRpcAdaptorConfiguration();
     assertEquals(null, classUnderTest.getName());
     assertEquals("XMLRPC", classUnderTest.getType());
+    assertEquals(5000, classUnderTest.getTimeout());
   }
   
   public void testConstructor_2() throws Exception {
     XmlRpcAdaptorConfiguration classUnderTest = new XmlRpcAdaptorConfiguration("NAME");
     assertEquals("NAME", classUnderTest.getName());
     assertEquals("XMLRPC", classUnderTest.getType());
+    assertEquals(5000, classUnderTest.getTimeout());
   }
 
   public void testName() throws Exception {
@@ -47,5 +49,10 @@ public class XmlRpcAdaptorConfigurationTest extends TestCase {
     classUnderTest.setURL("http://something");
     assertEquals("http://something", classUnderTest.getURL());
   }
-  
+
+  public void testTimeout() throws Exception {
+    XmlRpcAdaptorConfiguration classUnderTest = new XmlRpcAdaptorConfiguration();
+    classUnderTest.setTimeout(6000);
+    assertEquals(6000, classUnderTest.getTimeout());
+  }
 }

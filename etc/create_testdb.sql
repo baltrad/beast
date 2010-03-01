@@ -11,7 +11,8 @@ create table adaptors (
 
 create table adaptors_xmlrpc (
   adaptor_id integer PRIMARY KEY REFERENCES adaptors(adaptor_id),
-  uri text not null
+  uri text not null,
+  timeout integer
 );
 
 create table router_rules (

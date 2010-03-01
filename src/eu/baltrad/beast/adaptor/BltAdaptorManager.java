@@ -42,7 +42,7 @@ public class BltAdaptorManager implements IBltAdaptorManager {
   /**
    * The database access
    */
-  SimpleJdbcOperations template = null;
+  private SimpleJdbcOperations template = null;
   
   /**
    * The list of registered adaptors.
@@ -64,6 +64,14 @@ public class BltAdaptorManager implements IBltAdaptorManager {
   }
   
   /**
+   * Sets the jdbc template to be used by this class
+   * @param template the template
+   */
+  public void setJdbcTemplate(SimpleJdbcOperations template) {
+    this.template = template;
+  }
+  
+  /**
    * Sets the available types
    * @param typeRegistry the type registry
    */
@@ -72,6 +80,15 @@ public class BltAdaptorManager implements IBltAdaptorManager {
     for (IAdaptorConfigurationManager mgr: managers) {
       this.typeRegistry.put(mgr.getType(), mgr);
     }
+  }
+  
+  /**
+   * Sets the adaptors. Mostly used for test purposes otherwise this information
+   * is read from the database.
+   * @param adaptors the adaptors
+   */
+  public void setAdaptors(Map<String, IAdaptor> adaptors) {
+    this.adaptors = adaptors;
   }
   
   /**
@@ -85,11 +102,12 @@ public class BltAdaptorManager implements IBltAdaptorManager {
     if (mgr != null) {
       int index = 0;
       try {
+        System.out.println("NAME="+name+", TYPE="+type);
         template.update("insert into adaptors (name,type) values (?,?)",
             new Object[]{name,type});
         index = template.queryForInt("select adaptor_id from adaptors where name=?", name);
       } catch (DataAccessException e) {
-        throw new AdaptorException("Failed to add adaptor");
+        throw new AdaptorException("Failed to add adaptor", e);
       }
       
       try {
@@ -103,6 +121,22 @@ public class BltAdaptorManager implements IBltAdaptorManager {
       }
     }
     throw new AdaptorException("No such type: " + type);
+  }
+
+  /**
+   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#unregister(java.lang.String)
+   */
+  @Override  
+  public void unregister(String name) {
+    Map<String, Object> result = template.queryForMap("select adaptor_id,type from adaptors where name=?",
+        new Object[]{name});
+    String type = (String)result.get("type");
+    int adaptor_id = (Integer)result.get("adaptor_id");
+    IAdaptorConfigurationManager mgr = typeRegistry.get(type);
+    mgr.remove(adaptor_id);
+    template.update("delete from adaptors where adaptor_id=?",
+        new Object[]{adaptor_id});
+    adaptors.remove(name);
   }
   
   /**

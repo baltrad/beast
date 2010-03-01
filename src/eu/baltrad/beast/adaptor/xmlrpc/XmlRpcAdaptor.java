@@ -56,6 +56,11 @@ public class XmlRpcAdaptor implements IAdaptor {
   private String name = null;
   
   /**
+   * The URL
+   */
+  private String url = null;
+  
+  /**
    * The callback
    */
   private IXmlRpcCallback callback = null;
@@ -116,11 +121,20 @@ public class XmlRpcAdaptor implements IAdaptor {
       XmlRpcClientConfigImpl config = createConfig();
       config.setServerURL(new URL(url));
       client.setConfig(config);
+      this.url = url;
     } catch (Throwable t) {
       throw new AdaptorAddressException("Failed to set url", t);
     }
   }
   
+  /**
+   * Returns the url
+   * @return the url
+   */
+  public String getURL() {
+    return this.url;
+  }
+
   /**
    * Sets the name of this adaptor
    * @param name the name of this adaptor

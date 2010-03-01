@@ -37,6 +37,11 @@ public class XmlRpcAdaptorConfiguration implements IAdaptorConfiguration {
   private String url = null;
   
   /**
+   * The timeout before assuming that an xmlrpc request has gone wrong
+   */
+  private long timeout = 5000;
+  
+  /**
    * Default constructor
    */
   public XmlRpcAdaptorConfiguration() {
@@ -81,6 +86,22 @@ public class XmlRpcAdaptorConfiguration implements IAdaptorConfiguration {
    */
   public String getURL() {
     return this.url;
+  }
+  
+  /**
+   * Sets the timeout (before the xmladaptor should assume that the request has gone wrong)
+   * @param timeout the timeout
+   */
+  public void setTimeout(long timeout) {
+    this.timeout = timeout;
+  }
+  
+  /**
+   * Returns the timeout
+   * @return the timeout
+   */
+  public long getTimeout() {
+    return this.timeout;
   }
   
   /**

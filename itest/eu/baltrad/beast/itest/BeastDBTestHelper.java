@@ -18,6 +18,7 @@ import org.dbunit.dataset.excel.XlsDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 /* --------------------------------------------------------------------
@@ -124,7 +125,9 @@ public class BeastDBTestHelper {
    */
   public void cleanInsert(TestCase tc) throws Exception {
     Connection conn = source.getConnection();
+    SimpleJdbcTemplate template = new SimpleJdbcTemplate(source);
     try {
+      template.update("delete from adaptors_xmlrpc");
       IDatabaseConnection connection = getConnection(conn);
       DatabaseOperation.CLEAN_INSERT.execute(connection, getXlsDataset(tc, null));
     } finally {
