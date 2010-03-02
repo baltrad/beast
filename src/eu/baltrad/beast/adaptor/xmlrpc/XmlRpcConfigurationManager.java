@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
+import java.util.Map;
+
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -97,7 +99,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
   }
   
   /**
-   * @see eu.baltrad.beast.adaptor.IAdaptorConfigurationManager#emove(int)
+   * @see eu.baltrad.beast.adaptor.IAdaptorConfigurationManager#remove(int)
    */
   @Override
   public void remove(int id) {
@@ -106,5 +108,23 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
     } catch (Throwable t) {
       throw new AdaptorException("Could not remove adaptor", t);
     }
+  }
+  
+  /**
+   * @see eu.baltrad.beast.adaptor.IAdaptorConfigurationManager#read(int, String)
+   */
+  @Override
+  public IAdaptor read(int id, String name) {
+    try {
+      Map<String, Object> found = template.queryForMap("select uri, timeout from adaptors_xmlrpc where adaptor_id=?",
+          new Object[]{id});
+      XmlRpcAdaptor result = new XmlRpcAdaptor();
+      result.setName(name);
+      result.setTimeout((Integer)found.get("timeout"));
+      result.setURL((String)found.get("uri"));
+      return result;
+    } catch (Throwable t) {
+    }
+    return null;
   }
 }

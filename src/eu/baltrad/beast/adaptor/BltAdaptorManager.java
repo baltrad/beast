@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,9 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -33,7 +37,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @author Anders Henja
  *
  */
-public class BltAdaptorManager implements IBltAdaptorManager {
+public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   /**
    * The available types with their corresponding managers
    */
@@ -172,5 +176,54 @@ public class BltAdaptorManager implements IBltAdaptorManager {
   public IAdaptor getAdaptor(String name) {
     IAdaptor adaptor = adaptors.get(name);
     return adaptor;
+  }
+
+  /**
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    List<IAdaptor> l = template.query("select adaptor_id, name, type from adaptors", getAdaptorMapper(), (Object[])null);
+    for (IAdaptor adaptor: l) {
+      if (adaptor != null) {
+        adaptors.put(adaptor.getName(), adaptor);
+      }
+    }
+  }
+  
+  /**
+   * Creates a ParameterizedRowMapper instance for fetching the data from the
+   * database tables.
+   * @return the parameterized row mapper
+   */
+  protected ParameterizedRowMapper<IAdaptor> getAdaptorMapper() {
+    return new ParameterizedRowMapper<IAdaptor>() {
+      @Override
+      public IAdaptor mapRow(ResultSet rs, int rownum) throws SQLException {
+        return doMapAdaptorRow(rs, rownum);
+      }
+    };
+  }
+
+  /**
+   * Maps one adaptor row into an adaptor by using the types read function.
+   * @param rs the result set
+   * @param rownum the row number
+   * @return the adaptor if found
+   * @throws SQLException on any SQL related exception
+   */
+  protected IAdaptor doMapAdaptorRow(ResultSet rs, int rownum) throws SQLException {
+    int id = rs.getInt("adaptor_id");
+    String name = rs.getString("name");
+    String type = rs.getString("type");
+    IAdaptorConfigurationManager cfg = typeRegistry.get(type);
+    if (cfg != null) {
+      try {
+        return cfg.read(id, name);
+      } catch (AdaptorException e) {
+        // failed to fetch data
+      }
+    }
+    return null;
   }
 }

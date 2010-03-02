@@ -51,4 +51,14 @@ public interface IAdaptorConfigurationManager {
    * @param id the configuration that should be removed
    */
   public void remove(int id);
+  
+  /**
+   * Reads the adaptor from the database. the id and name are the unique identifiers
+   * defining the adaptor (from the BltAdaptorManager point of view).
+   * @param id the unique id
+   * @param name the unique name
+   * @return the read adaptor
+   * @throws AdaptorException if it is not possible to read the specified adaptor
+   */
+  public IAdaptor read(int id, String name);
 }

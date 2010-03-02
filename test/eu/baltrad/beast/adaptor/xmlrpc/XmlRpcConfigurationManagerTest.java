@@ -18,6 +18,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.easymock.MockControl;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -151,4 +154,31 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     // verify
     jdbcControl.verify();
   }  
+  
+  public void testRead() throws Exception {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+
+    Map<String, Object> foundEntry = new HashMap<String, Object>();
+    foundEntry.put("uri", "http://someurl");
+    foundEntry.put("timeout", (int)2000);
+    
+    jdbc.queryForMap("select uri, timeout from adaptors_xmlrpc where adaptor_id=?", new Object[]{10});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(foundEntry);
+
+    XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
+    classUnderTest.setJdbcTemplate(jdbc);
+
+    jdbcControl.replay();
+    
+    // Execute test
+    XmlRpcAdaptor result = (XmlRpcAdaptor)classUnderTest.read(10, "SA1");
+
+    // verify
+    jdbcControl.verify();
+    assertEquals("SA1", result.getName());
+    assertEquals(2000, result.getTimeout());
+    assertEquals("http://someurl", result.getURL());
+  }
 }

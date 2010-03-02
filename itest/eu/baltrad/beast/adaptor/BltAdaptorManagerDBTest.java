@@ -18,6 +18,12 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.sql.DataSource;
+
 import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
@@ -42,7 +48,6 @@ public class BltAdaptorManagerDBTest extends TestCase {
   public BltAdaptorManagerDBTest(String name) {
     super(name);
     context = BeastDBTestHelper.loadContext(this);
-    classUnderTest = (BltAdaptorManager)context.getBean("adaptorManager");
     helper = (BeastDBTestHelper)context.getBean("testHelper");
   }
   
@@ -51,6 +56,13 @@ public class BltAdaptorManagerDBTest extends TestCase {
    */
   public void setUp() throws Exception {
    helper.cleanInsert(this);
+   List<IAdaptorConfigurationManager> types = new ArrayList<IAdaptorConfigurationManager>();
+   types.add((IAdaptorConfigurationManager)context.getBean("xmlrpcmgr"));
+   
+   classUnderTest = new BltAdaptorManager();
+   classUnderTest.setDataSource((DataSource)context.getBean("dataSource"));
+   classUnderTest.setTypeRegistry(types);
+   classUnderTest.afterPropertiesSet();
   }
   
   /**
@@ -74,6 +86,12 @@ public class BltAdaptorManagerDBTest extends TestCase {
     Assertion.assertEquals(expected, actual);
   }
 
+  public void testAfterPropertiesSet() throws Exception {
+    Set<String> names = classUnderTest.getAvailableAdaptors();
+    assertEquals(true, names.contains("A2"));
+    assertEquals(true, names.contains("A3"));
+  }
+  
   public void testRegister() throws Exception {
     XmlRpcAdaptorConfiguration config = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("XMLRPC", "ABC");
     config.setURL("http://someone/somewhere/somewhereelse");
@@ -87,6 +105,27 @@ public class BltAdaptorManagerDBTest extends TestCase {
     assertTrue(result.getClass() == XmlRpcAdaptor.class);
     assertEquals("ABC", result.getName());
     assertEquals("ABC", classUnderTest.getAdaptor("ABC").getName());
+  }
+  
+  public void testRegister_duplicate() throws Exception {
+    XmlRpcAdaptorConfiguration config = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("XMLRPC", "A3");
+    config.setURL("http://someone/somewhere/somewhereelse");
+    config.setTimeout(1000);
+    
+    // Execute test
+    try {
+      classUnderTest.register(config);
+      fail("Expected AdaptorException");
+    } catch (AdaptorException e) {
+      // pass
+    }
+    
+    // verify
+    verifyDatabaseTables(null);
+    XmlRpcAdaptor result = (XmlRpcAdaptor)classUnderTest.getAdaptor("A3");
+    assertTrue(result.getClass() == XmlRpcAdaptor.class);
+    assertEquals("A3", result.getName());
+    assertEquals("http://something/else", result.getURL());
   }
   
   public void testUnregister() throws Exception {

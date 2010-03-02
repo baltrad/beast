@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ import junit.framework.TestCase;
 
 import org.easymock.MockControl;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.router.Route;
@@ -287,4 +290,121 @@ public class BltAdaptorManagerTest extends TestCase {
     jdbcControl.verify();
     assertEquals(null, adaptors.get("SA1"));
   }  
+  
+  public void testGetAdaptorMapper() throws Exception {
+    final IAdaptor adaptor = new IAdaptor() {
+      public void handle(Route route) {}
+      public String getName() {return null;}
+    };
+    
+    classUnderTest = new BltAdaptorManager() {
+      protected IAdaptor doMapAdaptorRow(ResultSet rs, int rownum) throws SQLException {
+        return adaptor;
+      }
+    };
+    
+    ParameterizedRowMapper<IAdaptor> result = classUnderTest.getAdaptorMapper();
+    
+    // Verify
+    assertSame(adaptor, result.mapRow(null, 0));
+  }
+  
+  public void testdoMapAdaptorRow() throws Exception {
+    MockControl rsetControl = MockControl.createControl(ResultSet.class);
+    ResultSet rset = (ResultSet)rsetControl.getMock();
+    IAdaptor adaptor = new IAdaptor() {
+      public void handle(Route route) {}
+      public String getName() {return null;}
+    };
+    rset.getInt("adaptor_id");
+    rsetControl.setReturnValue(10);
+    rset.getString("name");
+    rsetControl.setReturnValue("SA1");
+    rset.getString("type");
+    rsetControl.setReturnValue("XYZ");
+    
+    xyzManager.read(10, "SA1");
+    xyzManagerControl.setReturnValue(adaptor);
+    
+    rsetControl.replay();
+    xyzManagerControl.replay();
+    
+    // Execute test
+    IAdaptor result = classUnderTest.doMapAdaptorRow(rset, 1);
+    
+    // Verify result
+    rsetControl.verify();
+    xyzManagerControl.verify();
+    assertSame(adaptor, result);
+  }
+  
+  public void testdoMapAdaptorRow_failedRead() throws Exception {
+    MockControl rsetControl = MockControl.createControl(ResultSet.class);
+    ResultSet rset = (ResultSet)rsetControl.getMock();
+    rset.getInt("adaptor_id");
+    rsetControl.setReturnValue(10);
+    rset.getString("name");
+    rsetControl.setReturnValue("SA1");
+    rset.getString("type");
+    rsetControl.setReturnValue("XYZ");
+    
+    xyzManager.read(10, "SA1");
+    xyzManagerControl.setThrowable(new AdaptorException());
+    
+    rsetControl.replay();
+    xyzManagerControl.replay();
+    
+    // Execute test
+    IAdaptor result = classUnderTest.doMapAdaptorRow(rset, 1);
+    
+    // Verify result
+    rsetControl.verify();
+    xyzManagerControl.verify();
+    assertEquals(null, result);
+  }
+  
+  public void testAfterPropertiesSet() throws Exception {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
+
+    List<IAdaptor> readAdaptors = new ArrayList<IAdaptor>();
+    IAdaptor a1 = new IAdaptor() {
+      public void handle(Route route) {}
+      public String getName() {return "A1";}
+    };
+    IAdaptor a2 = new IAdaptor() {
+      public void handle(Route route) {}
+      public String getName() {return "A2";}
+    };
+    readAdaptors.add(a1);
+    readAdaptors.add(a2);
+    
+    final ParameterizedRowMapper<IAdaptor> mapper = new ParameterizedRowMapper<IAdaptor>() {
+      public IAdaptor mapRow(ResultSet arg0, int arg1) throws SQLException {
+        return null;
+      }
+    };
+    
+    jdbcTemplate.query("select adaptor_id, name, type from adaptors", mapper, (Object[])null);
+    jdbcControl.setReturnValue(readAdaptors);
+    
+    classUnderTest = new BltAdaptorManager() {
+      protected ParameterizedRowMapper<IAdaptor> getAdaptorMapper() {
+        return mapper;
+      }
+    };
+    classUnderTest.setJdbcTemplate(jdbcTemplate);
+    classUnderTest.typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();
+    classUnderTest.typeRegistry.put("XYZ", xyzManager);
+    
+    jdbcControl.replay();
+    
+    // Execute test
+    classUnderTest.afterPropertiesSet();
+   
+    // Verify result
+    jdbcControl.verify();
+    assertSame(a1, classUnderTest.getAdaptor("A1"));
+    assertSame(a2, classUnderTest.getAdaptor("A2"));
+  }
 }

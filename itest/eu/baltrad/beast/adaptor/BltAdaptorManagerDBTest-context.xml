@@ -25,12 +25,5 @@
   <bean id="testHelper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType" />
   
   <bean id="xmlrpcmgr" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcConfigurationManager" autowire="byType"/>
-  
-  <bean id="adaptorManager" class="eu.baltrad.beast.adaptor.BltAdaptorManager" autowire="byType">
-    <property name="typeRegistry">
-      <list>
-        <ref bean="xmlrpcmgr"/>
-      </list>
-    </property>
-  </bean>
+
 </beans>
