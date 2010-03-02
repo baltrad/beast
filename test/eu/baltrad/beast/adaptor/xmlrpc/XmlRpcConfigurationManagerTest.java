@@ -112,7 +112,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
     
-    jdbc.update("delete adaptors_xmlrpc where adaptor_id=?",
+    jdbc.update("delete from adaptors_xmlrpc where adaptor_id=?",
         new Object[]{10});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
@@ -133,7 +133,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
     
-    jdbc.update("delete adaptors_xmlrpc where adaptor_id=?",
+    jdbc.update("delete from adaptors_xmlrpc where adaptor_id=?",
         new Object[]{10});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));

@@ -151,7 +151,7 @@ public class BltAdaptorManagerTest extends TestCase {
     
     IAdaptor adaptor = new IAdaptor(){
       public String getName() {
-        return null;
+        return "SA1";
       }
       public void handle(Route route) {
       }
@@ -179,7 +179,8 @@ public class BltAdaptorManagerTest extends TestCase {
     // Verify
     xyzManagerControl.verify();
     jdbcControl.verify();
-    assertSame(result, adaptor);
+    assertSame(adaptor, result);
+    assertSame(adaptor, classUnderTest.getAdaptor("SA1"));
   }
 
   public void testRegister_duplicateKey() {

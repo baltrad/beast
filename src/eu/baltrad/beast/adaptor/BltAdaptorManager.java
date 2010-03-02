@@ -53,6 +53,7 @@ public class BltAdaptorManager implements IBltAdaptorManager {
    * Default constructor
    */
   public BltAdaptorManager() {
+    adaptors = new HashMap<String, IAdaptor>();
   }
   
   /**
@@ -95,14 +96,13 @@ public class BltAdaptorManager implements IBltAdaptorManager {
    * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#store(java.lang.String, java.lang.String, eu.baltrad.beast.adaptor.IAdaptor)
    */
   @Override
-  public IAdaptor register(IAdaptorConfiguration configuration) {
+  public synchronized IAdaptor register(IAdaptorConfiguration configuration) {
     String name = configuration.getName();
     String type = configuration.getType();
     IAdaptorConfigurationManager mgr = typeRegistry.get(type);
     if (mgr != null) {
       int index = 0;
       try {
-        System.out.println("NAME="+name+", TYPE="+type);
         template.update("insert into adaptors (name,type) values (?,?)",
             new Object[]{name,type});
         index = template.queryForInt("select adaptor_id from adaptors where name=?", name);
@@ -111,7 +111,9 @@ public class BltAdaptorManager implements IBltAdaptorManager {
       }
       
       try {
-        return mgr.store(index, configuration);
+        IAdaptor result = mgr.store(index, configuration);
+        adaptors.put(name, result);
+        return result;
       } catch (Throwable t) {
         try {
           template.update("delete adaptors where adaptor_id=?", new Object[]{index});
@@ -169,9 +171,6 @@ public class BltAdaptorManager implements IBltAdaptorManager {
    */
   public IAdaptor getAdaptor(String name) {
     IAdaptor adaptor = adaptors.get(name);
-    if (adaptor == null) {
-      throw new AdaptorException("No such adaptor: " + name);
-    }
     return adaptor;
   }
 }

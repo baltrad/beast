@@ -163,7 +163,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   </target>	
 
   <!-- prepares the setup so that it is possible to run the junit integration tests -->
-  <target name="prepare.itest" depends="create-testdb, compile.itest">
+  <target name="prepare.itest" depends="create-testdb, extras-testdb, compile.itest">
 	<mkdir dir="${dist.dir}/junit-reports" />
 	<copy file="${etc.dir}/testdb.properties" todir="${build.classes.dir}"/>
   </target>
@@ -173,8 +173,21 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	     driver="${db.driver}"
 	     url="${db.url}"
 	     userid="${db.user}" 
-	     password="${db.pwd}" >
+	     password="${db.pwd}">
 	  <transaction src="${etc.dir}/create_testdb.sql"/>
+	</sql>
+  </target>
+
+  <target name="extras-testdb">
+	<sql classpath="${lib.dir}/${db.jar}"
+	     driver="${db.driver}"
+	     url="${db.url}"
+	     userid="${db.user}" 
+	     password="${db.pwd}"
+		 escapeprocessing="false"
+		 expandproperties="false"
+		 delimitertype="row">
+	  <transaction src="${etc.dir}/extras_testdb.sql"/>
 	</sql>
   </target>
 	

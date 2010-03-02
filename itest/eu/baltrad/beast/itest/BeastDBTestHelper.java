@@ -127,6 +127,7 @@ public class BeastDBTestHelper {
     Connection conn = source.getConnection();
     SimpleJdbcTemplate template = new SimpleJdbcTemplate(source);
     try {
+      template.update("delete from router_dest");
       template.update("delete from adaptors_xmlrpc");
       IDatabaseConnection connection = getConnection(conn);
       DatabaseOperation.CLEAN_INSERT.execute(connection, getXlsDataset(tc, null));

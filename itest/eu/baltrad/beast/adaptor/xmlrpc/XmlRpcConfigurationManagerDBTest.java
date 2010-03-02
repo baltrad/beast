@@ -99,4 +99,14 @@ public class XmlRpcConfigurationManagerDBTest extends TestCase {
     }
     verifyDatabaseTables(null);
   }
+  
+  public void testRemove() throws Exception {
+    classUnderTest.remove(2);
+    verifyDatabaseTables("remove");
+  }
+  
+  public void testRemove_nonExisting() throws Exception {
+    classUnderTest.remove(10);
+    verifyDatabaseTables(null);
+  }
 }

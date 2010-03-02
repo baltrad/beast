@@ -102,7 +102,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
   @Override
   public void remove(int id) {
     try {
-      template.update("delete adaptors_xmlrpc where adaptor_id=?", new Object[]{id});
+      template.update("delete from adaptors_xmlrpc where adaptor_id=?", new Object[]{id});
     } catch (Throwable t) {
       throw new AdaptorException("Could not remove adaptor", t);
     }

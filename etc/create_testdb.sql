@@ -28,7 +28,6 @@ create table router_dest (
   name varchar(255) NOT NULL,
   recipient varchar(255) NOT NULL
 );
-
-
+  
 alter table router_dest add foreign key(name) references router_rules(name);
 alter table router_dest add foreign key(recipient) references adaptors(name);

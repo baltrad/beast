@@ -18,19 +18,21 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
+import junit.framework.TestCase;
+
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor;
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptorConfiguration;
-import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcConfigurationManager;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import junit.framework.TestCase;
 
 /**
+ * Verifies that the BltAdaptorManager uses the registered adaptors properly and
+ * ensures that the database tables are updated accordingly. Uses the XMLRPC
+ * adaptor implementation for performing these tests.
  * @author Anders Henja
- *
  */
 public class BltAdaptorManagerDBTest extends TestCase {
   private BltAdaptorManager classUnderTest = null;
@@ -39,16 +41,16 @@ public class BltAdaptorManagerDBTest extends TestCase {
   
   public BltAdaptorManagerDBTest(String name) {
     super(name);
-    //context = BeastDBTestHelper.loadContext(this);
-    //classUnderTest = (BltAdaptorManager)context.getBean("adaptorManager");
-    //helper = (BeastDBTestHelper)context.getBean("testHelper");
+    context = BeastDBTestHelper.loadContext(this);
+    classUnderTest = (BltAdaptorManager)context.getBean("adaptorManager");
+    helper = (BeastDBTestHelper)context.getBean("testHelper");
   }
   
   /**
    * Setup of test
    */
   public void setUp() throws Exception {
-    //helper.cleanInsert(this);
+   helper.cleanInsert(this);
   }
   
   /**
@@ -56,11 +58,7 @@ public class BltAdaptorManagerDBTest extends TestCase {
    */
   public void tearDown() throws Exception {
   }
-  
-  public void testThis() {
-    
-  }
-  
+
   /**
    * Verifies the database table with an excel sheet.
    * @param extras
@@ -70,9 +68,13 @@ public class BltAdaptorManagerDBTest extends TestCase {
     ITable expected = helper.getXlsTable(this, extras, "adaptors");
     ITable actual = helper.getDatabaseTable("adaptors");
     Assertion.assertEquals(expected, actual);
+
+    expected = helper.getXlsTable(this, extras, "adaptors_xmlrpc");
+    actual = helper.getDatabaseTable("adaptors_xmlrpc");
+    Assertion.assertEquals(expected, actual);
   }
 
-  public void XtestRegister() throws Exception {
+  public void testRegister() throws Exception {
     XmlRpcAdaptorConfiguration config = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("XMLRPC", "ABC");
     config.setURL("http://someone/somewhere/somewhereelse");
     config.setTimeout(1000);
@@ -84,18 +86,15 @@ public class BltAdaptorManagerDBTest extends TestCase {
     verifyDatabaseTables("register");
     assertTrue(result.getClass() == XmlRpcAdaptor.class);
     assertEquals("ABC", result.getName());
+    assertEquals("ABC", classUnderTest.getAdaptor("ABC").getName());
+  }
+  
+  public void testUnregister() throws Exception {
+    // Execute test
+    classUnderTest.unregister("A2");
     
-/*    
-    XmlRpcAdaptorConfiguration config = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("ABC");
-    config.setURL("http://someone/somewhere/insummertime");
-    config.setTimeout(8000);
-    
-    XmlRpcAdaptor result = (XmlRpcAdaptor)classUnderTest.store(4, config);
-
-    verifyDatabaseTables("store");
-    assertNotNull(result);
-    assertEquals("http://someone/somewhere/insummertime", result.getURL());
-    assertEquals(8000, result.getTimeout());
-*/    
+    // verify
+    verifyDatabaseTables("unregister");
+    assertEquals(null, classUnderTest.getAdaptor("A2"));
   }
 }

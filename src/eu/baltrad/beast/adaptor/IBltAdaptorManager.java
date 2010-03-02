@@ -66,8 +66,7 @@ public interface IBltAdaptorManager {
   /**
    * Returns the adaptor with the specified name
    * @param name the name of the requested adaptor
-   * @return the adaptor
-   * @throws AdaptorException if there is no such adaptor
+   * @return the adaptor (or null if there is none)
    */
   public IAdaptor getAdaptor(String name);
 }
