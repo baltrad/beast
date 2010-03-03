@@ -18,16 +18,17 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.pgfwk;
 
-import eu.baltrad.beast.message.mo.BltGenerateMessage;
 
 /**
  * All product generator plugins should implement this interface.
  * @author Anders Henja
  */
-public interface IProductPlugin {
+public interface IGeneratorPlugin {
   /**
    * Manages a blt generation message
-   * @param msg the message
+   * @param algorithm - the algorithm used to get to this plugin
+   * @param files - a list of files
+   * @param arguments - a list of arguments
    */
-  public void manage(BltGenerateMessage msg);
+  public void generate(String algorithm, String[] files, String[] arguments);
 }

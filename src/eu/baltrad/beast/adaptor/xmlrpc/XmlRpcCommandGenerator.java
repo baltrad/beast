@@ -21,6 +21,7 @@ package eu.baltrad.beast.adaptor.xmlrpc;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
 
 /**
  * @author Anders Henja
@@ -35,6 +36,8 @@ public class XmlRpcCommandGenerator implements IXmlRpcCommandGenerator {
       return createCommand((BltCommandMessage)message);
     } else if (message.getClass() == BltAlertMessage.class) {
       return createCommand((BltAlertMessage)message);
+    } else if (message.getClass() == BltGenerateMessage.class) {
+      return createCommand((BltGenerateMessage)message);
     }
     throw new XmlRpcCommandException("Can not handle message of type: " + message.getClass().getName());
   }
@@ -64,6 +67,22 @@ public class XmlRpcCommandGenerator implements IXmlRpcCommandGenerator {
     Object[] objects = new Object[]{code,msg};
     XmlRpcCommand command = new XmlRpcCommand();
     command.setMethod("alert");
+    command.setObjects(objects);
+    return command;    
+  }
+  
+  /**
+   * Creates an XmlRpcCommand for sending a generate message.
+   * @param message the message
+   * @return the command
+   */
+  protected XmlRpcCommand createCommand(BltGenerateMessage message) {
+    String algorithm = message.getAlgorithm();
+    String[] files = message.getFiles();
+    String[] arguments = message.getArguments();
+    Object[] objects = new Object[]{algorithm,files,arguments};
+    XmlRpcCommand command = new XmlRpcCommand();
+    command.setMethod("generate");
     command.setObjects(objects);
     return command;    
   }

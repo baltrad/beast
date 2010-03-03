@@ -21,6 +21,7 @@ package eu.baltrad.beast.adaptor.xmlrpc;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import junit.framework.TestCase;
 
 /**
@@ -68,6 +69,23 @@ public class XmlRpcCommandGeneratorTest extends TestCase {
     assertEquals(2, objs.length);
     assertEquals("ABC", objs[0]);
     assertEquals("A message", objs[1]);
+  }
+
+  public void testGenerateBltGenerate() throws Exception {
+    BltGenerateMessage msg = new BltGenerateMessage();
+    msg.setAlgorithm("x.C");
+    msg.setFiles(new String[]{"x", "y"});
+    msg.setArguments(new String[]{"o", "a"});
+    
+    XmlRpcCommand command = classUnderTest.generate(msg);
+    assertEquals("generate", command.getMethod());
+    Object[] objs = command.getObjects();
+    assertEquals(3, objs.length);
+    assertEquals("x.C", objs[0]);
+    assertEquals("x", ((Object[])objs[1])[0]);
+    assertEquals("y", ((Object[])objs[1])[1]);
+    assertEquals("o", ((Object[])objs[2])[0]);
+    assertEquals("a", ((Object[])objs[2])[1]);
   }
   
   public void testGenerate_unknownMessage() throws Exception {

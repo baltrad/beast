@@ -23,6 +23,7 @@ import eu.baltrad.beast.itest.XmlRpcTestServer;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.router.Route;
 
 /**
@@ -111,6 +112,42 @@ public class XmlRpcAdaptorITest extends TestCase {
     assertEquals("alert", method);
     assertEquals("E0001", server.getRequestParameters()[0]);
     assertEquals("Alert message", server.getRequestParameters()[1]);
+    assertEquals(true, cb.isSuccess());
+    assertSame(msg, cb.getMessage());
+  }
+
+  public void testHandleBltGenerateMessage() throws Exception {
+    XmlRpcTestServer server = new XmlRpcTestServer(56565, new Integer(0));
+    server.start();
+    
+    TestCallback cb = new TestCallback();
+    XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
+    XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
+    adaptor.setURL("http://localhost:56565/xmlrpc");
+    adaptor.setGenerator(generator);
+    adaptor.setCallback(cb);
+    
+    BltGenerateMessage msg = new BltGenerateMessage();
+    msg.setAlgorithm("com.test.something.Algorithm");
+    msg.setFiles(new String[]{"/file/1.h5", "/file/2.h5"});
+    msg.setArguments(new String[]{"-k", "10"});
+    Route route = new Route("A", msg);
+    adaptor.handle(route);
+    
+    String method = server.waitForRequest(2000);
+    assertEquals("generate", method);
+    String algorithm = (String)server.getRequestParameters()[0];
+    
+    Object[] files = (Object[])server.getRequestParameters()[1];
+    Object[] args = (Object[])server.getRequestParameters()[2];
+    
+    assertEquals("com.test.something.Algorithm", algorithm);
+    assertEquals(2, files.length);
+    assertEquals("/file/1.h5", files[0]);
+    assertEquals("/file/2.h5", files[1]);
+    assertEquals(2, args.length);
+    assertEquals("-k", args[0]);
+    assertEquals("10", args[1]);
     assertEquals(true, cb.isSuccess());
     assertSame(msg, cb.getMessage());
   }
