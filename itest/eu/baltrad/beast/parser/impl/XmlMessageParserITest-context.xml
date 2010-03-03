@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean id="xmlmsgFactory" class="eu.baltrad.beast.parser.impl.XmlMessageFactory">
+    <property name="registry">
+      <map>
+        <entry key="bltalert" value="eu.baltrad.beast.message.mo.BltAlertMessage"/>
+        <entry key="bltcommand" value="eu.baltrad.beast.message.mo.BltCommandMessage"/>
+        <entry key="bltdexdata" value="eu.baltrad.beast.message.mo.BltDexDataMessage"/>
+        <entry key="bltgenerate" value="eu.baltrad.beast.message.mo.BltGenerateMessage"/>
+      </map>
+    </property>
+  </bean>
+
+</beans>

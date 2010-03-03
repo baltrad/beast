@@ -18,7 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.parser;
 
-import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.message.MessageParserException;
 
 /**
@@ -33,5 +33,5 @@ public interface IXmlMessageParser {
    * @return a message object
    * @throws MessageParserException if xml not could be parsed or the object is not found
    */
-  public IBltMessage parse(String xml);
+  public IBltXmlMessage parse(String xml);
 }

@@ -56,7 +56,6 @@ public class BltCommandMessageTest extends TestCase {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltcommand");
     el.addElement("command").addText("ls -la");
-    
     BltCommandMessage classUnderTest = new BltCommandMessage();
     classUnderTest.fromDocument(document);
     assertEquals("ls -la", classUnderTest.getCommand());

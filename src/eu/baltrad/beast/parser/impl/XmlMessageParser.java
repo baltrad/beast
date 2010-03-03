@@ -24,7 +24,7 @@ import java.io.InputStream;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 
-import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.message.MessageParserException;
 import eu.baltrad.beast.parser.IXmlMessageFactory;
 import eu.baltrad.beast.parser.IXmlMessageParser;
@@ -51,9 +51,11 @@ public class XmlMessageParser implements IXmlMessageParser {
    * @see eu.baltrad.beast.parser.IXmlMessageParser#parse(java.lang.String)
    */
   @Override
-  public IBltMessage parse(String xml) {
+  public IBltXmlMessage parse(String xml) {
     Document dom = parseXml(xml);
-    return factory.createMessage(dom.getRootElement().getName());
+    IBltXmlMessage result = factory.createMessage(dom.getRootElement().getName());
+    result.fromDocument(dom);
+    return result;
   }
   
   /**

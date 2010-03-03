@@ -18,7 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.parser;
 
-import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.IBltXmlMessage;
 
 /**
  * Creates a xml object from a tag name, preferrably the root
@@ -32,5 +32,5 @@ public interface IXmlMessageFactory {
    * @return the object if it could be created
    * @throws XmlMessageFactoryException if instance not can be created. 
    */  
-  public IBltMessage createMessage(String tagName);
+  public IBltXmlMessage createMessage(String tagName);
 }

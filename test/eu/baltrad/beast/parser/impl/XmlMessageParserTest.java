@@ -25,6 +25,7 @@ import org.dom4j.DocumentHelper;
 import org.easymock.MockControl;
 
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.message.MessageParserException;
 import eu.baltrad.beast.parser.IXmlMessageFactory;
 
@@ -58,6 +59,8 @@ public class XmlMessageParserTest extends TestCase {
     IXmlMessageFactory factory = (IXmlMessageFactory)factoryControl.getMock();
     MockControl parseXmlControl = MockControl.createControl(ParseXmlMethod.class);
     final ParseXmlMethod parseXml = (ParseXmlMethod)parseXmlControl.getMock();
+    MockControl msgControl = MockControl.createControl(IBltXmlMessage.class);
+    IBltXmlMessage msg = (IBltXmlMessage)msgControl.getMock();
     
     XmlMessageParser classUnderTest = new XmlMessageParser() {
       protected Document parseXml(String xml) {
@@ -68,23 +71,25 @@ public class XmlMessageParserTest extends TestCase {
     
     // Execute
     Document dom = DocumentHelper.createDocument();
-    IBltMessage bltmsg = new IBltMessage(){};
     dom.addElement("sometag");
     String xml = "somexml";
     parseXml.parseXml(xml);
     parseXmlControl.setReturnValue(dom);
     factory.createMessage("sometag");
-    factoryControl.setReturnValue(bltmsg);
-
+    factoryControl.setReturnValue(msg);
+    msg.fromDocument(dom);
+    
     parseXmlControl.replay();
     factoryControl.replay();
+    msgControl.replay();
     
     IBltMessage result = classUnderTest.parse(xml);
     
     // Verify
     parseXmlControl.verify();
     factoryControl.verify();
-    assertSame(bltmsg, result);
+    msgControl.verify();
+    assertSame(msg, result);
     
   }
   

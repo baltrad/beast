@@ -22,7 +22,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.message.MessageParserException;
 
@@ -30,7 +29,7 @@ import eu.baltrad.beast.message.MessageParserException;
  * Represents an alert message.
  * @author Anders Henja
  */
-public class BltAlertMessage implements IBltMessage, IBltXmlMessage {
+public class BltAlertMessage implements IBltXmlMessage {
   /**
    * Defines the alert.
    */

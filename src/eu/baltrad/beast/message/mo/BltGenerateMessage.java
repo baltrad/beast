@@ -25,14 +25,13 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.message.MessageParserException;
 
 /**
  * @author Anders Henja
  */
-public class BltGenerationMessage implements IBltMessage, IBltXmlMessage {
+public class BltGenerateMessage implements IBltXmlMessage {
   public static final String BLT_GENERATE = "bltgenerate";
   
   /**

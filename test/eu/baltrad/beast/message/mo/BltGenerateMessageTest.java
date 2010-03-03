@@ -27,16 +27,16 @@ import junit.framework.TestCase;
 /**
  * @author Anders Henja
  */
-public class BltGenerationMessageTest extends TestCase {
+public class BltGenerateMessageTest extends TestCase {
   public void testSetAlgorithm() {
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     assertEquals(null, classUnderTest.getAlgorithm());
     classUnderTest.setAlgorithm("a.b");
     assertEquals("a.b", classUnderTest.getAlgorithm());
   }
   
   public void testSetFiles() {
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     String[] result = classUnderTest.getFiles();
     assertEquals(0, result.length);
     classUnderTest.setFiles(new String[]{"a","b"});
@@ -47,7 +47,7 @@ public class BltGenerationMessageTest extends TestCase {
   }
 
   public void testSetFiles_null() {
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     try {
       classUnderTest.setFiles(null);
       fail("Expected IllegalArgumentException");
@@ -57,7 +57,7 @@ public class BltGenerationMessageTest extends TestCase {
   }
 
   public void testSetArguments() {
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     String[] result = classUnderTest.getArguments();
     assertEquals(0, result.length);
     classUnderTest.setArguments(new String[]{"a","b"});
@@ -68,7 +68,7 @@ public class BltGenerationMessageTest extends TestCase {
   }
   
   public void testSetArguments_null() {
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     try {
       classUnderTest.setArguments(null);
       fail("Expected IllegalArgumentException");
@@ -90,7 +90,7 @@ public class BltGenerationMessageTest extends TestCase {
     subtree.addElement("arg").addText("arg2");
 
     // execute
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     classUnderTest.fromDocument(document);
     
     // verify
@@ -115,7 +115,7 @@ public class BltGenerationMessageTest extends TestCase {
     subtree.addElement("arg").addText("arg2");
 
     // execute
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     classUnderTest.fromDocument(document);
     
     // verify
@@ -137,7 +137,7 @@ public class BltGenerationMessageTest extends TestCase {
     subtree.addElement("file").addText("file2");
     
     // execute
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     classUnderTest.fromDocument(document);
     
     // verify
@@ -151,7 +151,7 @@ public class BltGenerationMessageTest extends TestCase {
   }
   
   public void testToDocument() throws Exception {
-    BltGenerationMessage classUnderTest = new BltGenerationMessage();
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
     classUnderTest.setAlgorithm("some.Algorithm");
     classUnderTest.setFiles(new String[]{"a", "b"});
     classUnderTest.setArguments(new String[]{"-k","val"});

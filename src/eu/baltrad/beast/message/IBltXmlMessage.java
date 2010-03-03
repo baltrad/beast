@@ -27,7 +27,7 @@ import org.dom4j.Document;
  * @todo: Probably going to be changed to annotation driven instead.
  * @author Anders Henja
  */
-public interface IBltXmlMessage {
+public interface IBltXmlMessage extends IBltMessage {
   /**
    * Sets the object with data from the xml code
    * @param xml the xml string

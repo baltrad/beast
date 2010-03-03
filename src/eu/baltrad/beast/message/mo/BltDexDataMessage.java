@@ -21,7 +21,6 @@ package eu.baltrad.beast.message.mo;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 
-import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.message.MessageParserException;
 
@@ -51,7 +50,7 @@ import eu.baltrad.beast.message.MessageParserException;
  * part of the http message. 
  * @author Anders Henja
  */
-public class BltDexDataMessage implements IBltMessage, IBltXmlMessage {
+public class BltDexDataMessage implements IBltXmlMessage {
   /**
    * The xml root tag for a baltrad dex data exchange message
    */

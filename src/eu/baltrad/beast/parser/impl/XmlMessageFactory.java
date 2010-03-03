@@ -20,7 +20,7 @@ package eu.baltrad.beast.parser.impl;
 
 import java.util.Map;
 
-import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.parser.IXmlMessageFactory;
 import eu.baltrad.beast.parser.XmlMessageFactoryException;
 
@@ -45,13 +45,13 @@ public class XmlMessageFactory implements IXmlMessageFactory {
   /**
    * @see IXmlMessageFactory#createMessage(String)
    */
-  public IBltMessage createMessage(String tagName){
+  public IBltXmlMessage createMessage(String tagName){
     String cname = registry.get(tagName);
     if (cname == null) {
       throw new XmlMessageFactoryException("No class mapped to " + tagName);
     }
     try {
-      return (IBltMessage)Class.forName(cname).newInstance();
+      return (IBltXmlMessage)Class.forName(cname).newInstance();
     } catch (Throwable t) {
       throw new XmlMessageFactoryException("Failed to create instance", t);
     }

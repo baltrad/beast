@@ -68,7 +68,7 @@ public class BltAlertMessageTest extends TestCase {
     Element el = document.addElement("bltalert");
     el.addElement("code").addText("123");
     el.addElement("message").addText("severe");
-    
+
     BltAlertMessage classUnderTest = new BltAlertMessage();
     classUnderTest.fromDocument(document);
     assertEquals("123", classUnderTest.getCode());
@@ -80,7 +80,7 @@ public class BltAlertMessageTest extends TestCase {
     Element el = document.addElement("bltalert");
     el.addElement("code").addText("");
     el.addElement("message").addText("");
-    
+
     BltAlertMessage classUnderTest = new BltAlertMessage();
     classUnderTest.fromDocument(document);
     assertEquals("", classUnderTest.getCode());
