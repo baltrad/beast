@@ -69,10 +69,13 @@ public class BaltradXmlRPCGenerateHandler implements XmlRpcHandler, ApplicationC
    * @return the string array
    */
   protected String[] createStringArray(Object[] arr) {
-    String[] result = new String[arr.length];
-    int index = 0;
-    for (Object str : arr) {
-      result[index++] = (String)str;
+    String[] result = new String[0];
+    if (arr != null) {
+      result = new String[arr.length];
+      int index = 0;
+      for (Object str : arr) {
+        result[index++] = (String)str;
+      }
     }
     return result;
   }
