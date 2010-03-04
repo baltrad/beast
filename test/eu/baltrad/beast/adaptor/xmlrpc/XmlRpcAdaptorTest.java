@@ -171,6 +171,65 @@ public class XmlRpcAdaptorTest extends TestCase {
     // verify
     verify();
   }  
+
+  public void testHandle_cbThrowTimeoutException() throws Throwable {
+    MockControl rpcCallbackControl = MockControl.createControl(IXmlRpcCallback.class);
+    IXmlRpcCallback rpcCallback = (IXmlRpcCallback)rpcCallbackControl.getMock();
+    IBltMessage message = new IBltMessage(){};
+    XmlRpcCommand cmd = new XmlRpcCommand();
+    Object[] args = new Object[]{};
+    cmd.setMethod("command");
+    cmd.setObjects(args);
+    
+    generator.generate(message);
+    generatorControl.setReturnValue(cmd);
+    rpcClient.executeAsync("command", args, timeoutCB);
+    timeoutCB.waitForResponse();
+    timeoutCBControl.setThrowable(new TimingOutCallback.TimeoutException(0, "x"));
+    rpcCallback.timeout(message);
+    
+    replay();
+    rpcCallbackControl.replay();
+    
+    // Execute test
+    Route route = new Route("XYZ", message);
+    classUnderTest.setCallback(rpcCallback);
+    classUnderTest.handle(route);
+
+    // verify
+    verify();
+    rpcCallbackControl.verify();
+  }    
+
+  public void testHandle_cbThrowThrowable() throws Throwable {
+    MockControl rpcCallbackControl = MockControl.createControl(IXmlRpcCallback.class);
+    IXmlRpcCallback rpcCallback = (IXmlRpcCallback)rpcCallbackControl.getMock();
+    IBltMessage message = new IBltMessage(){};
+    XmlRpcCommand cmd = new XmlRpcCommand();
+    Object[] args = new Object[]{};
+    cmd.setMethod("command");
+    cmd.setObjects(args);
+    
+    generator.generate(message);
+    generatorControl.setReturnValue(cmd);
+    rpcClient.executeAsync("command", args, timeoutCB);
+    timeoutCB.waitForResponse();
+    Throwable t = new NullPointerException();
+    timeoutCBControl.setThrowable(t);
+    rpcCallback.error(message, t);
+    
+    replay();
+    rpcCallbackControl.replay();
+    
+    // Execute test
+    Route route = new Route("XYZ", message);
+    classUnderTest.setCallback(rpcCallback);
+    classUnderTest.handle(route);
+
+    // verify
+    verify();
+    rpcCallbackControl.verify();
+  }      
   
   public void testSetUrl() throws Exception {
     MockControl xmlRpcConfigControl = MockClassControl.createControl(XmlRpcClientConfigImpl.class);
@@ -202,6 +261,34 @@ public class XmlRpcAdaptorTest extends TestCase {
     xmlRpcConfigControl.verify();
     assertSame(result, xmlRpcConfig);
     assertEquals("http://localhost", classUnderTest.getURL());
+  }
+  
+  public void testSetUrl_malformed() throws Exception {
+    MockControl xmlRpcConfigControl = MockClassControl.createControl(XmlRpcClientConfigImpl.class);
+    final XmlRpcClientConfigImpl xmlRpcConfig = (XmlRpcClientConfigImpl)xmlRpcConfigControl.getMock();
+    
+    XmlRpcClient client = new XmlRpcClient();
+    
+    xmlRpcConfigControl.replay();
+    
+    
+    classUnderTest = new XmlRpcAdaptor() {
+      protected XmlRpcClientConfigImpl createConfig() {
+        return xmlRpcConfig;
+      }
+    };
+    classUnderTest.setRpcClient(client);
+    
+    // execute test
+    try {
+      classUnderTest.setURL("ht tp://localhost");
+      fail("Expected AdaptorAddressException");
+    } catch (AdaptorAddressException e) {
+      // pass
+    }
+    
+    // verify
+    xmlRpcConfigControl.verify();
   }
   
   public void testCreateUrl() throws Exception {

@@ -131,14 +131,14 @@ public class BltGenerateMessage implements IBltXmlMessage {
     Element el = document.addElement(BLT_GENERATE);
     el.addElement("algorithm").addText(this.algorithm);
     Element elFiles = el.addElement("filelist");
-    for (int i = 0; this.files != null && i < this.files.length; i++) {
+    for (int i = 0; i < this.files.length; i++) {
       if (this.files[i] != null) {
         elFiles.addElement("file").addText(this.files[i]);
       }
     }
     
     Element elArgs = el.addElement("arguments");
-    for (int i = 0; this.arguments != null && i < this.arguments.length; i++) {
+    for (int i = 0; i < this.arguments.length; i++) {
       if (this.arguments[i] != null) {
         elArgs.addElement("arg").addText(this.arguments[i]);
       }

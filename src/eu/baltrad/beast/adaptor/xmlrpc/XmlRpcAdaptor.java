@@ -119,7 +119,7 @@ public class XmlRpcAdaptor implements IAdaptor {
   public void setURL(String url) {
     try {
       XmlRpcClientConfigImpl config = createConfig();
-      config.setServerURL(new URL(url));
+      config.setServerURL(createUrl(url));
       client.setConfig(config);
       this.url = url;
     } catch (Throwable t) {

@@ -22,6 +22,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import eu.baltrad.beast.message.MessageParserException;
+
 import junit.framework.TestCase;
 
 /**
@@ -104,6 +106,22 @@ public class BltGenerateMessageTest extends TestCase {
     assertEquals("arg1", args[0]);
     assertEquals("arg2", args[1]);
   }
+
+  public void testFromDocument_notBltGenerate() throws Exception {
+    Document document = DocumentHelper.createDocument();
+    Element el = document.addElement("bltadm");
+    el.addElement("algorithm").addText("one.Algorithm");
+    
+    // execute
+    BltGenerateMessage classUnderTest = new BltGenerateMessage();
+    
+    try {
+      classUnderTest.fromDocument(document);
+      fail("Expected MessageParserException");
+    } catch (MessageParserException e) {
+      // pass
+    }
+  }   
   
   public void testFromDocument_nofiles() throws Exception {
     Document document = DocumentHelper.createDocument();
