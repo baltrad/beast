@@ -70,13 +70,19 @@ public class BaltradXMLRPCServer implements XmlRpcHandlerMapping {
   }
 
   /**
+   * Terminates the server
+   */
+  public void shutdown() {
+    server.shutdown();
+  }
+  
+  /**
    * @see org.apache.xmlrpc.server.XmlRpcHandlerMapping#getHandler(java.lang.String)
    */
   @Override
   public XmlRpcHandler getHandler(String method)
       throws XmlRpcNoSuchHandlerException, XmlRpcException {
     XmlRpcHandler handler = handlers.get(method);
-    System.out.println("Found Handler for " + method);
     if (handler == null) {
       throw new XmlRpcNoSuchHandlerException(""+method);
     }
