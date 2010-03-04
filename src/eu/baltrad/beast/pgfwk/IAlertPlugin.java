@@ -18,17 +18,14 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.pgfwk;
 
-
 /**
- * All product generator plugins should implement this interface.
  * @author Anders Henja
  */
-public interface IGeneratorPlugin {
+public interface IAlertPlugin {
   /**
-   * Manages a blt generation message
-   * @param algorithm - the algorithm used to get to this plugin
-   * @param files - a list of files
-   * @param arguments - a list of arguments
+   * Manages an alert
+   * @param code the error code
+   * @param message the error message
    */
-  public void generate(String algorithm, String[] files, Object[] arguments);
+  public void alert(String code, String message);
 }
