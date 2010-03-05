@@ -75,7 +75,7 @@ public class XmlRpcAdaptorITest extends TestCase {
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setURL("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:56565/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setCallback(cb);
     
@@ -98,7 +98,7 @@ public class XmlRpcAdaptorITest extends TestCase {
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setURL("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:56565/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setCallback(cb);
     
@@ -123,7 +123,7 @@ public class XmlRpcAdaptorITest extends TestCase {
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setURL("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:56565/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setCallback(cb);
     
@@ -160,7 +160,7 @@ public class XmlRpcAdaptorITest extends TestCase {
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setURL("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:56565/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setTimeout(1000);
     adaptor.setCallback(cb);
@@ -181,7 +181,7 @@ public class XmlRpcAdaptorITest extends TestCase {
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setURL("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:56565/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setTimeout(1000);
     adaptor.setCallback(cb);

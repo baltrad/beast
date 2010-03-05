@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 public class BaltradXmlRpcServerTest extends TestCase {
   public void testGetContextUriFromArguments_noArg() throws Exception {
     String result = BaltradXmlRpcServer.getContextUriFromArguments(new String[0]);
-    assertEquals("classpath:etc/xmlrpcserver-context.xml", result);
+    assertEquals("classpath:*xmlrpcserver-context.xml", result);
   }
 
   public void testGetContextUriFromArguments_oneArg() throws Exception {

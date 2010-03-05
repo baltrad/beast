@@ -22,7 +22,12 @@ import java.io.IOException;
 
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.WebServer;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
@@ -30,56 +35,35 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * correct plugin is called.
  * @author Anders Henja
  */
-public class BaltradXmlRpcServer {
+public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, ApplicationContextAware {
   /**
    * The web server 
    */
   private WebServer server = null;
-
-  /**
-   * The port number this server should be listening at
-   */
-  private int port = 56565;
   
   /**
-   * The handler mapping
+   * The singleton instance
    */
-  private XmlRpcHandlerMapping mapping = null;
+  private static BaltradXmlRpcServer _instance = null;
+  
+  /**
+   * This beans name, after spring has initialized it, it must be called
+   * rpcserver.
+   */
+  private String beanName = null;
+  
+  /**
+   * The application context defining this instances
+   */
+  private ApplicationContext context = null;
   
   /**
    * Default constructor
    */
-  public BaltradXmlRpcServer() {
+  protected BaltradXmlRpcServer(int port, XmlRpcHandlerMapping mapping) {
+    server = new WebServer(port);
+    server.getXmlRpcServer().setHandlerMapping(mapping);
   }
-
-  /**
-   * @param port the port to set
-   */
-  public void setPort(int port) {
-    this.port = port;
-  }
-
-  /**
-   * @return the port
-   */
-  public int getPort() {
-    return port;
-  }
- 
-
-  /**
-   * @param mapping the mapping to set
-   */
-  public void setMapping(XmlRpcHandlerMapping mapping) {
-    this.mapping = mapping;
-  }
-
-  /**
-   * @return the mapping
-   */
-  public XmlRpcHandlerMapping getMapping() {
-    return mapping;
-  }  
   
   /**
    * Starts the XMLRPC server
@@ -94,6 +78,43 @@ public class BaltradXmlRpcServer {
   public void shutdown() {
     server.shutdown();
   }
+
+  /**
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (server == null || 
+        server.getXmlRpcServer().getHandlerMapping() == null ||
+        !this.beanName.equals("rpcserver")) {
+      throw new BeanInitializationException("Failed to initialize bean");
+    }
+  }
+
+  /**
+   * @see org.springframework.beans.factory.BeanNameAware#setBeanName(java.lang.String)
+   */
+  @Override
+  public void setBeanName(String name) {
+    this.beanName = name;
+  }
+
+  /**
+   * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+   */
+  @Override
+  public void setApplicationContext(ApplicationContext context)
+      throws BeansException {
+    this.context = context;
+  }
+  
+  /**
+   * Returns the context defining this instance
+   * @return the context
+   */
+  public ApplicationContext getContext() {
+    return this.context;
+  }
   
   /**
    * Verifies that the argumens sent to the main function are correct. I.e.
@@ -103,7 +124,7 @@ public class BaltradXmlRpcServer {
    * @throws IllegalArgumentException if the provided arguments are not valid
    */
   public static String getContextUriFromArguments(String[] args) throws IllegalArgumentException {
-    String path = "classpath:etc/xmlrpcserver-context.xml";
+    String path = "classpath:*xmlrpcserver-context.xml";
     if (args.length == 1) {
       path = args[0];
     } else if (args.length > 1) {
@@ -113,14 +134,26 @@ public class BaltradXmlRpcServer {
   }
   
   /**
+   * Returns the singleton instance of this server. There should only be
+   * one.
+   * @param path the uri context path
+   * @return the server
+   */
+  public static synchronized BaltradXmlRpcServer getInstance(String path) {
+    if (_instance == null) {
+       ApplicationContext context = new FileSystemXmlApplicationContext(path);
+       _instance = (BaltradXmlRpcServer)context.getBean("rpcserver");
+    }
+    return _instance;
+  }
+  
+  /**
    * Main function for starting the server
    * @param args
    * @throws Exception
    */
   public static void main(String[] args) throws Exception {
     String path = getContextUriFromArguments(args);
-    ApplicationContext context = new FileSystemXmlApplicationContext(path);
-    BaltradXmlRpcServer server = (BaltradXmlRpcServer)context.getBean("rpcserver");
-    server.start();
+    getInstance(path).start();
   }
 }

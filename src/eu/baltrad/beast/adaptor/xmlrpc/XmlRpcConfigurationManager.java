@@ -89,7 +89,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
           new Object[]{id, url, timeout});
       result = new XmlRpcAdaptor();
       result.setName(name);
-      result.setURL(url);
+      result.setUrl(url);
       result.setTimeout(timeout);
     } catch (Throwable t) {
       throw new AdaptorException("Could not store XMLRPC adaptor: " + name, t);
@@ -121,7 +121,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
       XmlRpcAdaptor result = new XmlRpcAdaptor();
       result.setName(name);
       result.setTimeout((Integer)found.get("timeout"));
-      result.setURL((String)found.get("uri"));
+      result.setUrl((String)found.get("uri"));
       return result;
     } catch (Throwable t) {
     }

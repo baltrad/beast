@@ -125,7 +125,7 @@ public class BltAdaptorManagerDBTest extends TestCase {
     XmlRpcAdaptor result = (XmlRpcAdaptor)classUnderTest.getAdaptor("A3");
     assertTrue(result.getClass() == XmlRpcAdaptor.class);
     assertEquals("A3", result.getName());
-    assertEquals("http://something/else", result.getURL());
+    assertEquals("http://something/else", result.getUrl());
   }
   
   public void testUnregister() throws Exception {

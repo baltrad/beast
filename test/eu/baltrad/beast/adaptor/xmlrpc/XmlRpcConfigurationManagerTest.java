@@ -74,7 +74,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     assertNotNull(result);
     assertTrue (result.getClass() == XmlRpcAdaptor.class);
     assertEquals("ABC", ((XmlRpcAdaptor)result).getName());
-    assertEquals("http://somepath/somewhere", ((XmlRpcAdaptor)result).getURL());
+    assertEquals("http://somepath/somewhere", ((XmlRpcAdaptor)result).getUrl());
     assertEquals(6000, ((XmlRpcAdaptor)result).getTimeout());
   }
   
@@ -179,6 +179,6 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     jdbcControl.verify();
     assertEquals("SA1", result.getName());
     assertEquals(2000, result.getTimeout());
-    assertEquals("http://someurl", result.getURL());
+    assertEquals("http://someurl", result.getUrl());
   }
 }

@@ -5,8 +5,13 @@
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <!-- alert plugins, add them as list -->
+  <bean id="testalertplugin" class="eu.baltrad.beast.pgfwk.TestAlertPlugin"/>
   <bean id="alerthandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcAlertHandler">
-    <!-- add plugins here -->
+    <property name="plugins">
+      <list>
+        <ref bean="testalertplugin"/>
+      </list>
+    </property>
   </bean>
 
   <!-- the command handler, should be exchanged if there is need for some other exec -->
@@ -22,7 +27,7 @@
     <property name="handlers">
       <map>
         <entry key="alert" value-ref="alerthandler"/>
-        <entry key="command" value-ref="commandhandler"/>
+        <entry key="execute" value-ref="commandhandler"/>
         <entry key="generate" value-ref="generatehandler"/>
       </map>
     </property>
@@ -30,7 +35,16 @@
   
   <!-- the rpcserver -->
   <bean id="rpcserver" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcServer">
-    <constructor-arg><value>56565</value></constructor-arg>
+    <constructor-arg><value>55555</value></constructor-arg>
     <constructor-arg><ref bean="pgfwkhandler"/></constructor-arg>
   </bean>
+  
+  <!-- setup a xmlrpc adaptor to make things easier when testing -->
+  <bean id="xmlrpcgenerator" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcCommandGenerator"/>
+  <bean id="xmlrpccallback" class="eu.baltrad.beast.pgfwk.TestRpcCallback"/>
+  <bean id="xmlrpcadaptor" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor" autowire="byType">
+    <property name="url" value="http://localhost:55555/xmlrpc"/>
+    <property name="timeout" value="10000"/>
+  </bean>
+  
 </beans>

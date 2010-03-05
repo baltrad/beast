@@ -116,7 +116,7 @@ public class XmlRpcAdaptor implements IAdaptor {
    * The destination url for the rpc server.
    * @param url - the url
    */
-  public void setURL(String url) {
+  public void setUrl(String url) {
     try {
       XmlRpcClientConfigImpl config = createConfig();
       config.setServerURL(createUrl(url));
@@ -131,7 +131,7 @@ public class XmlRpcAdaptor implements IAdaptor {
    * Returns the url
    * @return the url
    */
-  public String getURL() {
+  public String getUrl() {
     return this.url;
   }
 

@@ -82,7 +82,7 @@ public class XmlRpcConfigurationManagerDBTest extends TestCase {
 
     verifyDatabaseTables("store");
     assertNotNull(result);
-    assertEquals("http://someone/somewhere/insummertime", result.getURL());
+    assertEquals("http://someone/somewhere/insummertime", result.getUrl());
     assertEquals(8000, result.getTimeout());
   }
   

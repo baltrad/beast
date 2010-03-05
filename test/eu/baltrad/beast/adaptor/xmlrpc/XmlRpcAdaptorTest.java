@@ -254,13 +254,13 @@ public class XmlRpcAdaptorTest extends TestCase {
     classUnderTest.setRpcClient(client);
     
     // execute test
-    classUnderTest.setURL("http://localhost");
+    classUnderTest.setUrl("http://localhost");
     XmlRpcClientConfigImpl result = (XmlRpcClientConfigImpl)client.getConfig();
     
     // verify
     xmlRpcConfigControl.verify();
     assertSame(result, xmlRpcConfig);
-    assertEquals("http://localhost", classUnderTest.getURL());
+    assertEquals("http://localhost", classUnderTest.getUrl());
   }
   
   public void testSetUrl_malformed() throws Exception {
@@ -281,7 +281,7 @@ public class XmlRpcAdaptorTest extends TestCase {
     
     // execute test
     try {
-      classUnderTest.setURL("ht tp://localhost");
+      classUnderTest.setUrl("ht tp://localhost");
       fail("Expected AdaptorAddressException");
     } catch (AdaptorAddressException e) {
       // pass
