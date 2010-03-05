@@ -4,17 +4,21 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <!-- handlers -->
+  <!-- alert plugins, add them as list -->
   <bean id="alerthandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRPCAlertHandler">
     <!-- add plugins here -->
   </bean>
 
+  <!-- the command handler, should be exchanged if there is need for some other exec -->
   <bean id="commandhandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRPCCommandHandler" />
 
+  <!-- generate plugins does not need to be added as properties to generate handler. The
+    -- generate handler will check for bean-ids and verify that the specified class is
+    -- implementing the IGeneratorPlugin interface -->
   <bean id="generatehandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRPCGenerateHandler" />
   
-  <bean id="rpcserver" class="eu.baltrad.beast.pgfwk.BaltradXMLRPCServer">
-    <constructor-arg><value>54321</value></constructor-arg>
+  <!-- the pg fwk handler that should be the front end for all requests -->
+  <bean id="pgfwkhandler" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcHandlerMapping">
     <property name="handlers">
       <map>
         <entry key="alert" value-ref="alerthandler"/>
@@ -22,5 +26,10 @@
         <entry key="generate" value-ref="generatehandler"/>
       </map>
     </property>
+  </bean>
+  
+  <!-- the rpcserver -->
+  <bean id="rpcserver" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcServer" autowire="byType">
+    <property name="port" value="56565">
   </bean>
 </beans>

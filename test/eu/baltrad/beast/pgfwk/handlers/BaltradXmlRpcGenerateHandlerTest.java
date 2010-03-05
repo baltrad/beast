@@ -29,13 +29,13 @@ import junit.framework.TestCase;
 /**
  * @author Anders Henja
  */
-public class BaltradXMLRPCGenerateHandlerTest extends TestCase {
+public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
   static interface CreateStringArrayMethod {
     public String[] createStringArray(Object[] arr);
   };
   
   public void testCreateStringArray() {
-    BaltradXmlRPCGenerateHandler classUnderTest = new BaltradXmlRPCGenerateHandler();
+    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     Object[] strs = new String[]{"a", "b"};
     String[] result = classUnderTest.createStringArray(strs);
     assertEquals(2, result.length);
@@ -44,13 +44,13 @@ public class BaltradXMLRPCGenerateHandlerTest extends TestCase {
   }
   
   public void testCreateStringArray_null() {
-    BaltradXmlRPCGenerateHandler classUnderTest = new BaltradXmlRPCGenerateHandler();
+    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     String[] result = classUnderTest.createStringArray(null);
     assertEquals(0,result.length);
   }
 
   public void testCreateStringArray_empty() {
-    BaltradXmlRPCGenerateHandler classUnderTest = new BaltradXmlRPCGenerateHandler();
+    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     String[] result = classUnderTest.createStringArray(new Object[]{});
     assertEquals(0,result.length);
   }
@@ -73,7 +73,7 @@ public class BaltradXMLRPCGenerateHandlerTest extends TestCase {
     String[] files = new String[0];
     String[] args = new String[0];
     
-    BaltradXmlRPCGenerateHandler classUnderTest = new BaltradXmlRPCGenerateHandler() {
+    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler() {
       protected String[] createStringArray(Object[] arr) {
         return strArrayMethod.createStringArray(arr);
       }
@@ -128,7 +128,7 @@ public class BaltradXMLRPCGenerateHandlerTest extends TestCase {
     String[] files = new String[0];
     String[] args = new String[0];
     
-    BaltradXmlRPCGenerateHandler classUnderTest = new BaltradXmlRPCGenerateHandler() {
+    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler() {
       protected String[] createStringArray(Object[] arr) {
         return strArrayMethod.createStringArray(arr);
       }
@@ -181,7 +181,7 @@ public class BaltradXMLRPCGenerateHandlerTest extends TestCase {
     
     Object plugin = new Object();
     
-    BaltradXmlRPCGenerateHandler classUnderTest = new BaltradXmlRPCGenerateHandler() {
+    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler() {
       protected String[] createStringArray(Object[] arr) {
         return strArrayMethod.createStringArray(arr);
       }

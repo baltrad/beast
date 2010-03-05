@@ -19,13 +19,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.pgfwk;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.XmlRpcHandler;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
-import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 import org.apache.xmlrpc.webserver.WebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -35,37 +30,61 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * correct plugin is called.
  * @author Anders Henja
  */
-public class BaltradXMLRPCServer implements XmlRpcHandlerMapping {
-  /**
-   * The registered handler functions.
-   */
-  private Map<String, XmlRpcHandler> handlers = new HashMap<String, XmlRpcHandler>();
-  
+public class BaltradXmlRpcServer {
   /**
    * The web server 
    */
   private WebServer server = null;
+
+  /**
+   * The port number this server should be listening at
+   */
+  private int port = 56565;
+  
+  /**
+   * The handler mapping
+   */
+  private XmlRpcHandlerMapping mapping = null;
   
   /**
    * Default constructor
    */
-  public BaltradXMLRPCServer(int port) {
-    server = new WebServer(port);
-    server.getXmlRpcServer().setHandlerMapping(this);
+  public BaltradXmlRpcServer() {
   }
 
   /**
-   * Sets the handlers that are available.
-   * @param handlers the handlers
+   * @param port the port to set
    */
-  public void setHandlers(Map<String, XmlRpcHandler> handlers) {
-    this.handlers = handlers;
+  public void setPort(int port) {
+    this.port = port;
   }
+
+  /**
+   * @return the port
+   */
+  public int getPort() {
+    return port;
+  }
+ 
+
+  /**
+   * @param mapping the mapping to set
+   */
+  public void setMapping(XmlRpcHandlerMapping mapping) {
+    this.mapping = mapping;
+  }
+
+  /**
+   * @return the mapping
+   */
+  public XmlRpcHandlerMapping getMapping() {
+    return mapping;
+  }  
   
   /**
    * Starts the XMLRPC server
    */
-  public void startup() throws IOException {
+  public void start() throws IOException {
     server.start();
   }
 
@@ -77,16 +96,20 @@ public class BaltradXMLRPCServer implements XmlRpcHandlerMapping {
   }
   
   /**
-   * @see org.apache.xmlrpc.server.XmlRpcHandlerMapping#getHandler(java.lang.String)
+   * Verifies that the argumens sent to the main function are correct. I.e.
+   * either no context uri or one context uri.
+   * @param args the arguments
+   * @return a context uri
+   * @throws IllegalArgumentException if the provided arguments are not valid
    */
-  @Override
-  public XmlRpcHandler getHandler(String method)
-      throws XmlRpcNoSuchHandlerException, XmlRpcException {
-    XmlRpcHandler handler = handlers.get(method);
-    if (handler == null) {
-      throw new XmlRpcNoSuchHandlerException(""+method);
-    }
-    return handler;
+  public static String getContextUriFromArguments(String[] args) throws IllegalArgumentException {
+    String path = "classpath:etc/xmlrpcserver-context.xml";
+    if (args.length == 1) {
+      path = args[0];
+    } else if (args.length > 1) {
+      throw new IllegalArgumentException("Usage: " + BaltradXmlRpcServer.class.getName() + " [context-url]");
+    }   
+    return path;
   }
   
   /**
@@ -95,8 +118,9 @@ public class BaltradXMLRPCServer implements XmlRpcHandlerMapping {
    * @throws Exception
    */
   public static void main(String[] args) throws Exception {
-    ApplicationContext context = new FileSystemXmlApplicationContext("file:///projects/Baltrad/beast/etc/xmlrpcserver-context.xml");
-    BaltradXMLRPCServer server = (BaltradXMLRPCServer)context.getBean("rpcserver");
-    server.startup();
+    String path = getContextUriFromArguments(args);
+    ApplicationContext context = new FileSystemXmlApplicationContext(path);
+    BaltradXmlRpcServer server = (BaltradXmlRpcServer)context.getBean("rpcserver");
+    server.start();
   }
 }

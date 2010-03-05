@@ -16,48 +16,50 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.pgfwk.handlers;
+package eu.baltrad.beast.pgfwk;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcHandler;
-import org.apache.xmlrpc.XmlRpcRequest;
-
-import eu.baltrad.beast.pgfwk.IAlertPlugin;
+import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
+import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 
 /**
  * @author Anders Henja
+ *
  */
-public class BaltradXmlRPCAlertHandler implements XmlRpcHandler {
+public class BaltradXmlRpcHandlerMapping  implements XmlRpcHandlerMapping {
   /**
-   * A list of plugins
+   * The registered handler functions.
    */
-  private List<IAlertPlugin> plugins = new ArrayList<IAlertPlugin>();
+  private Map<String, XmlRpcHandler> handlers = new HashMap<String, XmlRpcHandler>();
 
   /**
-   * @see org.apache.xmlrpc.XmlRpcHandler#execute(org.apache.xmlrpc.XmlRpcRequest)
+   * Constructor
    */
-  @Override
-  public Object execute(XmlRpcRequest request) throws XmlRpcException {
-    String ecode = (String)request.getParameter(0);
-    String message = (String)request.getParameter(1);
-    for (IAlertPlugin plugin: plugins) {
-      try {
-        plugin.alert(ecode, message);
-      } catch (Throwable t) {
-        t.printStackTrace();
-      }
-    }
-    return new Integer(0);
+  public BaltradXmlRpcHandlerMapping() {
   }
   
   /**
-   * Initializes the alert handler with the specified alert plugins
-   * @param plugins a list of plugins
+   * Sets the handlers that are available.
+   * @param handlers the handlers
    */
-  public void setPlugins(List<IAlertPlugin> plugins) {
-    this.plugins = plugins;
+  public void setHandlers(Map<String, XmlRpcHandler> handlers) {
+    this.handlers = handlers;
+  }
+  
+  /**
+   * @see org.apache.xmlrpc.server.XmlRpcHandlerMapping#getHandler(java.lang.String)
+   */
+  @Override
+  public XmlRpcHandler getHandler(String method)
+      throws XmlRpcNoSuchHandlerException, XmlRpcException {
+    XmlRpcHandler handler = handlers.get(method);
+    if (handler == null) {
+      throw new XmlRpcNoSuchHandlerException(""+method);
+    }
+    return handler;
   }
 }

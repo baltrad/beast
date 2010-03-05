@@ -31,7 +31,7 @@ import junit.framework.TestCase;
 /**
  * @author Anders Henja
  */
-public class BaltradXmlRPCAlertHandlerTest extends TestCase {
+public class BaltradXmlRpcAlertHandlerTest extends TestCase {
   public void testExecute() throws Exception {
     MockControl alert1Control = MockControl.createControl(IAlertPlugin.class);
     IAlertPlugin alert1 = (IAlertPlugin)alert1Control.getMock();
@@ -57,7 +57,7 @@ public class BaltradXmlRPCAlertHandlerTest extends TestCase {
     requestControl.replay();
     
     // Execute test
-    BaltradXmlRPCAlertHandler classUnderTest = new BaltradXmlRPCAlertHandler();
+    BaltradXmlRpcAlertHandler classUnderTest = new BaltradXmlRpcAlertHandler();
     classUnderTest.setPlugins(plugins);
 
     classUnderTest.execute(request);

@@ -32,7 +32,7 @@ import org.apache.xmlrpc.XmlRpcRequest;
 /**
  * @author Anders Henja
  */
-public class BaltradXmlRPCCommandHandler implements XmlRpcHandler {
+public class BaltradXmlRpcCommandHandler implements XmlRpcHandler {
   
   /**
    * Internal class used for preempty the output and error stream when

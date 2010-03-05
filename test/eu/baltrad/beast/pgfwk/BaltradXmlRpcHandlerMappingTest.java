@@ -30,8 +30,9 @@ import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
+ *
  */
-public class BaltradXMLRPCServerTest extends TestCase {
+public class BaltradXmlRpcHandlerMappingTest extends TestCase {
   public void testGetHandler() throws Exception {
     XmlRpcHandler handler1 = new XmlRpcHandler() {
       public Object execute(XmlRpcRequest request) throws XmlRpcException {return null;}
@@ -43,7 +44,7 @@ public class BaltradXMLRPCServerTest extends TestCase {
     handlers.put("handler1", handler1);
     handlers.put("handler2", handler2);
     
-    BaltradXMLRPCServer classUnderTest = new BaltradXMLRPCServer(12345);
+    BaltradXmlRpcHandlerMapping classUnderTest = new BaltradXmlRpcHandlerMapping();
     classUnderTest.setHandlers(handlers);
     
     // Execute test
@@ -64,7 +65,7 @@ public class BaltradXMLRPCServerTest extends TestCase {
     handlers.put("handler1", handler1);
     handlers.put("handler2", handler2);
     
-    BaltradXMLRPCServer classUnderTest = new BaltradXMLRPCServer(12345);
+    BaltradXmlRpcHandlerMapping classUnderTest = new BaltradXmlRpcHandlerMapping();
     classUnderTest.setHandlers(handlers);
     
     // Execute test
@@ -87,7 +88,7 @@ public class BaltradXMLRPCServerTest extends TestCase {
     handlers.put("handler1", handler1);
     handlers.put("handler2", handler2);
     
-    BaltradXMLRPCServer classUnderTest = new BaltradXMLRPCServer(12345);
+    BaltradXmlRpcHandlerMapping classUnderTest = new BaltradXmlRpcHandlerMapping();
     classUnderTest.setHandlers(handlers);
     
     // Execute test
@@ -98,4 +99,5 @@ public class BaltradXMLRPCServerTest extends TestCase {
       // pass
     }
   }  
+
 }

@@ -30,7 +30,7 @@ import eu.baltrad.beast.pgfwk.IGeneratorPlugin;
 /**
  * @author Anders Henja
  */
-public class BaltradXmlRPCGenerateHandler implements XmlRpcHandler, ApplicationContextAware {
+public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationContextAware {
   /**
    * The application context
    */

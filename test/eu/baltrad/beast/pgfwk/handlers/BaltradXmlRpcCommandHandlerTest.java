@@ -27,9 +27,9 @@ import org.easymock.MockControl;
  * @author Anders Henja
  *
  */
-public class BaltradXmlRPCCommandHandlerTest extends TestCase {
+public class BaltradXmlRpcCommandHandlerTest extends TestCase {
   public void testExecute() throws Exception {
-    BaltradXmlRPCCommandHandler classUnderTest = new BaltradXmlRPCCommandHandler();
+    BaltradXmlRpcCommandHandler classUnderTest = new BaltradXmlRpcCommandHandler();
     MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
     XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
     
@@ -49,7 +49,7 @@ public class BaltradXmlRPCCommandHandlerTest extends TestCase {
   }
   
   public void testExecute_errStream() throws Exception {
-    BaltradXmlRPCCommandHandler classUnderTest = new BaltradXmlRPCCommandHandler();
+    BaltradXmlRpcCommandHandler classUnderTest = new BaltradXmlRpcCommandHandler();
     MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
     XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
     
@@ -69,7 +69,7 @@ public class BaltradXmlRPCCommandHandlerTest extends TestCase {
   }
   
   public void testExecute_cmdNotFound() throws Exception {
-    BaltradXmlRPCCommandHandler classUnderTest = new BaltradXmlRPCCommandHandler();
+    BaltradXmlRpcCommandHandler classUnderTest = new BaltradXmlRpcCommandHandler();
     MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
     XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
     
