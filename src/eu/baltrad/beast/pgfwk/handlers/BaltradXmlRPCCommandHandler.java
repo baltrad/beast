@@ -22,6 +22,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcHandler;
@@ -32,14 +34,32 @@ import org.apache.xmlrpc.XmlRpcRequest;
  */
 public class BaltradXmlRPCCommandHandler implements XmlRpcHandler {
   
+  /**
+   * Internal class used for preempty the output and error stream when
+   * running exec.
+   */
   private static class IOStreamPreemptier extends Thread {
+    /**
+     * The buffer
+     */
     private StringBuffer msgbuffer = new StringBuffer();
+    
+    /**
+     * The input stream
+     */
     private InputStream is = null;
     
+    /**
+     * Constructor
+     * @param is the input stream
+     */
     private IOStreamPreemptier(InputStream is) {
       this.is = is;
     }
     
+    /**
+     * The thread that runs
+     */
     public void run() {
       try {
         InputStreamReader isr = new InputStreamReader(is);
@@ -52,8 +72,11 @@ public class BaltradXmlRPCCommandHandler implements XmlRpcHandler {
         e.printStackTrace();  
       }
     }
-    
-    @SuppressWarnings("unused")
+
+    /**
+     * Returns the preemptied string buffer
+     * @return the buffer
+     */
     public String getTrace() {
       return msgbuffer.toString();
     }
@@ -66,7 +89,8 @@ public class BaltradXmlRPCCommandHandler implements XmlRpcHandler {
   public Object execute(XmlRpcRequest request) throws XmlRpcException {
     String command = (String)request.getParameter(0);
     Runtime rt = Runtime.getRuntime();
-    Object result = new Integer(-1);
+    Object[] result = new Object[3];
+    result[0] = new Integer(-1);
     try {
       Process proc = rt.exec(command);
       IOStreamPreemptier errreader = new IOStreamPreemptier(proc.getErrorStream()); 
@@ -76,8 +100,16 @@ public class BaltradXmlRPCCommandHandler implements XmlRpcHandler {
       outreader.start();
       
       int v = proc.waitFor();
-      result = new Integer(v);
+      result[0] = new Integer(v);
+      errreader.join();
+      outreader.join();
+      result[1] = outreader.getTrace();
+      result[2] = errreader.getTrace();
     } catch (Throwable e) {
+      StringWriter writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      result[1] = "";
+      result[2] = writer.toString();
     }
     return result;
   }
