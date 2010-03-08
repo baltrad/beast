@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
+import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.Route;
 
 /**
@@ -37,4 +38,24 @@ public interface IAdaptor {
    * @throws AdaptorException
    */
   public void handle(Route route);
+  
+  /**
+   * Same as {@link #handle(Route)} but with the possibility to get the result
+   * to the callback
+   * @param route the route
+   * @param callback the callback
+   * @throws AdaptorException
+   */
+  public void handle(Route route, IAdaptorCallback callback);
+  
+  /**
+   * This is a non-routed version of the message sending, when using
+   * this function, The adaptor must know the destination of the message
+   * so it is optional to implement this function. If not supported an AdaptorException
+   * should be thrown.
+   * @param msg the message to send
+   * @param callback the callback that should get the response
+   * @throws AdaptorException - on error or if not supported.
+   */
+  public void handle(IBltMessage msg, IAdaptorCallback callback);
 }

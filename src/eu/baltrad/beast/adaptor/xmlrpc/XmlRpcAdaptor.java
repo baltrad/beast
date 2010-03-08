@@ -27,6 +27,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import eu.baltrad.beast.adaptor.AdaptorAddressException;
 import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
+import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.Route;
 
@@ -63,7 +64,7 @@ public class XmlRpcAdaptor implements IAdaptor {
   /**
    * The callback
    */
-  private IXmlRpcCallback callback = null;
+  private IAdaptorCallback callback = null;
   
   /**
    * Default constructor
@@ -108,7 +109,7 @@ public class XmlRpcAdaptor implements IAdaptor {
    * Sets the callback to use
    * @param cb the callback
    */
-  public void setCallback(IXmlRpcCallback cb) {
+  public void setCallback(IAdaptorCallback cb) {
     this.callback = cb;
   }
   
@@ -153,25 +154,38 @@ public class XmlRpcAdaptor implements IAdaptor {
   /**
    * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)
    */
-  @Override
   public void handle(Route route) {
+    handle(route, this.callback);
+  }
+  
+  /**
+   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route, eu.baltrad.beast.adaptor.IAdaptorCallback)
+   */
+  public void handle(Route route, IAdaptorCallback cb) {
+    handle(route.getMessage(), cb);
+  }
+
+  /**
+   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.message.IBltMessage, eu.baltrad.beast.adaptor.IAdaptorCallback)
+   */
+  @Override
+  public void handle(IBltMessage message, IAdaptorCallback cb) {
     try {
-      IBltMessage message = route.getMessage();
       XmlRpcCommand command = generator.generate(message);
       TimingOutCallback tcb = createTimeout(timeout);
       client.executeAsync(command.getMethod(), command.getObjects(), tcb);
       try {
         Object result = tcb.waitForResponse();
-        if (callback != null) {
-          callback.success(message, result);
+        if (cb != null) {
+          cb.success(message, result);
         }
       } catch (TimingOutCallback.TimeoutException e) {
-        if (callback != null) {
-          callback.timeout(message);
+        if (cb != null) {
+          cb.timeout(message);
         }
       } catch (Throwable t) {
-        if (callback != null) {
-          callback.error(message, t);
+        if (cb != null) {
+          cb.error(message, t);
         }
       }
     } catch (Throwable t) {

@@ -18,13 +18,13 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.pgfwk;
 
-import eu.baltrad.beast.adaptor.xmlrpc.IXmlRpcCallback;
+import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.message.IBltMessage;
 
 /**
  * @author Anders Henja
  */
-public class TestRpcCallback implements IXmlRpcCallback {
+public class TestRpcCallback implements IAdaptorCallback {
   private IBltMessage message = null;
   private Object result = null;
   private Throwable t = null;

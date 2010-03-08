@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
 import junit.framework.TestCase;
+import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.itest.XmlRpcTestServer;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
@@ -33,7 +34,7 @@ import eu.baltrad.beast.router.Route;
  */
 public class XmlRpcAdaptorITest extends TestCase {
   
-  private class TestCallback implements IXmlRpcCallback {
+  private class TestCallback implements IAdaptorCallback {
     private IBltMessage msg = null;
     boolean wasError = false;
     boolean wasTimeout = false;

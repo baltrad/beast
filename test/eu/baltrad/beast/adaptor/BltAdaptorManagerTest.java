@@ -33,6 +33,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.Route;
 
 /**
@@ -153,11 +154,10 @@ public class BltAdaptorManagerTest extends TestCase {
     SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
     
     IAdaptor adaptor = new IAdaptor(){
-      public String getName() {
-        return "SA1";
-      }
-      public void handle(Route route) {
-      }
+      public String getName() {return "SA1";}
+      public void handle(Route route) {}
+      public void handle(Route route, IAdaptorCallback callback) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     };
 
     jdbcTemplate.update("insert into adaptors (name,type) values (?,?)",
@@ -262,6 +262,8 @@ public class BltAdaptorManagerTest extends TestCase {
     adaptors.put("SA1", new IAdaptor() {
       public String getName() {return null;}
       public void handle(Route route) {}
+      public void handle(Route route, IAdaptorCallback callback) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     });
     
     jdbcTemplate.queryForMap("select adaptor_id,type from adaptors where name=?",
@@ -293,7 +295,9 @@ public class BltAdaptorManagerTest extends TestCase {
   
   public void testGetAdaptorMapper() throws Exception {
     final IAdaptor adaptor = new IAdaptor() {
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
       public void handle(Route route) {}
+      public void handle(Route route, IAdaptorCallback callback) {}
       public String getName() {return null;}
     };
     
@@ -313,6 +317,8 @@ public class BltAdaptorManagerTest extends TestCase {
     MockControl rsetControl = MockControl.createControl(ResultSet.class);
     ResultSet rset = (ResultSet)rsetControl.getMock();
     IAdaptor adaptor = new IAdaptor() {
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+      public void handle(Route route, IAdaptorCallback callback) {}
       public void handle(Route route) {}
       public String getName() {return null;}
     };
@@ -369,10 +375,14 @@ public class BltAdaptorManagerTest extends TestCase {
 
     List<IAdaptor> readAdaptors = new ArrayList<IAdaptor>();
     IAdaptor a1 = new IAdaptor() {
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+      public void handle(Route route, IAdaptorCallback callback) {}
       public void handle(Route route) {}
       public String getName() {return "A1";}
     };
     IAdaptor a2 = new IAdaptor() {
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+      public void handle(Route route, IAdaptorCallback callback) {}
       public void handle(Route route) {}
       public String getName() {return "A2";}
     };

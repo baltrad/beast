@@ -20,6 +20,7 @@ package eu.baltrad.beast.adaptor;
 
 import java.util.Map;
 
+import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.Route;
 
 /**
@@ -66,6 +67,26 @@ public class BltAdaptor implements IAdaptor {
     if (adaptor == null) {
       throw new AdaptorException("No adaptor able to handle the route");
     }
-    adaptor.handle(route);
+    adaptor.handle(route); 
+  }
+
+  /**
+   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route, eu.baltrad.beast.adaptor.IAdaptorCallback)
+   */
+  @Override
+  public void handle(Route route, IAdaptorCallback callback) {
+    IAdaptor adaptor = adaptors.get(route.getDestination());
+    if (adaptor == null) {
+      throw new AdaptorException("No adaptor able to handle the route");
+    }
+    adaptor.handle(route, callback);    
+  }
+
+  /**
+   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.message.IBltMessage, eu.baltrad.beast.adaptor.IAdaptorCallback)
+   */
+  @Override
+  public void handle(IBltMessage msg, IAdaptorCallback callback) {
+    throw new AdaptorException("Not supported");
   }
 }

@@ -16,16 +16,15 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.adaptor.xmlrpc;
+package eu.baltrad.beast.adaptor;
 
 import eu.baltrad.beast.message.IBltMessage;
 
 /**
- * Callback that can be used to identify results of the
- * {@link XmlRpcAdaptor#handle(eu.baltrad.beast.router.Route)}.
+ * Callback that can be used to get the result of an operation
  * @author Anders Henja
  */
-public interface IXmlRpcCallback {
+public interface IAdaptorCallback {
   /**
    * Called on success
    * @param message - the message
