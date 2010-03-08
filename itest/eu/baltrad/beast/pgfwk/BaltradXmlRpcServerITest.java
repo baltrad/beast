@@ -26,6 +26,7 @@ import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.router.Route;
 
 import junit.framework.TestCase;
@@ -111,8 +112,12 @@ public class BaltradXmlRpcServerITest extends TestCase {
     msg.setCommand("ls -la 1>&2");
     Route r = new Route("A", msg);
     cb.reset();
+    
+    // Execute
     adaptor.handle(r);
     IBltMessage result = cb.waitForResponse(5000);
+    
+    // Verify
     assertSame(msg, result);
     Object[] resp = (Object[])cb.getResult();
     assertEquals(2, resp[0]);
@@ -120,25 +125,81 @@ public class BaltradXmlRpcServerITest extends TestCase {
     assertFalse(resp[2].equals(""));
   }
   
-  
-  public void XtestX() {
+  public void testSendGenerate() throws Exception {
     ApplicationContext context = classUnderTest.getContext();
     XmlRpcAdaptor adaptor = (XmlRpcAdaptor)context.getBean("xmlrpcadaptor");
-    BltAlertMessage msg = new BltAlertMessage();
-    msg.setCode("E1314");
-    msg.setMessage("this message");
+    TestRpcCallback cb = (TestRpcCallback)context.getBean("xmlrpccallback");
+    
+    BltGenerateMessage msg = new BltGenerateMessage();
+    msg.setAlgorithm("a.TestAlgorithm");
+    msg.setFiles(new String[]{"file:/x/y/z.h5", "file:/somewhere/x.h5"});
+    msg.setArguments(new String[]{"a", "b"});
+
     Route r = new Route("A", msg);
+    cb.reset();
+    
+    // execute
     adaptor.handle(r);
+    
+    // verify
+    IBltMessage result = cb.waitForResponse(5000);
+    assertSame(msg, result);
+    Object resp = (Object)cb.getResult();
+    assertEquals(0, resp);
+    TestGeneratorPlugin plug = (TestGeneratorPlugin)context.getBean("a.TestAlgorithm");
+    assertEquals("a.TestAlgorithm", plug.getAlgorithm());
+    String[] files = plug.getFiles();
+    assertEquals(2, files.length);
+    assertEquals("file:/x/y/z.h5", files[0]);
+    assertEquals("file:/somewhere/x.h5", files[1]);
+    Object[] args = plug.getArgs();
+    assertEquals(2, args.length);
+    assertEquals("a", args[0]);
+    assertEquals("b", args[1]);
   }
 
-  public void XtestY() {
+  public void testSendGenerate_withThrowable() throws Exception {
     ApplicationContext context = classUnderTest.getContext();
     XmlRpcAdaptor adaptor = (XmlRpcAdaptor)context.getBean("xmlrpcadaptor");
-    BltAlertMessage msg = new BltAlertMessage();
-    msg.setCode("E1515");
-    msg.setMessage("this message");
+    TestRpcCallback cb = (TestRpcCallback)context.getBean("xmlrpccallback");
+    
+    BltGenerateMessage msg = new BltGenerateMessage();
+    msg.setAlgorithm("a.FailedTestAlgorithm");
+    msg.setFiles(new String[]{"file:/x/y/z.h5", "file:/somewhere/x.h5"});
+    msg.setArguments(new String[]{"a", "b"});
+
     Route r = new Route("A", msg);
+    cb.reset();
+    
+    // execute
     adaptor.handle(r);
+    
+    // verify
+    IBltMessage result = cb.waitForResponse(5000);
+    assertSame(msg, result);
+    Object resp = (Object)cb.getResult();
+    assertEquals(-1, resp);
   }
-  
+
+  public void testSendGenerate_noSuchPlugin() throws Exception {
+    ApplicationContext context = classUnderTest.getContext();
+    XmlRpcAdaptor adaptor = (XmlRpcAdaptor)context.getBean("xmlrpcadaptor");
+    TestRpcCallback cb = (TestRpcCallback)context.getBean("xmlrpccallback");
+    
+    BltGenerateMessage msg = new BltGenerateMessage();
+    msg.setAlgorithm("a.NonExistingAlgorithm");
+    msg.setFiles(new String[]{"file:/x/y/z.h5", "file:/somewhere/x.h5"});
+    msg.setArguments(new String[]{"a", "b"});
+
+    Route r = new Route("A", msg);
+    cb.reset();
+    
+    // execute
+    adaptor.handle(r);
+    
+    // verify
+    IBltMessage result = cb.waitForResponse(5000);
+    assertSame(msg, result);
+    assertNotNull(cb.getThrowable());
+  }
 }

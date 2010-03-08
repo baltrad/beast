@@ -22,6 +22,11 @@
        implementing the IGeneratorPlugin interface -->
   <bean id="generatehandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcGenerateHandler" />
   
+  <bean id="a.TestAlgorithm" class="eu.baltrad.beast.pgfwk.TestGeneratorPlugin"/>
+  <bean id="a.FailedTestAlgorithm" class="eu.baltrad.beast.pgfwk.TestGeneratorPlugin">
+    <property name="fail" value="true"/>
+  </bean>
+  
   <!-- the pg fwk handler that should be the front end for all requests -->
   <bean id="pgfwkhandler" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcHandlerMapping">
     <property name="handlers">
