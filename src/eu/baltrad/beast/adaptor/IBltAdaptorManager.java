@@ -20,6 +20,8 @@ package eu.baltrad.beast.adaptor;
 
 import java.util.Set;
 
+import eu.baltrad.beast.router.Route;
+
 /**
  * @author Anders Henja
  */
@@ -69,4 +71,21 @@ public interface IBltAdaptorManager {
    * @return the adaptor (or null if there is none)
    */
   public IAdaptor getAdaptor(String name);
+  
+  /**
+   * Handles a route. If this adaptor could not handle the route an AdaptorException should be
+   * thrown.
+   * @param route the route to handle
+   * @throws AdaptorException
+   */
+  public void handle(Route route);
+
+  /**
+   * Same as {@link #handle(Route)} but with the possibility to get the result
+   * to the callback
+   * @param route the route
+   * @param callback the callback
+   * @throws AdaptorException
+   */
+  public void handle(Route route, IAdaptorCallback callback);
 }

@@ -21,13 +21,14 @@ package eu.baltrad.beast.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.easymock.MockControl;
 
-import eu.baltrad.beast.adaptor.IAdaptor;
+import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.IRouter;
 import eu.baltrad.beast.router.Route;
-import junit.framework.TestCase;
 
 
 /**
@@ -37,8 +38,8 @@ public class BltMessageManagerTest extends TestCase {
   public void testManage() throws Exception {
     MockControl routerControl = MockControl.createControl(IRouter.class);
     IRouter router = (IRouter)routerControl.getMock();
-    MockControl adaptorControl = MockControl.createControl(IAdaptor.class);
-    IAdaptor adaptor = (IAdaptor)adaptorControl.getMock();
+    MockControl managerControl = MockControl.createControl(IBltAdaptorManager.class);
+    IBltAdaptorManager manager = (IBltAdaptorManager)managerControl.getMock();
     
     IBltMessage message = new IBltMessage() { };
     List<Route> routes = new ArrayList<Route>();
@@ -50,29 +51,29 @@ public class BltMessageManagerTest extends TestCase {
     // the mocking sequence
     router.getRoutes(message);
     routerControl.setReturnValue(routes);
-    adaptor.handle(r1);
-    adaptor.handle(r2);
+    manager.handle(r1);
+    manager.handle(r2);
     
     BltMessageManager classUnderTest = new BltMessageManager();
     classUnderTest.setRouter(router);
-    classUnderTest.setAdaptor(adaptor);
+    classUnderTest.setManager(manager);
 
     routerControl.replay();
-    adaptorControl.replay();
+    managerControl.replay();
     
     // execute test
     classUnderTest.manage(message);
     
     // verify
     routerControl.verify();
-    adaptorControl.verify();
+    managerControl.verify();
   }
   
   public void testManage_exceptionInSequence() throws Exception {
     MockControl routerControl = MockControl.createControl(IRouter.class);
     IRouter router = (IRouter)routerControl.getMock();
-    MockControl adaptorControl = MockControl.createControl(IAdaptor.class);
-    IAdaptor adaptor = (IAdaptor)adaptorControl.getMock();
+    MockControl managerControl = MockControl.createControl(IBltAdaptorManager.class);
+    IBltAdaptorManager manager = (IBltAdaptorManager)managerControl.getMock();
     
     IBltMessage message = new IBltMessage() { };
     List<Route> routes = new ArrayList<Route>();
@@ -84,23 +85,23 @@ public class BltMessageManagerTest extends TestCase {
     // the mocking sequence
     router.getRoutes(message);
     routerControl.setReturnValue(routes);
-    adaptor.handle(r1);
-    adaptorControl.setThrowable(new RuntimeException());
-    adaptor.handle(r2);
+    manager.handle(r1);
+    managerControl.setThrowable(new RuntimeException());
+    manager.handle(r2);
     
     BltMessageManager classUnderTest = new BltMessageManager();
     classUnderTest.setRouter(router);
-    classUnderTest.setAdaptor(adaptor);
+    classUnderTest.setManager(manager);
 
     routerControl.replay();
-    adaptorControl.replay();
+    managerControl.replay();
     
     // execute test
     classUnderTest.manage(message);
     
     // verify
     routerControl.verify();
-    adaptorControl.verify();
+    managerControl.verify();
   }
 
 }

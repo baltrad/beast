@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- Property placeholder configurer for expanding ${} into values -->
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:testdb.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+    <property name="driverClassName" value="${db.driver}"/>
+    <property name="url" value="${db.url}"/>
+    <property name="username" value="${db.user}"/>
+    <property name="password" value="${db.pwd}"/>
+  </bean>
+
+  <!-- alert plugins, add them as list -->
+  <bean id="alerthandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcAlertHandler" />
+
+  <!-- the command handler, should be exchanged if there is need for some other exec -->
+  <bean id="commandhandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcCommandHandler" />
+
+  <!-- the generate handler -->
+  <bean id="generatehandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcGenerateHandler" />
+  
+  <!-- a simple timing plugin -->
+  <bean id="a.TimingGenerator" class="eu.baltrad.beast.manager.TimingGeneratorPlugin"/>
+  
+  <!-- the pg fwk handler that should be the front end for all requests -->
+  <bean id="pgfwkhandler" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcHandlerMapping">
+    <property name="handlers">
+      <map>
+        <entry key="alert" value-ref="alerthandler"/>
+        <entry key="execute" value-ref="commandhandler"/>
+        <entry key="generate" value-ref="generatehandler"/>
+      </map>
+    </property>
+  </bean>
+  
+  <!-- the rpcserver -->
+  <bean id="rpcserver" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcServer">
+    <constructor-arg><value>55555</value></constructor-arg>
+    <constructor-arg><ref bean="pgfwkhandler"/></constructor-arg>
+  </bean>
+  
+  <!-- setup a xmlrpc adaptor to make things easier when testing -->
+  <bean id="xmlrpcgenerator" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcCommandGenerator"/>
+  <bean id="xmlrpcadaptor" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor" autowire="byType">
+    <property name="name" value="PGFWK"/>
+    <property name="url" value="http://localhost:55555/xmlrpc"/>
+    <property name="timeout" value="10000"/>
+  </bean>
+  
+  <!-- Add the xml adaptor to the baltrad adaptor -->
+  <bean id="adaptormanager" class="eu.baltrad.beast.adaptor.BltAdaptorManager" autowire="byType">
+    <property name="adaptors">
+      <map>
+        <entry key="XMLRPC" value-ref="xmlrpcadaptor"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="groovycreator" class="eu.baltrad.beast.rules.GroovyRuleCreator"/>
+  
+  <!-- Create the rule factory -->
+  <bean id="rulefactory" class="eu.baltrad.beast.rules.RuleFactory">
+    <property name="creators">
+      <list>
+        <ref bean="groovycreator"/>
+      </list>
+    </property>
+  </bean>
+  
+  
+  <!-- Create the router -->
+  <bean id="router" class="eu.baltrad.beast.router.impl.BltRouter" autowire="byType">
+  </bean>
+  
+  <!-- Add the baltrad adaptor manager to the baltrad manager -->
+  <bean id="manager" class="eu.baltrad.beast.manager.BltMessageManager" autowire="byType"/>
+  
+</beans>

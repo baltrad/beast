@@ -22,7 +22,6 @@ import eu.baltrad.beast.message.IBltMessage;
 
 /**
  * @author Anders Henja
- *
  */
 public interface IBltMessageManager {
   /**

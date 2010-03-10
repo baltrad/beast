@@ -8,7 +8,7 @@
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>testdb.properties</value>
+        <value>classpath:testdb.properties</value>
       </list>
     </property>
   </bean>
@@ -19,8 +19,8 @@
     <property name="username" value="${db.user}"/>
     <property name="password" value="${db.pwd}"/>
   </bean>
-
-  <bean id="dataFactory" class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory"/>
   
-  <bean id="testHelper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType" />
-</beans>
+  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+    <constructor-arg><ref bean="dataSource"/></constructor-arg>
+  </bean>
+</beans>  

@@ -20,7 +20,7 @@ package eu.baltrad.beast.manager;
 
 import java.util.List;
 
-import eu.baltrad.beast.adaptor.IAdaptor;
+import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.IRouter;
 import eu.baltrad.beast.router.Route;
@@ -39,7 +39,7 @@ public class BltMessageManager implements IBltMessageManager {
   /**
    * The main adaptor
    */
-  private IAdaptor adaptor = null;
+  private IBltAdaptorManager manager = null;
   
   /**
    * @param router the router to set
@@ -51,8 +51,8 @@ public class BltMessageManager implements IBltMessageManager {
   /**
    * @param adaptor the adaptor to set
    */
-  public void setAdaptor(IAdaptor adaptor) {
-    this.adaptor = adaptor;
+  public void setManager(IBltAdaptorManager manager) {
+    this.manager = manager;
   }
 
   /**
@@ -62,7 +62,7 @@ public class BltMessageManager implements IBltMessageManager {
     List<Route> routes = router.getRoutes(message);
     for (Route r: routes) {
       try {
-        adaptor.handle(r);
+        manager.handle(r);
       } catch (Throwable t) {
         // no op
       }

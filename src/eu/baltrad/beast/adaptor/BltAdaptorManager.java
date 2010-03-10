@@ -33,6 +33,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import eu.baltrad.beast.router.Route;
+
 /**
  * @author Anders Henja
  *
@@ -58,6 +60,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    */
   public BltAdaptorManager() {
     adaptors = new HashMap<String, IAdaptor>();
+    typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();    
   }
   
   /**
@@ -178,6 +181,30 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     return adaptor;
   }
 
+  /**
+   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#handle(eu.baltrad.beast.router.Route)
+   */
+  @Override
+  public void handle(Route route) {
+    IAdaptor adaptor = adaptors.get(route.getDestination());
+    if (adaptor == null) {
+      throw new AdaptorException("No adaptor able to handle the route");
+    }
+    adaptor.handle(route); 
+  }
+
+  /**
+   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#handle(eu.baltrad.beast.router.Route, eu.baltrad.beast.adaptor.IAdaptorCallback)
+   */
+  @Override
+  public void handle(Route route, IAdaptorCallback callback) {
+    IAdaptor adaptor = adaptors.get(route.getDestination());
+    if (adaptor == null) {
+      throw new AdaptorException("No adaptor able to handle the route");
+    }
+    adaptor.handle(route, callback);    
+  }  
+  
   /**
    * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
    */
