@@ -190,7 +190,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     if (adaptor == null) {
       throw new AdaptorException("No adaptor able to handle the route");
     }
-    adaptor.handle(route); 
+    adaptor.handle(route.getMessage()); 
   }
 
   /**
@@ -202,7 +202,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     if (adaptor == null) {
       throw new AdaptorException("No adaptor able to handle the route");
     }
-    adaptor.handle(route, callback);    
+    adaptor.handle(route.getMessage(), callback);    
   }  
   
   /**

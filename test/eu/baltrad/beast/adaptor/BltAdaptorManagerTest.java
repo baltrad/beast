@@ -155,8 +155,7 @@ public class BltAdaptorManagerTest extends TestCase {
     
     IAdaptor adaptor = new IAdaptor(){
       public String getName() {return "SA1";}
-      public void handle(Route route) {}
-      public void handle(Route route, IAdaptorCallback callback) {}
+      public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     };
 
@@ -261,8 +260,7 @@ public class BltAdaptorManagerTest extends TestCase {
     Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
     adaptors.put("SA1", new IAdaptor() {
       public String getName() {return null;}
-      public void handle(Route route) {}
-      public void handle(Route route, IAdaptorCallback callback) {}
+      public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     });
     
@@ -307,7 +305,7 @@ public class BltAdaptorManagerTest extends TestCase {
     
     classUnderTest.setAdaptors(adaptors);
 
-    adaptor2.handle(r);
+    adaptor2.handle(msg);
 
     adaptor1Control.replay();
     adaptor2Control.replay();
@@ -358,7 +356,7 @@ public class BltAdaptorManagerTest extends TestCase {
     
     classUnderTest.setAdaptors(adaptors);
 
-    adaptor2.handle(r, cb);
+    adaptor2.handle(msg, cb);
 
     adaptor1Control.replay();
     adaptor2Control.replay();
@@ -396,9 +394,8 @@ public class BltAdaptorManagerTest extends TestCase {
   
   public void testGetAdaptorMapper() throws Exception {
     final IAdaptor adaptor = new IAdaptor() {
+      public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
-      public void handle(Route route) {}
-      public void handle(Route route, IAdaptorCallback callback) {}
       public String getName() {return null;}
     };
     
@@ -418,9 +415,8 @@ public class BltAdaptorManagerTest extends TestCase {
     MockControl rsetControl = MockControl.createControl(ResultSet.class);
     ResultSet rset = (ResultSet)rsetControl.getMock();
     IAdaptor adaptor = new IAdaptor() {
+      public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
-      public void handle(Route route, IAdaptorCallback callback) {}
-      public void handle(Route route) {}
       public String getName() {return null;}
     };
     rset.getInt("adaptor_id");
@@ -476,15 +472,13 @@ public class BltAdaptorManagerTest extends TestCase {
 
     List<IAdaptor> readAdaptors = new ArrayList<IAdaptor>();
     IAdaptor a1 = new IAdaptor() {
+      public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
-      public void handle(Route route, IAdaptorCallback callback) {}
-      public void handle(Route route) {}
       public String getName() {return "A1";}
     };
     IAdaptor a2 = new IAdaptor() {
+      public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
-      public void handle(Route route, IAdaptorCallback callback) {}
-      public void handle(Route route) {}
       public String getName() {return "A2";}
     };
     readAdaptors.add(a1);

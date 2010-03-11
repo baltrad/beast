@@ -33,14 +33,12 @@ import eu.baltrad.beast.adaptor.AdaptorAddressException;
 import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.beast.router.Route;
 
 /**
  * @author Anders Henja
  */
 public class XmlRpcAdaptorTest extends TestCase {
   private static interface HandleMethodMock {
-    public void handle(Route route, IAdaptorCallback callback);
     public void handle(IBltMessage message, IAdaptorCallback callback);
   };
   
@@ -116,12 +114,12 @@ public class XmlRpcAdaptorTest extends TestCase {
     MockControl adaptorCbControl = MockControl.createControl(IAdaptorCallback.class);
     IAdaptorCallback adaptorCb = (IAdaptorCallback)adaptorCbControl.getMock();
 
-    Route route = new Route();
-    handleMock.handle(route, adaptorCb);
+    IBltMessage message = new IBltMessage(){};
+    handleMock.handle(message, adaptorCb);
 
     XmlRpcAdaptor classUnderTest = new XmlRpcAdaptor() {
-      public void handle(Route route, IAdaptorCallback callback) {
-        handleMock.handle(route, callback);
+      public void handle(IBltMessage message, IAdaptorCallback callback) {
+        handleMock.handle(message, callback);
       }
     };
     classUnderTest.setCallback(adaptorCb);
@@ -131,7 +129,7 @@ public class XmlRpcAdaptorTest extends TestCase {
     handleControl.replay();
     
     // Execute test
-    classUnderTest.handle(route);
+    classUnderTest.handle(message);
 
     // Verify
     verify();
@@ -160,8 +158,7 @@ public class XmlRpcAdaptorTest extends TestCase {
     handleControl.replay();
     
     // Execute test
-    Route route = new Route("ABC", message);
-    classUnderTest.handle(route, adaptorCb);
+    classUnderTest.handle(message, adaptorCb);
 
     // Verify
     verify();

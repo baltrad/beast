@@ -42,11 +42,6 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
   private WebServer server = null;
   
   /**
-   * The singleton instance
-   */
-//  private static BaltradXmlRpcServer _instance = null;
-  
-  /**
    * This beans name, after spring has initialized it, it must be called
    * rpcserver.
    */
@@ -132,20 +127,6 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
     }   
     return path;
   }
-  
-  /**
-   * Returns the singleton instance of this server. There should only be
-   * one.
-   * @param path the uri context path
-   * @return the server
-   */
-//  public static synchronized BaltradXmlRpcServer getInstance(String path) {
-//    if (_instance == null) {
-//       ApplicationContext context = new FileSystemXmlApplicationContext(path);
-//       _instance = (BaltradXmlRpcServer)context.getBean("rpcserver");
-//    }
-//    return _instance;
-//  }
   
   /**
    * Main function for starting the server

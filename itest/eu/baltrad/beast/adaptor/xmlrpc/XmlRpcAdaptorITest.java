@@ -25,7 +25,6 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
-import eu.baltrad.beast.router.Route;
 
 /**
  * Attempts to test that the xml-rpc client server communication works.
@@ -82,8 +81,8 @@ public class XmlRpcAdaptorITest extends TestCase {
     
     BltCommandMessage msg = new BltCommandMessage();
     msg.setCommand("ls -l");
-    Route route = new Route("A", msg);
-    adaptor.handle(route);
+
+    adaptor.handle(msg);
 
     String method = server.waitForRequest(2000);
     assertEquals("execute", method);
@@ -106,8 +105,8 @@ public class XmlRpcAdaptorITest extends TestCase {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setCode("E0001");
     msg.setMessage("Alert message");
-    Route route = new Route("A", msg);
-    adaptor.handle(route);
+
+    adaptor.handle(msg);
     
     String method = server.waitForRequest(2000);
     assertEquals("alert", method);
@@ -132,8 +131,8 @@ public class XmlRpcAdaptorITest extends TestCase {
     msg.setAlgorithm("com.test.something.Algorithm");
     msg.setFiles(new String[]{"/file/1.h5", "/file/2.h5"});
     msg.setArguments(new String[]{"-k", "10"});
-    Route route = new Route("A", msg);
-    adaptor.handle(route);
+
+    adaptor.handle(msg);
     
     String method = server.waitForRequest(2000);
     assertEquals("generate", method);
@@ -169,8 +168,8 @@ public class XmlRpcAdaptorITest extends TestCase {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setCode("E0001");
     msg.setMessage("Alert message");
-    Route route = new Route("A", msg);
-    adaptor.handle(route);
+
+    adaptor.handle(msg);
     
     String method = server.waitForRequest(3000);
     assertEquals("alert", method);
@@ -190,8 +189,8 @@ public class XmlRpcAdaptorITest extends TestCase {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setCode("E0001");
     msg.setMessage("Alert message");
-    Route route = new Route("A", msg);
-    adaptor.handle(route);
+
+    adaptor.handle(msg);
     
     assertEquals(true, cb.isError());
     assertSame(msg, cb.getMessage());

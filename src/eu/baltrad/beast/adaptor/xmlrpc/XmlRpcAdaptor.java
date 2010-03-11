@@ -29,7 +29,6 @@ import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.beast.router.Route;
 
 /**
  * The XMLRPC adaptor
@@ -160,19 +159,13 @@ public class XmlRpcAdaptor implements IAdaptor {
   }
   
   /**
-   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route)
+   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.message.IBltMessage)
    */
-  public void handle(Route route) {
-    handle(route, this.callback);
-  }
+  @Override
+  public void handle(IBltMessage msg) {
+    handle(msg, this.callback);
+  }  
   
-  /**
-   * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.router.Route, eu.baltrad.beast.adaptor.IAdaptorCallback)
-   */
-  public void handle(Route route, IAdaptorCallback cb) {
-    handle(route.getMessage(), cb);
-  }
-
   /**
    * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.message.IBltMessage, eu.baltrad.beast.adaptor.IAdaptorCallback)
    */

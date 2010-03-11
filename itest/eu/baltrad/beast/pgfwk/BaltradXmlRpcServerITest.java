@@ -20,6 +20,8 @@ package eu.baltrad.beast.pgfwk;
 
 import java.io.File;
 
+import junit.framework.TestCase;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -28,9 +30,6 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
-import eu.baltrad.beast.router.Route;
-
-import junit.framework.TestCase;
 
 /**
  * Runs some basic integration tests towards the xmlrpc server
@@ -78,10 +77,9 @@ public class BaltradXmlRpcServerITest extends TestCase {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setCode("E1212");
     msg.setMessage("this message");
-    Route r = new Route("A", msg);
     
     cb.reset();
-    adaptor.handle(r);
+    adaptor.handle(msg);
     IBltMessage result = cb.waitForResponse(5000);
     assertSame(msg, result);
     assertEquals(0, cb.getResult());
@@ -94,9 +92,9 @@ public class BaltradXmlRpcServerITest extends TestCase {
 
     BltCommandMessage msg = new BltCommandMessage();
     msg.setCommand("ls -la");
-    Route r = new Route("A", msg);
+
     cb.reset();
-    adaptor.handle(r);
+    adaptor.handle(msg);
     IBltMessage result = cb.waitForResponse(5000);
     assertSame(msg, result);
     Object[] resp = (Object[])cb.getResult();
@@ -112,11 +110,10 @@ public class BaltradXmlRpcServerITest extends TestCase {
 
     BltCommandMessage msg = new BltCommandMessage();
     msg.setCommand("ls -la 1>&2");
-    Route r = new Route("A", msg);
     cb.reset();
     
     // Execute
-    adaptor.handle(r);
+    adaptor.handle(msg);
     IBltMessage result = cb.waitForResponse(5000);
     
     // Verify
@@ -137,11 +134,10 @@ public class BaltradXmlRpcServerITest extends TestCase {
     msg.setFiles(new String[]{"file:/x/y/z.h5", "file:/somewhere/x.h5"});
     msg.setArguments(new String[]{"a", "b"});
 
-    Route r = new Route("A", msg);
     cb.reset();
     
     // execute
-    adaptor.handle(r);
+    adaptor.handle(msg);
     
     // verify
     IBltMessage result = cb.waitForResponse(5000);
@@ -170,11 +166,10 @@ public class BaltradXmlRpcServerITest extends TestCase {
     msg.setFiles(new String[]{"file:/x/y/z.h5", "file:/somewhere/x.h5"});
     msg.setArguments(new String[]{"a", "b"});
 
-    Route r = new Route("A", msg);
     cb.reset();
     
     // execute
-    adaptor.handle(r);
+    adaptor.handle(msg);
     
     // verify
     IBltMessage result = cb.waitForResponse(5000);
@@ -193,11 +188,10 @@ public class BaltradXmlRpcServerITest extends TestCase {
     msg.setFiles(new String[]{"file:/x/y/z.h5", "file:/somewhere/x.h5"});
     msg.setArguments(new String[]{"a", "b"});
 
-    Route r = new Route("A", msg);
     cb.reset();
     
     // execute
-    adaptor.handle(r);
+    adaptor.handle(msg);
     
     // verify
     IBltMessage result = cb.waitForResponse(5000);
