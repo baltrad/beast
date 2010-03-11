@@ -82,6 +82,14 @@ public class XmlRpcAdaptor implements IAdaptor {
   }
   
   /**
+   * Returns the command generator
+   * @return the command generator
+   */
+  public IXmlRpcCommandGenerator getGenerator() {
+    return this.generator;
+  }
+  
+  /**
    * Sets the xml rpc client to use. Used for testing.
    * @param client
    */

@@ -26,67 +26,60 @@ import eu.baltrad.beast.pgfwk.IGeneratorPlugin;
  */
 public class TimingGeneratorPlugin implements IGeneratorPlugin {
   /**
-   * The time when the last call to begin() was performed
-   */
-  private long begintime = 0;
-  
-  /**
-   * The time when the last call to end() was performed
-   */
-  private long endtime = 0;
-  
-  /**
    * The sum of all begin-end sequences;
    */
   private long totaltime = 0;
   
   /**
-   * The number of times begin has been folloed by end
+   * The number of times totaltime has been increased
    */
-  private long nrbeginend = 0;
+  private long nrtimes = 0;
   
   /**
    * @see eu.baltrad.beast.pgfwk.IGeneratorPlugin#generate(java.lang.String, java.lang.String[], java.lang.Object[])
    */
   @Override
-  public void generate(String algorithm, String[] files, Object[] arguments) {
-    // TODO Auto-generated method stub
-    
-  }
-  
-  /**
-   * Resets the time counter
-   */
-  public void begin() {
-    begintime = System.currentTimeMillis();
+  public synchronized void generate(String algorithm, String[] files, Object[] arguments) {
+    Long btime = Long.parseLong((String)arguments[0]);
+    long difftime = System.currentTimeMillis() - btime;
+    totaltime += difftime;
+    nrtimes++;
+    notify();
   }
 
   /**
-   * Stops the time counter
+   * Waits the specified timeout period for the generate call to be called
+   * nrtimes or until the timeout occur
+   * @param nrtimes the nr of times the function should be called
+   * @param timeout the timeout in ms
+   * @return the nr of times
    */
-  public void end() {
-    endtime = System.currentTimeMillis();
-    totaltime += (endtime - begintime);
-    nrbeginend++;
-  }
-
-  /**
-   * Returns the number of times begin has been followed by end
-   * @return
-   */
-  public long getNrTimes() {
-    return nrbeginend;
-  }
-  
-  /**
-   * Returns the average time consumption
-   * @return the average time consumption
-   */
-  public long getAverageTime() {
-    if (nrbeginend > 0) {
-      return (long)totaltime/nrbeginend;
-    } else {
-      return 0;
+  public synchronized long waitForResponse(long nrtimes, long timeout) {
+    long currtime = System.currentTimeMillis();
+    long endtime = currtime + timeout;
+    while (this.nrtimes != nrtimes && (currtime < endtime)) {
+      try {
+        wait(endtime - currtime);
+      } catch (Throwable t) {
+      }
+      currtime = System.currentTimeMillis();
     }
+    return this.nrtimes;
+  }
+  
+  /**
+   * Resets the settings
+   */
+  public synchronized void reset() {
+    totaltime = 0;
+    nrtimes = 0;
+    notify();
+  }
+  
+  /**
+   * @return the total time
+   */
+  public long getTotaltime() {
+    return this.totaltime;
   }
 }

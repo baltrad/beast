@@ -21,6 +21,7 @@ package eu.baltrad.beast.pgfwk;
 import java.io.File;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor;
 import eu.baltrad.beast.message.IBltMessage;
@@ -59,7 +60,8 @@ public class BaltradXmlRpcServerITest extends TestCase {
     String cln = getClassName(this.getClass());
     String cname = cln + "-context.xml";
     File f = new File(this.getClass().getResource(cname).getFile());
-    classUnderTest = BaltradXmlRpcServer.getInstance("file:"+f.getAbsolutePath());
+    ApplicationContext context = new FileSystemXmlApplicationContext("file:"+f.getAbsolutePath());
+    classUnderTest = (BaltradXmlRpcServer)context.getBean("rpcserver");
     classUnderTest.start();
   }
   

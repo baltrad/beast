@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -43,7 +44,7 @@ import eu.baltrad.beast.rules.RuleException;
  * The Baltrad router that determines all routes.
  * @author Anders Henja
  */
-public class BltRouter implements IRouter, IRouterManager {
+public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   /**
    * The JDBC template managing the database connectivity.
    */
@@ -58,6 +59,13 @@ public class BltRouter implements IRouter, IRouterManager {
    * The rule factory. 
    */
   private IRuleFactory factory = null;
+  
+  /**
+   * Constructor
+   */
+  public BltRouter() {
+    definitions = new ArrayList<RouteDefinition>();
+  };
   
   /**
    * Sets the data source that should be used by the SimpleJdbcTemplate instance
@@ -195,10 +203,6 @@ public class BltRouter implements IRouter, IRouterManager {
    * Spring framework will call this function after the bean has been created.
    */
   public synchronized void afterPropertiesSet() throws Exception {
-    if (definitions != null) {
-      return;
-    }
-
     ParameterizedRowMapper<RouteDefinition> mapper = new ParameterizedRowMapper<RouteDefinition>() {
       public RouteDefinition mapRow(ResultSet rs, int rowNum) throws SQLException {
         String name = rs.getString("name");

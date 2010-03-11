@@ -49,20 +49,16 @@
     <constructor-arg><ref bean="pgfwkhandler"/></constructor-arg>
   </bean>
   
-  <!-- setup a xmlrpc adaptor to make things easier when testing -->
+  <!-- setup the adaptor configuration to make things easier when testing -->
   <bean id="xmlrpcgenerator" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcCommandGenerator"/>
-  <bean id="xmlrpcadaptor" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor" autowire="byType">
-    <property name="name" value="PGFWK"/>
-    <property name="url" value="http://localhost:55555/xmlrpc"/>
-    <property name="timeout" value="10000"/>
-  </bean>
+  <bean id="xmlrpcadaptormanager" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcConfigurationManager" autowire="byType"/>
   
   <!-- Add the xml adaptor to the baltrad adaptor -->
   <bean id="adaptormanager" class="eu.baltrad.beast.adaptor.BltAdaptorManager" autowire="byType">
-    <property name="adaptors">
-      <map>
-        <entry key="XMLRPC" value-ref="xmlrpcadaptor"/>
-      </map>
+    <property name="typeRegistry">
+      <list>
+        <ref bean="xmlrpcadaptormanager"/>
+      </list>
     </property>
   </bean>
   

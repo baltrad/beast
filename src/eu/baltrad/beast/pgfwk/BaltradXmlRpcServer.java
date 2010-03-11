@@ -44,7 +44,7 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
   /**
    * The singleton instance
    */
-  private static BaltradXmlRpcServer _instance = null;
+//  private static BaltradXmlRpcServer _instance = null;
   
   /**
    * This beans name, after spring has initialized it, it must be called
@@ -139,13 +139,13 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
    * @param path the uri context path
    * @return the server
    */
-  public static synchronized BaltradXmlRpcServer getInstance(String path) {
-    if (_instance == null) {
-       ApplicationContext context = new FileSystemXmlApplicationContext(path);
-       _instance = (BaltradXmlRpcServer)context.getBean("rpcserver");
-    }
-    return _instance;
-  }
+//  public static synchronized BaltradXmlRpcServer getInstance(String path) {
+//    if (_instance == null) {
+//       ApplicationContext context = new FileSystemXmlApplicationContext(path);
+//       _instance = (BaltradXmlRpcServer)context.getBean("rpcserver");
+//    }
+//    return _instance;
+//  }
   
   /**
    * Main function for starting the server
@@ -154,6 +154,7 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
    */
   public static void main(String[] args) throws Exception {
     String path = getContextUriFromArguments(args);
-    getInstance(path).start();
+    ApplicationContext context = new FileSystemXmlApplicationContext(path);
+    ((BaltradXmlRpcServer)context.getBean("rpcserver")).start();
   }
 }

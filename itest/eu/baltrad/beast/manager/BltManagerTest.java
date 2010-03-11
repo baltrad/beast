@@ -26,15 +26,24 @@ import junit.framework.TestCase;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import eu.baltrad.beast.adaptor.IBltAdaptorManager;
+import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptorConfiguration;
+import eu.baltrad.beast.message.mo.BltAlertMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.pgfwk.BaltradXmlRpcServer;
+import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
-import eu.baltrad.beast.router.impl.BltRouter;
+import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.IRuleFactory;
 
 /**
+ * More of a overall system view test, performs all steps to verify
+ * that the use-cases work properly. I.e. registering of adaptors,
+ * adding of new router rules, message routing, etc etc..
  * @author Anders Henja
- *
  */
 public class BltManagerTest extends TestCase {
   /**
@@ -51,6 +60,11 @@ public class BltManagerTest extends TestCase {
    * The timing generator plugin
    */
   private TimingGeneratorPlugin generator = null;
+  
+  /**
+   * The rule factory
+   */
+  private IRuleFactory factory = null;
   
   /**
    * Extracts only the class name (no package included).
@@ -81,29 +95,41 @@ public class BltManagerTest extends TestCase {
   }
   
   public void setUp() throws Exception {
-    /*
+    initializeDatabase();
     String cln = getClassName(this.getClass());
     String cname = cln + "-context.xml";
     File f = new File(this.getClass().getResource(cname).getFile());
-    server = BaltradXmlRpcServer.getInstance("file:"+f.getAbsolutePath());
+    ApplicationContext context = new FileSystemXmlApplicationContext("file:"+f.getAbsolutePath());
+    server = (BaltradXmlRpcServer)context.getBean("rpcserver");
     server.start();
     classUnderTest = (BltMessageManager)server.getContext().getBean("manager");
-    generator = (TimingGeneratorPlugin)server.getContext().getBean("");
-    */
+    factory = (IRuleFactory)server.getContext().getBean("rulefactory");
+    generator = (TimingGeneratorPlugin)server.getContext().getBean("a.TimingGenerator");
   }
   
   public void tearDown() throws Exception {
-    /*
     server.shutdown();
     server = null;
     classUnderTest = null;
     generator = null;
-    */
+    factory = null;
   }
   
-  public void testManage() throws Exception {
-    /*
-    BltRouter router = (BltRouter)server.getContext().getBean("router");
+  public void testManage_forwardGenerateRule() throws Exception {
+    IBltAdaptorManager adaptorManager =
+      (IBltAdaptorManager)server.getContext().getBean("adaptormanager");
+    IRouterManager routerManager = (IRouterManager)server.getContext().getBean("router");
+
+    // Create adaptor configuration
+    XmlRpcAdaptorConfiguration config = 
+      (XmlRpcAdaptorConfiguration)adaptorManager.createConfiguration(XmlRpcAdaptorConfiguration.TYPE, "PGFWK");
+    config.setTimeout(5000);
+    config.setURL("http://localhost:55555/xmlrpc");
+    
+    // Register the adaptor in the database
+    adaptorManager.register(config);
+    
+    // Create routing rule
     RouteDefinition def = new RouteDefinition();
     List<String> recipients = new ArrayList<String>();
     recipients.add("PGFWK");
@@ -111,8 +137,107 @@ public class BltManagerTest extends TestCase {
     def.setAuthor("anders");
     def.setDescription("test");
     def.setRecipients(recipients);
-    router.storeDefinition(def);
-    */
+    // Scripted groovy rule
+    IRule rule = factory.create("groovy", getForwardingRule());
+    def.setRule(rule);
+    
+    // Register the routing rule in the database
+    routerManager.storeDefinition(def);
+    
+    generator.reset();
+    
+    for (int i = 0; i < 20; i++) {
+      BltGenerateMessage message = new BltGenerateMessage();
+      message.setAlgorithm("a.TimingGenerator");
+      message.setArguments(new String[]{""+System.currentTimeMillis()});
+      classUnderTest.manage(message);
+    }
+    
+    long nrtimes = generator.waitForResponse(20, 5000);
+    assertEquals(20, nrtimes);
+    System.out.println("Avg time: " + (generator.getTotaltime()/nrtimes));
+    assertTrue(20 > (generator.getTotaltime()/nrtimes));
+  }
+
+  public void testManage_alertToGenerateRule() throws Exception {
+    IBltAdaptorManager adaptorManager =
+      (IBltAdaptorManager)server.getContext().getBean("adaptormanager");
+    IRouterManager routerManager = (IRouterManager)server.getContext().getBean("router");
+
+    // Create adaptor configuration
+    XmlRpcAdaptorConfiguration config = 
+      (XmlRpcAdaptorConfiguration)adaptorManager.createConfiguration(XmlRpcAdaptorConfiguration.TYPE, "PGFWK");
+    config.setTimeout(5000);
+    config.setURL("http://localhost:55555/xmlrpc");
+    
+    // Register the adaptor in the database
+    adaptorManager.register(config);
+    
+    // Create routing rule
+    RouteDefinition def = new RouteDefinition();
+    List<String> recipients = new ArrayList<String>();
+    recipients.add("PGFWK");
+    def.setName("bltmanagertestroute");
+    def.setAuthor("anders");
+    def.setDescription("test");
+    def.setRecipients(recipients);
+    // Scripted groovy rule
+    IRule rule = factory.create("groovy", getAlertToGenerateRule());
+    def.setRule(rule);
+    
+    // Register the routing rule in the database
+    routerManager.storeDefinition(def);
+    
+    generator.reset();
+    
+    for (int i = 0; i < 20; i++) {
+      BltAlertMessage message = new BltAlertMessage();
+      message.setCode("E0001");
+      message.setMessage(""+System.currentTimeMillis());
+      classUnderTest.manage(message);
+    }
+    
+    long nrtimes = generator.waitForResponse(20, 5000);
+    assertEquals(20, nrtimes);
+    System.out.println("Avg time: " + (generator.getTotaltime()/nrtimes));
+    assertTrue(25 > (generator.getTotaltime()/nrtimes));
+  }
+  
+  
+  protected String getForwardingRule() {
+    StringBuffer buf = new StringBuffer();
+    buf.append("import eu.baltrad.beast.rules.IScriptableRule;\n");
+    buf.append("import eu.baltrad.beast.message.IBltMessage;\n");
+    buf.append("import eu.baltrad.beast.message.mo.BltGenerateMessage;\n");
+    buf.append("public class ForwardingRule implements IScriptableRule {\n");
+    buf.append("  public IBltMessage handle(IBltMessage message) {\n");
+    buf.append("    if (message.getClass() == BltGenerateMessage.class) {\n");
+    buf.append("      return message;\n");
+    buf.append("    }\n");
+    buf.append("  }\n");
+    buf.append("}\n");
+    return buf.toString();
+  }
+
+  protected String getAlertToGenerateRule() {
+    StringBuffer buf = new StringBuffer();
+    buf.append("import eu.baltrad.beast.rules.IScriptableRule;\n");
+    buf.append("import eu.baltrad.beast.message.IBltMessage;\n");
+    buf.append("import eu.baltrad.beast.message.mo.BltGenerateMessage;\n");
+    buf.append("import eu.baltrad.beast.message.mo.BltAlertMessage;\n");
+    buf.append("public class ForwardingRule implements IScriptableRule {\n");
+    buf.append("  public IBltMessage handle(IBltMessage message) {\n");
+    buf.append("    BltGenerateMessage result = null;\n");
+    buf.append("    if (message.getClass() == BltAlertMessage.class) {\n");
+    buf.append("      String xtime = ((BltAlertMessage)message).getMessage();\n");
+    buf.append("      result = new BltGenerateMessage();\n");
+    buf.append("      result.setAlgorithm(\"a.TimingGenerator\");\n");
+    buf.append("      result.setArguments([xtime] as String[]);\n");
+    buf.append("    }\n");
+    buf.append("    return result;\n");
+    buf.append("  }\n");
+    buf.append("}\n");
+    return buf.toString();
   }
   
 }

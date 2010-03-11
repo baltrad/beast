@@ -28,6 +28,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorConfiguration;
+import eu.baltrad.beast.message.IBltMessage;
 import junit.framework.TestCase;
 
 /**
@@ -52,8 +53,13 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
     SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
     
+    IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
+      public XmlRpcCommand generate(IBltMessage message) {return null;}
+    };
+    
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setGenerator(generator);
     
     XmlRpcAdaptorConfiguration conf = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("ABC");
     conf.setURL("http://somepath/somewhere");
@@ -76,6 +82,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     assertEquals("ABC", ((XmlRpcAdaptor)result).getName());
     assertEquals("http://somepath/somewhere", ((XmlRpcAdaptor)result).getUrl());
     assertEquals(6000, ((XmlRpcAdaptor)result).getTimeout());
+    assertSame(generator, ((XmlRpcAdaptor)result).getGenerator());
   }
   
   public void testStore_cannotStore() throws Exception {

@@ -35,7 +35,15 @@ import eu.baltrad.beast.adaptor.IAdaptorConfigurationManager;
  * @author Anders Henja
  */
 public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager {
+  /**
+   * The jdbc template
+   */
   private SimpleJdbcOperations template = null;
+  
+  /**
+   * The xmlrpc command generator, will be set in all created adaptors
+   */
+  private IXmlRpcCommandGenerator generator = null;
   
   /**
    * Default constructor
@@ -57,6 +65,14 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
    */
   void setJdbcTemplate(SimpleJdbcOperations template) {
     this.template = template;
+  }
+  
+  /**
+   * The command generator to be added to the adaptors;
+   * @param generator
+   */
+  public void setGenerator(IXmlRpcCommandGenerator generator) {
+    this.generator = generator;
   }
   
   /**
@@ -91,6 +107,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
       result.setName(name);
       result.setUrl(url);
       result.setTimeout(timeout);
+      result.setGenerator(this.generator);
     } catch (Throwable t) {
       throw new AdaptorException("Could not store XMLRPC adaptor: " + name, t);
     }
