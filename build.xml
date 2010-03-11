@@ -174,7 +174,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	     url="${db.url}"
 	     userid="${db.user}" 
 	     password="${db.pwd}">
-	  <transaction src="${etc.dir}/create_testdb.sql"/>
+	  <transaction src="${etc.dir}/create_db.sql"/>
 	</sql>
   </target>
 
