@@ -16,6 +16,8 @@ GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see http://www.gnu.org/licenses.
+/opt/testbuilds/baltrad-db/baltrad/db-devel
+
 -->
 <project name="beast" default="build" basedir=".">
   <property file="build.properties" />
@@ -37,6 +39,26 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="compile.optimize" value="true" />
 
   <property file="${etc.dir}/testdb.properties" />
+  <property file="develop.properties" />
+
+  <!-- override this with -Dbaltraddb.path= -->
+  <property name="baltraddb.path" value="/opt/baltrad/db-devel"/>
+  <available file="${baltraddb.path}" type="dir" property="baltraddb.available"/>
+  <fail unless="baltraddb.available" message="Can not build the beast library without baltrad-db!" />
+
+  <available file="${baltraddb.path}/java/jbrfc.jar" property="jbrfc.jar.available"/>
+  <available file="${baltraddb.path}/lib/libbrfc_java.so" property="libjbrfc_java.so.available"/>
+  <available file="${baltraddb.path}/lib/libbrfc.so" property="libbrfc.so.available"/>
+  <available file="${baltraddb.path}/sql/postgresql/create.sql" property="create.sql.available"/>
+  <available file="${baltraddb.path}/sql/postgresql/drop.sql" property="drop.sql.available"/>
+
+  <fail unless="jbrfc.jar.available" message="Can not find baltrad-db / jbrfc.jar!" />
+  <fail unless="libjbrfc_java.so.available" message="Can not find baltrad-db / libjbrfc_java.so!" />
+  <fail unless="libbrfc.so.available" message="Can not find baltrad-db / libbrfc.so!" />
+  <fail unless="create.sql.available" message="Can not find baltrad-db / create.sql!" />
+  <fail unless="drop.sql.available" message="Can not find baltrad-db / drop.sql!" />
+
+  <fail unless="blt.db.path" message="No storage root path defined (blt.db.path)!"/>
 	
   <path id="lib.path">
     <fileset dir="${lib.dir}">
@@ -47,6 +69,9 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <exclude name="cobertura/*.jar"/>
       <exclude name="cglib/*.jar"/>
     </fileset>
+  	<fileset dir="${baltraddb.path}/java">
+  	  <include name="jbrfc.jar"/>
+  	</fileset>
   </path>
 
   <path id="test.lib.path">
@@ -158,6 +183,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
         <include name="**/*.xls"/>
         <include name="**/*.properties"/>
         <include name="**/*.groovy"/>
+      	<include name="**/*.h5"/>
       </fileset>
     </copy>
   </target>	
@@ -175,6 +201,22 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	     userid="${db.user}" 
 	     password="${db.pwd}">
 	  <transaction src="${etc.dir}/create_db.sql"/>
+	</sql>
+
+  	<!--Add the baltrad-db database sceheme as well -->
+	<sql classpath="${lib.dir}/${db.jar}"
+	     driver="${db.driver}"
+	     url="${db.url}"
+	     userid="${db.user}" 
+	     password="${db.pwd}">
+	  <transaction src="${baltraddb.path}/sql/postgresql/drop.sql"/>
+	</sql>
+	<sql classpath="${lib.dir}/${db.jar}"
+	     driver="${db.driver}"
+	     url="${db.url}"
+	     userid="${db.user}" 
+	     password="${db.pwd}">
+	  <transaction src="${baltraddb.path}/sql/postgresql/create.sql"/>
 	</sql>
   </target>
 
@@ -223,7 +265,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="unittest.coverage" depends="instrument.coverage">
     <mkdir dir="${dist.dir}/coverage-reports" />
     <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
-      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+      <jvmarg line="-d64 -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
       <sysproperty key="net.sourceforge.cobertura.datafile"  file="${build.coverage.dir}/cobertura.ser" /> <!-- For instrumentation -->
       <formatter type="xml"/> 
       <classpath location="${build.instrument.dir}" /> <!-- For instrumentation -->
@@ -250,7 +292,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     <mkdir dir="${dist.dir}/junit-reports" />
     <mkdir dir="${dist.dir}/coverage-reports" />
     <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
-      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+      <jvmarg line="-d64 -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
       <sysproperty key="net.sourceforge.cobertura.datafile"  file="${build.coverage.dir}/cobertura.ser" /> <!-- For instrumentation -->
       <formatter type="xml"/> 
       <classpath location="${build.instrument.dir}" /> <!-- For instrumentation -->
@@ -265,7 +307,6 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
         <fileset dir="${build.itest.dir}" includes="**/*Test.class"/>
       </batchtest>
     </junit>
-			
     <cobertura-report format="xml" destdir="${dist.dir}/coverage-reports" datafile="${build.coverage.dir}/cobertura.ser">
       <fileset dir="${source.dir}">
         <include name="**/*.java" />
@@ -300,6 +341,10 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
         <include name="**/*.types"/>
       </fileset>
     </copy>
+  	<mkdir dir="${blt.db.path}" />
+  	<delete>
+  	  <fileset dir="${blt.db.path}" includes="**/*.h5"/> 
+  	</delete>
   </target>
 </project>
 

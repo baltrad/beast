@@ -46,12 +46,47 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 public class BeastDBTestHelper {
   private DataSource source = null;
   private IDataTypeFactory factory = null;
+  private String baltradDbUri = null;
+  private String baltradDbPth = null;
   
   /**
    * Default constructor
    */
   public BeastDBTestHelper() {
   }
+  
+  /**
+   * Sets the baltrad db uri
+   * @param uri the uri
+   */
+  public void setBaltradDbUri(String uri) {
+    this.baltradDbUri = uri;
+  }
+  
+  /**
+   * Returns the baltrad db uri
+   * @return the baltrad db uri
+   */
+  public String getBaltradDbUri() {
+    return this.baltradDbUri;
+  }
+
+  /**
+   * Sets the baltrad db path
+   * @param pth the pth
+   */
+  public void setBaltradDbPth(String pth) {
+    this.baltradDbPth = pth;
+  }
+  
+  /**
+   * Returns the baltrad db pth
+   * @return the baltrad db pth
+   */
+  public String getBaltradDbPth() {
+    return this.baltradDbPth;
+  }
+  
   
   /**
    * Setter for setting a data type factory used by dbunit
