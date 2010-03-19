@@ -37,6 +37,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="etc.dir" value="${basedir}/etc" />
   <property name="compile.debug" value="true" />
   <property name="compile.optimize" value="true" />
+  <property name="compile.includeAntRuntime" value="no" />
 
   <property name="prefix" value="/opt/baltrad" />
 
@@ -151,10 +152,11 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     <mkdir dir="${build.classes.dir}"/>
     <javac srcdir="${source.dir}"
            encoding="8859_1"
-    	   deprecation="on"
-  	   debug="${compile.debug}"
-  	   optimize="${compile.optimize}"
-  	   destdir="${build.classes.dir}">
+           deprecation="on"
+           debug="${compile.debug}"
+           includeAntRuntime="${compile.includeAntRuntime}"
+           optimize="${compile.optimize}"
+           destdir="${build.classes.dir}">
       <classpath refid="lib.path"/>
     </javac>
   </target>
@@ -166,6 +168,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
            encoding="8859_1"
            deprecation="on"
            debug="${compile.debug}"
+           includeAntRuntime="${compile.includeAntRuntime}"    	
            optimize="${compile.optimize}"
            destdir="${build.test.dir}">
     	<classpath location="${build.classes.dir}"/>
@@ -209,6 +212,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
            encoding="8859_1"
            deprecation="on"
            debug="${compile.debug}"
+           includeAntRuntime="${compile.includeAntRuntime}"    	
            optimize="${compile.optimize}"
            destdir="${build.itest.dir}">
       <classpath location="${build.classes.dir}"/>
