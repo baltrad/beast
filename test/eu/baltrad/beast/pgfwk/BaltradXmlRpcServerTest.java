@@ -24,25 +24,23 @@ import junit.framework.TestCase;
  * @author Anders Henja
  */
 public class BaltradXmlRpcServerTest extends TestCase {
-  public void testGetContextUriFromArguments_noArg() throws Exception {
-    String result = BaltradXmlRpcServer.getContextUriFromArguments(new String[0]);
-    assertEquals("classpath:*xmlrpcserver-context.xml", result);
-  }
-
-  public void testGetContextUriFromArguments_oneArg() throws Exception {
-    String[] args = new String[]{"file:/x/y/z"};
-    String result = BaltradXmlRpcServer.getContextUriFromArguments(args);
-    assertEquals("file:/x/y/z", result);
-  }
-
-  public void testGetContextUriFromArguments_twoArg() throws Exception {
-    String[] args = new String[]{"file:/x/y/z", "abc"};
+  public void testCreateServerFromArguments_illegalArgument() {
     try {
-      BaltradXmlRpcServer.getContextUriFromArguments(args);
+      String args[] = new String[]{"--notsupported=xyz", "--port=1234"};
+      BaltradXmlRpcServer.createServerFromArguments(args);
       fail("Expected IllegalArgumentException");
     } catch (IllegalArgumentException e) {
       // pass
     }
   }
   
+  public void testCreateServerFromArguments_badPort() {
+    try {
+      String args[] = new String[]{"--port=10"};
+      BaltradXmlRpcServer.createServerFromArguments(args);
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      // pass
+    }
+  }
 }

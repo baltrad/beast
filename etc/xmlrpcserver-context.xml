@@ -27,10 +27,4 @@
       </map>
     </property>
   </bean>
-  
-  <!-- the rpcserver -->
-  <bean id="rpcserver" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcServer">
-    <constructor-arg><value>56565</value></constructor-arg>
-    <constructor-arg><ref bean="pgfwkhandler"/></constructor-arg>
-  </bean>
 </beans>

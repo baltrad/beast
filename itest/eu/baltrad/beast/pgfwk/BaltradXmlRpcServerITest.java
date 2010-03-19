@@ -23,7 +23,6 @@ import java.io.File;
 import junit.framework.TestCase;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor;
 import eu.baltrad.beast.message.IBltMessage;
@@ -39,6 +38,7 @@ import eu.baltrad.beast.message.mo.BltGenerateMessage;
  */
 public class BaltradXmlRpcServerITest extends TestCase {
   private BaltradXmlRpcServer classUnderTest = null;
+  private Integer serverPort=55555;
   
   /**
    * Extracts only the class name (no package included).
@@ -59,8 +59,11 @@ public class BaltradXmlRpcServerITest extends TestCase {
     String cln = getClassName(this.getClass());
     String cname = cln + "-context.xml";
     File f = new File(this.getClass().getResource(cname).getFile());
-    ApplicationContext context = new FileSystemXmlApplicationContext("file:"+f.getAbsolutePath());
-    classUnderTest = (BaltradXmlRpcServer)context.getBean("rpcserver");
+    String[] args = new String[]{
+        "--port="+serverPort,
+        "--context=file:"+f.getAbsolutePath()
+    };
+    classUnderTest = BaltradXmlRpcServer.createServerFromArguments(args);
     classUnderTest.start();
   }
   

@@ -38,6 +38,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="compile.debug" value="true" />
   <property name="compile.optimize" value="true" />
 
+  <property name="prefix" value="/opt/baltrad" />
+
   <property file="${etc.dir}/testdb.properties" />
   <property file="develop.properties" />
 
@@ -93,15 +95,53 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	
   <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 
-  <!-- Generates the deliverable -->
+  <!-- Generates the deliverables -->
   <target name="build" depends="clean,compile">
     <mkdir dir="${dist.dir}" />
     <jar jarfile="${dist.dir}/${app.name}-${app.version}.jar"
-         basedir="${build.classes.dir}"/>
+         basedir="${build.classes.dir}">
+    </jar>
   </target>
-	
+
   <!-- same as running build and execute.test -->
   <target name="distribution" depends="build, execute.test" />
+
+  <target name="install" depends="distribution">
+  	<mkdir dir="${prefix}/beast" />
+  	<mkdir dir="${prefix}/beast/sql" />
+  	<mkdir dir="${prefix}/beast/bin" />
+  	<mkdir dir="${prefix}/beast/etc" />
+  	<mkdir dir="${prefix}/beast/libs" />
+  	<mkdir dir="${prefix}/beast/plugins" />
+  	<copy todir="${prefix}/beast/sql">
+  	  <fileset dir="${etc.dir}">
+  	  	<include name="drop_db.sql" />
+  	  	<include name="create_db.sql" />
+  	  </fileset>
+  	</copy>
+  	<copy todir="${prefix}/beast/libs" flatten="true">
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar"/>
+        <exclude name="ant/*.jar" />
+        <exclude name="junit/*.jar"/>
+        <exclude name="easymock/*.jar"/>
+        <exclude name="cobertura/*.jar"/>
+        <exclude name="cglib/*.jar"/>
+      	<exclude name="poi/*.jar"/>
+      	<exclude name="dbunit/*.jar"/>
+      	<exclude name="spring/spring-test.jar"/>
+      </fileset>
+  	</copy>
+  	<copy todir="${prefix}/beast/etc">
+      <fileset dir="${etc.dir}">
+        <include name="xmlrpcserver-context.xml" />
+      	<include name="log4j.properties" />
+      </fileset>
+  	</copy>
+  	<copy file="${dist.dir}/${app.name}-${app.version}.jar" todir="${prefix}/beast/bin" />
+  	<copy file="${etc.dir}/xmlrpcserver" todir="${prefix}/beast/bin" />
+    <chmod file="${prefix}/beast/bin/xmlrpcserver" perm="755"/>
+  </target>
 
   <!-- This is the overall build script that can be used to get a full build & test sequence --> 
   <target name="hudson" depends="build,test.coverage" />
@@ -200,6 +240,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	     url="${db.url}"
 	     userid="${db.user}" 
 	     password="${db.pwd}">
+	  <transaction src="${etc.dir}/drop_db.sql"/>
 	  <transaction src="${etc.dir}/create_db.sql"/>
 	</sql>
 
@@ -210,13 +251,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	     userid="${db.user}" 
 	     password="${db.pwd}">
 	  <transaction src="${baltraddb.path}/sql/postgresql/drop.sql"/>
-	</sql>
-	<sql classpath="${lib.dir}/${db.jar}"
-	     driver="${db.driver}"
-	     url="${db.url}"
-	     userid="${db.user}" 
-	     password="${db.pwd}">
-	  <transaction src="${baltraddb.path}/sql/postgresql/create.sql"/>
+      <transaction src="${baltraddb.path}/sql/postgresql/create.sql"/>
 	</sql>
   </target>
 

@@ -17,53 +17,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ###################################################################################
 
-The beast library (acronym undefined) is not intended to be used stand alone. It's 
-main purpose is to provide the users a generic interface for passing on messages to 
-various receivers determined by router rules. Since this library has been
-developed with the main purpose to support the BALTRAD exchange program, the default
-components delivered are defined for that specific purpose.
+Installation is quite straight forward, it is deploying everything into a
+directory called <prefix>/beast where prefix is specified on command line to
+the ant script as -Bprefix=<somepath>, default prefix is /opt/baltrad.
 
-1) Database
-This library requires database access (postgresql), where it can define four tables 
-for keeping track on the routing information.
+The beast library depends on the baltrad-db apis so you will need to provide
+that path as well, this is done by specifying -Bbaltraddb.path=<path>,
+default baltraddb.path is /opt/baltrad/db-devel.
 
-The tables needed are defined in the script: etc/create_db.sql
+So, to install the beast library you will only have to do "ant install"
+unless you want to specify a different prefix and/or baltrad-db path.
 
-2) Message Manager
-The manager is preferably bundled as a spring-IOC container but you are of course
-free to wrap it manually if you want. The nessecary context.xml parts are.
-  
-<bean id="xmlrpcgenerator" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcCommandGenerator"/>
-<bean id="xmlrpcadaptormanager" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcConfigurationManager" autowire="byType"/>
-  
-<bean id="adaptormanager" class="eu.baltrad.beast.adaptor.BltAdaptorManager" autowire="byType">
-  <property name="typeRegistry">
-    <list>
-      <ref bean="xmlrpcadaptormanager"/>
-    </list>
-  </property>
-</bean>
-  
-<bean id="groovycreator" class="eu.baltrad.beast.rules.GroovyRuleCreator"/>
-<bean id="rulefactory" class="eu.baltrad.beast.rules.RuleFactory">
-  <property name="creators">
-    <list>
-      <ref bean="groovycreator"/>
-    </list>
-  </property>
-</bean>
-  
-<bean id="router" class="eu.baltrad.beast.router.impl.BltRouter" autowire="byType" />
-<bean id="manager" class="eu.baltrad.beast.manager.BltMessageManager" autowire="byType"/>
-  
-NOTE! Be certain that you get all injected dependencies in place before atempting to
-use the message routing.
-If you feel that you want to expand the scripting language support with more
-types, just add a new class implementing the IRuleCreator interface and add
-it to the list of creators in the rulefactory.
-
-3) XmlRpc server
-The library comes bundled with a xmlrpc server that can be run stand alone
-processing xmlrpc requests comming from the message manager.
-You can find the context.xml configuration file in etc/xmlrpcserver-context.xml.
 

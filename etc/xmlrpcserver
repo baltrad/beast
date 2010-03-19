@@ -1,0 +1,181 @@
+#!/bin/sh
+###########################################################################
+# Copyright (C) 2010 Swedish Meteorological and Hydrological Institute, SMHI,
+#
+# This file is part of baltrad-node.
+#
+# baltrad-node is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# baltrad-node is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with baltrad-node.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+#
+# The xmlrpc server that works as a product generation framework for the
+# baltrad project.
+#
+# @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
+# @date 2010-03-19
+###########################################################################
+
+SCRFILE=`python -c "import os;print os.path.abspath(\"$0\")"`
+SCRIPTDIR=`dirname "$SCRFILE"`
+
+INSTALLDIR=`dirname "$SCRIPTDIR"`
+LIBSDIR="$INSTALLDIR/libs"
+PLUGINDIR="$INSTALLDIR/plugins"
+
+# Need a java executable
+JAVABIN=$JAVA_HOME/bin/java
+
+# Default context file
+DEFAULT_CONTEXTURI="classpath:*xmlrpcserver-context.xml"
+CONTEXTURI=$DEFAULT_CONTEXTURI
+
+# The beast jar file containing the xmlrpc server
+BEASTJAR=`ls -1 "$SCRIPTDIR"/*.jar`
+
+# Log file
+DEFAULT_LOGFILE=~/xmlrpcserver.log
+LOGFILE=$DEFAULT_LOGFILE
+
+# Port
+DEFAULT_PORT=56565
+PORT=$DEFAULT_PORT
+
+# On console printouts
+DEFAULT_ONCONSOLE=no
+ONCONSOLE=$DEFAULT_ONCONSOLE
+
+# Command parameters
+DOSTART=no
+DOSTOP=no
+
+# Setup the classpath
+# Add etc folder
+CLP="$INSTALLDIR/etc"
+CLP="$CLP:$BEASTJAR"
+
+# Create classpath
+for fname in `find $LIBSDIR -name "*.jar"`; do
+  CLP="$CLP:$fname"
+done
+
+# Create classpath
+for fname in `find $PLUGINDIR -name "*.jar"`; do
+  CLP="$CLP:$fname"
+done
+
+print_usage() {
+  echo "xmlrpcserver [OPTIONS] start|stop|status"
+  echo ""
+  if [ "$1" = "brief" ]; then
+    return
+  fi
+  echo "This is the main program for starting the beast xmlrpc server"
+  echo "that manages the product generator plugins and other relevant"
+  echo "plugins (e.g. alerts, system commands, etc)."
+  echo "To add plugins, read documentation and see the xmlrpcaddplugin script."
+  echo ""
+  echo "start)   starts this server"
+  echo "stop)    stops this server"
+  echo "status)  shows if this server is running or not"
+  echo ""
+  echo "OPTIONS:"
+  echo "--context=<context uri>:"
+  echo "  Specifies a context uri to use."
+  echo "  [default: $DEFAULT_CONTEXTURI]"
+  echo "--logfile=<path>:"
+  echo "  Specifies where log messages should be written."
+  echo "  [default: $DEFAULT_LOGFILE]"
+  echo "--onconsole:"
+  echo "  If the log messages should be printed on the console instead"
+  echo "  of to the log file."
+  echo "  Note, this will disable nohup as well so do not expect app to be"
+  echo "  running if you close the console."
+  echo "  [default: $DEFAULT_ONCONSOLE]"
+  echo "--port=<portnumber>:"
+  echo "  Specifies what port the xmlrpc server should be listening on."
+  echo "  [default: $DEFAULT_PORT]"
+  echo "--help:"
+  echo "  shows this help text"
+}
+
+do_start() {
+  if [ "$ONCONSOLE" = "no" ]; then
+    nohup nice $JAVABIN -cp "$CLP" eu.baltrad.beast.pgfwk.BaltradXmlRpcServer --port=$PORT --context="$CONTEXTURI" > "$LOGFILE" 2>&1 &
+  else
+    $JAVABIN -cp "$CLP" eu.baltrad.beast.pgfwk.BaltradXmlRpcServer --port=$PORT --context="$CONTEXTURI"
+  fi
+}
+
+do_stop() {
+  PID=`ps -ef | grep eu.baltrad.beast.pgfwk.BaltradXmlRpcServer | grep -v grep | awk '{ print $2 }'`
+  if [ "$PID" != "" ]; then
+    # Just to be damn sure I do not atempt to kill the root process
+    if [ "$PID" != "0" -a "$PID" != "-1" ]; then
+      kill $PID
+    fi
+  fi
+}
+
+show_status() {
+  PID=`ps -ef | grep eu.baltrad.beast.pgfwk.BaltradXmlRpcServer | grep -v grep | awk '{ print $2 }'`
+  if [ "$PID" != "" ]; then
+    echo "xmlrpcserver is running"
+  else
+    echo "xmlrpcserver is stopped"
+  fi
+}
+
+#
+# And here starts the argument parsing and command handling
+#
+for arg in $*; do
+  case $arg in
+    start)
+      DOSTART=yes
+      ;;
+    stop)
+      DOSTOP=yes
+      ;;
+    status)
+      show_status
+      exit 0
+      ;;
+    --context=*)
+      CONTEXTFILE=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+    --logfile=*)
+      LOGFILE=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+    --port=*)
+      PORT=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+    --onconsole)
+      ONCONSOLE=yes
+      ;;
+    --help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      print_usage brief
+      exit 255
+      ;;
+  esac
+done
+
+if [ "$DOSTART" = "yes" ]; then
+  do_start
+elif [ "$DOSTOP" = "yes" ]; then
+  do_stop
+fi
+

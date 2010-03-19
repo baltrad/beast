@@ -43,12 +43,6 @@
     </property>
   </bean>
   
-  <!-- the rpcserver -->
-  <bean id="rpcserver" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcServer">
-    <constructor-arg><value>55555</value></constructor-arg>
-    <constructor-arg><ref bean="pgfwkhandler"/></constructor-arg>
-  </bean>
-  
   <!-- setup the adaptor configuration to make things easier when testing -->
   <bean id="xmlrpcgenerator" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcCommandGenerator"/>
   <bean id="xmlrpcadaptormanager" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcConfigurationManager" autowire="byType"/>

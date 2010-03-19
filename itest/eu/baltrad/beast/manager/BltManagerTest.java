@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
@@ -99,8 +98,12 @@ public class BltManagerTest extends TestCase {
     String cln = getClassName(this.getClass());
     String cname = cln + "-context.xml";
     File f = new File(this.getClass().getResource(cname).getFile());
-    ApplicationContext context = new FileSystemXmlApplicationContext("file:"+f.getAbsolutePath());
-    server = (BaltradXmlRpcServer)context.getBean("rpcserver");
+    
+    String[] args = new String[]{
+        "--port=55555",
+        "--context=file:"+f.getAbsolutePath()
+    };
+    server = BaltradXmlRpcServer.createServerFromArguments(args);
     server.start();
     classUnderTest = (BltMessageManager)server.getContext().getBean("manager");
     factory = (IRuleFactory)server.getContext().getBean("rulefactory");

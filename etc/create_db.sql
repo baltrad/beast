@@ -1,8 +1,3 @@
-drop table if exists router_dest;
-drop table if exists adaptors_xmlrpc;
-drop table if exists adaptors; 
-drop table if exists router_rules;
-
 create table adaptors (
   adaptor_id SERIAL PRIMARY KEY,
   name text not null unique,

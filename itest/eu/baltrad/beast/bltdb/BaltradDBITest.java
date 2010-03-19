@@ -19,8 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.bltdb;
 
 import java.io.FilenameFilter;
-import java.util.HashSet;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -29,10 +27,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.Query;
-import eu.baltrad.fc.ResultSet;
-import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.expr.ExpressionFactory;
 import eu.baltrad.fc.oh5.File;
 
 /**

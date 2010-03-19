@@ -22,12 +22,7 @@ import java.io.IOException;
 
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.WebServer;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
@@ -35,17 +30,11 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * correct plugin is called.
  * @author Anders Henja
  */
-public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, ApplicationContextAware {
+public class BaltradXmlRpcServer {
   /**
    * The web server 
    */
   private WebServer server = null;
-  
-  /**
-   * This beans name, after spring has initialized it, it must be called
-   * rpcserver.
-   */
-  private String beanName = null;
   
   /**
    * The application context defining this instances
@@ -55,9 +44,10 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
   /**
    * Default constructor
    */
-  protected BaltradXmlRpcServer(int port, XmlRpcHandlerMapping mapping) {
+  protected BaltradXmlRpcServer(int port, ApplicationContext context, XmlRpcHandlerMapping mapping) {
     server = new WebServer(port);
     server.getXmlRpcServer().setHandlerMapping(mapping);
+    this.context = context;
   }
   
   /**
@@ -75,35 +65,6 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
   }
 
   /**
-   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-   */
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    if (server == null || 
-        server.getXmlRpcServer().getHandlerMapping() == null ||
-        !this.beanName.equals("rpcserver")) {
-      throw new BeanInitializationException("Failed to initialize bean");
-    }
-  }
-
-  /**
-   * @see org.springframework.beans.factory.BeanNameAware#setBeanName(java.lang.String)
-   */
-  @Override
-  public void setBeanName(String name) {
-    this.beanName = name;
-  }
-
-  /**
-   * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-   */
-  @Override
-  public void setApplicationContext(ApplicationContext context)
-      throws BeansException {
-    this.context = context;
-  }
-  
-  /**
    * Returns the context defining this instance
    * @return the context
    */
@@ -112,20 +73,33 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
   }
   
   /**
-   * Verifies that the argumens sent to the main function are correct. I.e.
-   * either no context uri or one context uri.
-   * @param args the arguments
-   * @return a context uri
-   * @throws IllegalArgumentException if the provided arguments are not valid
+   * Creates a server instance from a list of arguments.
+   *   --port=<port> The port to use, must be > 1024 (mandatory)
+   *   --context=<contexturi> The context uri to use, default "classpath:*xmlrpcserver-context.xml"
+   * @param args See description
+   * @return a server instance on success
+   * @throws a Throwable
    */
-  public static String getContextUriFromArguments(String[] args) throws IllegalArgumentException {
-    String path = "classpath:*xmlrpcserver-context.xml";
-    if (args.length == 1) {
-      path = args[0];
-    } else if (args.length > 1) {
-      throw new IllegalArgumentException("Usage: " + BaltradXmlRpcServer.class.getName() + " [context-url]");
-    }   
-    return path;
+  public static BaltradXmlRpcServer createServerFromArguments(String[] args) {
+    String path="classpath:*xmlrpcserver-context.xml";
+    Integer port = 0;
+    for (String str : args) {
+      if (str.startsWith("--port=")) {
+        String portstr = str.substring("--port=".length());
+        port = Integer.parseInt(portstr);
+      } else if (str.startsWith("--context")) {
+        path = str.substring("--context=".length());
+      } else {
+        throw new IllegalArgumentException("Only allowed arguments are --port=<port> and --context=<context uri>");
+      }
+    }
+    if (port <= 1024) {
+      throw new IllegalArgumentException("Portnumber must be > 1024");
+    }
+    ApplicationContext context = new FileSystemXmlApplicationContext(path);
+    XmlRpcHandlerMapping mapping = (XmlRpcHandlerMapping)context.getBean("pgfwkhandler");
+    BaltradXmlRpcServer server = new BaltradXmlRpcServer(port, context, mapping);
+    return server;
   }
   
   /**
@@ -134,8 +108,6 @@ public class BaltradXmlRpcServer implements InitializingBean, BeanNameAware, App
    * @throws Exception
    */
   public static void main(String[] args) throws Exception {
-    String path = getContextUriFromArguments(args);
-    ApplicationContext context = new FileSystemXmlApplicationContext(path);
-    ((BaltradXmlRpcServer)context.getBean("rpcserver")).start();
+    createServerFromArguments(args).start();
   }
 }

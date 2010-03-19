@@ -69,13 +69,13 @@ public class XmlRpcAdaptorITest extends TestCase {
   };
   
   public void testHandleBltCommandMessage() throws Exception {
-    XmlRpcTestServer server = new XmlRpcTestServer(56565, new Integer(0));
+    XmlRpcTestServer server = new XmlRpcTestServer(55555, new Integer(0));
     server.start();
     
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setUrl("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:55555/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setCallback(cb);
     
@@ -92,13 +92,13 @@ public class XmlRpcAdaptorITest extends TestCase {
   }
   
   public void testHandleBltAlertMessage() throws Exception {
-    XmlRpcTestServer server = new XmlRpcTestServer(56565, new Integer(0));
+    XmlRpcTestServer server = new XmlRpcTestServer(55555, new Integer(0));
     server.start();
     
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setUrl("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:55555/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setCallback(cb);
     
@@ -117,13 +117,13 @@ public class XmlRpcAdaptorITest extends TestCase {
   }
 
   public void testHandleBltGenerateMessage() throws Exception {
-    XmlRpcTestServer server = new XmlRpcTestServer(56565, new Integer(0));
+    XmlRpcTestServer server = new XmlRpcTestServer(55555, new Integer(0));
     server.start();
     
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setUrl("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:55555/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setCallback(cb);
     
@@ -153,14 +153,14 @@ public class XmlRpcAdaptorITest extends TestCase {
   }
   
   public void testHandle_timeout() throws Exception {
-    XmlRpcTestServer server = new XmlRpcTestServer(56565, new Integer(0));
+    XmlRpcTestServer server = new XmlRpcTestServer(55555, new Integer(0));
     server.setResponseTimeout(2000);
     server.start();
     
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setUrl("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:55555/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setTimeout(1000);
     adaptor.setCallback(cb);
@@ -181,7 +181,7 @@ public class XmlRpcAdaptorITest extends TestCase {
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setUrl("http://localhost:56565/xmlrpc");
+    adaptor.setUrl("http://localhost:55555/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setTimeout(1000);
     adaptor.setCallback(cb);
