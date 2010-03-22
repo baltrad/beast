@@ -1,0 +1,107 @@
+/** \mainpage The Baltrad exchange and scheduling tools (BEAST)
+\date March, 22nd 2010
+\author Anders Henja
+\version x.x
+\par Copyright 
+&copy; 2010 by the Swedish Meteorological and Hydrological Institute (SMHI), Norrköping, Sweden
+
+\par Legals
+BEAST is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+\par
+BEAST is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+\par
+You should have received a copy of the GNU Lesser General Public License
+along with BEAST.  If not, see <http://www.gnu.org/licenses/>.
+By obtaining, using, and/or copying this software and/or its associated 
+documentation, you agree that you have read, understood, and will comply
+with the following terms and conditions:
+
+\section introduction "The beast library"
+The beast library provides the internal mechanisms for managing
+messages and data that are transfered by the Baltrad Data Exchange engine.
+In it's own, it does not do much except providing some mechanisms
+for determining what to do with certain messages as well as passing
+on the messages to different adaptors.
+
+Most functionality has been developed as building blocks that will allow
+the users to adapt the library into their own structure but the core
+functionality and the provided code has been built to support the baltrad
+dex and baltrad product generation framework.
+
+\section messagemanager "Message Manager"
+
+The basics for the beast library is that messages are passed around. Each
+message contains some sort of information. These messages are managed by
+routing rules which in turn will determine what to do with a message.
+If a routing rule determines that something should be done with the message
+it will either do something directly or indicate that one or more adaptors
+should manage the message or another type of message.
+
+So that we get up and running, first an example on how you do to send a 
+message through the library.
+
+
+// Create some message
+BltCommandMessage msg = new BltCommandMessage();
+msg.setCommand("ls -la");  
+
+// Call the Baltrad Message Manager
+manager.manage(msg);
+
+Ok, this probably looks quite easy and it is, but, how do you get hold of the manager?
+Well, since the beast library has been developed using the IOC container spring for
+wiring everything together you probably want to learn how to wire stuff up or you can
+just create a spring ApplicationContext. If you are using spring for wiring for example
+a servlet or anything else up, it will most likely be a walk in the park to get hold
+of the message manager.
+
+Anyhow, let's asume that you need to create the application context manually.
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import eu.baltrad.beast.manager.IBltMessageManager;
+
+...
+String path = "classpath:application-context.xml"
+ApplicationContext context = new FileSystemXmlApplicationContext(path)
+
+IBltMessageManager manager = (IBltMessageManager)context.getBean("bltmanager");
+
+The above code says that load a application context named application-context.xml that
+can be found on the classpath. Then fetch the bean manager that is refered to by the name
+bltmanager.
+
+Now, you have some code that is able to load an application context and then return
+a bean to you. We are almost done. What is nessecary now is to create your application-context.xml.
+The default bundled application context can be found in etc/default-application-context.xml, please
+take a look at it in order to get a feeling on how the system has been setup. You can also checkout
+the itest-directory since it contains various examples on how to wire the system depending on
+what you are after.
+
+\section xmlrpcserver "Xml Rpc Server"
+The beast library comes bundled with a xmlrpc server that is able to manage
+requests for system commands, alerts and product generation requests.
+
+The xmlrpc server is able to load plugins but these plugins needs to be added
+to the spring application context file that is used by the Xml Rpc Server. This
+file is placed in <prefix>/etc/xmlrpcserver-context.xml. Here you can add
+any product generator by adding a separate entry for each and every one.
+
+These plugins are added as a simple bean with a name corresponding to the algorithm
+name to use. For example, if you want to call a algorithm with the name "my.Algorithm", then
+the bean entry should look like:
+<bean id="my.Algorithm" class="x.y.z....SomeAlgorithm" />
+
+The code that contains the plugin, should be bundled in a .jar file that resides in the
+plugin directory (<prefix>/plugins). The bean should implement the interface
+eu.baltrad.beast.pgfwk.IGeneratorPlugin.
+
+*/

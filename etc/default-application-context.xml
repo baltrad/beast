@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- Property placeholder configurer for expanding ${} into values -->
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:db.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+    <property name="driverClassName" value="${db.driver}"/>
+    <property name="url" value="${db.url}"/>
+    <property name="username" value="${db.user}"/>
+    <property name="password" value="${db.pwd}"/>
+  </bean>
+
+  <!-- setup the adaptor configuration to make things easier when testing -->
+  <bean id="xmlrpcgenerator" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcCommandGenerator"/>
+  <bean id="xmlrpcadaptormanager" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcConfigurationManager" autowire="byType"/>
+  
+  <!-- Add the xml adaptor to the baltrad adaptor -->
+  <bean id="adaptormanager" class="eu.baltrad.beast.adaptor.BltAdaptorManager" autowire="byType">
+    <property name="typeRegistry">
+      <list>
+        <ref bean="xmlrpcadaptormanager"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="groovycreator" class="eu.baltrad.beast.rules.GroovyRuleCreator"/>
+  
+  <!-- Create the rule factory -->
+  <bean id="rulefactory" class="eu.baltrad.beast.rules.RuleFactory">
+    <property name="creators">
+      <list>
+        <ref bean="groovycreator"/>
+      </list>
+    </property>
+  </bean>
+  
+  
+  <!-- Create the router -->
+  <bean id="router" class="eu.baltrad.beast.router.impl.BltRouter" autowire="byType" />
+  
+  <!-- Add the baltrad adaptor manager to the baltrad manager -->
+  <bean id="bltmanager" class="eu.baltrad.beast.manager.BltMessageManager" autowire="byType"/>
+</beans>

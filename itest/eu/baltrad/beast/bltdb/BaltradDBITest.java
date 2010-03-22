@@ -27,6 +27,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.fc.Query;
+import eu.baltrad.fc.ResultSet;
+import eu.baltrad.fc.expr.Expression;
+import eu.baltrad.fc.expr.ExpressionFactory;
 import eu.baltrad.fc.oh5.File;
 
 /**
@@ -56,7 +60,7 @@ public class BaltradDBITest extends TestCase {
   
   public BaltradDBITest(String name) {
     super(name);
-    //System.out.println("LIBRARYPATH: " + System.getProperty("java.library.path"));
+    System.out.println("LIBRARYPATH: " + System.getProperty("java.library.path"));
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     baltradDbPath = helper.getBaltradDbPth();
@@ -151,14 +155,14 @@ public class BaltradDBITest extends TestCase {
 //    assertTrue(result.contains("sekkr"));
 //  }
 //  
-//  public void Xtest_find_sekir_or_selul() throws Exception {
+//  public void test_find_sekir_or_selul() throws Exception {
 //    Query q = catalogue.query();
 //    ExpressionFactory xpr = new ExpressionFactory();
 //    
 //    q.fetch(xpr.attribute("src_node"));
 //    Expression e1 = xpr.attribute("src_node").eq(xpr.string("sekir"));
 //    Expression e2 = xpr.attribute("src_node").eq(xpr.string("selul"));
-//    q.filter(xpr.and_(e1, e2));
+//    q.filter(xpr.or_(e1, e2));
 //    ResultSet rs = q.execute();
 //    assertEquals(2, rs.size());
 //    rs.next();
@@ -174,7 +178,7 @@ public class BaltradDBITest extends TestCase {
 //      fail("Expected to get sekir and selul");
 //    }
 //  }
-//  
+  
 //  public void test_find_all_but_sekir() throws Exception {
 //    Query q = catalogue.query();
 //    ExpressionFactory xpr = new ExpressionFactory();
