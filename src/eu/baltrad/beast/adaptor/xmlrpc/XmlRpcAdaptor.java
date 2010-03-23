@@ -159,6 +159,13 @@ public class XmlRpcAdaptor implements IAdaptor {
   }
   
   /**
+   * @see IAdaptor#getType()
+   */
+  public String getType() {
+    return XmlRpcAdaptorConfiguration.TYPE;
+  }
+  
+  /**
    * @see eu.baltrad.beast.adaptor.IAdaptor#handle(eu.baltrad.beast.message.IBltMessage)
    */
   @Override

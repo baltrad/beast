@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
+import java.util.List;
 import java.util.Set;
 
 import eu.baltrad.beast.router.Route;
@@ -43,6 +44,12 @@ public interface IBltAdaptorManager {
    * @throws AdaptorException on failure
    */
   public void unregister(String name);
+  
+  /**
+   * Returns the list of registered adaptors
+   * @return a list of registered adaptors
+   */
+  public List<IAdaptor> getRegisteredAdaptors();
   
   /**
    * Returns a list of the available adaptor types.

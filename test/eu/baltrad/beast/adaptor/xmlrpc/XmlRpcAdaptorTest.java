@@ -108,6 +108,12 @@ public class XmlRpcAdaptorTest extends TestCase {
     timeoutCBControl.verify();
   }
   
+  public void testGetType() throws Throwable {
+    replay();
+    assertEquals(XmlRpcAdaptorConfiguration.TYPE, classUnderTest.getType());
+    verify();
+  }
+  
   public void testHandle() throws Throwable {
     MockControl handleControl = MockControl.createControl(HandleMethodMock.class);
     final HandleMethodMock handleMock = (HandleMethodMock)handleControl.getMock();

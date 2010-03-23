@@ -31,6 +31,12 @@ public interface IAdaptor {
   public String getName();
 
   /**
+   * Returns the type of this adaptor
+   * @return the type of this adaptor (as defined when adding a new adaptor).
+   */
+  public String getType();
+  
+  /**
    * Handles a message. If this adaptor could not handle the message an AdaptorException
    * should be thrown. However, it is optional to throw the exception and instead
    * use a callback indicating an error, @see {@link #handle(IBltMessage, IAdaptorCallback)}.

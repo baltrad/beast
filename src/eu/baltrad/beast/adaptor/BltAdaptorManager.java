@@ -20,6 +20,7 @@ package eu.baltrad.beast.adaptor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,6 +147,18 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     template.update("delete from adaptors where adaptor_id=?",
         new Object[]{adaptor_id});
     adaptors.remove(name);
+  }
+  
+  /**
+   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#getRegisteredAdaptors()
+   */
+  @Override
+  public List<IAdaptor> getRegisteredAdaptors() {
+    ArrayList<IAdaptor> result = new ArrayList<IAdaptor>();
+    for (IAdaptor adaptor : this.adaptors.values()) {
+      result.add(adaptor);
+    }
+    return result;
   }
   
   /**

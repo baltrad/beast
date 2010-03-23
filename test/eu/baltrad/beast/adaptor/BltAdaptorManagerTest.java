@@ -155,6 +155,7 @@ public class BltAdaptorManagerTest extends TestCase {
     
     IAdaptor adaptor = new IAdaptor(){
       public String getName() {return "SA1";}
+      public String getType() {return "XYZ";}
       public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     };
@@ -260,6 +261,7 @@ public class BltAdaptorManagerTest extends TestCase {
     Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
     adaptors.put("SA1", new IAdaptor() {
       public String getName() {return null;}
+      public String getType() {return "XYZ";}
       public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     });
@@ -290,6 +292,52 @@ public class BltAdaptorManagerTest extends TestCase {
     jdbcControl.verify();
     assertEquals(null, adaptors.get("SA1"));
   }  
+  
+  public void testGetRegisteredAdaptors() throws Exception {
+    IAdaptor a1 = new IAdaptor() {
+      public String getName() {return "A1";}
+      public String getType() {return null;}
+      public void handle(IBltMessage msg) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+    };
+    IAdaptor a2 = new IAdaptor() {
+      public String getName() {return "A2";}
+      public String getType() {return null;}
+      public void handle(IBltMessage msg) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+    };
+    Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
+    adaptors.put("A1", a1);
+    adaptors.put("A2", a2);
+    classUnderTest.setAdaptors(adaptors);
+    
+    xyzManagerControl.replay();
+    
+    List<IAdaptor> result = classUnderTest.getRegisteredAdaptors();
+    
+    xyzManagerControl.verify();
+    
+    assertEquals(2, result.size());
+    IAdaptor r1 = result.get(0);
+    IAdaptor r2 = result.get(1);
+   
+    assertTrue((r1.getName().equals("A1") && r2.getName().equals("A2")) ||
+        (r1.getName().equals("A2") && r2.getName().equals("A1")));
+  }
+
+  public void testGetRegisteredAdaptors_noAdaptors() throws Exception {
+    Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
+    classUnderTest.setAdaptors(adaptors);
+    
+    xyzManagerControl.replay();
+    
+    List<IAdaptor> result = classUnderTest.getRegisteredAdaptors();
+    
+    xyzManagerControl.verify();
+    
+    assertEquals(0, result.size());
+  }
+  
   
   public void testHandle() throws Exception {
     MockControl adaptor1Control = MockControl.createControl(IAdaptor.class);
@@ -397,6 +445,7 @@ public class BltAdaptorManagerTest extends TestCase {
       public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
       public String getName() {return null;}
+      public String getType() {return "XYZ";}
     };
     
     classUnderTest = new BltAdaptorManager() {
@@ -418,6 +467,7 @@ public class BltAdaptorManagerTest extends TestCase {
       public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
       public String getName() {return null;}
+      public String getType() {return "XYZ";}
     };
     rset.getInt("adaptor_id");
     rsetControl.setReturnValue(10);
@@ -475,11 +525,13 @@ public class BltAdaptorManagerTest extends TestCase {
       public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
       public String getName() {return "A1";}
+      public String getType() {return "XYZ";}
     };
     IAdaptor a2 = new IAdaptor() {
       public void handle(IBltMessage msg) {}
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
       public String getName() {return "A2";}
+      public String getType() {return "XYZ";}
     };
     readAdaptors.add(a1);
     readAdaptors.add(a2);
