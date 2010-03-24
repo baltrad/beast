@@ -115,6 +115,36 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     jdbcControl.verify();
   }  
 
+  public void testStore_canNotCreateAdaptor() throws Exception {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    
+    IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
+      public XmlRpcCommand generate(IBltMessage message) {return null;}
+    };
+    
+    XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
+    classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setGenerator(generator);
+    
+    XmlRpcAdaptorConfiguration conf = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("ABC");
+    conf.setURL("httpsomebadurl");
+    conf.setTimeout(6000);
+    
+    jdbcControl.replay();
+    
+    // execute test
+    try {
+      classUnderTest.store(2, conf);
+      fail("Expected AdaptorException");
+    } catch (AdaptorException e) {
+      //pass
+    }
+    
+    // verify
+    jdbcControl.verify();
+  }  
+  
   public void testUpdate() throws Exception {
     MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
     SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
@@ -166,6 +196,36 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
 
+    jdbcControl.replay();
+    
+    // execute test
+    try {
+      classUnderTest.update(2, conf);
+      fail("Expected AdaptorException");
+    } catch (AdaptorException e) {
+      // pass
+    }
+    
+    // verify
+    jdbcControl.verify();
+  }   
+
+  public void testUpdate_canNotUpdate() throws Exception {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+
+    IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
+      public XmlRpcCommand generate(IBltMessage message) {return null;}
+    };
+    
+    XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
+    classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setGenerator(generator);
+    
+    XmlRpcAdaptorConfiguration conf = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("ABC");
+    conf.setURL("httpsomepath");
+    conf.setTimeout(6000);
+    
     jdbcControl.replay();
     
     // execute test

@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -101,14 +102,17 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
     long timeout = ((XmlRpcAdaptorConfiguration)configuration).getTimeout();
     XmlRpcAdaptor result = null;
     try {
-      template.update("insert into adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
-          new Object[]{id, url, timeout});
+      // First atempt to create adaptor to see if it works before atempting to store it
+      // in the database.
       result = new XmlRpcAdaptor();
       result.setName(name);
       result.setUrl(url);
       result.setTimeout(timeout);
       result.setGenerator(this.generator);
-    } catch (Throwable t) {
+      
+      template.update("insert into adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
+          new Object[]{id, url, timeout});
+    } catch (DataAccessException t) {
       throw new AdaptorException("Could not store XMLRPC adaptor: " + name, t);
     }
     
@@ -124,14 +128,15 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
     long timeout = ((XmlRpcAdaptorConfiguration)configuration).getTimeout();
     XmlRpcAdaptor result = null;
     try {
-      template.update("update adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
-          new Object[]{url, timeout, id});
       result = new XmlRpcAdaptor();
       result.setName(name);
       result.setUrl(url);
       result.setTimeout(timeout);
       result.setGenerator(this.generator);
-    } catch (Throwable t) {
+
+      template.update("update adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
+          new Object[]{url, timeout, id});
+    } catch (DataAccessException t) {
       throw new AdaptorException("Could not update XMLRPC adaptor: " + name, t);
     }
     
@@ -145,7 +150,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
   public void remove(int id) {
     try {
       template.update("delete from adaptors_xmlrpc where adaptor_id=?", new Object[]{id});
-    } catch (Throwable t) {
+    } catch (DataAccessException t) {
       throw new AdaptorException("Could not remove adaptor", t);
     }
   }
@@ -163,7 +168,8 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
       result.setTimeout((Integer)found.get("timeout"));
       result.setUrl((String)found.get("uri"));
       return result;
-    } catch (Throwable t) {
+    } catch (DataAccessException t) {
+      t.printStackTrace();
     }
     return null;
   }
