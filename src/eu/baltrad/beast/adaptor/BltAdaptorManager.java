@@ -135,6 +135,10 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     throw new AdaptorException("No such type: " + type);
   }
 
+  /**
+   * @see IBltAdaptorManager#reregister(IAdaptorConfiguration)
+   */
+  @Override
   public synchronized IAdaptor reregister(IAdaptorConfiguration configuration) {
     String name = configuration.getName();
     String type = configuration.getType();

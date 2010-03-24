@@ -38,6 +38,17 @@ public interface IBltAdaptorManager {
   public IAdaptor register(IAdaptorConfiguration configuration);
 
   /**
+   * Re-registers an existing adaptor in the database. If the
+   * previous configuration type is different from the provided
+   * configuration type, then the adaptor specific configuration
+   * will be modifed as well. 
+   * @param configuration the new configuration
+   * @return the configured adaptor
+   * @throws AdaptorException on error
+   */
+  public IAdaptor reregister(IAdaptorConfiguration configuration);
+  
+  /**
    * Unregisters the adaptor with the specified name (and will also
    * remove it from the database).
    * @param name the name of the adaptor to unregister
