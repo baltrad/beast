@@ -52,10 +52,10 @@ public interface IBltAdaptorManager {
   public List<IAdaptor> getRegisteredAdaptors();
   
   /**
-   * Returns a list of the available adaptor types.
-   * @return alist of the available adaptor types.
+   * Returns a sorted list of available types
+   * @return a sorted list of available types.
    */
-  public Set<String> getAvailableTypes();
+  public List<String> getAvailableTypes();
   
   /**
    * Creates an adaptor configuration of the specified type

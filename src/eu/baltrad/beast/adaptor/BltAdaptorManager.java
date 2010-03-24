@@ -21,7 +21,9 @@ package eu.baltrad.beast.adaptor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,8 +166,14 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   /**
    * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#getAvailableTypes()
    */
-  public Set<String> getAvailableTypes() {
-    return typeRegistry.keySet();
+  public List<String> getAvailableTypes() {
+    List<String> result = new ArrayList<String>();
+    Iterator<String> i = typeRegistry.keySet().iterator();
+    while (i.hasNext()) {
+      result.add(i.next());
+    }
+    Collections.sort(result);
+    return result;
   }
   
   /**

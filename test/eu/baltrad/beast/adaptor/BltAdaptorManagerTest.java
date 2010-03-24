@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -131,22 +130,28 @@ public class BltAdaptorManagerTest extends TestCase {
   public void testGetAvailableTypes() {
     MockControl managerControl = MockControl.createControl(IAdaptorConfigurationManager.class);
     IAdaptorConfigurationManager manager = (IAdaptorConfigurationManager)managerControl.getMock();
+    MockControl manager2Control = MockControl.createControl(IAdaptorConfigurationManager.class);
+    IAdaptorConfigurationManager manager2 = (IAdaptorConfigurationManager)managerControl.getMock();
     
     classUnderTest.typeRegistry.put("ZZZ", manager);
+    classUnderTest.typeRegistry.put("ABC", manager2);
     
     xyzManagerControl.replay();
     managerControl.replay();
+    manager2Control.replay();
     
     // Execute test
-    Set<String> result = classUnderTest.getAvailableTypes();
+    List<String> result = classUnderTest.getAvailableTypes();
 
-    assertEquals(2, result.size());
-    assertTrue(result.contains("XYZ"));
-    assertTrue(result.contains("ZZZ"));
+    assertEquals(3, result.size());
+    assertEquals("ABC", result.get(0));
+    assertEquals("XYZ", result.get(1));
+    assertEquals("ZZZ", result.get(2));
     
     // Verify
     xyzManagerControl.verify();
     managerControl.verify();
+    manager2Control.verify();
   }
   
   public void testRegister() {
