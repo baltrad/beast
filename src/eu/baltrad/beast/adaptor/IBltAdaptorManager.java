@@ -36,7 +36,7 @@ public interface IBltAdaptorManager {
    * @throws AdaptorException on failure
    */
   public IAdaptor register(IAdaptorConfiguration configuration);
-  
+
   /**
    * Unregisters the adaptor with the specified name (and will also
    * remove it from the database).

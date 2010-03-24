@@ -116,6 +116,29 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
   }
   
   /**
+   * @see eu.baltrad.beast.adaptor.IAdaptorConfigurationManager#update(int, eu.baltrad.beast.adaptor.IAdaptorConfiguration)
+   */
+  public IAdaptor update(int id, IAdaptorConfiguration configuration) {
+    String url = ((XmlRpcAdaptorConfiguration)configuration).getURL();
+    String name = configuration.getName();
+    long timeout = ((XmlRpcAdaptorConfiguration)configuration).getTimeout();
+    XmlRpcAdaptor result = null;
+    try {
+      template.update("update adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
+          new Object[]{url, timeout, id});
+      result = new XmlRpcAdaptor();
+      result.setName(name);
+      result.setUrl(url);
+      result.setTimeout(timeout);
+      result.setGenerator(this.generator);
+    } catch (Throwable t) {
+      throw new AdaptorException("Could not update XMLRPC adaptor: " + name, t);
+    }
+    
+    return result;
+  }
+  
+  /**
    * @see eu.baltrad.beast.adaptor.IAdaptorConfigurationManager#remove(int)
    */
   @Override

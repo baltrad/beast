@@ -40,13 +40,22 @@ import eu.baltrad.beast.router.Route;
  *
  */
 public class BltAdaptorManagerTest extends TestCase {
-  private MockControl xyzManagerControl = MockControl.createControl(IAdaptorConfigurationManager.class);
-  private IAdaptorConfigurationManager xyzManager = (IAdaptorConfigurationManager)xyzManagerControl.getMock();
+  private static interface ReregisterMethods {
+    public IAdaptor updateAdaptorConfiguration(int adaptor_id, IAdaptorConfiguration configuration);
+    public IAdaptor redefineAdaptorConfiguration(int adaptor_id, String type, IAdaptorConfiguration configuration);
+  }
+ 
+  private MockControl xyzManagerControl = null;
+  private IAdaptorConfigurationManager xyzManager = null;
+  private MockControl jdbcControl = null;
+  private SimpleJdbcOperations jdbcTemplate = null;
+  
   private BltAdaptorManager classUnderTest = null;
   private IAdaptorConfiguration xyzConfiguration = null;
-  
+ 
   public void setUp() throws Exception {
     super.setUp();
+    
     xyzManagerControl = MockControl.createControl(IAdaptorConfigurationManager.class);
     xyzManager = (IAdaptorConfigurationManager)xyzManagerControl.getMock();
     xyzConfiguration = new IAdaptorConfiguration() {
@@ -57,10 +66,13 @@ public class BltAdaptorManagerTest extends TestCase {
         return "XYZ";
       }
     };
+    jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
 
     classUnderTest = new BltAdaptorManager();
     classUnderTest.typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();
     classUnderTest.typeRegistry.put("XYZ", xyzManager);
+    classUnderTest.setJdbcTemplate(jdbcTemplate);
   }
   
   public void tearDown() throws Exception {
@@ -71,22 +83,32 @@ public class BltAdaptorManagerTest extends TestCase {
     classUnderTest = null;
   }
   
+  protected void replay() {
+    xyzManagerControl.replay();
+    jdbcControl.replay();
+  }
+
+  protected void verify() {
+    xyzManagerControl.verify();
+    jdbcControl.verify();
+  }
+  
   public void testCreateConfiguration() {
     xyzManager.createConfiguration("SA1");
     xyzManagerControl.setReturnValue(xyzConfiguration);
     
-    xyzManagerControl.replay();
+    replay();
     
     // Execute test
     IAdaptorConfiguration result = classUnderTest.createConfiguration("XYZ", "SA1");
     
     // verify
-    xyzManagerControl.verify();
+    verify();
     assertSame(result, xyzConfiguration);
   }
 
   public void testCreateConfiguration_noSuchType() {
-    xyzManagerControl.replay();
+    replay();
     
     // Execute test
     try {
@@ -97,7 +119,7 @@ public class BltAdaptorManagerTest extends TestCase {
     }
     
     // verify
-    xyzManagerControl.verify();
+    verify();
   }
   
   public void testSetTypeRegistry() {
@@ -112,14 +134,14 @@ public class BltAdaptorManagerTest extends TestCase {
     manager.getType();
     managerControl.setReturnValue("ZZZ");
     
-    xyzManagerControl.replay();
+    replay();
     managerControl.replay();
    
     // Execute
     classUnderTest.setTypeRegistry(list);
     
     // Verify
-    xyzManagerControl.verify();
+    verify();
     managerControl.verify();
     IAdaptorConfigurationManager result = classUnderTest.typeRegistry.get("XYZ");
     assertSame(xyzManager, result);
@@ -136,7 +158,7 @@ public class BltAdaptorManagerTest extends TestCase {
     classUnderTest.typeRegistry.put("ZZZ", manager);
     classUnderTest.typeRegistry.put("ABC", manager2);
     
-    xyzManagerControl.replay();
+    replay();
     managerControl.replay();
     manager2Control.replay();
     
@@ -149,15 +171,12 @@ public class BltAdaptorManagerTest extends TestCase {
     assertEquals("ZZZ", result.get(2));
     
     // Verify
-    xyzManagerControl.verify();
+    verify();
     managerControl.verify();
     manager2Control.verify();
   }
   
   public void testRegister() {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
-    
     IAdaptor adaptor = new IAdaptor(){
       public String getName() {return "SA1";}
       public String getType() {return "XYZ";}
@@ -176,34 +195,24 @@ public class BltAdaptorManagerTest extends TestCase {
     xyzManager.store(2, xyzConfiguration);
     xyzManagerControl.setReturnValue(adaptor);
 
-    classUnderTest.setJdbcTemplate(jdbcTemplate); 
-
-    xyzManagerControl.replay();
-    jdbcControl.replay();
+    replay();
     
     // Execute
     IAdaptor result = classUnderTest.register(xyzConfiguration);
 
     // Verify
-    xyzManagerControl.verify();
-    jdbcControl.verify();
+    verify();
     assertSame(adaptor, result);
     assertSame(adaptor, classUnderTest.getAdaptor("SA1"));
   }
 
   public void testRegister_duplicateKey() {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
-    
     jdbcTemplate.update("insert into adaptors (name,type) values (?,?)",
         new Object[]{"SA1","XYZ"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
 
-    classUnderTest.setJdbcTemplate(jdbcTemplate); 
-
-    xyzManagerControl.replay();
-    jdbcControl.replay();
+    replay();
     
     // Execute
     try {
@@ -214,14 +223,10 @@ public class BltAdaptorManagerTest extends TestCase {
     }
 
     // Verify
-    xyzManagerControl.verify();
-    jdbcControl.verify();
+    verify();
   }
 
   public void testRegister_failedToStoreAdaptor() {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
-    
     jdbcTemplate.update("insert into adaptors (name,type) values (?,?)",
         new Object[]{"SA1","XYZ"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
@@ -237,10 +242,7 @@ public class BltAdaptorManagerTest extends TestCase {
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     
-    classUnderTest.setJdbcTemplate(jdbcTemplate); 
-
-    xyzManagerControl.replay();
-    jdbcControl.replay();
+    replay();
     
     // Execute
     try {
@@ -251,14 +253,243 @@ public class BltAdaptorManagerTest extends TestCase {
     }
 
     // Verify
-    xyzManagerControl.verify();
-    jdbcControl.verify();
+    verify();
+  }
+  
+  public void testReregister_sameType() {
+    MockControl reregisterControl = MockControl.createControl(ReregisterMethods.class);
+    final ReregisterMethods reregister = (ReregisterMethods)reregisterControl.getMock();
+    
+    Map<String,Object> map = new HashMap<String, Object>();
+    map.put("type", "XYZ");
+    map.put("adaptor_id", (int)2);
+    
+    IAdaptor adaptor = new IAdaptor(){
+      public String getName() {return "SA1";}
+      public String getType() {return "XYZ";}
+      public void handle(IBltMessage msg) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+    };
+
+    jdbcTemplate.queryForMap("select type, adaptor_id from adaptors where name=?",
+        new Object[]{"SA1"});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(map);
+    reregister.updateAdaptorConfiguration(2, xyzConfiguration);
+    reregisterControl.setReturnValue(adaptor);
+    
+    classUnderTest = new BltAdaptorManager() {
+      protected IAdaptor updateAdaptorConfiguration(int adaptor_id, IAdaptorConfiguration configuration) {
+        return reregister.updateAdaptorConfiguration(adaptor_id, configuration);
+      }
+      protected IAdaptor redefineAdaptorConfiguration(int adaptor_id, String type, IAdaptorConfiguration configuration) {
+        return reregister.redefineAdaptorConfiguration(adaptor_id, type, configuration);
+      }
+    };
+    classUnderTest.setJdbcTemplate(jdbcTemplate); 
+
+    replay();
+    reregisterControl.replay();
+    
+    // Execute
+    IAdaptor result = classUnderTest.reregister(xyzConfiguration);
+
+    // Verify
+    verify();
+    reregisterControl.verify();
+    assertSame(adaptor, result);
+    assertSame(adaptor, classUnderTest.getAdaptor("SA1"));
+  }
+
+  public void testReregister_differentType() {
+    MockControl reregisterControl = MockControl.createControl(ReregisterMethods.class);
+    final ReregisterMethods reregister = (ReregisterMethods)reregisterControl.getMock();
+    
+    Map<String,Object> map = new HashMap<String, Object>();
+    map.put("type", "ABC");
+    map.put("adaptor_id", (int)2);
+    
+    IAdaptor adaptor = new IAdaptor(){
+      public String getName() {return "SA1";}
+      public String getType() {return "XYZ";}
+      public void handle(IBltMessage msg) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+    };
+
+    jdbcTemplate.queryForMap("select type, adaptor_id from adaptors where name=?",
+        new Object[]{"SA1"});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(map);
+    reregister.redefineAdaptorConfiguration(2, "ABC", xyzConfiguration);
+    reregisterControl.setReturnValue(adaptor);
+    
+    classUnderTest = new BltAdaptorManager() {
+      protected IAdaptor updateAdaptorConfiguration(int adaptor_id, IAdaptorConfiguration configuration) {
+        return reregister.updateAdaptorConfiguration(adaptor_id, configuration);
+      }
+      protected IAdaptor redefineAdaptorConfiguration(int adaptor_id, String type, IAdaptorConfiguration configuration) {
+        return reregister.redefineAdaptorConfiguration(adaptor_id, type, configuration);
+      }
+    };
+    classUnderTest.setJdbcTemplate(jdbcTemplate); 
+
+    replay();
+    reregisterControl.replay();
+    
+    // Execute
+    IAdaptor result = classUnderTest.reregister(xyzConfiguration);
+
+    // Verify
+    verify();
+    reregisterControl.verify();
+    assertSame(adaptor, result);
+    assertSame(adaptor, classUnderTest.getAdaptor("SA1"));
+  }
+  
+  public void testReregister_nonExisting() {
+    jdbcTemplate.queryForMap("select type, adaptor_id from adaptors where name=?",
+        new Object[]{"SA1"});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
+
+    replay();
+    
+    // Execute
+    try {
+      classUnderTest.reregister(xyzConfiguration);
+      fail("Expected AdaptorException");
+    } catch (AdaptorException e) {
+      // pass
+    }
+
+    // Verify
+    verify();
+  }
+
+  public void testUpdateAdaptorConfiguration() throws Exception {
+    IAdaptor adaptor = new IAdaptor(){
+      public String getName() {return "SA1";}
+      public String getType() {return "XYZ";}
+      public void handle(IBltMessage msg) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+    };
+    
+    xyzManager.update(2, xyzConfiguration);
+    xyzManagerControl.setReturnValue(adaptor);
+    
+    replay();
+    
+    IAdaptor result = classUnderTest.updateAdaptorConfiguration(2, xyzConfiguration);
+    
+    verify();
+    assertSame(adaptor, result);
+  }
+  
+  public void testRedefineAdaptorConfiguration() throws Exception {
+    MockControl oldtypeManagerControl = MockControl.createControl(IAdaptorConfigurationManager.class);
+    IAdaptorConfigurationManager oldtypeManager = (IAdaptorConfigurationManager)oldtypeManagerControl.getMock();
+    
+    IAdaptor adaptor = new IAdaptor(){
+      public String getName() {return "SA1";}
+      public String getType() {return "XYZ";}
+      public void handle(IBltMessage msg) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+    };
+
+    xyzManager.store(2, xyzConfiguration);
+    xyzManagerControl.setReturnValue(adaptor);
+    jdbcTemplate.update("update adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+    oldtypeManager.remove(2);
+
+    classUnderTest.typeRegistry.put("OLDTYPE", oldtypeManager);
+    
+    replay();
+    oldtypeManagerControl.replay();
+    
+    IAdaptor result = classUnderTest.redefineAdaptorConfiguration(2, "OLDTYPE", xyzConfiguration);
+    
+    verify();
+    oldtypeManagerControl.verify();
+    assertSame(adaptor, result);
+  }
+
+  public void testRedefineAdaptorConfiguration_failedToStoreNew() throws Exception {
+    xyzManager.store(2, xyzConfiguration);
+    xyzManagerControl.setThrowable(new AdaptorException());
+    
+    replay();
+
+    try {
+      classUnderTest.redefineAdaptorConfiguration(2, "OLDTYPE", xyzConfiguration);
+      fail("Expected AdaptorException");
+    } catch (AdaptorException e) {
+      // pass
+    }
+    
+    verify();
+  }
+
+  public void testRedefineAdaptorConfiguration_failedToUpdateType() throws Exception {
+    IAdaptor adaptor = new IAdaptor(){
+      public String getName() {return "SA1";}
+      public String getType() {return "XYZ";}
+      public void handle(IBltMessage msg) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+    };
+
+    xyzManager.store(2, xyzConfiguration);
+    xyzManagerControl.setReturnValue(adaptor);
+    jdbcTemplate.update("update adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
+    xyzManager.remove(2);
+    
+    replay();
+
+    try {
+      classUnderTest.redefineAdaptorConfiguration(2, "OLDTYPE", xyzConfiguration);
+      fail("Expected AdaptorException");
+    } catch (AdaptorException e) {
+      // pass
+    }
+    
+    verify();
+  }
+  
+  public void testRedefineAdaptorConfiguration_failedToRemoveOldConfig() throws Exception {
+    MockControl oldtypeManagerControl = MockControl.createControl(IAdaptorConfigurationManager.class);
+    IAdaptorConfigurationManager oldtypeManager = (IAdaptorConfigurationManager)oldtypeManagerControl.getMock();
+    
+    IAdaptor adaptor = new IAdaptor(){
+      public String getName() {return "SA1";}
+      public String getType() {return "XYZ";}
+      public void handle(IBltMessage msg) {}
+      public void handle(IBltMessage msg, IAdaptorCallback callback) {}
+    };
+
+    xyzManager.store(2, xyzConfiguration);
+    xyzManagerControl.setReturnValue(adaptor);
+    jdbcTemplate.update("update adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+    oldtypeManager.remove(2);
+    oldtypeManagerControl.setThrowable(new AdaptorException());
+
+    classUnderTest.typeRegistry.put("OLDTYPE", oldtypeManager);
+    
+    replay();
+    oldtypeManagerControl.replay();
+    
+    IAdaptor result = classUnderTest.redefineAdaptorConfiguration(2, "OLDTYPE", xyzConfiguration);
+    
+    verify();
+    oldtypeManagerControl.verify();
+    assertSame(adaptor, result);
   }
   
   public void testUnregister() {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
-
     Map<String, Object> found = new HashMap<String, Object>();
     found.put("type", "XYZ");
     found.put("adaptor_id", new Integer(10));
@@ -284,17 +515,14 @@ public class BltAdaptorManagerTest extends TestCase {
     jdbcControl.setReturnValue(0);
 
     classUnderTest.setAdaptors(adaptors);
-    classUnderTest.setJdbcTemplate(jdbcTemplate); 
     
-    xyzManagerControl.replay();
-    jdbcControl.replay();
+    replay();
     
     // Execute
     classUnderTest.unregister("SA1");
 
     // Verify
-    xyzManagerControl.verify();
-    jdbcControl.verify();
+    verify();
     assertEquals(null, adaptors.get("SA1"));
   }  
   
@@ -316,11 +544,11 @@ public class BltAdaptorManagerTest extends TestCase {
     adaptors.put("A2", a2);
     classUnderTest.setAdaptors(adaptors);
     
-    xyzManagerControl.replay();
+    replay();
     
     List<IAdaptor> result = classUnderTest.getRegisteredAdaptors();
     
-    xyzManagerControl.verify();
+    verify();
     
     assertEquals(2, result.size());
     IAdaptor r1 = result.get(0);
@@ -334,11 +562,11 @@ public class BltAdaptorManagerTest extends TestCase {
     Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
     classUnderTest.setAdaptors(adaptors);
     
-    xyzManagerControl.replay();
+    replay();
     
     List<IAdaptor> result = classUnderTest.getRegisteredAdaptors();
     
-    xyzManagerControl.verify();
+    verify();
     
     assertEquals(0, result.size());
   }
@@ -485,14 +713,14 @@ public class BltAdaptorManagerTest extends TestCase {
     xyzManagerControl.setReturnValue(adaptor);
     
     rsetControl.replay();
-    xyzManagerControl.replay();
+    replay();
     
     // Execute test
     IAdaptor result = classUnderTest.doMapAdaptorRow(rset, 1);
     
     // Verify result
     rsetControl.verify();
-    xyzManagerControl.verify();
+    verify();
     assertSame(adaptor, result);
   }
   
@@ -510,21 +738,18 @@ public class BltAdaptorManagerTest extends TestCase {
     xyzManagerControl.setThrowable(new AdaptorException());
     
     rsetControl.replay();
-    xyzManagerControl.replay();
+    replay();
     
     // Execute test
     IAdaptor result = classUnderTest.doMapAdaptorRow(rset, 1);
     
     // Verify result
     rsetControl.verify();
-    xyzManagerControl.verify();
+    verify();
     assertEquals(null, result);
   }
   
   public void testAfterPropertiesSet() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
-
     List<IAdaptor> readAdaptors = new ArrayList<IAdaptor>();
     IAdaptor a1 = new IAdaptor() {
       public void handle(IBltMessage msg) {}
@@ -559,13 +784,13 @@ public class BltAdaptorManagerTest extends TestCase {
     classUnderTest.typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();
     classUnderTest.typeRegistry.put("XYZ", xyzManager);
     
-    jdbcControl.replay();
+    replay();
     
     // Execute test
     classUnderTest.afterPropertiesSet();
    
     // Verify result
-    jdbcControl.verify();
+    verify();
     assertSame(a1, classUnderTest.getAdaptor("A1"));
     assertSame(a2, classUnderTest.getAdaptor("A2"));
   }

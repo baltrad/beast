@@ -47,6 +47,14 @@ public interface IAdaptorConfigurationManager {
   public IAdaptor store(int id, IAdaptorConfiguration configuration);
   
   /**
+   * Updates the adaptor configuration for the specified adaptor id
+   * @param id the adaptor id
+   * @param configuration the configuration
+   * @return the updated adaptor (or a new one, implementation specific)
+   */
+  public IAdaptor update(int id, IAdaptorConfiguration configuration);
+  
+  /**
    * Removes the adaptor configuration.
    * @param id the configuration that should be removed
    */

@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
+import org.easymock.MockControl;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor;
@@ -127,6 +128,50 @@ public class BltAdaptorManagerDBTest extends TestCase {
     assertEquals("A3", result.getName());
     assertEquals("http://something/else", result.getUrl());
   }
+
+  public void testReregister_sameType() throws Exception {
+    XmlRpcAdaptorConfiguration config = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("XMLRPC", "A3");
+    config.setURL("http://someone/somewhere/somewhereelse");
+    config.setTimeout(1000);
+    
+    // Execute test
+    IAdaptor result = classUnderTest.reregister(config);
+    
+    // verify
+    verifyDatabaseTables("reregister-sametype");
+    assertTrue(result.getClass() == XmlRpcAdaptor.class);
+    assertEquals("A3", result.getName());
+    assertEquals("http://someone/somewhere/somewhereelse",
+        ((XmlRpcAdaptor)classUnderTest.getAdaptor("A3")).getUrl());
+  }
+
+  public void testReregister_differentType() throws Exception {
+    // Just create a phony http manager...
+    MockControl httpAdaptorControl = MockControl.createControl(IAdaptorConfigurationManager.class);
+    IAdaptorConfigurationManager httpAdaptorManager = (IAdaptorConfigurationManager)httpAdaptorControl.getMock();
+    
+    XmlRpcAdaptorConfiguration config = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("XMLRPC", "A1");
+    config.setURL("http://someone/somewhere/somewhereelse");
+    config.setTimeout(1000);
+    
+    classUnderTest.typeRegistry.put("HTTP", httpAdaptorManager);
+    
+    httpAdaptorManager.remove(1);
+    
+    httpAdaptorControl.replay();
+    
+    // Execute test
+    IAdaptor result = classUnderTest.reregister(config);
+    
+    // verify
+    httpAdaptorControl.verify();
+    verifyDatabaseTables("reregister-differenttype");
+    assertTrue(result.getClass() == XmlRpcAdaptor.class);
+    assertEquals("A1", result.getName());
+    assertEquals("http://someone/somewhere/somewhereelse",
+        ((XmlRpcAdaptor)classUnderTest.getAdaptor("A1")).getUrl());
+  }
+  
   
   public void testUnregister() throws Exception {
     // Execute test

@@ -135,6 +135,75 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     throw new AdaptorException("No such type: " + type);
   }
 
+  public synchronized IAdaptor reregister(IAdaptorConfiguration configuration) {
+    String name = configuration.getName();
+    String type = configuration.getType();
+    Map<String,Object> entry = null;
+    IAdaptor result = null;
+    
+    try {
+      entry = template.queryForMap("select type, adaptor_id from adaptors where name=?", new Object[]{name});
+    } catch (Throwable t) {
+      throw new AdaptorException("No configuration with that name stored");
+    }
+    
+    if (type.equals(entry.get("type"))) {
+      result = updateAdaptorConfiguration((Integer)entry.get("adaptor_id"), configuration);
+    } else {
+      result = redefineAdaptorConfiguration((Integer)entry.get("adaptor_id"), (String)entry.get("type"), configuration);
+    }
+    
+    adaptors.put(name, result);
+    
+    return result;
+  }
+  
+  /**
+   * Updates the adaptor specific configuration.
+   * @param adaptor_id the adaptor
+   * @param configuration the configuration
+   * @return an adaptor
+   * @throws AdaptorException on failure
+   */
+  protected IAdaptor updateAdaptorConfiguration(int adaptor_id, IAdaptorConfiguration configuration) {
+    String type = configuration.getType();
+    IAdaptorConfigurationManager mgr = typeRegistry.get(type);
+    return mgr.update(adaptor_id, configuration);
+  }
+  
+  /**
+   * Will reregister the adaptor specific configuration for the new type of adaptor, then
+   * the old adaptor specific configuration will be removed.
+   * @param adaptor_id the adaptor id
+   * @param type the old type of adaptor configuration
+   * @param configuration the new adaptor configuration
+   * @return an adaptor
+   * @throws AdaptorException on failure
+   */
+  protected IAdaptor redefineAdaptorConfiguration(int adaptor_id, String type, IAdaptorConfiguration configuration) {
+    String ntype = configuration.getType();
+    IAdaptorConfigurationManager mgr = typeRegistry.get(ntype);
+    IAdaptor result = mgr.store(adaptor_id, configuration);
+    
+    // Try to modify type for the adaptor
+    try {
+      template.update("update adaptors set type=? where adaptor_id=?", new Object[]{ntype, adaptor_id});
+    } catch (Throwable t) {
+      mgr.remove(adaptor_id);
+      throw new AdaptorException("Failed to change type of adaptor");
+    }
+    
+    // Remove the old configuration entry but do not try to recover if it can not be removed,
+    // just print an error message and continue..
+    mgr = typeRegistry.get(type);
+    try {
+      mgr.remove(adaptor_id);
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+    return result;
+  }
+  
   /**
    * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#unregister(java.lang.String)
    */

@@ -114,6 +114,71 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     // verify
     jdbcControl.verify();
   }  
+
+  public void testUpdate() throws Exception {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+
+    IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
+      public XmlRpcCommand generate(IBltMessage message) {return null;}
+    };
+    
+    XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
+    classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setGenerator(generator);
+    
+    XmlRpcAdaptorConfiguration conf = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("ABC");
+    conf.setURL("http://somepath/somewhere");
+    conf.setTimeout(6000);
+    
+    jdbc.update("update adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
+        new Object[]{"http://somepath/somewhere", (long)6000, 2});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+    jdbcControl.replay();
+    
+    // execute test
+    IAdaptor result = classUnderTest.update(2, conf);
+    
+    // verify
+    jdbcControl.verify();
+    assertNotNull(result);
+    assertTrue (result.getClass() == XmlRpcAdaptor.class);
+    assertEquals("ABC", ((XmlRpcAdaptor)result).getName());
+    assertEquals("http://somepath/somewhere", ((XmlRpcAdaptor)result).getUrl());
+    assertEquals(6000, ((XmlRpcAdaptor)result).getTimeout());
+    assertSame(generator, ((XmlRpcAdaptor)result).getGenerator());
+  }   
+
+  public void testUpdate_notDefined() throws Exception {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+
+    XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
+    classUnderTest.setJdbcTemplate(jdbc);
+    
+    XmlRpcAdaptorConfiguration conf = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("ABC");
+    conf.setURL("http://somepath/somewhere");
+    conf.setTimeout(6000);
+    
+    jdbc.update("update adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
+        new Object[]{"http://somepath/somewhere", (long)6000, 2});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
+
+    jdbcControl.replay();
+    
+    // execute test
+    try {
+      classUnderTest.update(2, conf);
+      fail("Expected AdaptorException");
+    } catch (AdaptorException e) {
+      // pass
+    }
+    
+    // verify
+    jdbcControl.verify();
+  }   
   
   public void testRemove() throws Exception {
     MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
