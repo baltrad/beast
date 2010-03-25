@@ -125,14 +125,14 @@ public class RuleFactoryTest extends TestCase {
     creator2Control.replay();
     
     //execute test
-    String[] result = classUnderTest.getTypes();
+    List<String> result = classUnderTest.getTypes();
 
     // verify
     creator1Control.verify();
     creator2Control.verify();
-    assertEquals(2, result.length);
-    assertEquals("t1", result[0]);
-    assertEquals("t2", result[1]);
+    assertEquals(2, result.size());
+    assertEquals("t1", result.get(0));
+    assertEquals("t2", result.get(1));
   }    
 
   public void testGetTypes_noneDefined() throws Exception {
@@ -140,9 +140,9 @@ public class RuleFactoryTest extends TestCase {
     RuleFactory classUnderTest = new RuleFactory();
     
     //execute test
-    String[] result = classUnderTest.getTypes();
+    List<String> result = classUnderTest.getTypes();
     
     // verify
-    assertEquals(0, result.length);
+    assertEquals(0, result.size());
   }    
 }

@@ -53,11 +53,10 @@ public class RuleFactory implements IRuleFactory {
    * @see eu.baltrad.beast.rules.IRuleFactory#getTypes()
    */
   @Override  
-  public String[] getTypes() {
-    String[] result = new String[creators.size()];
-    int index = 0;
+  public List<String> getTypes() {
+    List<String> result = new ArrayList<String>();
     for (IRuleCreator creator:creators) {
-      result[index++] = creator.getType();
+      result.add(creator.getType());
     }
     return result;
   }

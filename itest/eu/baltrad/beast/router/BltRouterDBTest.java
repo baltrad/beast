@@ -70,8 +70,10 @@ public class BltRouterDBTest extends TestCase {
     public IRule create(String type, String definition) {
       return new DummyRule(type, definition);
     }
-    public String[] getTypes() {
-      return new String[]{"dummy"};
+    public List<String> getTypes() {
+      List<String> result = new ArrayList<String>();
+      result.add("dummy");
+      return result;
     }
     
   };

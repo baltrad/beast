@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules;
 
+import java.util.List;
+
 /**
  * Create any type of rule.
  * @author Anders Henja
@@ -36,5 +38,5 @@ public interface IRuleFactory {
    * Returns a list of the currently supported types.
    * @return a list of types or an empty array if no types supported
    */
-  public String[] getTypes();
+  public List<String> getTypes();
 }
