@@ -19,6 +19,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.bltdb;
 
 import java.io.FilenameFilter;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -27,6 +29,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.fc.Query;
+import eu.baltrad.fc.ResultSet;
+import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.oh5.File;
 
 /**
@@ -56,7 +62,7 @@ public class BaltradDBITest extends TestCase {
   
   public BaltradDBITest(String name) {
     super(name);
-    System.out.println("LIBRARYPATH: " + System.getProperty("java.library.path"));
+    //System.out.println("LIBRARYPATH: " + System.getProperty("java.library.path"));
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     baltradDbPath = helper.getBaltradDbPth();
@@ -80,15 +86,6 @@ public class BaltradDBITest extends TestCase {
     }
     
     SimpleJdbcTemplate template = new SimpleJdbcTemplate(helper.getSource());
-    template.update("delete from attribute_values_bool");
-    template.update("delete from attribute_values_date");
-    template.update("delete from attribute_values_int");
-    template.update("delete from attribute_values_real");
-    template.update("delete from attribute_values_str");
-    template.update("delete from attribute_values_time");
-    template.update("delete from attribute_values_str");
-    template.update("delete from attribute_groups");
-    template.update("delete from data_objects");
     template.update("delete from files");
   }
   
@@ -111,122 +108,118 @@ public class BaltradDBITest extends TestCase {
     catalogue = null;
   }
   
-//  public void test_find_seang() throws Exception {
-//    Query q = catalogue.query();
-//    ExpressionFactory xpr = new ExpressionFactory();
-//    q.fetch(xpr.attribute("path"));
-//    q.filter(xpr.attribute("src_node").eq(xpr.string("seang")));
-//    ResultSet rs = q.execute();
-//    assertEquals(1, rs.size());
-//    rs.next();
-//    String result = rs.string(0);
-//    rs.delete();
-//    assertEquals(baltradDbPath+"/Z_PVOL_C_ESWI_20090501120000_seang.h5", result);
-//  }
-//
-//  public void test_find_all() throws Exception {
-//    Query q = catalogue.query();
-//    ExpressionFactory xpr = new ExpressionFactory();
-//    Set<String> result = new HashSet<String>();
-//    
-//    q.fetch(xpr.attribute("src_node"));
-//
-//    ResultSet rs = q.execute();
-//    assertEquals(12, rs.size());
-//    while (rs.next()) {
-//      result.add(rs.string(0));
-//    }
-//    rs.delete();
-//    assertTrue(result.contains("sekir"));
-//    assertTrue(result.contains("selul"));
-//    assertTrue(result.contains("seosu"));
-//    assertTrue(result.contains("seovi"));
-//    assertTrue(result.contains("sehud"));
-//    assertTrue(result.contains("selek"));
-//    assertTrue(result.contains("searl"));
-//    assertTrue(result.contains("sease"));
-//    assertTrue(result.contains("sevil"));
-//    assertTrue(result.contains("sevar"));
-//    assertTrue(result.contains("seang"));
-//    assertTrue(result.contains("sekkr"));
-//  }
-//  
-//  public void test_find_sekir_or_selul() throws Exception {
-//    Query q = catalogue.query();
-//    ExpressionFactory xpr = new ExpressionFactory();
-//    
-//    q.fetch(xpr.attribute("src_node"));
-//    Expression e1 = xpr.attribute("src_node").eq(xpr.string("sekir"));
-//    Expression e2 = xpr.attribute("src_node").eq(xpr.string("selul"));
-//    q.filter(xpr.or_(e1, e2));
-//    ResultSet rs = q.execute();
-//    assertEquals(2, rs.size());
-//    rs.next();
-//    String result1 = rs.string(0);
-//    rs.next();
-//    String result2 = rs.string(0);
-//    rs.delete();
-//    if (result1.equals("sekir")) {
-//      assertEquals("selul", result2);
-//    } else if (result1.equals("selul")) {
-//      assertEquals("sekir", result2);
-//    } else {
-//      fail("Expected to get sekir and selul");
-//    }
-//  }
-  
-//  public void test_find_all_but_sekir() throws Exception {
-//    Query q = catalogue.query();
-//    ExpressionFactory xpr = new ExpressionFactory();
-//    Set<String> result = new HashSet<String>();
-//    
-//    q.fetch(xpr.attribute("src_node"));
-//    q.filter(xpr.attribute("src_node").ne(xpr.string("sekir")));
-//    ResultSet rs = q.execute();
-//    assertEquals(11, rs.size());
-//    while (rs.next()) {
-//      result.add(rs.string(0));
-//    }
-//    rs.delete();
-//    assertTrue(result.contains("selul"));
-//    assertTrue(result.contains("seosu"));
-//    assertTrue(result.contains("seovi"));
-//    assertTrue(result.contains("sehud"));
-//    assertTrue(result.contains("selek"));
-//    assertTrue(result.contains("searl"));
-//    assertTrue(result.contains("sease"));
-//    assertTrue(result.contains("sevil"));
-//    assertTrue(result.contains("sevar"));
-//    assertTrue(result.contains("seang"));
-//    assertTrue(result.contains("sekkr"));
-//  }
-//
-//  public void test_find_elangles_searl() throws Exception {
-//    Query q = catalogue.query();
-//    ExpressionFactory xpr = new ExpressionFactory();
-//    Set<Double> result = new HashSet<Double>();
-//    
-//    q.fetch(xpr.attribute("src_node"));
-//    q.fetch(xpr.attribute("where/elangle"));
-//    q.filter(xpr.attribute("src_node").eq(xpr.string("searl")));
-//    q.filter(xpr.attribute("where/elangle").between(xpr.real(-1.0), xpr.real(5.0)));
-//    
-//    ResultSet rs = q.execute();
-//    assertEquals(6, rs.size());
-//    while (rs.next()) {
-//      assertEquals("searl", rs.string(0));
-//      result.add(rs.real(1));
-//    }
-//    rs.delete();
-//    assertTrue(result.contains(0.5));
-//    assertTrue(result.contains(1.0));
-//    assertTrue(result.contains(1.5));
-//    assertTrue(result.contains(2.0));
-//    assertTrue(result.contains(2.5));
-//    assertTrue(result.contains(4.0));
-//  }  
-  
-  public void testDummy() throws Exception {
-    // no op
+  public void test_find_seang() throws Exception {
+    Query q = catalogue.query();
+    ExpressionFactory xpr = new ExpressionFactory();
+    q.fetch(xpr.attribute("path"));
+    q.filter(xpr.attribute("src_node").eq(xpr.string("seang")));
+    ResultSet rs = q.execute();
+    assertEquals(1, rs.size());
+    rs.next();
+    String result = rs.string(0);
+    rs.delete();
+    assertEquals(baltradDbPath+"/Z_PVOL_C_ESWI_20090501120000_seang_000000.h5", result);
   }
+
+  public void test_find_all() throws Exception {
+    Query q = catalogue.query();
+    ExpressionFactory xpr = new ExpressionFactory();
+    Set<String> result = new HashSet<String>();
+    
+    q.fetch(xpr.attribute("src_node"));
+
+    ResultSet rs = q.execute();
+    assertEquals(12, rs.size());
+    while (rs.next()) {
+      result.add(rs.string(0));
+    }
+    rs.delete();
+    assertTrue(result.contains("sekir"));
+    assertTrue(result.contains("selul"));
+    assertTrue(result.contains("seosu"));
+    assertTrue(result.contains("seovi"));
+    assertTrue(result.contains("sehud"));
+    assertTrue(result.contains("selek"));
+    assertTrue(result.contains("searl"));
+    assertTrue(result.contains("sease"));
+    assertTrue(result.contains("sevil"));
+    assertTrue(result.contains("sevar"));
+    assertTrue(result.contains("seang"));
+    assertTrue(result.contains("sekkr"));
+  }
+  
+  public void test_find_sekir_or_selul() throws Exception {
+    Query q = catalogue.query();
+    ExpressionFactory xpr = new ExpressionFactory();
+    
+    q.fetch(xpr.attribute("src_node"));
+    Expression e1 = xpr.attribute("src_node").eq(xpr.string("sekir"));
+    Expression e2 = xpr.attribute("src_node").eq(xpr.string("selul"));
+    q.filter(xpr.or_(e1, e2));
+    ResultSet rs = q.execute();
+    assertEquals(2, rs.size());
+    rs.next();
+    String result1 = rs.string(0);
+    rs.next();
+    String result2 = rs.string(0);
+    rs.delete();
+    if (result1.equals("sekir")) {
+      assertEquals("selul", result2);
+    } else if (result1.equals("selul")) {
+      assertEquals("sekir", result2);
+    } else {
+      fail("Expected to get sekir and selul");
+    }
+  }
+  
+  public void test_find_all_but_sekir() throws Exception {
+    Query q = catalogue.query();
+    ExpressionFactory xpr = new ExpressionFactory();
+    Set<String> result = new HashSet<String>();
+    
+    q.fetch(xpr.attribute("src_node"));
+    q.filter(xpr.attribute("src_node").ne(xpr.string("sekir")));
+    ResultSet rs = q.execute();
+    assertEquals(11, rs.size());
+    while (rs.next()) {
+      result.add(rs.string(0));
+    }
+    rs.delete();
+    assertTrue(result.contains("selul"));
+    assertTrue(result.contains("seosu"));
+    assertTrue(result.contains("seovi"));
+    assertTrue(result.contains("sehud"));
+    assertTrue(result.contains("selek"));
+    assertTrue(result.contains("searl"));
+    assertTrue(result.contains("sease"));
+    assertTrue(result.contains("sevil"));
+    assertTrue(result.contains("sevar"));
+    assertTrue(result.contains("seang"));
+    assertTrue(result.contains("sekkr"));
+  }
+
+  public void test_find_elangles_searl() throws Exception {
+    Query q = catalogue.query();
+    ExpressionFactory xpr = new ExpressionFactory();
+    Set<Double> result = new HashSet<Double>();
+    
+    q.fetch(xpr.attribute("src_node"));
+    q.fetch(xpr.attribute("where/elangle"));
+    q.filter(xpr.attribute("src_node").eq(xpr.string("searl")));
+    q.filter(xpr.attribute("where/elangle").between(xpr.real(-1.0), xpr.real(5.0)));
+    
+    ResultSet rs = q.execute();
+    assertEquals(6, rs.size());
+    while (rs.next()) {
+      assertEquals("searl", rs.string(0));
+      result.add(rs.real(1));
+    }
+    rs.delete();
+    assertTrue(result.contains(0.5));
+    assertTrue(result.contains(1.0));
+    assertTrue(result.contains(1.5));
+    assertTrue(result.contains(2.0));
+    assertTrue(result.contains(2.5));
+    assertTrue(result.contains(4.0));
+  }  
 }
