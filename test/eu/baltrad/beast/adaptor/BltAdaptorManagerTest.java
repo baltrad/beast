@@ -571,6 +571,25 @@ public class BltAdaptorManagerTest extends TestCase {
     assertEquals(0, result.size());
   }
   
+  public void testGetAdaptorNames() throws Exception {
+    Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
+    adaptors.put("ABC", null);
+    adaptors.put("DEF", null);
+    adaptors.put("BEA", null);
+    classUnderTest.setAdaptors(adaptors);
+    
+    replay();
+    
+    List<String> result = classUnderTest.getAdaptorNames();
+    
+    verify();
+    
+    assertEquals(3, result.size());
+    assertEquals("ABC", result.get(0));
+    assertEquals("BEA", result.get(1));
+    assertEquals("DEF", result.get(2));
+  }
+  
   
   public void testHandle() throws Exception {
     MockControl adaptor1Control = MockControl.createControl(IAdaptor.class);

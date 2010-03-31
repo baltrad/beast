@@ -19,7 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.adaptor;
 
 import java.util.List;
-import java.util.Set;
 
 import eu.baltrad.beast.router.Route;
 
@@ -78,10 +77,10 @@ public interface IBltAdaptorManager {
   public IAdaptorConfiguration createConfiguration(String type, String name);
   
   /**
-   * Returns a set of available adaptors
-   * @return a set of available adaptors 
+   * Returns a sorted list of available adaptor names
+   * @return a list of available adaptors 
    */
-  public Set<String> getAvailableAdaptors();
+  public List<String> getAdaptorNames();
   
   /**
    * Returns the adaptor with the specified name

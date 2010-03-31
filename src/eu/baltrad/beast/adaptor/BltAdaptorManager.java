@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -261,10 +260,16 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   }
   
   /**
-   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#getAvailableAdaptors()
+   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#getAdaptorNames()
    */
-  public Set<String> getAvailableAdaptors() {
-    return adaptors.keySet();
+  public List<String> getAdaptorNames() {
+    List<String> result = new ArrayList<String>();
+    Iterator<String> i = adaptors.keySet().iterator();
+    while (i.hasNext()) {
+      result.add(i.next());
+    }
+    Collections.sort(result);
+    return result;
   }
   
   /**

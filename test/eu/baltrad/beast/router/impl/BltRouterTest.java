@@ -193,4 +193,25 @@ public class BltRouterTest extends TestCase {
     // verify
     jdbcControl.verify();
   }
+  
+  public void testCreate() throws Exception {
+    String name = "MyName";
+    String author = "nisse";
+    boolean active = true;
+    String description = "some description";
+    List<String> recipients = new ArrayList<String>();
+    IRule rule = new IRule() {
+      public IBltMessage handle(IBltMessage message) {return null;}
+      public String getType() {return null;}
+      public String getDefinition() {return null;}
+    };
+    BltRouter classUnderTest = new BltRouter();
+    RouteDefinition result = classUnderTest.create(name, author, active, description, recipients, rule);
+    assertEquals(name, result.getName());
+    assertEquals(author, result.getAuthor());
+    assertEquals(active, result.isActive());
+    assertEquals(description, result.getDescription());
+    assertSame(recipients, result.getRecipients());
+    assertSame(rule, result.getRule());
+  }
 }

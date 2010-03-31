@@ -198,6 +198,21 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
     removeDefinitionFromList(def.getName());
     definitions.add(def);
   }
+ 
+  /**
+   * @see eu.baltrad.beast.router.IRouterManager#create(String,String,boolean,String,IRule)
+   */
+  @Override
+  public RouteDefinition create(String name, String author, boolean active, String description, List<String> recipients, IRule rule) {
+    RouteDefinition result = new RouteDefinition();
+    result.setActive(active);
+    result.setAuthor(author);
+    result.setDescription(description);
+    result.setName(name);
+    result.setRecipients(recipients);
+    result.setRule(rule);
+    return result;
+  }
   
   /**
    * Spring framework will call this function after the bean has been created.

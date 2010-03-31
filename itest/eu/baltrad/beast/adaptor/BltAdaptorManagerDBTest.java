@@ -20,7 +20,6 @@ package eu.baltrad.beast.adaptor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -88,7 +87,7 @@ public class BltAdaptorManagerDBTest extends TestCase {
   }
 
   public void testAfterPropertiesSet() throws Exception {
-    Set<String> names = classUnderTest.getAvailableAdaptors();
+    List<String> names = classUnderTest.getAdaptorNames();
     assertEquals(true, names.contains("A2"));
     assertEquals(true, names.contains("A3"));
   }

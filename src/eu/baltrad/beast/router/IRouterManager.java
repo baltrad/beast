@@ -20,6 +20,8 @@ package eu.baltrad.beast.router;
 
 import java.util.List;
 
+import eu.baltrad.beast.rules.IRule;
+
 /**
  * Manages all routes and synchronizes them with the database.
  * 
@@ -61,4 +63,15 @@ public interface IRouterManager {
    */
   public void deleteDefinition(String name);
 
+  /**
+   * Works as a factory for creating route definitions
+   * @param name the name of the route definition
+   * @param author the author
+   * @param active if enabled or not
+   * @param description the description
+   * @param recipients a list of recipients
+   * @param rule the rule
+   * @return a routing definition
+   */
+  public RouteDefinition create(String name, String author, boolean active, String description, List<String> recipients, IRule rule);
 }
