@@ -256,9 +256,11 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    * @param recipients a list of recipients
    */
   protected void storeRecipients(String name, List<String> recipients) {
-    for (String rec: recipients) {
-      template.update("insert into router_dest (name, recipient) values (?,?)",
-        new Object[]{name, rec});
+    if (recipients != null) {
+      for (String rec: recipients) {
+        template.update("insert into router_dest (name, recipient) values (?,?)",
+            new Object[]{name, rec});
+      }
     }
   }
   

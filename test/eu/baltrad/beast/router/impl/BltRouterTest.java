@@ -193,6 +193,23 @@ public class BltRouterTest extends TestCase {
     // verify
     jdbcControl.verify();
   }
+
+  public void testStoreRecipients_nullList() throws Exception {
+    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
+    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setJdbcTemplate(jdbc);
+
+    jdbcControl.replay();
+    
+    // execute
+    classUnderTest.storeRecipients("D1", null);
+    
+    // verify
+    jdbcControl.verify();
+  }
+
   
   public void testCreate() throws Exception {
     String name = "MyName";
