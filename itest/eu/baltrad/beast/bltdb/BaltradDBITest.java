@@ -86,7 +86,7 @@ public class BaltradDBITest extends TestCase {
     }
     
     SimpleJdbcTemplate template = new SimpleJdbcTemplate(helper.getSource());
-    template.update("delete from files");
+    template.update("delete from bdb_files");
   }
   
   private String getFilePath(String resource) throws Exception {
