@@ -1,0 +1,198 @@
+#!/bin/sh
+###########################################################################
+# Copyright (C) 2010 Swedish Meteorological and Hydrological Institute, SMHI,
+#
+# This file is part of baltrad-node.
+#
+# baltrad-node is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# baltrad-node is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with baltrad-node.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+#
+# Allows deployment of plugin software.
+#
+# @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
+# @date 2010-04-10
+###########################################################################
+SCRFILE=`python -c "import os;print os.path.abspath(\"$0\")"`
+SCRIPTDIR=`dirname "$SCRFILE"`
+
+INSTALLDIR=`dirname "$SCRIPTDIR"`
+LIBSDIR="$INSTALLDIR/libs"
+PLUGINSDIR="$INSTALLDIR/plugins"
+
+# Need a java executable
+JAVABIN=$JAVA_HOME/bin/java
+
+# Need a java compiler
+JAVACBIN=$JAVA_HOME/bin/javac
+
+# Command parameters
+DOBUILD=no
+DODEPLOY=no
+DOUNDEPLOY=no
+PLUGINNAME=
+PLUGINDIR=
+
+# The beast jar file containing the xmlrpc server
+BEASTJAR=`ls -1 "$SCRIPTDIR"/*.jar`
+
+# Setup the classpath
+# Add etc folder
+CLP="$INSTALLDIR/etc"
+CLP="$CLP:$BEASTJAR"
+
+# Create classpath
+for fname in `find $LIBSDIR -name "*.jar"`; do
+  CLP="$CLP:$fname"
+done
+
+print_usage() {
+  echo "pgfwkplugin [--build|--deploy|--undeploy|--list] [OPTIONS]"
+  echo ""
+  if [ "$1" = "brief" ]; then
+    return
+  fi
+  echo "This is a script for help building (and deploying) a plugin into the pg framework."
+  echo "If you have got a source folder that is formatted as:"
+  echo " <plugin>/"
+  echo " <plugin>/src/<code>"
+  echo " <plugin>/<PluginName>-pgplugin.xml"
+  echo " <plugin>/lib/<.jar files>"
+  echo " <plugin>/<PluginName>.jar (Not nessecary if building)"
+  echo "Where <PluginName> is the name of the plugin."
+  echo ""
+  echo "--build) Builds the plugin (requires --name=... and --dir=...)"
+  echo "  If successful, a jar file called <PluginName>.jar will be stored in <plugin>-dir"
+  echo "--deploy) Deploys the plugin (requires --name=... and --dir=...)"
+  echo "  The file <PluginName>-pgplugin.xml, <PluginName>.jar and all libs will be deployed."
+  echo "--undeploy) Undeploys the plugin (requires --name=...)"
+  echo "--list)  shows all installed plugins."
+  echo ""
+  echo "OPTIONS:"
+  echo "--name=<name>:"
+  echo "  Name of the plugin, should match <PluginName>."
+  echo "--dir=<srcdir>:"
+  echo "  Directory of the source code or <PluginName>.jar."
+  echo "  Should also contain the file <PluginName>-pgplugin.xml"
+  echo "--help:"
+  echo "  shows this help text"
+}
+
+# Prints the message on stderr
+# Arguments:
+#  *  : The string to be printed
+#
+show_stderr() {
+  echo "$*" 1>&2
+}
+
+# Prints the provided error message and exits with 255
+# Arguments:
+#  *  : The string to be printed
+#
+exit_with_error() {
+  show_stderr "$*"
+  exit 255
+}
+
+# Asserts if the 1 argument is 0 or not.
+# Arguments:
+#  1   : The code, will exit_with_error if code != 0
+#  2-* : The error message to exit with
+assert_result() {
+  if [ $1 -ne 0 ]; then
+    shift;
+    exit_with_error $*;
+  fi
+}
+
+show_installed_plugins() {
+  PLUGINS=`ls -1 $PLUGINDIR`
+  echo "Installed plugins:"
+  echo "$PLUGINS"
+}
+
+do_build() {
+  XYZ=0
+  TMPFILE=`mktemp -d /tmp/$PLUGINNAME.XXXXXXXX`
+  if [ -d "$TMPFILE" ]; then
+    \rm -fr $TMPFILE
+  fi
+  mkdir "$TMPFILE"
+  mkdir "$TMPFILE/build"
+  ant -f $INSTALLDIR/etc/build-plugin.xml -Dbuild.dir=$TMPFILE -Dplugin.name=$PLUGINNAME -Dplugin.dir=$SOURCEDIR
+  XYZ=$?
+  \rm -fr $TMPFILE
+  if [ $XYZ -ne 0 ]; then
+    exit_with_error "Failed to build plugin"
+  fi
+}
+
+do_deploy() {
+  ant -f $INSTALLDIR/etc/build-plugin.xml -Dbuild.dir=$TMPFILE -Dplugin.name=$PLUGINNAME -Dplugin.dir=$SOURCEDIR deploy
+}
+
+#
+# And here starts the argument parsing and command handling
+#
+for arg in $*; do
+  case $arg in
+    --build)
+      DOBUILD=yes
+      ;;
+    --deploy)
+      DODEPLOY=yes
+      ;;
+    --undeploy)
+      DOUNDEPLOY=yes
+      ;;
+    --list)
+      show_installed_plugins
+      exit 0
+      ;;
+    --name=*)
+      PLUGINNAME=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+    --dir=*)
+      SOURCEDIR=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+    --help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      print_usage brief
+      exit 255
+      ;;
+  esac
+done
+
+if [ "$DOBUILD" = "no" -a "$DODEPLOY" = "no" -a "$DOUNDEPLOY" = "no" ]; then
+  print_usage brief
+fi
+
+if [ "$DOBUILD" = "yes" ]; then
+  if [ "$PLUGINNAME" = "" -o "$SOURCEDIR" = "" ]; then
+    echo "Both --name and --dir must be specified when building a plugin"
+    exit 255
+  fi
+  do_build
+fi
+
+if [ "$DODEPLOY" = "yes" ]; then
+  if [ "$PLUGINNAME" = "" -o "$SOURCEDIR" = "" ]; then
+    echo "Both --name and --dir must be specified when deploying a plugin"
+    exit 255
+  fi
+  do_deploy
+fi

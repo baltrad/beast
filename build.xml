@@ -136,12 +136,16 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   	<copy todir="${prefix}/beast/etc">
       <fileset dir="${etc.dir}">
         <include name="xmlrpcserver-context.xml" />
+        <include name="build-plugin.xml" />
       	<include name="log4j.properties" />
       </fileset>
   	</copy>
   	<copy file="${dist.dir}/${app.name}-${app.version}.jar" todir="${prefix}/beast/bin" />
   	<copy file="${etc.dir}/xmlrpcserver" todir="${prefix}/beast/bin" />
     <chmod file="${prefix}/beast/bin/xmlrpcserver" perm="755"/>
+  	<copy file="${etc.dir}/pgfwkplugin" todir="${prefix}/beast/bin" />
+    <chmod file="${prefix}/beast/bin/pgfwkplugin" perm="755"/>
+  	
   </target>
 
   <!-- This is the overall build script that can be used to get a full build & test sequence --> 

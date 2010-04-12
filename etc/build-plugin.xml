@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2009-2010 Swedish Meteorological and Hydrological Institute, SMHI,
+
+This file is part of the Beast library.
+
+Beast library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Beast library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the Beast library library.  If not, see http://www.gnu.org/licenses.
+-->
+<project name="build-plugin" default="build" basedir=".">
+  <fail unless="plugin.name" message="You need to specify -Dplugin.name=xxx"/>
+  <fail unless="plugin.dir" message="You need to specify -Dplugin.dir=xxx"/>
+  <fail unless="build.dir" message="You need to specify -Dbuild.dir=xxx"/>
+
+  <property name="compile.debug" value="true" />
+  <property name="compile.optimize" value="true" />
+  <property name="compile.includeAntRuntime" value="no" />
+
+  <property name="lib.dir" value="${plugin.dir}/lib" />
+  <property name="src.dir" value="${plugin.dir}/src" />
+  <property name="beast.libs" value="${basedir}/../libs" />
+  <property name="beast.bin" value="${basedir}/../bin"/>
+  <property name="beast.plugins" value="${basedir}/../plugins"/>
+  <property name="plugin.file" value="${plugin.dir}/${plugin.name}-pgplugin.xml" />
+  <property name="plugin.jar" value="${plugin.dir}/${plugin.name}.jar" />
+  
+  <available file="${plugin.file}" property="plugin.file.available" />
+  <fail unless="plugin.file.available" message="Could not find plugin file ${plugin.file}" />  
+	
+  <path id="lib.path">
+    <fileset dir="${beast.bin}">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="${beast.libs}">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+  </path>
+
+  <target name="prepare">
+    <delete dir="${build.dir}" />
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${build.dir}/classes" />
+  </target>
+  
+  <target name="compile" depends="prepare">
+    <javac srcdir="${src.dir}"
+           encoding="8859_1"
+           deprecation="on"
+           debug="${compile.debug}"
+           includeAntRuntime="${compile.includeAntRuntime}"
+           optimize="${compile.optimize}"
+           destdir="${build.dir}/classes">
+      <classpath refid="lib.path"/>
+    </javac>    
+  </target>
+
+  <!-- Generates plugin -->
+  <target name="build" depends="compile">
+    <jar jarfile="${plugin.jar}"
+         basedir="${build.dir}/classes">
+    </jar>
+  </target>
+  
+  <!-- Installs a plugin -->
+  <target name="deploy">
+    <delete dir="${beast.plugins}/${plugin.name}" />
+    <mkdir dir="${beast.plugins}/${plugin.name}" />
+    <mkdir dir="${beast.plugins}/${plugin.name}/lib" />
+    <copy file="${plugin.file}" todir="${beast.plugins}/${plugin.name}" />
+    <copy file="${plugin.jar}" todir="${beast.plugins}/${plugin.name}" />
+    <copy todir="${beast.plugins}/${plugin.name}/lib" flatten="true">
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar" />
+      </fileset>
+    </copy>
+  </target>
+</project>
+

@@ -159,7 +159,6 @@ public class BltManagerTest extends TestCase {
     long nrtimes = generator.waitForResponse(20, 5000);
     assertEquals(20, nrtimes);
     System.out.println("Avg time: " + (generator.getTotaltime()/nrtimes));
-    assertTrue(20 > (generator.getTotaltime()/nrtimes));
   }
 
   public void testManage_alertToGenerateRule() throws Exception {
@@ -203,7 +202,6 @@ public class BltManagerTest extends TestCase {
     long nrtimes = generator.waitForResponse(20, 5000);
     assertEquals(20, nrtimes);
     System.out.println("Avg time: " + (generator.getTotaltime()/nrtimes));
-    assertTrue(25 > (generator.getTotaltime()/nrtimes));
   }
   
   
