@@ -109,7 +109,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     String name = configuration.getName();
     String type = configuration.getType();
     IAdaptorConfigurationManager mgr = typeRegistry.get(type);
-bug
+
     if (mgr != null) {
       int index = 0;
       try {
