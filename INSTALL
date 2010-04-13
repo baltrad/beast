@@ -28,4 +28,3 @@ default baltraddb.path is /opt/baltrad/db-devel.
 So, to install the beast library you will only have to do "ant install"
 unless you want to specify a different prefix and/or baltrad-db path.
 
-
