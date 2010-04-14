@@ -73,6 +73,12 @@ for fname in `find $PLUGINDIR -name "*.jar"`; do
   CLP="$CLP:$fname"
 done
 
+for dname in `ls -1 $PLUGINDIR`; do
+  if [ -d "$PLUGINDIR/$dname" ]; then
+    CLP="$CLP:$PLUGINDIR/$dname"
+  fi
+done
+
 print_usage() {
   echo "xmlrpcserver [OPTIONS] start|stop|status"
   echo ""

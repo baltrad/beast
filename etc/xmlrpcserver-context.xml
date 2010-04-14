@@ -27,4 +27,6 @@
       </map>
     </property>
   </bean>
+  
+  <import resource="classpath*:*-pgplugin.xml" />
 </beans>
