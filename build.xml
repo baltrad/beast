@@ -99,7 +99,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <!-- Generates the deliverables -->
   <target name="build" depends="clean,compile">
     <mkdir dir="${dist.dir}" />
-    <jar jarfile="${dist.dir}/${app.name}-${app.version}.jar"
+    <jar jarfile="${dist.dir}/${app.name}.jar"
          basedir="${build.classes.dir}">
     </jar>
   </target>
@@ -107,7 +107,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <!-- same as running build and execute.test -->
   <target name="distribution" depends="build, execute.test" />
 
-  <target name="install" depends="distribution">
+  <target name="-install-files">
   	<mkdir dir="${prefix}/beast" />
   	<mkdir dir="${prefix}/beast/sql" />
   	<mkdir dir="${prefix}/beast/bin" />
@@ -140,16 +140,21 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<include name="log4j.properties" />
       </fileset>
   	</copy>
-  	<copy file="${dist.dir}/${app.name}-${app.version}.jar" todir="${prefix}/beast/bin" />
+  	<!-- remove old beast.jar that contained version information -->
+  	<delete file="${prefix}/beast/bin/${app.name}-0.1-dev.jar" failonerror="false"/>
+  	<copy file="${dist.dir}/${app.name}.jar" todir="${prefix}/beast/bin" />
   	<copy file="${etc.dir}/xmlrpcserver" todir="${prefix}/beast/bin" />
     <chmod file="${prefix}/beast/bin/xmlrpcserver" perm="755"/>
   	<copy file="${etc.dir}/pgfwkplugin" todir="${prefix}/beast/bin" />
     <chmod file="${prefix}/beast/bin/pgfwkplugin" perm="755"/>
-  	
   </target>
+	
+  <target name="install" depends="distribution, -install-files" />
 
   <!-- This is the overall build script that can be used to get a full build & test sequence --> 
   <target name="hudson" depends="build,test.coverage" />
+
+  <target name="hudson-install" depends="build,test.coverage,-install-files" />
 	
   <!-- Compile the code -->
   <target name="compile" depends="prepare">
