@@ -19,6 +19,11 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.manager;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.message.IBltMessage;
@@ -30,7 +35,7 @@ import eu.baltrad.beast.router.IRouter;
  * the available adaptors/routes.
  * @author Anders Henja
  */
-public class BltMessageManager implements IBltMessageManager {
+public class BltMessageManager implements IBltMessageManager, InitializingBean {
   /**
    * The router
    */
@@ -40,6 +45,11 @@ public class BltMessageManager implements IBltMessageManager {
    * The main adaptor
    */
   private IBltAdaptorManager manager = null;
+  
+  /**
+   * The executor
+   */
+  private ExecutorService executor = null;
   
   /**
    * @param router the router to set
@@ -56,12 +66,64 @@ public class BltMessageManager implements IBltMessageManager {
   }
 
   /**
+   * @param service the executor service to set
+   */
+  public synchronized void setExecutor(ExecutorService executor) {
+    this.executor = executor;
+  }
+  
+  /**
+   * @return the executor
+   */
+  public ExecutorService getExecutor() {
+    return this.executor;
+  }
+  
+  /**
    * @see IBltMessageManager#manage(IBltMessage)
    */
   public void manage(IBltMessage message) {
-    List<IMultiRoutedMessage> msgs = router.getMultiRoutedMessages(message);
-    for (IMultiRoutedMessage msg : msgs) {
-      manager.handle(msg);
+    if (message != null) {
+      Runnable r = createRunnable(message);
+      executor.execute(r);
+    } else {
+      throw new NullPointerException();
+    }
+  }
+  
+  /**
+   * Creates a runnable for use with an executor.
+   * @param message a message
+   * @return a runnable
+   */
+  protected Runnable createRunnable(final IBltMessage message) {
+    return new Runnable() {
+      @Override
+      public void run() {
+        List<IMultiRoutedMessage> msgs = router.getMultiRoutedMessages(message);
+        for (IMultiRoutedMessage msg : msgs) {
+          manager.handle(msg);
+        }
+      }
+    };
+  }
+
+  /**
+   * If the executor service not has been set when arriving here, the
+   * default executor service will be set.
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public synchronized void afterPropertiesSet() throws Exception {
+    if (executor == null) {
+      executor = Executors.newFixedThreadPool(10,new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+          Thread th = new Thread(r);
+          th.setDaemon(true);
+          return th;
+        }
+      });  
     }
   }
 }

@@ -20,6 +20,7 @@ package eu.baltrad.beast.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import junit.framework.TestCase;
 
@@ -40,6 +41,8 @@ public class BltMessageManagerTest extends TestCase {
   private IRouter router = null;
   private MockControl managerControl = null;
   private IBltAdaptorManager manager = null;
+  private MockControl executorControl = null;
+  private ExecutorService executor = null;
   private BltMessageManager classUnderTest = null;
   
   protected void setUp() throws Exception {
@@ -47,9 +50,13 @@ public class BltMessageManagerTest extends TestCase {
     router = (IRouter)routerControl.getMock();
     managerControl = MockControl.createControl(IBltAdaptorManager.class);
     manager = (IBltAdaptorManager)managerControl.getMock();
+    executorControl = MockControl.createControl(ExecutorService.class);
+    executor = (ExecutorService)executorControl.getMock();
+    
     classUnderTest = new BltMessageManager();
     classUnderTest.setRouter(router);
     classUnderTest.setManager(manager);
+    classUnderTest.setExecutor(executor);
   }
   
   protected void tearDown() throws Exception {
@@ -57,29 +64,70 @@ public class BltMessageManagerTest extends TestCase {
     router = null;
     managerControl = null;
     manager = null;
+    executorControl = null;
+    executor = null;
     classUnderTest = null;
   }
   
   protected void replay() {
     routerControl.replay();
     managerControl.replay();
+    executorControl.replay();
   }
   
   protected void verify() {
     routerControl.verify();
     managerControl.verify();
+    executorControl.verify();
   }
   
   public void testManage() throws Exception {
     IBltMessage message = new IBltMessage() {};
     
+    final Runnable theRunnable = new Runnable() {
+      public void run() {
+      }
+    };
+    
+    classUnderTest = new BltMessageManager() {
+      protected Runnable createRunnable(final IBltMessage message) {
+        return theRunnable;
+      }
+    };
+    classUnderTest.setExecutor(executor);
+    
+    executor.execute(theRunnable);
+    
+    replay();
+    
+    classUnderTest.manage(message);
+    
+    verify();
+  }
+
+  public void testManage_nullMessage() throws Exception {
+    
+    replay();
+    
+    try {
+      classUnderTest.manage(null);
+      fail("Expected NullPointerException");
+    } catch (NullPointerException npe) {
+      // pass
+    }
+    
+    verify();
+  }
+  
+  public void testCreateRunnable() throws Exception {
+    IBltMessage message = new IBltMessage() {};
     IMultiRoutedMessage m1 = new BltMultiRoutedMessage();
     IMultiRoutedMessage m2 = new BltMultiRoutedMessage();
     
     List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
     messages.add(m1);
     messages.add(m2);
-    
+
     router.getMultiRoutedMessages(message);
     routerControl.setReturnValue(messages);
     manager.handle(m1);
@@ -87,20 +135,34 @@ public class BltMessageManagerTest extends TestCase {
     
     replay();
     
-    classUnderTest.manage(message);
+    Runnable r = classUnderTest.createRunnable(message);
+    r.run(); // And verify that the calls are performed correctly.
     
     verify();
   }
   
-  public void testManage_noRoute() throws Exception {
+  public void testCreateRunnable_noRoute() {
     IBltMessage message = new IBltMessage() {};
     List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
     router.getMultiRoutedMessages(message);
     routerControl.setReturnValue(messages);
+    
     replay();
     
-    classUnderTest.manage(message);
+    Runnable r = classUnderTest.createRunnable(message);
+    r.run();
     
     verify();
+  }
+  
+  public void testAfterPropertiesSet() throws Exception {
+    classUnderTest = new BltMessageManager();
+    assertEquals(null, classUnderTest.getExecutor());
+    
+    // Execute test
+    classUnderTest.afterPropertiesSet();
+    
+    // Verify
+    assertTrue(classUnderTest.getExecutor() != null);
   }
 }
