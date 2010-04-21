@@ -27,81 +27,80 @@ import org.easymock.MockControl;
 
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
+import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRouter;
-import eu.baltrad.beast.router.Route;
 
 
 /**
  * @author Anders Henja
  */
 public class BltMessageManagerTest extends TestCase {
-  public void testManage() throws Exception {
-    MockControl routerControl = MockControl.createControl(IRouter.class);
-    IRouter router = (IRouter)routerControl.getMock();
-    MockControl managerControl = MockControl.createControl(IBltAdaptorManager.class);
-    IBltAdaptorManager manager = (IBltAdaptorManager)managerControl.getMock();
-    
-    IBltMessage message = new IBltMessage() { };
-    List<Route> routes = new ArrayList<Route>();
-    Route r1 = new Route();
-    Route r2 = new Route();
-    routes.add(r1);
-    routes.add(r2);
-    
-    // the mocking sequence
-    router.getRoutes(message);
-    routerControl.setReturnValue(routes);
-    manager.handle(r1);
-    manager.handle(r2);
-    
-    BltMessageManager classUnderTest = new BltMessageManager();
+  private MockControl routerControl = null;
+  private IRouter router = null;
+  private MockControl managerControl = null;
+  private IBltAdaptorManager manager = null;
+  private BltMessageManager classUnderTest = null;
+  
+  protected void setUp() throws Exception {
+    routerControl = MockControl.createControl(IRouter.class);
+    router = (IRouter)routerControl.getMock();
+    managerControl = MockControl.createControl(IBltAdaptorManager.class);
+    manager = (IBltAdaptorManager)managerControl.getMock();
+    classUnderTest = new BltMessageManager();
     classUnderTest.setRouter(router);
     classUnderTest.setManager(manager);
-
+  }
+  
+  protected void tearDown() throws Exception {
+    routerControl = null;
+    router = null;
+    managerControl = null;
+    manager = null;
+    classUnderTest = null;
+  }
+  
+  protected void replay() {
     routerControl.replay();
     managerControl.replay();
-    
-    // execute test
-    classUnderTest.manage(message);
-    
-    // verify
+  }
+  
+  protected void verify() {
     routerControl.verify();
     managerControl.verify();
   }
   
-  public void testManage_exceptionInSequence() throws Exception {
-    MockControl routerControl = MockControl.createControl(IRouter.class);
-    IRouter router = (IRouter)routerControl.getMock();
-    MockControl managerControl = MockControl.createControl(IBltAdaptorManager.class);
-    IBltAdaptorManager manager = (IBltAdaptorManager)managerControl.getMock();
+  public void testManage() throws Exception {
+    IBltMessage message = new IBltMessage() {};
     
-    IBltMessage message = new IBltMessage() { };
-    List<Route> routes = new ArrayList<Route>();
-    Route r1 = new Route();
-    Route r2 = new Route();
-    routes.add(r1);
-    routes.add(r2);
+    IMultiRoutedMessage m1 = new BltMultiRoutedMessage();
+    IMultiRoutedMessage m2 = new BltMultiRoutedMessage();
     
-    // the mocking sequence
-    router.getRoutes(message);
-    routerControl.setReturnValue(routes);
-    manager.handle(r1);
-    managerControl.setThrowable(new RuntimeException());
-    manager.handle(r2);
+    List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
+    messages.add(m1);
+    messages.add(m2);
     
-    BltMessageManager classUnderTest = new BltMessageManager();
-    classUnderTest.setRouter(router);
-    classUnderTest.setManager(manager);
-
-    routerControl.replay();
-    managerControl.replay();
+    router.getMultiRoutedMessages(message);
+    routerControl.setReturnValue(messages);
+    manager.handle(m1);
+    manager.handle(m2);
     
-    // execute test
+    replay();
+    
     classUnderTest.manage(message);
     
-    // verify
-    routerControl.verify();
-    managerControl.verify();
+    verify();
   }
-
+  
+  public void testManage_noRoute() throws Exception {
+    IBltMessage message = new IBltMessage() {};
+    List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
+    router.getMultiRoutedMessages(message);
+    routerControl.setReturnValue(messages);
+    replay();
+    
+    classUnderTest.manage(message);
+    
+    verify();
+  }
 }

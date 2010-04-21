@@ -33,7 +33,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.beast.router.Route;
 
 /**
  * @author Anders Henja
@@ -588,108 +587,6 @@ public class BltAdaptorManagerTest extends TestCase {
     assertEquals("ABC", result.get(0));
     assertEquals("BEA", result.get(1));
     assertEquals("DEF", result.get(2));
-  }
-  
-  
-  public void testHandle() throws Exception {
-    MockControl adaptor1Control = MockControl.createControl(IAdaptor.class);
-    IAdaptor adaptor1 = (IAdaptor)adaptor1Control.getMock();
-    MockControl adaptor2Control = MockControl.createControl(IAdaptor.class);
-    IAdaptor adaptor2 = (IAdaptor)adaptor2Control.getMock();
-    Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
-    adaptors.put("A1", adaptor1);
-    adaptors.put("A2", adaptor2);
-    
-    IBltMessage msg = new IBltMessage() {};
-    Route r = new Route("A2", msg);
-    
-    classUnderTest.setAdaptors(adaptors);
-
-    adaptor2.handle(msg);
-
-    adaptor1Control.replay();
-    adaptor2Control.replay();
-    
-    // execute test
-    classUnderTest.handle(r);
-    
-    // verify
-    adaptor1Control.verify();
-    adaptor2Control.verify();
-  }
-
-  public void testHandle_noMatchingAdaptor() throws Exception {
-    Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
-    IBltMessage msg = new IBltMessage() {};
-    Route r = new Route("A2", msg);
-    
-    classUnderTest.setAdaptors(adaptors);
-
-    // execute test
-    try {
-      classUnderTest.handle(r);
-      fail("Expected AdaptorException");
-    } catch (AdaptorException e) {
-      // pass
-    }
-    
-    // verify
-  }
-
-  
-  public void testHandle_withCallback() throws Exception {
-    MockControl adaptor1Control = MockControl.createControl(IAdaptor.class);
-    IAdaptor adaptor1 = (IAdaptor)adaptor1Control.getMock();
-    MockControl adaptor2Control = MockControl.createControl(IAdaptor.class);
-    IAdaptor adaptor2 = (IAdaptor)adaptor2Control.getMock();
-    IAdaptorCallback cb = new IAdaptorCallback(){
-      public void error(IBltMessage message, Throwable t) {}
-      public void success(IBltMessage message, Object result) {}
-      public void timeout(IBltMessage message) {}
-    };
-    Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
-    adaptors.put("A1", adaptor1);
-    adaptors.put("A2", adaptor2);
-    
-    IBltMessage msg = new IBltMessage() {};
-    Route r = new Route("A2", msg);
-    
-    classUnderTest.setAdaptors(adaptors);
-
-    adaptor2.handle(msg, cb);
-
-    adaptor1Control.replay();
-    adaptor2Control.replay();
-    
-    // execute test
-    classUnderTest.handle(r, cb);
-    
-    // verify
-    adaptor1Control.verify();
-    adaptor2Control.verify();
-  }
-
-  public void testHandle_withCallback_noMatchingAdaptor() throws Exception {
-    Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
-    IAdaptorCallback cb = new IAdaptorCallback(){
-      public void error(IBltMessage message, Throwable t) {}
-      public void success(IBltMessage message, Object result) {}
-      public void timeout(IBltMessage message) {}
-    };    
-    IBltMessage msg = new IBltMessage() {};
-    Route r = new Route("A2", msg);
-    
-    classUnderTest.setAdaptors(adaptors);
-
-    // execute test
-    try {
-      classUnderTest.handle(r, cb);
-      fail("Expected AdaptorException");
-    } catch (AdaptorException e) {
-      // pass
-    }
-    
-    // verify
   }
   
   public void testGetAdaptorMapper() throws Exception {

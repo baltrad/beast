@@ -22,8 +22,8 @@ import java.util.List;
 
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRouter;
-import eu.baltrad.beast.router.Route;
 
 /**
  * The message manager that will distribute the messages to
@@ -59,13 +59,9 @@ public class BltMessageManager implements IBltMessageManager {
    * @see IBltMessageManager#manage(IBltMessage)
    */
   public void manage(IBltMessage message) {
-    List<Route> routes = router.getRoutes(message);
-    for (Route r: routes) {
-      try {
-        manager.handle(r);
-      } catch (Throwable t) {
-        // no op
-      }
+    List<IMultiRoutedMessage> msgs = router.getMultiRoutedMessages(message);
+    for (IMultiRoutedMessage msg : msgs) {
+      manager.handle(msg);
     }
   }
 }

@@ -16,31 +16,45 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.router;
+package eu.baltrad.beast.message.mo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.router.IMultiRoutedMessage;
+import junit.framework.TestCase;
 
 /**
- * Creates the routed messages for a message that should be sent. I.e. one message
- * can actually be intended for more than one target.
  * @author Anders Henja
+ *
  */
-public interface IRouter {
-  /**
-   * Creates a list of routed messages that can be used for sending the messages
-   * to several recipients.
-   * @param msg the message that should be routed.
-   * @return a list of multi routed messages
-   */
-  public List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg);
+public class BltMultiRoutedMessageTest extends TestCase {
+  private BltMultiRoutedMessage classUnderTest = null;
   
-  /**
-   * Almost the same as {@link #getMultiRoutedMessages(IBltMessage)} but it returns
-   * several IRoutedMessage's instead of several MultiRoutedMessage
-   * @param msg the message
-   * @return a list of zero or more routed messages
-   */
-  public List<IRoutedMessage> getRoutedMessages(IBltMessage msg);
+  public void setUp() throws Exception {
+    super.setUp();
+    classUnderTest = new BltMultiRoutedMessage();
+  }
+  
+  public void tearDown() throws Exception {
+    super.tearDown();
+    classUnderTest = null;
+  }
+
+  public void testIsRoutedMessage() throws Exception {
+    assertTrue(classUnderTest instanceof IMultiRoutedMessage);
+  }
+  
+  public void testMessage() {
+    IBltMessage msg = new IBltMessage() { };
+    classUnderTest.setMessage(msg);
+    assertSame(msg, classUnderTest.getMessage());
+  }
+  
+  public void testDestinations() {
+    List<String> destinations = new ArrayList<String>();
+    classUnderTest.setDestinations(destinations);
+    assertSame(destinations, classUnderTest.getDestinations());
+  }
 }

@@ -20,7 +20,8 @@ package eu.baltrad.beast.adaptor;
 
 import java.util.List;
 
-import eu.baltrad.beast.router.Route;
+import eu.baltrad.beast.router.IMultiRoutedMessage;
+import eu.baltrad.beast.router.IRoutedMessage;
 
 /**
  * @author Anders Henja
@@ -90,19 +91,25 @@ public interface IBltAdaptorManager {
   public IAdaptor getAdaptor(String name);
   
   /**
-   * Handles a route. If this adaptor could not handle the route an AdaptorException should be
-   * thrown.
-   * @param route the route to handle
-   * @throws AdaptorException
+   * Handles a multi routed message. If the message not can be sent to a specified
+   * destination, this must be ignored and the next destination should get the message.
+   * @param message the routed message to handle
    */
-  public void handle(Route route);
+  public void handle(IMultiRoutedMessage message);
 
   /**
-   * Same as {@link #handle(Route)} but with the possibility to get the result
-   * to the callback
-   * @param route the route
-   * @param callback the callback
-   * @throws AdaptorException
+   * Sends a message to destination given by the message
+   * @param message the message
+   * @throws AdaptorException if the message not could be passed on to the adaptor
    */
-  public void handle(Route route, IAdaptorCallback callback);
+  public void handle(IRoutedMessage message);
+  
+  /**
+   * Same as {@link #handle(IRoutedMessage)} but it also gives the possibility
+   * to get the result back to the callback.
+   * @param message the routed message
+   * @param callback the callback
+   * @throws AdaptorException if the message not could be passed on to the adaptor
+   */
+  public void handle(IRoutedMessage message, IAdaptorCallback callback);
 }

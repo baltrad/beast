@@ -21,7 +21,6 @@ package eu.baltrad.beast.router.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -32,9 +31,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
+import eu.baltrad.beast.message.mo.BltRoutedMessage;
+import eu.baltrad.beast.router.IMultiRoutedMessage;
+import eu.baltrad.beast.router.IRoutedMessage;
 import eu.baltrad.beast.router.IRouter;
 import eu.baltrad.beast.router.IRouterManager;
-import eu.baltrad.beast.router.Route;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleFactory;
@@ -103,23 +105,70 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   }
   
 	/**
-	 * Creates a list of zero or more routes.
-	 * @param msg - the message that should result in the route(s).
-	 * @return a list of zero or more routes.
+	 * @see IRouter#getMultiRoutedMessages(IBltMessage)
+	 * @param msg - the message that should result in the multi routed messages.
+	 * @return a list of zero or more multi routed messages.
 	 */
 	@Override
-	public synchronized List<Route> getRoutes(IBltMessage msg) {
-	  List<Route> result = new ArrayList<Route>();
-	  for (RouteDefinition d: definitions) {
+	public List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg) {
+	  List<IMultiRoutedMessage> result = new ArrayList<IMultiRoutedMessage>();
+	  for (RouteDefinition d : definitions) {
 	    IBltMessage nmsg = d.getRule().handle(msg);
 	    if (nmsg != null) {
-	      Iterator<String> i = d.getRecipients().iterator();
-	      while (i.hasNext()) {
-	        result.add(new Route(i.next(), nmsg));
+	      if (nmsg instanceof IMultiRoutedMessage) {
+	        result.add((IMultiRoutedMessage)nmsg);
+	      } else if (nmsg instanceof IRoutedMessage) {
+	        BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
+	        rms.setMessage(((IRoutedMessage)nmsg).getMessage());
+	        List<String> destinations = new ArrayList<String>();
+	        destinations.add(((IRoutedMessage) nmsg).getDestination());
+	        rms.setDestinations(destinations);
+	        result.add(rms);
+	      } else {
+	        BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
+	        rms.setMessage(nmsg);
+	        rms.setDestinations(d.getRecipients());
+	        result.add(rms);
 	      }
 	    }
 	  }
-		return result;
+	  return result;
+	}
+
+	 /**
+   * @see IRouter#getRoutedMessages(IBltMessage)
+   * @param msg - the message that should result in the routed messages.
+   * @return a list of zero or more routed messages.
+   */
+	@Override
+	public List<IRoutedMessage> getRoutedMessages(IBltMessage msg) {
+    List<IRoutedMessage> result = new ArrayList<IRoutedMessage>();
+    for (RouteDefinition d : definitions) {
+      IBltMessage nmsg = d.getRule().handle(msg);
+      if (nmsg != null) {
+        if (nmsg instanceof IRoutedMessage) {
+          result.add((IRoutedMessage)nmsg);
+        } else if (nmsg instanceof IMultiRoutedMessage) {
+          List<String> recipients = ((IMultiRoutedMessage)nmsg).getDestinations();
+          if (recipients != null) {
+            for (String r: recipients) {
+              BltRoutedMessage bmsg = new BltRoutedMessage();
+              bmsg.setDestination(r);
+              bmsg.setMessage(((IMultiRoutedMessage)nmsg).getMessage());
+              result.add(bmsg);
+            }
+          }
+        } else {
+          for (String r : d.getRecipients()) {
+            BltRoutedMessage bmsg = new BltRoutedMessage();
+            bmsg.setDestination(r);
+            bmsg.setMessage(nmsg);
+            result.add(bmsg);
+          }
+        }
+      }
+    }
+    return result;
 	}
 
   /**

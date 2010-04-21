@@ -16,31 +16,59 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.router;
-
-import java.util.List;
+package eu.baltrad.beast.message.mo;
 
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.router.IRoutedMessage;
 
 /**
- * Creates the routed messages for a message that should be sent. I.e. one message
- * can actually be intended for more than one target.
  * @author Anders Henja
+ *
  */
-public interface IRouter {
+public class BltRoutedMessage implements IBltMessage, IRoutedMessage {
   /**
-   * Creates a list of routed messages that can be used for sending the messages
-   * to several recipients.
-   * @param msg the message that should be routed.
-   * @return a list of multi routed messages
+   * The message that is routed
    */
-  public List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg);
+  private IBltMessage message = null;
   
   /**
-   * Almost the same as {@link #getMultiRoutedMessages(IBltMessage)} but it returns
-   * several IRoutedMessage's instead of several MultiRoutedMessage
-   * @param msg the message
-   * @return a list of zero or more routed messages
+   * The destination of the message
    */
-  public List<IRoutedMessage> getRoutedMessages(IBltMessage msg);
+  private String destination = null;
+  
+  /**
+   * Constructor
+   */
+  public BltRoutedMessage() {
+  }
+
+  /**
+   * @param message the message to set
+   */
+  public void setMessage(IBltMessage message) {
+    this.message = message;
+  }
+
+  /**
+   * @return the message
+   */
+  @Override
+  public IBltMessage getMessage() {
+    return message;
+  }
+
+  /**
+   * @param destinations the destinations to set
+   */
+  public void setDestination(String destination) {
+    this.destination = destination;
+  }
+
+  /**
+   * @see eu.baltrad.beast.router.IRoutedMessage#getDestination()
+   */
+  @Override
+  public String getDestination() {
+    return this.destination;
+  }
 }

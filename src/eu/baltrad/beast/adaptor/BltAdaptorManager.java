@@ -35,7 +35,9 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import eu.baltrad.beast.router.Route;
+import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.router.IMultiRoutedMessage;
+import eu.baltrad.beast.router.IRoutedMessage;
 
 /**
  * @author Anders Henja
@@ -282,27 +284,47 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   }
 
   /**
-   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#handle(eu.baltrad.beast.router.Route)
+   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#handle(eu.baltrad.beast.router.IMultiRoutedMessage)
    */
   @Override
-  public void handle(Route route) {
-    IAdaptor adaptor = adaptors.get(route.getDestination());
-    if (adaptor == null) {
-      throw new AdaptorException("No adaptor able to handle the route");
+  public void handle(IMultiRoutedMessage message) {
+    Iterator<String> i = message.getDestinations().iterator();
+    IBltMessage msg = message.getMessage();
+    
+    while (i.hasNext()) {
+      String key = i.next();
+      try {
+        IAdaptor adaptor = adaptors.get(key);
+        if (adaptor != null) {
+          adaptor.handle(msg);
+        }
+      } catch (Throwable t) {
+        // do nothing
+      }
     }
-    adaptor.handle(route.getMessage()); 
   }
 
-  /**
-   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#handle(eu.baltrad.beast.router.Route, eu.baltrad.beast.adaptor.IAdaptorCallback)
-   */
   @Override
-  public void handle(Route route, IAdaptorCallback callback) {
-    IAdaptor adaptor = adaptors.get(route.getDestination());
+  public void handle(IRoutedMessage message) {
+    String destination = message.getDestination();
+    IAdaptor adaptor = adaptors.get(destination);
     if (adaptor == null) {
       throw new AdaptorException("No adaptor able to handle the route");
     }
-    adaptor.handle(route.getMessage(), callback);    
+    adaptor.handle(message.getMessage());
+  }
+  
+  /**
+   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#handle(IRoutedMessage, IAdaptorCallback)
+   */
+  @Override
+  public void handle(IRoutedMessage message, IAdaptorCallback callback) {
+    String destination = message.getDestination();
+    IAdaptor adaptor = adaptors.get(destination);
+    if (adaptor == null) {
+      throw new AdaptorException("No adaptor able to handle the route");
+    }
+    adaptor.handle(message.getMessage(), callback);    
   }  
   
   /**

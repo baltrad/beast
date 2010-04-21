@@ -18,29 +18,22 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.router;
 
-import java.util.List;
-
 import eu.baltrad.beast.message.IBltMessage;
 
 /**
- * Creates the routed messages for a message that should be sent. I.e. one message
- * can actually be intended for more than one target.
+ * A routed message that should be sent to one destination
  * @author Anders Henja
  */
-public interface IRouter {
+public interface IRoutedMessage {
   /**
-   * Creates a list of routed messages that can be used for sending the messages
-   * to several recipients.
-   * @param msg the message that should be routed.
-   * @return a list of multi routed messages
+   * Returns the message that should be sent to the destination.
+   * @return the message
    */
-  public List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg);
+  public IBltMessage getMessage();
   
   /**
-   * Almost the same as {@link #getMultiRoutedMessages(IBltMessage)} but it returns
-   * several IRoutedMessage's instead of several MultiRoutedMessage
-   * @param msg the message
-   * @return a list of zero or more routed messages
+   * Returns the destination of this message
+   * @return a destination
    */
-  public List<IRoutedMessage> getRoutedMessages(IBltMessage msg);
+  public String getDestination();
 }
