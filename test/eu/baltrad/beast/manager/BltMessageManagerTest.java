@@ -83,6 +83,39 @@ public class BltMessageManagerTest extends TestCase {
   
   public void testManage() throws Exception {
     IBltMessage message = new IBltMessage() {};
+    IMultiRoutedMessage m1 = new BltMultiRoutedMessage();
+    IMultiRoutedMessage m2 = new BltMultiRoutedMessage();
+    
+    List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
+    messages.add(m1);
+    messages.add(m2);
+
+    router.getMultiRoutedMessages(message);
+    routerControl.setReturnValue(messages);
+    manager.handle(m1);
+    manager.handle(m2);
+    
+    replay();
+    classUnderTest.manage(message);
+    
+    verify();
+  }  
+  
+  public void testManage_noRoute() {
+    IBltMessage message = new IBltMessage() {};
+    List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
+    router.getMultiRoutedMessages(message);
+    routerControl.setReturnValue(messages);
+    
+    replay();
+    classUnderTest.manage(message);
+    
+    verify();
+  }  
+  
+/*  
+  public void testManage() throws Exception {
+    IBltMessage message = new IBltMessage() {};
     
     final Runnable theRunnable = new Runnable() {
       public void run() {
@@ -164,5 +197,9 @@ public class BltMessageManagerTest extends TestCase {
     
     // Verify
     assertTrue(classUnderTest.getExecutor() != null);
+  }
+*/
+  public void testThis() {
+    
   }
 }

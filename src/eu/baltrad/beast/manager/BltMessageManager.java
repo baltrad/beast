@@ -83,12 +83,23 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
    * @see IBltMessageManager#manage(IBltMessage)
    */
   public void manage(IBltMessage message) {
+    try {
+      List<IMultiRoutedMessage> msgs = router.getMultiRoutedMessages(message);
+      for (IMultiRoutedMessage msg : msgs) {
+        manager.handle(msg);
+      }
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }    
+/* Commented by AHE until I have time to investigate reason for hanging when
+ * running the integration tests. 
     if (message != null) {
       Runnable r = createRunnable(message);
       executor.execute(r);
     } else {
       throw new NullPointerException();
     }
+*/    
   }
   
   /**
@@ -97,15 +108,23 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
    * @return a runnable
    */
   protected Runnable createRunnable(final IBltMessage message) {
+/* Commented by AHE until I have time to investigate reason for hanging when
+ * running the integration tests. 
     return new Runnable() {
       @Override
       public void run() {
-        List<IMultiRoutedMessage> msgs = router.getMultiRoutedMessages(message);
-        for (IMultiRoutedMessage msg : msgs) {
-          manager.handle(msg);
+        try {
+          List<IMultiRoutedMessage> msgs = router.getMultiRoutedMessages(message);
+          for (IMultiRoutedMessage msg : msgs) {
+            manager.handle(msg);
+          }
+        } catch (Throwable t) {
+          t.printStackTrace();
         }
       }
     };
+ */
+    return null;
   }
 
   /**
@@ -115,6 +134,8 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
    */
   @Override
   public synchronized void afterPropertiesSet() throws Exception {
+/* Commented by AHE until I have time to investigate reason for hanging when
+ * running the integration tests.    
     if (executor == null) {
       executor = Executors.newFixedThreadPool(10,new ThreadFactory() {
         @Override
@@ -125,5 +146,6 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
         }
       });  
     }
+*/    
   }
 }
