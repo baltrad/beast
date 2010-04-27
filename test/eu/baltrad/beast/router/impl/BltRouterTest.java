@@ -131,6 +131,87 @@ public class BltRouterTest extends TestCase {
     assertEquals("Adaptor3", result.get(1).getDestinations().get(1));
   }
 
+  private static class MRM implements IBltMessage, IMultiRoutedMessage {
+    private IBltMessage msg = null;
+    private List<String> destinations = null;
+    
+    @Override
+    public List<String> getDestinations() {
+      return this.destinations;
+    }
+    @Override
+    public IBltMessage getMessage() {
+      return this.msg;
+    }
+    
+    public void setDestinations(List<String> destinations) {
+      this.destinations = destinations;
+    }
+    
+    public void setMessage(IBltMessage msg) {
+      this.msg = msg;
+    }
+  }
+  
+  private static class RM implements IBltMessage, IRoutedMessage {
+    private IBltMessage msg = null;
+    private String destination = null;
+    
+    @Override
+    public String getDestination() {
+      return this.destination;
+    }
+    @Override
+    public IBltMessage getMessage() {
+      return this.msg;
+    }
+
+    public void setDestination(String destination) {
+      this.destination = destination;
+    }
+    
+    public void setMessage(IBltMessage msg) {
+      this.msg = msg;
+    }
+    
+  }
+  
+  public void testGetMultiRoutedMessages_alreadyMultiRouted() throws Exception {
+    MRM message = new MRM();
+    
+    BltRouter classUnderTest = new BltRouter();
+    
+    replay();
+    
+    List<IMultiRoutedMessage> result = classUnderTest.getMultiRoutedMessages(message);
+    
+    verify();
+    
+    assertEquals(1, result.size());
+    assertSame(message, result.get(0));
+  }
+
+  public void testGetMultiRoutedMessages_routed() throws Exception {
+    IBltMessage msg = new IBltMessage() {};
+    RM message = new RM();
+    message.setDestination("ABC");
+    message.setMessage(msg);
+    
+    BltRouter classUnderTest = new BltRouter();
+    
+    replay();
+    
+    List<IMultiRoutedMessage> result = classUnderTest.getMultiRoutedMessages(message);
+    
+    verify();
+    
+    assertEquals(1, result.size());
+    assertSame(msg, result.get(0).getMessage());
+    assertEquals(1, result.get(0).getDestinations().size());
+    assertEquals("ABC", result.get(0).getDestinations().get(0));
+  }
+  
+  
   public void testGetMultiRoutedMessages_noHits() throws Exception {
     IBltMessage message = new IBltMessage() {};
     
@@ -241,6 +322,46 @@ public class BltRouterTest extends TestCase {
     assertEquals("Adaptor3", result.get(2).getDestination());
   }
 
+  public void testGetRoutedMessages_alreadyRouted() throws Exception {
+    RM message = new RM();
+    
+    BltRouter classUnderTest = new BltRouter();
+    
+    replay();
+    
+    List<IRoutedMessage> result = classUnderTest.getRoutedMessages(message);
+    
+    verify();
+    
+    assertEquals(1, result.size());
+    assertSame(message, result.get(0));
+  }
+
+  public void testGetRoutedMessages_multiRouted() throws Exception {
+    IBltMessage m = new IBltMessage() {};
+    MRM message = new MRM();
+    message.setMessage(m);
+    List<String> destinations = new ArrayList<String>();
+    destinations.add("ABC");
+    destinations.add("DEF");
+    message.setDestinations(destinations);
+    
+    BltRouter classUnderTest = new BltRouter();
+    
+    replay();
+    
+    List<IRoutedMessage> result = classUnderTest.getRoutedMessages(message);
+    
+    verify();
+    
+    assertEquals(2, result.size());
+    assertSame(m, result.get(0).getMessage());
+    assertSame(m, result.get(1).getMessage());
+    assertEquals("ABC", result.get(0).getDestination());
+    assertEquals("DEF", result.get(1).getDestination());
+  }
+  
+  
   public void testGetRoutedMessages_noHits() throws Exception {
     IBltMessage message = new IBltMessage() {};
     

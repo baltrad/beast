@@ -112,25 +112,36 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	@Override
 	public List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg) {
 	  List<IMultiRoutedMessage> result = new ArrayList<IMultiRoutedMessage>();
-	  for (RouteDefinition d : definitions) {
-	    IBltMessage nmsg = d.getRule().handle(msg);
-	    if (nmsg != null) {
-	      if (nmsg instanceof IMultiRoutedMessage) {
-	        result.add((IMultiRoutedMessage)nmsg);
-	      } else if (nmsg instanceof IRoutedMessage) {
-	        BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
-	        rms.setMessage(((IRoutedMessage)nmsg).getMessage());
-	        List<String> destinations = new ArrayList<String>();
-	        destinations.add(((IRoutedMessage) nmsg).getDestination());
-	        rms.setDestinations(destinations);
-	        result.add(rms);
-	      } else {
-	        BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
-	        rms.setMessage(nmsg);
-	        rms.setDestinations(d.getRecipients());
-	        result.add(rms);
-	      }
-	    }
+	  if (msg instanceof IMultiRoutedMessage) {
+	    result.add((IMultiRoutedMessage)msg);
+	  } else if (msg instanceof IRoutedMessage) {
+	    BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
+	    rms.setMessage(((IRoutedMessage) msg).getMessage());
+      List<String> destinations = new ArrayList<String>();
+      destinations.add(((IRoutedMessage) msg).getDestination());
+	    rms.setDestinations(destinations);
+	    result.add(rms);
+	  } else {
+      for (RouteDefinition d : definitions) {
+        IBltMessage nmsg = d.getRule().handle(msg);
+        if (nmsg != null) {
+          if (nmsg instanceof IMultiRoutedMessage) {
+            result.add((IMultiRoutedMessage) nmsg);
+          } else if (nmsg instanceof IRoutedMessage) {
+            BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
+            rms.setMessage(((IRoutedMessage) nmsg).getMessage());
+            List<String> destinations = new ArrayList<String>();
+            destinations.add(((IRoutedMessage) nmsg).getDestination());
+            rms.setDestinations(destinations);
+            result.add(rms);
+          } else {
+            BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
+            rms.setMessage(nmsg);
+            rms.setDestinations(d.getRecipients());
+            result.add(rms);
+          }
+        }
+      }
 	  }
 	  return result;
 	}
@@ -143,27 +154,43 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	@Override
 	public List<IRoutedMessage> getRoutedMessages(IBltMessage msg) {
     List<IRoutedMessage> result = new ArrayList<IRoutedMessage>();
-    for (RouteDefinition d : definitions) {
-      IBltMessage nmsg = d.getRule().handle(msg);
-      if (nmsg != null) {
-        if (nmsg instanceof IRoutedMessage) {
-          result.add((IRoutedMessage)nmsg);
-        } else if (nmsg instanceof IMultiRoutedMessage) {
-          List<String> recipients = ((IMultiRoutedMessage)nmsg).getDestinations();
-          if (recipients != null) {
-            for (String r: recipients) {
+    if (msg instanceof IRoutedMessage) {
+      result.add((IRoutedMessage)msg);
+    } else if (msg instanceof IMultiRoutedMessage) {
+      IBltMessage m = ((IMultiRoutedMessage)msg).getMessage();
+      List<String> destinations = ((IMultiRoutedMessage)msg).getDestinations();
+      if (destinations != null) {
+        for (String d : destinations) {
+          BltRoutedMessage rm = new BltRoutedMessage();
+          rm.setDestination(d);
+          rm.setMessage(m);
+          result.add(rm);
+        }
+      }
+    } else {
+      for (RouteDefinition d : definitions) {
+        IBltMessage nmsg = d.getRule().handle(msg);
+        if (nmsg != null) {
+          if (nmsg instanceof IRoutedMessage) {
+            result.add((IRoutedMessage) nmsg);
+          } else if (nmsg instanceof IMultiRoutedMessage) {
+            List<String> recipients = ((IMultiRoutedMessage) nmsg)
+                .getDestinations();
+            if (recipients != null) {
+              for (String r : recipients) {
+                BltRoutedMessage bmsg = new BltRoutedMessage();
+                bmsg.setDestination(r);
+                bmsg.setMessage(((IMultiRoutedMessage) nmsg).getMessage());
+                result.add(bmsg);
+              }
+            }
+          } else {
+            for (String r : d.getRecipients()) {
               BltRoutedMessage bmsg = new BltRoutedMessage();
               bmsg.setDestination(r);
-              bmsg.setMessage(((IMultiRoutedMessage)nmsg).getMessage());
+              bmsg.setMessage(nmsg);
               result.add(bmsg);
             }
-          }
-        } else {
-          for (String r : d.getRecipients()) {
-            BltRoutedMessage bmsg = new BltRoutedMessage();
-            bmsg.setDestination(r);
-            bmsg.setMessage(nmsg);
-            result.add(bmsg);
           }
         }
       }
