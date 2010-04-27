@@ -20,8 +20,6 @@ package eu.baltrad.beast.manager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import org.springframework.beans.factory.InitializingBean;
 

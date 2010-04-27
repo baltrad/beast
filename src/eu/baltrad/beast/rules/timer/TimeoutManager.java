@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
+import eu.baltrad.beast.manager.IBltMessageManager;
+import eu.baltrad.beast.message.IBltMessage;
+
 /**
  * The manager keeping track on all timeouts.
  * @author Anders Henja
@@ -41,6 +44,11 @@ public class TimeoutManager implements ITimeoutTaskListener {
    * The timeout task factory
    */
   private ITimeoutTaskFactory factory = null;
+  
+  /**
+   * The message manager for initiating new messages.
+   */
+  private IBltMessageManager messageManager = null;
   
   /**
    * The registered tasks
@@ -69,6 +77,13 @@ public class TimeoutManager implements ITimeoutTaskListener {
    */
   public void setFactory(ITimeoutTaskFactory factory) {
     this.factory = factory;
+  }
+  
+  /**
+   * @param messageManager the message manager to set
+   */
+  public void setMessageManager(IBltMessageManager messageManager) {
+    this.messageManager = messageManager;
   }
   
   /**
@@ -118,7 +133,10 @@ public class TimeoutManager implements ITimeoutTaskListener {
   @Override
   public synchronized void cancelNotification(long id, ITimeoutRule rule) {
     tasks.remove(id);
-    rule.timeout(id, ITimeoutRule.CANCELLED);
+    IBltMessage message = rule.timeout(id, ITimeoutRule.CANCELLED);
+    if (message != null) {
+      messageManager.manage(message);
+    }
   }
 
   /**
@@ -127,6 +145,9 @@ public class TimeoutManager implements ITimeoutTaskListener {
   @Override
   public synchronized void timeoutNotification(long id, ITimeoutRule rule) {
     tasks.remove(id);
-    rule.timeout(id, ITimeoutRule.TIMEOUT);
+    IBltMessage message = rule.timeout(id, ITimeoutRule.TIMEOUT);
+    if (message != null) {
+      messageManager.manage(message);
+    }
   }
 }

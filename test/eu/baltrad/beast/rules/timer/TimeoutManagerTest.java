@@ -23,6 +23,7 @@ import java.util.Timer;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
+import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.IBltMessage;
 import junit.framework.TestCase;
 
@@ -35,6 +36,8 @@ public class TimeoutManagerTest extends TestCase {
   private ITimeoutTaskFactory factory = null;
   private MockControl timerControl = null;
   private Timer timer = null;
+  private MockControl managerControl = null;
+  private IBltMessageManager manager = null;
   
   private TimeoutManager classUnderTest = null;
   
@@ -44,6 +47,8 @@ public class TimeoutManagerTest extends TestCase {
     factory = (ITimeoutTaskFactory)factoryControl.getMock();
     timerControl = MockClassControl.createControl(Timer.class);
     timer = (Timer)timerControl.getMock();
+    managerControl = MockControl.createControl(IBltMessageManager.class);
+    manager = (IBltMessageManager)managerControl.getMock();
     
     classUnderTest = new TimeoutManager() {
       protected synchronized long newID() {
@@ -52,6 +57,7 @@ public class TimeoutManagerTest extends TestCase {
     };
     classUnderTest.setTimer(timer);
     classUnderTest.setFactory(factory);
+    classUnderTest.setMessageManager(manager);
   }
   
   public void tearDown() throws Exception {
@@ -61,10 +67,14 @@ public class TimeoutManagerTest extends TestCase {
   
   protected void replay() {
     factoryControl.replay();
+    timerControl.replay();
+    managerControl.replay();
   }
   
   protected void verify() {
     factoryControl.verify();
+    timerControl.verify();
+    managerControl.verify();
   }
   
   public void testRegister() throws Exception {
@@ -140,6 +150,8 @@ public class TimeoutManagerTest extends TestCase {
     rule.timeout(1, ITimeoutRule.CANCELLED);
     ruleControl.setReturnValue(msg);
     
+    manager.manage(msg);
+    
     replay();
     ruleControl.replay();
     
@@ -162,6 +174,8 @@ public class TimeoutManagerTest extends TestCase {
     
     rule.timeout(1, ITimeoutRule.TIMEOUT);
     ruleControl.setReturnValue(msg);
+    
+    manager.manage(msg);
     
     replay();
     ruleControl.replay();

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  <!-- We need to have a timeout manager so that we can initiate timeout requests from anywhere -->
+  <bean id="timeoutfactory" class="eu.baltrad.beast.rules.timer.TimeoutTaskFactory"/>  
+  <bean id="timeoutmanager" class="eu.baltrad.beast.rules.timer.TimeoutManager" autowire="byType"/>
+
+  <!-- And we should have an application context to get hold of relevant managers -->
+  <bean id="managercontext" class="eu.baltrad.beast.ManagerContext" autowire="byType" />
+</beans>
