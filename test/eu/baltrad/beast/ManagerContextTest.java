@@ -21,7 +21,9 @@ package eu.baltrad.beast;
 import org.springframework.beans.factory.BeanCreationException;
 
 import eu.baltrad.beast.ManagerContext;
+import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.fc.FileCatalog;
 import junit.framework.TestCase;
 
 /**
@@ -31,6 +33,8 @@ public class ManagerContextTest extends TestCase {
   
   public void setUp() throws Exception {
     new ManagerContext().setTimeoutManager(null);
+    new ManagerContext().setCatalog(null);
+    FileCatalog fc = new FileCatalog("postgresql://baltrad:baltrad@localhost/beasttestdb", "/tmp");
   }
   
   public void testTimeoutManager() {
@@ -39,15 +43,25 @@ public class ManagerContextTest extends TestCase {
     assertSame(manager, ManagerContext.getTimeoutManager());
   }
   
+  public void testCatalog() {
+    Catalog c = new Catalog();
+    new ManagerContext().setCatalog(c);
+    assertSame(c, ManagerContext.getCatalog());
+  }
+  
   public void testAfterPropertiesSet() throws Exception {
     TimeoutManager manager = new TimeoutManager();
+    Catalog c = new Catalog();
     ManagerContext context = new ManagerContext();
     context.setTimeoutManager(manager);
+    context.setCatalog(c);
     context.afterPropertiesSet();
   }
   
   public void testAfterPropertiesSet_noTimeoutManager() throws Exception {
     ManagerContext context = new ManagerContext();
+    Catalog c = new Catalog();
+    context.setCatalog(c);
     try {
       context.afterPropertiesSet();
       fail("Expected BeanCreationException");
@@ -55,4 +69,17 @@ public class ManagerContextTest extends TestCase {
       //pass
     }
   }
+
+  public void testAfterPropertiesSet_noCatalog() throws Exception {
+    ManagerContext context = new ManagerContext();
+    TimeoutManager m = new TimeoutManager();
+    context.setTimeoutManager(m);
+    try {
+      context.afterPropertiesSet();
+      fail("Expected BeanCreationException");
+    } catch (BeanCreationException e) {
+      //pass
+    }
+  }
+  
 }

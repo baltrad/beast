@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.itest;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -218,6 +219,36 @@ public class BeastDBTestHelper {
   public ITable getXlsTable(TestCase tc, String extras, String name) throws Exception {
     IDataSet dataset = getXlsDataset(tc, extras);
     return dataset.getTable(name);
+  }
+  
+  public void createBaltradDbPath() {
+    File f = new File(getBaltradDbPth());
+    if (!f.exists()) {
+      f.mkdir();
+    } else if (!f.isDirectory()) {
+      throw new RuntimeException(""+getBaltradDbPth() + " exists but is not a directory");
+    }
+  }
+  
+  /**
+   * Removes all entries from the baltrad db
+   * @throws Exception
+   */
+  public void purgeBaltradDB() throws Exception {
+    String pth = getBaltradDbPth();
+    FilenameFilter filter = new FilenameFilter() {
+      public boolean accept(java.io.File dir, String name) {
+        return name.endsWith(".h5");
+      }
+    };
+    java.io.File dir = new java.io.File(pth);
+    String[] list = dir.list(filter);
+    for (String n : list) {
+      (new java.io.File(pth, n)).delete();
+    }
+
+    SimpleJdbcTemplate template = new SimpleJdbcTemplate(getSource());
+    template.update("delete from bdb_files");
   }
   
   /**

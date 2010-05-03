@@ -16,23 +16,21 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.bltdb;
+package eu.baltrad.beast.db;
 
-import java.io.FilenameFilter;
 import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.Query;
 import eu.baltrad.fc.ResultSet;
-import eu.baltrad.fc.expr.ExpressionFactory;
 import eu.baltrad.fc.expr.Expression;
+import eu.baltrad.fc.expr.ExpressionFactory;
 import eu.baltrad.fc.oh5.File;
 
 /**
@@ -62,31 +60,10 @@ public class BaltradDBITest extends TestCase {
   
   public BaltradDBITest(String name) {
     super(name);
-    //System.out.println("LIBRARYPATH: " + System.getProperty("java.library.path"));
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     baltradDbPath = helper.getBaltradDbPth();
     catalogue = new FileCatalog(helper.getBaltradDbUri(), baltradDbPath);
-  }
-  
-  /**
-   * Hack to purge the baltrad-db from all entries.
-   */
-  private void purgeBaltradDB() throws Exception {
-    String pth = helper.getBaltradDbPth();
-    FilenameFilter filter = new FilenameFilter() {
-      public boolean accept(java.io.File dir, String name) {
-        return name.endsWith(".h5");
-      }
-    };
-    java.io.File dir = new java.io.File(pth);
-    String[] list = dir.list(filter);
-    for (String n : list) {
-      (new java.io.File(pth, n)).delete();
-    }
-    
-    SimpleJdbcTemplate template = new SimpleJdbcTemplate(helper.getSource());
-    template.update("delete from bdb_files");
   }
   
   private String getFilePath(String resource) throws Exception {
@@ -95,7 +72,7 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void setUp() throws Exception {
-    purgeBaltradDB();
+    helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
     for (String n : FIXTURES) {
       File result = catalogue.catalog(getFilePath(n));

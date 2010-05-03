@@ -21,6 +21,7 @@ package eu.baltrad.beast;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 
+import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 
 /**
@@ -33,6 +34,11 @@ public class ManagerContext implements InitializingBean {
    * Timeout Manager
    */
   protected static TimeoutManager timeoutManager = null;
+  
+  /**
+   * The catalog for db access
+   */
+  protected static Catalog catalog = null;
   
   /**
    * @param manager the timeout manager to set
@@ -49,12 +55,29 @@ public class ManagerContext implements InitializingBean {
   }
 
   /**
+   * @param catalog the catalog to set
+   */
+  public void setCatalog(Catalog c) {
+    catalog = c;
+  }
+  
+  /**
+   * @return the catalog
+   */
+  public static Catalog getCatalog() {
+    return catalog;
+  }
+  
+  /**
    * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
    */
   @Override
   public void afterPropertiesSet() throws Exception {
     if (timeoutManager == null) {
       throw new BeanCreationException("timeout manager not set");
+    }
+    if (catalog == null) {
+      throw new BeanCreationException("catalog not set");
     }
   }
 }

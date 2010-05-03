@@ -16,21 +16,39 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.message.mo;
+package eu.baltrad.beast.rules.composite;
 
+import org.springframework.context.ApplicationContext;
+
+import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.itest.BeastDBTestHelper;
+import eu.baltrad.fc.FileCatalog;
 import junit.framework.TestCase;
-import eu.baltrad.fc.oh5.File;
 
 /**
  * @author Anders Henja
  *
  */
-public class BltDataMessageTest extends TestCase {
-  public void testSetFile() {
-    File o = new File(0,false);
-    BltDataMessage classUnderTest = new BltDataMessage();
-    assertEquals(null, classUnderTest.getFile());
-    classUnderTest.setFile(o);
-    assertSame(o, classUnderTest.getFile());
+public class CompositingRuleITest extends TestCase {
+  private ApplicationContext context = null;
+  private Catalog catalog = null;
+  private CompositingRule classUnderTest = null;
+
+  public CompositingRuleITest(String name) {
+    super(name);
+    context = BeastDBTestHelper.loadContext(this);
+    catalog = (Catalog)context.getBean("catalog");
+  }
+
+  public void setUp() throws Exception {
+    classUnderTest = new CompositingRule();
+    classUnderTest.setCatalog(catalog);
+  }
+  
+  public void tearDown() throws Exception {
+    classUnderTest = null;
+  }
+  
+  public void testX() {
   }
 }

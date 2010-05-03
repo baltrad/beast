@@ -16,21 +16,18 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.message.mo;
+package eu.baltrad.beast.db;
 
-import junit.framework.TestCase;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.Query;
 
 /**
  * @author Anders Henja
  *
  */
-public class BltDataMessageTest extends TestCase {
-  public void testSetFile() {
-    File o = new File(0,false);
-    BltDataMessage classUnderTest = new BltDataMessage();
-    assertEquals(null, classUnderTest.getFile());
-    classUnderTest.setFile(o);
-    assertSame(o, classUnderTest.getFile());
-  }
+public interface ICatalogFilter {
+  /**
+   * Applies this filters rules to the query.
+   * @param query the query to apply the filtering rules to
+   */
+  void apply(Query query);
 }
