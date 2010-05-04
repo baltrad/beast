@@ -16,33 +16,30 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.rules.timer;
+package eu.baltrad.beast.rules.composite;
 
-import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.IRuleCreator;
 
 /**
- * Any rule implementing this interface can subscribe for
- * a timeout notification.
  * @author Anders Henja
  */
-public interface ITimeoutRule {
+public class CompositeCreator implements IRuleCreator {
+  public final static String TYPE = "blt_composite";
+
   /**
-   * Timeout was triggered due to timeout.
+   * @see eu.baltrad.beast.rules.IRuleCreator#create(java.lang.String)
    */
-  public final static int TIMEOUT = 0;
-  
+  @Override
+  public IRule create(String definition) {
+    return null;
+  }
+
   /**
-   * Timeout was triggered due to cancellation.
+   * @see eu.baltrad.beast.rules.IRuleCreator#getType()
    */
-  public final static int CANCELLED = 1;
-  
-  /**
-   * Will be triggered when a timeout occurs or any other reason
-   * that can be of interest, like the timeout has been cancelled.
-   * @param id the identifier
-   * @param why the reason
-   * @param data any data that was registered with the timeout
-   * @return a blt message if a message should be sent
-   */
-  public IBltMessage timeout(long id, int why, Object data);
+  @Override
+  public String getType() {
+    return TYPE;
+  }
 }

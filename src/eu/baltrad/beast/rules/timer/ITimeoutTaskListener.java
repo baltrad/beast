@@ -28,11 +28,11 @@ public interface ITimeoutTaskListener {
    * Notification that a timeout occured
    * @param id the id
    */
-  public void timeoutNotification(long id, ITimeoutRule rule);
+  public void timeoutNotification(long id, ITimeoutRule rule, Object data);
   
   /**
    * Notification that a timeout has been cancelled
    * @param id the id
    */
-  public void cancelNotification(long id, ITimeoutRule rule);
+  public void cancelNotification(long id, ITimeoutRule rule, Object data);
 }

@@ -146,10 +146,10 @@ public class CompositingRule implements IRule, ITimeoutRule {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.timer.ITimeoutRule#timeout(long, int)
+   * @see eu.baltrad.beast.rules.timer.ITimeoutRule#timeout(long, int, Object)
    */
   @Override
-  public IBltMessage timeout(long id, int why) {
+  public IBltMessage timeout(long id, int why, Object data) {
     return null;
   }
   

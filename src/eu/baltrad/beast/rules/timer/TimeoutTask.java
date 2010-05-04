@@ -35,6 +35,11 @@ public class TimeoutTask extends TimerTask {
   private ITimeoutRule rule = null;
 
   /**
+   * The object data
+   */
+  private Object data = null;
+  
+  /**
    * A listener for listening on events
    */
   private ITimeoutTaskListener listener = null;
@@ -50,7 +55,7 @@ public class TimeoutTask extends TimerTask {
    */
   @Override
   public void run() {
-    listener.timeoutNotification(id, rule);
+    listener.timeoutNotification(id, rule, data);
   }
 
   /**
@@ -59,7 +64,7 @@ public class TimeoutTask extends TimerTask {
   @Override
   public boolean cancel() {
     boolean result = super.cancel();
-    listener.cancelNotification(id, rule);
+    listener.cancelNotification(id, rule, data);
     return result;
   }
 
@@ -103,5 +108,19 @@ public class TimeoutTask extends TimerTask {
    */
   public ITimeoutTaskListener getListener() {
     return listener;
+  }
+
+  /**
+   * @param data the data to set
+   */
+  public void setData(Object data) {
+    this.data = data;
+  }
+
+  /**
+   * @return the data
+   */
+  public Object getData() {
+    return data;
   }
 }

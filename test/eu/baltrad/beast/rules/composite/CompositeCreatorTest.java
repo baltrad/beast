@@ -16,33 +16,32 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.rules.timer;
+package eu.baltrad.beast.rules.composite;
 
-import eu.baltrad.beast.message.IBltMessage;
+import junit.framework.TestCase;
+
 
 /**
- * Any rule implementing this interface can subscribe for
- * a timeout notification.
  * @author Anders Henja
  */
-public interface ITimeoutRule {
-  /**
-   * Timeout was triggered due to timeout.
-   */
-  public final static int TIMEOUT = 0;
+public class CompositeCreatorTest extends TestCase {
+  private CompositeCreator classUnderTest = null;
   
-  /**
-   * Timeout was triggered due to cancellation.
-   */
-  public final static int CANCELLED = 1;
+  public void setUp() throws Exception {
+    classUnderTest = new CompositeCreator();
+  }
   
-  /**
-   * Will be triggered when a timeout occurs or any other reason
-   * that can be of interest, like the timeout has been cancelled.
-   * @param id the identifier
-   * @param why the reason
-   * @param data any data that was registered with the timeout
-   * @return a blt message if a message should be sent
-   */
-  public IBltMessage timeout(long id, int why, Object data);
+  public void tearDown() throws Exception {
+    classUnderTest = null;
+  }
+  
+  public void testGetType() {
+    assertEquals("blt_composite", classUnderTest.getType());
+    assertEquals(CompositeCreator.TYPE, classUnderTest.getType());
+  }
+  
+  public void testCreate() throws Exception {
+    CompositingRule rule = (CompositingRule)classUnderTest.create("C1");
+    
+  }
 }

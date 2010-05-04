@@ -58,11 +58,11 @@ public class TimeoutTaskTest extends TestCase {
   
   public void testRun() {
     ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why) {return null;}
+      public IBltMessage timeout(long id, int why, Object data) {return null;}
     };
     classUnderTest.setId(10);
     classUnderTest.setRule(rule);
-    listener.timeoutNotification(10, rule);
+    listener.timeoutNotification(10, rule, null);
     
     replay();
     classUnderTest.run();
@@ -71,11 +71,11 @@ public class TimeoutTaskTest extends TestCase {
 
   public void testCancel() {
     ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why) {return null;}
+      public IBltMessage timeout(long id, int why, Object data) {return null;}
     };
     classUnderTest.setId(10);
     classUnderTest.setRule(rule);
-    listener.cancelNotification(10, rule);
+    listener.cancelNotification(10, rule, null);
     replay();
     classUnderTest.cancel();
     verify();

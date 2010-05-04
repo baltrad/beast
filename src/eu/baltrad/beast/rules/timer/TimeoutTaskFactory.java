@@ -26,8 +26,7 @@ public class TimeoutTaskFactory implements ITimeoutTaskFactory {
    * @see eu.baltrad.beast.rules.timer.ITimeoutTaskFactory#create(eu.baltrad.beast.rules.timer.ITimeoutRule, long, eu.baltrad.beast.rules.timer.ITimeoutTaskListener)
    */
   @Override
-  public TimeoutTask create(ITimeoutRule rule, long id,
-      ITimeoutTaskListener listener) {
+  public TimeoutTask create(ITimeoutRule rule, long id, Object data, ITimeoutTaskListener listener) {
     if (rule != null && listener != null) {
       TimeoutTask task = new TimeoutTask();
       task.setId(id);

@@ -79,17 +79,17 @@ public class TimeoutManagerTest extends TestCase {
   
   public void testRegister() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why) {return null;}
+      public IBltMessage timeout(long id, int why, Object data) {return null;}
     };
     TimeoutTask task = new TimeoutTask();
     
-    factory.create(rule, 0, classUnderTest);
+    factory.create(rule, 0, null, classUnderTest);
     factoryControl.setReturnValue(task);
     timer.schedule(task, 1000);
     
     replay();
     
-    long result = classUnderTest.register(rule, 1000);
+    long result = classUnderTest.register(rule, 1000, null);
     
     verify();
     assertSame(task, classUnderTest.tasks.get(result));
@@ -147,7 +147,7 @@ public class TimeoutManagerTest extends TestCase {
     TimeoutTask task = new TimeoutTask();
     classUnderTest.tasks.put((long)1, task);
     
-    rule.timeout(1, ITimeoutRule.CANCELLED);
+    rule.timeout(1, ITimeoutRule.CANCELLED, null);
     ruleControl.setReturnValue(msg);
     
     manager.manage(msg);
@@ -155,7 +155,7 @@ public class TimeoutManagerTest extends TestCase {
     replay();
     ruleControl.replay();
     
-    classUnderTest.cancelNotification(1, rule);
+    classUnderTest.cancelNotification(1, rule, null);
    
     verify();
     ruleControl.verify();
@@ -172,7 +172,7 @@ public class TimeoutManagerTest extends TestCase {
     TimeoutTask task = new TimeoutTask();
     classUnderTest.tasks.put((long)1, task);
     
-    rule.timeout(1, ITimeoutRule.TIMEOUT);
+    rule.timeout(1, ITimeoutRule.TIMEOUT, null);
     ruleControl.setReturnValue(msg);
     
     manager.manage(msg);
@@ -180,7 +180,7 @@ public class TimeoutManagerTest extends TestCase {
     replay();
     ruleControl.replay();
     
-    classUnderTest.timeoutNotification(1, rule);
+    classUnderTest.timeoutNotification(1, rule, null);
    
     verify();
     ruleControl.verify();

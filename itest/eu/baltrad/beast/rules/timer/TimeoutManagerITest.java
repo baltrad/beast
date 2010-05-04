@@ -86,7 +86,7 @@ public class TimeoutManagerITest extends TestCase {
     final IBltMessage message = new IBltMessage() {};
     
     ITimeoutRule rule = new ITimeoutRule() {
-      public synchronized IBltMessage timeout(long id, int why) {
+      public synchronized IBltMessage timeout(long id, int why, Object data) {
         result.id = id;
         result.why = why;
         notify();
@@ -98,7 +98,7 @@ public class TimeoutManagerITest extends TestCase {
     
     replay();
     
-    long id = classUnderTest.register(rule, 1000);
+    long id = classUnderTest.register(rule, 1000, null);
     synchronized(rule) {
       try {
         rule.wait(1500);
@@ -114,7 +114,7 @@ public class TimeoutManagerITest extends TestCase {
     final TimeoutValues result = new TimeoutValues();
     
     ITimeoutRule rule = new ITimeoutRule() {
-      public synchronized IBltMessage timeout(long id, int why) {
+      public synchronized IBltMessage timeout(long id, int why, Object data) {
         result.id = id;
         result.why = why;
         notify();
@@ -124,7 +124,7 @@ public class TimeoutManagerITest extends TestCase {
     
     replay();
     
-    long id = classUnderTest.register(rule, 1000);
+    long id = classUnderTest.register(rule, 1000, null);
     synchronized(rule) {
       try {
         rule.wait(1500);
@@ -141,7 +141,7 @@ public class TimeoutManagerITest extends TestCase {
     final IBltMessage message = new IBltMessage() {};
     
     ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why) {
+      public IBltMessage timeout(long id, int why, Object data) {
         result.id = id;
         result.why = why;
         return message;
@@ -152,7 +152,7 @@ public class TimeoutManagerITest extends TestCase {
 
     replay();
     
-    long id = classUnderTest.register(rule, 1000);
+    long id = classUnderTest.register(rule, 1000, null);
     classUnderTest.cancel(id);
     synchronized(rule) {
       try {
@@ -170,7 +170,7 @@ public class TimeoutManagerITest extends TestCase {
     final TimeoutValues result = new TimeoutValues();
     
     ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why) {
+      public IBltMessage timeout(long id, int why, Object data) {
         result.id = id;
         result.why = why;
         return null;
@@ -179,7 +179,7 @@ public class TimeoutManagerITest extends TestCase {
     
     replay();
     
-    long id = classUnderTest.register(rule, 1000);
+    long id = classUnderTest.register(rule, 1000, null);
     classUnderTest.cancel(id);
     synchronized(rule) {
       try {
@@ -200,7 +200,7 @@ public class TimeoutManagerITest extends TestCase {
     
     public IBltMessage handle(IBltMessage message) {
       if (id < 0) {
-        id = ManagerContext.getTimeoutManager().register(this, 1000);
+        id = ManagerContext.getTimeoutManager().register(this, 1000, null);
       } else {
         ManagerContext.getTimeoutManager().cancel(id);
         id = -1;
@@ -208,7 +208,7 @@ public class TimeoutManagerITest extends TestCase {
       return null;
     }
     
-    public IBltMessage timeout(long id, int why) {
+    public IBltMessage timeout(long id, int why, Object data) {
       this.timeoutId = id;
       this.why = why;
       return resultMessage;

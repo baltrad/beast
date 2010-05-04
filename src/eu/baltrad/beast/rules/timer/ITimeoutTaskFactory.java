@@ -27,9 +27,10 @@ public interface ITimeoutTaskFactory {
    * Creates a TimeoutTask
    * @param rule the rule
    * @param id the id
+   * @param data any data that should be passed on
    * @param listener the listener
    * @return a TimeoutTask
    * @throws TimeoutRuleException if the rule is null
    */
-  public TimeoutTask create(ITimeoutRule rule, long id, ITimeoutTaskListener listener);
+  public TimeoutTask create(ITimeoutRule rule, long id, Object data, ITimeoutTaskListener listener);
 }

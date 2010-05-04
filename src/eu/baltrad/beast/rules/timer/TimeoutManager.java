@@ -90,11 +90,12 @@ public class TimeoutManager implements ITimeoutTaskListener {
    * Registers a timeout that should be triggered after delay (ms).
    * @param rule the rule to be called
    * @param delay the delay in miliseconds
+   * @param data data to be passed on to the one registering the task
    * @return a unique id
    */
-  public synchronized long register(ITimeoutRule rule, long delay) {
+  public synchronized long register(ITimeoutRule rule, long delay, Object data) {
     long id = newID();
-    TimeoutTask task = factory.create(rule, id, this);
+    TimeoutTask task = factory.create(rule, id, data, this);
     tasks.put(id, task);
     timer.schedule(task, delay);
     return id;
@@ -131,9 +132,9 @@ public class TimeoutManager implements ITimeoutTaskListener {
    * @see eu.baltrad.beast.rules.timer.ITimeoutListener#cancelNotification(long)
    */
   @Override
-  public synchronized void cancelNotification(long id, ITimeoutRule rule) {
+  public synchronized void cancelNotification(long id, ITimeoutRule rule, Object data) {
     tasks.remove(id);
-    IBltMessage message = rule.timeout(id, ITimeoutRule.CANCELLED);
+    IBltMessage message = rule.timeout(id, ITimeoutRule.CANCELLED, data);
     if (message != null) {
       messageManager.manage(message);
     }
@@ -143,9 +144,9 @@ public class TimeoutManager implements ITimeoutTaskListener {
    * @see eu.baltrad.beast.rules.timer.ITimeoutListener#timeoutNotification(long)
    */
   @Override
-  public synchronized void timeoutNotification(long id, ITimeoutRule rule) {
+  public synchronized void timeoutNotification(long id, ITimeoutRule rule, Object data) {
     tasks.remove(id);
-    IBltMessage message = rule.timeout(id, ITimeoutRule.TIMEOUT);
+    IBltMessage message = rule.timeout(id, ITimeoutRule.TIMEOUT, data);
     if (message != null) {
       messageManager.manage(message);
     }

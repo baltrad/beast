@@ -39,10 +39,10 @@ public class TimeoutTaskFactoryTest extends TestCase {
   
   public void testCreate_noListener() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why) {return null;}
+      public IBltMessage timeout(long id, int why, Object data) {return null;}
     };
     try {
-      classUnderTest.create(rule, 1, null);
+      classUnderTest.create(rule, 1, null, null);
       fail("Expected TimeoutRuleException");
     } catch (TimeoutRuleException e) {
       // pass
@@ -51,14 +51,14 @@ public class TimeoutTaskFactoryTest extends TestCase {
 
   public void testCreate_2() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why) {return null;}
+      public IBltMessage timeout(long id, int why, Object data) {return null;}
     };
     ITimeoutTaskListener listener = new ITimeoutTaskListener() {
-      public void timeoutNotification(long id, ITimeoutRule rule) {}
-      public void cancelNotification(long id, ITimeoutRule rule) {}
+      public void timeoutNotification(long id, ITimeoutRule rule, Object data) {}
+      public void cancelNotification(long id, ITimeoutRule rule, Object data) {}
     };
     
-    TimeoutTask result = classUnderTest.create(rule, 2, listener);
+    TimeoutTask result = classUnderTest.create(rule, 2, null, listener);
     assertNotNull(result);
     assertSame(rule, result.getRule());
     assertEquals(2, result.getId());
@@ -67,7 +67,7 @@ public class TimeoutTaskFactoryTest extends TestCase {
 
   public void testCreate_noRule() throws Exception {
     try {
-      classUnderTest.create(null, 1, null);
+      classUnderTest.create(null, 1, null, null);
       fail("Expected TimeoutRuleException");
     } catch (TimeoutRuleException e) {
       //pass 
