@@ -28,8 +28,8 @@
   </bean>
 
   <bean id="fc" class="eu.baltrad.fc.FileCatalog">
-  	<constructor-arg>${blt.db.uri}</constructor-arg>
-  	<constructor-arg>${blt.db.path}</constructor-arg>
+  	<constructor-arg value="${blt.db.uri}" />
+  	<constructor-arg value="${blt.db.path}" />
   </bean>
   
   <bean id="catalog" class="eu.baltrad.beast.db.Catalog" autowire="byType"/>

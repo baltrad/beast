@@ -21,6 +21,9 @@ package eu.baltrad.beast.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.Query;
 import eu.baltrad.fc.ResultSet;
@@ -30,7 +33,7 @@ import eu.baltrad.fc.expr.ExpressionFactory;
  * Helper API for simplifying certain tasks related to the FileCatalog
  * @author Anders Henja
  */
-public class Catalog {
+public class Catalog implements InitializingBean {
   /**
    * The file catalog
    */
@@ -60,13 +63,6 @@ public class Catalog {
    */
   public FileCatalog getCatalog() {
     return this.fc;
-  }
-  
-  /**
-   * @param xpr the expression factory to set
-   */
-  public void setExpressionFactory(ExpressionFactory xpr) {
-    this.xpr = xpr;
   }
   
   /**
@@ -106,5 +102,17 @@ public class Catalog {
       }
     }
     return result;
+  }
+
+  /**
+   * Requires that a file catalog instance has been set, otherwise a BeanInitializationException
+   * will be thrown.
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (fc == null) {
+      throw new BeanInitializationException("FileCatalog missing");
+    }
   }
 }

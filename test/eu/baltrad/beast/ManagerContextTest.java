@@ -18,13 +18,12 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 
 package eu.baltrad.beast;
+import junit.framework.TestCase;
+
 import org.springframework.beans.factory.BeanCreationException;
 
-import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
-import eu.baltrad.fc.FileCatalog;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
@@ -34,7 +33,6 @@ public class ManagerContextTest extends TestCase {
   public void setUp() throws Exception {
     new ManagerContext().setTimeoutManager(null);
     new ManagerContext().setCatalog(null);
-    FileCatalog fc = new FileCatalog("postgresql://baltrad:baltrad@localhost/beasttestdb", "/tmp");
   }
   
   public void testTimeoutManager() {

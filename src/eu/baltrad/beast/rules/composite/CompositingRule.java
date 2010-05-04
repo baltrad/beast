@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
@@ -132,10 +134,11 @@ public class CompositingRule implements IRule, ITimeoutRule {
       if (file.what_object().equals("PVOL")) {
         Time t = file.what_time();
         Date d = file.what_date();
-        TimeIntervalFilter filter = createFilter(d, t);
+        DateTime nominalTime = getNominalTime(d, t);
+        TimeIntervalFilter filter = createFilter(nominalTime);
         List<CatalogEntry> entries = catalog.fetch(filter);
         if (areCriteriasMet(entries)) {
-          return createMessage(d, t, entries);
+          return createMessage(nominalTime, entries);
         }
       }
     }
@@ -180,18 +183,53 @@ public class CompositingRule implements IRule, ITimeoutRule {
   }
   
   /**
-   * Creates a list of files from the entries
+   * Creates a list of files from the entries. If the list contains more than
+   * one entry from the same source, the one nearest in time to the nominal time 
+   * will be used.
    * @param entries a list of entries
    * @return a list of files
    */
-  protected List<String> getFilesFromEntries(List<CatalogEntry> entries) {
+  protected List<String> getFilesFromEntries(DateTime nominalTime, List<CatalogEntry> entries) {
+    Map<String, CatalogEntry> entryMap = new HashMap<String, CatalogEntry>();
+    GregorianCalendar nominalTimeCalendar = createCalendar(nominalTime.getDate(), nominalTime.getTime());
     List<String> result = new ArrayList<String>();
-    for (CatalogEntry entry : entries) {
+    
+    for (CatalogEntry entry: entries) {
+      String src = entry.getSource();
+      if (sources.contains(src)) {
+        if (!entryMap.containsKey(src)) {
+          entryMap.put(src, entry);
+        } else {
+          GregorianCalendar entryCalendar = createCalendar(entry.getDate(), entry.getTime());
+          CatalogEntry mapEntry = entryMap.get(src);
+          GregorianCalendar mapEntryCalendar = createCalendar(mapEntry.getDate(), mapEntry.getTime());
+        
+          // If the entrys time is closer to the nominal time than the existing one, replace it
+          if (Math.abs(entryCalendar.compareTo(nominalTimeCalendar)) < Math.abs(mapEntryCalendar.compareTo(nominalTimeCalendar))) {
+            entryMap.put(src, entry);
+          }
+        }
+      }
+    }
+    
+    for (CatalogEntry entry : entryMap.values()) {
       result.add(entry.getPath());
     }
+
     return result;
   }
   
+  /**
+   * Creates a gregorian calendar with the specified date/time
+   * @param date the date
+   * @param time the time
+   * @return a gregorian calendar
+   */
+  protected GregorianCalendar createCalendar(Date date, Time time) {
+    GregorianCalendar c = new GregorianCalendar();
+    c.set(date.year(), date.month()-1, date.day(), time.hour(), time.minute(), time.second());
+    return c;
+  }
   /**
    * Creates a message if all nessecary entries are there
    * @param date the date
@@ -199,11 +237,14 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @param entries the list of entries
    * @return a message if criterias are fullfilled, otherwise null
    */
-  protected IBltMessage createMessage(Date date, Time time, List<CatalogEntry> entries) {
+  protected IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries) {
     BltGenerateMessage result = new BltGenerateMessage();
+    Date date = nominalTime.getDate();
+    Time time = nominalTime.getTime();
+    
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
 
-    result.setFiles(getFilesFromEntries(entries).toArray(new String[0]));
+    result.setFiles(getFilesFromEntries(nominalTime, entries).toArray(new String[0]));
 
     String[] args = new String[3];
     args[0] = "--area="+area;
@@ -221,28 +262,27 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @param time the time
    * @returns a TimeIntervalFilter for polar volumes  
    */
-  protected TimeIntervalFilter createFilter(Date date, Time time) {
+  protected TimeIntervalFilter createFilter(DateTime nominalTime) {
     TimeIntervalFilter filter = new TimeIntervalFilter();
-    DateTime dt = new DateTime(date, time);
     filter.setObject("PVOL");
-    DateTime startDT = getStart(dt);
-    DateTime stopDT = getStop(dt);
-    filter.setStartDateTime(startDT.getDate(), startDT.getTime());
+    DateTime stopDT = getStop(nominalTime);
+    filter.setStartDateTime(nominalTime.getDate(), nominalTime.getTime());
     filter.setStopDateTime(stopDT.getDate(), stopDT.getTime());
     return filter;
   }
-  
+
   /**
-   * Returns the start date/time
-   * @param dt the date/time to determine start dt from
-   * @return the start date/time
+   * Returns the nominal time for the specified time, i.e.
+   * the start time period
+   * @param d the date
+   * @param t the time
+   * @return a nominal time
    */
-  protected DateTime getStart(DateTime dt) {
+  protected DateTime getNominalTime(Date d, Time t) {
     DateTime result = new DateTime();
-    Time t = dt.getTime();
     int period = t.minute() / interval;
     result.setTime(new Time(t.hour(), period*interval, 0));
-    result.setDate(dt.getDate());
+    result.setDate(d);
     return result;
   }
   

@@ -36,7 +36,6 @@ import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.Time;
 import eu.baltrad.fc.oh5.File;
-import eu.baltrad.fc.oh5.Source;
 
 /**
  * @author Anders Henja
@@ -47,9 +46,10 @@ public class CompositingRuleTest extends TestCase {
   private CompositingRule classUnderTest = null;
   
   private static interface ICompositingMethods {
-    public TimeIntervalFilter createFilter(Date d, Time t);
-    public IBltMessage createMessage(Date d, Time t, List<CatalogEntry> entries);
+    public TimeIntervalFilter createFilter(DateTime nominalTime);
+    public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
     public boolean areCriteriasMet(List<CatalogEntry> entries);
+    public DateTime getNominalTime(Date d, Time t);
   };
   
   protected void setUp() throws Exception {
@@ -95,6 +95,7 @@ public class CompositingRuleTest extends TestCase {
   public void testHandle() throws Exception {
     Date date = new Date(2010, 1, 1);
     Time time = new Time(10, 0, 0);
+    DateTime nominalTime = new DateTime();
     TimeIntervalFilter filter = new TimeIntervalFilter();
     
     MockControl fileControl = MockClassControl.createControl(File.class);
@@ -115,25 +116,31 @@ public class CompositingRuleTest extends TestCase {
     fileControl.setReturnValue(date);
     file.what_time();
     fileControl.setReturnValue(time);
-    methods.createFilter(date, time);
+    methods.getNominalTime(date, time);
+    methodsControl.setReturnValue(nominalTime);
+    methods.createFilter(nominalTime);
     methodsControl.setReturnValue(filter);
     catalog.fetch(filter);
     catalogControl.setReturnValue(entries);
     methods.areCriteriasMet(entries);
     methodsControl.setReturnValue(true);
-    methods.createMessage(date, time, entries);
+    methods.createMessage(nominalTime, entries);
     methodsControl.setReturnValue(message);
     
     classUnderTest = new CompositingRule() {
-      protected TimeIntervalFilter createFilter(Date d, Time t) {
-        return methods.createFilter(d, t);
+      protected TimeIntervalFilter createFilter(DateTime nominalTime) {
+        return methods.createFilter(nominalTime);
       }
-      protected IBltMessage createMessage(Date d, Time t, List<CatalogEntry> e) {
-        return methods.createMessage(d, t, e);
+      protected IBltMessage createMessage(DateTime nt, List<CatalogEntry> e) {
+        return methods.createMessage(nt, e);
       }
       protected boolean areCriteriasMet(List<CatalogEntry> e) {
         return methods.areCriteriasMet(e);
       }
+      protected DateTime getNominalTime(Date d, Time t) {
+        return methods.getNominalTime(d, t);
+      }
+
     };
     classUnderTest.setCatalog(catalog);
     
@@ -153,6 +160,8 @@ public class CompositingRuleTest extends TestCase {
   public void testHandle_criteriasNotMet() throws Exception {
     Date date = new Date(2010, 1, 1);
     Time time = new Time(10, 0, 0);
+    DateTime nominalTime = new DateTime();
+    
     TimeIntervalFilter filter = new TimeIntervalFilter();
     
     MockControl fileControl = MockClassControl.createControl(File.class);
@@ -171,7 +180,9 @@ public class CompositingRuleTest extends TestCase {
     fileControl.setReturnValue(date);
     file.what_time();
     fileControl.setReturnValue(time);
-    methods.createFilter(date, time);
+    methods.getNominalTime(date, time);
+    methodsControl.setReturnValue(nominalTime);
+    methods.createFilter(nominalTime);
     methodsControl.setReturnValue(filter);
     catalog.fetch(filter);
     catalogControl.setReturnValue(entries);
@@ -179,14 +190,17 @@ public class CompositingRuleTest extends TestCase {
     methodsControl.setReturnValue(false);
     
     classUnderTest = new CompositingRule() {
-      protected TimeIntervalFilter createFilter(Date d, Time t) {
-        return methods.createFilter(d, t);
+      protected TimeIntervalFilter createFilter(DateTime nt) {
+        return methods.createFilter(nt);
       }
-      protected IBltMessage createMessage(Date d, Time t, List<CatalogEntry> e) {
-        return methods.createMessage(d, t, e);
+      protected IBltMessage createMessage(DateTime nt, List<CatalogEntry> e) {
+        return methods.createMessage(nt, e);
       }
       protected boolean areCriteriasMet(List<CatalogEntry> e) {
         return methods.areCriteriasMet(e);
+      }
+      protected DateTime getNominalTime(Date d, Time t) {
+        return methods.getNominalTime(d, t);
       }
     };
     classUnderTest.setCatalog(catalog);
@@ -279,9 +293,19 @@ public class CompositingRuleTest extends TestCase {
     assertEquals(false, result);
   }
   
+  protected boolean arrayContains(String[] arr, String value) {
+    for (String x : arr) {
+      if (x.equals(value)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
   public void testCreateMessage() {
     Date date = new Date(2010, 2, 1);
     Time time = new Time(1, 0, 0);
+    DateTime nominalTime = new DateTime(date, time);
     
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     entries.add(createCatalogEntry("sekkr","/tmp/sekkr.h5"));
@@ -290,15 +314,21 @@ public class CompositingRuleTest extends TestCase {
     
     classUnderTest.setArea("blt_composite");
     
-    IBltMessage result = classUnderTest.createMessage(date, time, entries);
+    List<String> sources = new ArrayList<String>();
+    sources.add("sekkr");
+    sources.add("selul");
+    sources.add("searl");
+    classUnderTest.setSources(sources);
+    
+    IBltMessage result = classUnderTest.createMessage(nominalTime, entries);
     assertTrue(result instanceof BltGenerateMessage);
     BltGenerateMessage msg = (BltGenerateMessage)result;
     assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
     String[] files = msg.getFiles();
     assertEquals(3, files.length);
-    assertEquals("/tmp/sekkr.h5", files[0]);
-    assertEquals("/tmp/selul.h5", files[1]);
-    assertEquals("/tmp/searl.h5", files[2]);
+    assertTrue(arrayContains(files, "/tmp/sekkr.h5"));
+    assertTrue(arrayContains(files, "/tmp/selul.h5"));
+    assertTrue(arrayContains(files, "/tmp/searl.h5"));
     String[] arguments = msg.getArguments();
     assertEquals(3, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
@@ -306,10 +336,7 @@ public class CompositingRuleTest extends TestCase {
     assertEquals("--time=010000", arguments[2]);
   }
   
-  
   public void testCreateFilter() throws Exception {
-    final Date date = new Date(2010,1,1);
-    final Time time = new Time(1,2,0);
     Date startDate = new Date(2010,1,1);
     Time startTime = new Time(1,2,0);
     Date stopDate = new Date(2010,1,1);
@@ -318,15 +345,12 @@ public class CompositingRuleTest extends TestCase {
     final DateTime stopDT = new DateTime(stopDate, stopTime);
     
     classUnderTest = new CompositingRule() {
-      protected DateTime getStart(DateTime dt) {
-        return startDT;
-      };
       protected DateTime getStop(DateTime dt) {
         return stopDT;
       };
     };
     
-    TimeIntervalFilter result = classUnderTest.createFilter(date, time);
+    TimeIntervalFilter result = classUnderTest.createFilter(startDT);
     assertNotNull(result);
     assertSame(startDate, result.getStartDate());
     assertSame(startTime, result.getStartTime());
@@ -335,7 +359,7 @@ public class CompositingRuleTest extends TestCase {
     assertEquals("PVOL", result.getObject());
   }
   
-  public void testGetStartTime() throws Exception {
+  public void testGetNominalTime() throws Exception {
     classUnderTest.setInterval(10);
 
     DateTime[][] TIME_TABLE=new DateTime[][] {
@@ -347,7 +371,7 @@ public class CompositingRuleTest extends TestCase {
     };
     
     for (int i = 0; i < TIME_TABLE.length; i++) {
-      DateTime dtResult = classUnderTest.getStart(TIME_TABLE[i][0]);
+      DateTime dtResult = classUnderTest.getNominalTime(TIME_TABLE[i][0].getDate(), TIME_TABLE[i][0].getTime());
       assertTrue("TT["+i+"] not as expected", dtResult.equals(TIME_TABLE[i][1]));
     }
   }
@@ -370,36 +394,33 @@ public class CompositingRuleTest extends TestCase {
     }
   }
   
-  public void XtestHandle() {
-    MockControl file1Control = MockClassControl.createControl(File.class);
-    File file1 = (File)file1Control.getMock();
-    MockControl sourceControl = MockClassControl.createControl(Source.class);
-    Source source = (Source)sourceControl.getMock();
+  public void testGetFilesFromEntries() throws Exception {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new Date(2010,1,1), new Time(10,1,1)));
+    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new Date(2010,1,1), new Time(10,1,2)));
+    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new Date(2010,1,1), new Time(10,1,1)));
+    entries.add(createCatalogEntry("seosu", "/tmp/4.h5", new Date(2010,1,1), new Time(10,1,2)));
+    entries.add(createCatalogEntry("sevan", "/tmp/5.h5", new Date(2010,1,1), new Time(10,1,2)));
     
-    BltDataMessage message = new BltDataMessage();
-    message.setFile(file1);
+    List<String> sources = new ArrayList<String>();
+    sources.add("seang");
+    sources.add("sehud");
+    sources.add("seosu");
+    classUnderTest.setSources(sources);
     
-    // Time: hour, minute, second, ms
-    Time t1 = new Time(1, 0, 0, 0);
-    Date d1 = new Date(2010, 04, 27);
-    
-    file1.what_object();
-    file1Control.setReturnValue("PVOL");
-    file1.what_time();
-    file1Control.setReturnValue(t1);
-    file1.what_date();
-    file1Control.setReturnValue(d1);
-    file1.source();
-    file1Control.setReturnValue(source);
-    source.node_id();
-    sourceControl.setReturnValue("seang");
-    
-    file1Control.replay();
-    sourceControl.replay();
-    
-    classUnderTest.handle(message);
-    
-    file1Control.verify();
-    sourceControl.verify();
+    List<String> result = classUnderTest.getFilesFromEntries(new DateTime(2010,1,1,10,1,1), entries);
+    assertEquals(3, result.size());
+    assertTrue(result.contains("/tmp/1.h5"));
+    assertTrue(result.contains("/tmp/3.h5"));
+    assertTrue(result.contains("/tmp/4.h5"));
+  }
+  
+  private CatalogEntry createCatalogEntry(String src, String file, Date date, Time time) {
+    CatalogEntry result = new CatalogEntry();
+    result.setSource(src);
+    result.setPath(file);
+    result.setDate(date);
+    result.setTime(time);
+    return result;
   }
 }
