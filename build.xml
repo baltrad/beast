@@ -127,7 +127,6 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
         <exclude name="junit/*.jar"/>
         <exclude name="easymock/*.jar"/>
         <exclude name="cobertura/*.jar"/>
-        <exclude name="cglib/*.jar"/>
       	<exclude name="poi/*.jar"/>
       	<exclude name="dbunit/*.jar"/>
       	<exclude name="spring/spring-test.jar"/>
