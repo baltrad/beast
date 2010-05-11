@@ -28,10 +28,8 @@ import org.dbunit.dataset.ITable;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.impl.BltRouter;
 import eu.baltrad.beast.rules.IRule;
-import eu.baltrad.beast.rules.IRuleFactory;
 import eu.baltrad.beast.rules.RuleException;
 
 
@@ -43,49 +41,19 @@ public class BltRouterDBTest extends TestCase {
   private BltRouter classUnderTest = null;
   private ApplicationContext context = null;
   private BeastDBTestHelper helper = null;
-  
+  //private Map<String, IRuleManager> ruleMap = null;
   public BltRouterDBTest(String name) {
     super(name);
-    context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("testHelper");
   }
-
-  private class DummyRule implements IRule {
-    private String type = null;
-    private String definition = null;
-    public DummyRule(String type, String definition) {
-      this.type = type;
-      this.definition = definition;
-    }
-    public String getDefinition() {
-      return this.definition;
-    }
-    public String getType() {
-      return this.type;
-    }
-    public IBltMessage handle(IBltMessage message) {return null;}
-  };
-  
-  public class DummyFactory implements IRuleFactory {
-    public IRule create(String type, String definition) {
-      return new DummyRule(type, definition);
-    }
-    public List<String> getTypes() {
-      List<String> result = new ArrayList<String>();
-      result.add("dummy");
-      return result;
-    }
-    
-  };
   
   /**
    * Setup of test
    */
   public void setUp() throws Exception {
+    context = BeastDBTestHelper.loadContext(this);
+    helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.cleanInsert(this);
-    classUnderTest = new BltRouter();
-    classUnderTest.setDataSource(helper.getSource());
-    classUnderTest.setRuleFactory(new DummyFactory());
+    classUnderTest = (BltRouter)context.getBean("router");
     classUnderTest.afterPropertiesSet();
   }
   
@@ -93,6 +61,9 @@ public class BltRouterDBTest extends TestCase {
    * Teardown of test
    */
   public void tearDown() throws Exception {
+    context = null;
+    helper = null;
+    //ruleMap = null;
     classUnderTest = null;
   }
   
@@ -102,16 +73,16 @@ public class BltRouterDBTest extends TestCase {
    * @throws Exception
    */
   protected void verifyDatabaseTables(String extras) throws Exception {
-    ITable expected = helper.getXlsTable(this, extras, "router_rules");
-    ITable actual = helper.getDatabaseTable("router_rules");
+    ITable expected = helper.getXlsTable(this, extras, "beast_router_rules");
+    ITable actual = helper.getDatabaseTable("beast_router_rules");
     Assertion.assertEquals(expected, actual);
 
-    expected = helper.getXlsTable(this, extras, "adaptors");
-    actual = helper.getDatabaseTable("adaptors");
+    expected = helper.getXlsTable(this, extras, "beast_adaptors");
+    actual = helper.getDatabaseTable("beast_adaptors");
     Assertion.assertEqualsIgnoreCols(expected, actual, new String[]{"adaptor_id"});
 
-    expected = helper.getXlsTable(this, extras, "router_dest");
-    actual = helper.getDatabaseTable("router_dest");
+    expected = helper.getXlsTable(this, extras, "beast_router_dest");
+    actual = helper.getDatabaseTable("beast_router_dest");
     Assertion.assertEquals(expected, actual);
   }
 
@@ -133,11 +104,11 @@ public class BltRouterDBTest extends TestCase {
     assertEquals("Nils", result.getAuthor());
     assertEquals("nisses test", result.getDescription());
     assertEquals(true, result.isActive());
-    assertEquals("nothing", result.getRule().getDefinition());
   }
   
   public void testDeleteDefinition() throws Exception {
     classUnderTest.deleteDefinition("X2");
+    
     verifyDatabaseTables("deleteDefinition");
     RouteDefinition result = classUnderTest.getDefinition("X2");
     assertNull(result);
@@ -154,10 +125,7 @@ public class BltRouterDBTest extends TestCase {
     def.setDescription("test description");
     def.setName("X4");
     def.setRecipients(recipients);
-    
-    DummyRule rule = new DummyRule("test", "test definition");
-    def.setRule(rule);
-    
+    def.setRule(new DummyRule("test"));
     classUnderTest.storeDefinition(def);
 
     verifyDatabaseTables("storeDefinition");
@@ -176,7 +144,7 @@ public class BltRouterDBTest extends TestCase {
     def.setDescription("test description");
     def.setRecipients(recipients);
     
-    DummyRule rule = new DummyRule("test", "test definition");
+    DummyRule rule = new DummyRule("test");
     def.setRule(rule);
     
     try {
@@ -197,7 +165,7 @@ public class BltRouterDBTest extends TestCase {
     def.setDescription("scoobys test");
     def.setActive(false);
     def.setAuthor("scooby");
-    IRule rule = new DummyRule("ntest", "yada");
+    IRule rule = new DummyRule("ntest");
     def.setRule(rule);
     
     List<String> recipients = new ArrayList<String>();
@@ -213,6 +181,36 @@ public class BltRouterDBTest extends TestCase {
     assertEquals("scooby", result.getAuthor());
     rule = result.getRule();
     assertEquals("ntest", rule.getType());
-    assertEquals("yada", rule.getDefinition());
+  }
+  
+  /**
+   * Verify if transactional support works
+   * @throws Exception
+   */
+  public void testStoreDefinition_failedManagerStore() throws Exception {
+    List<String> recipients = new ArrayList<String>();
+    recipients.add("A2");
+    recipients.add("A3");
+    
+    RouteDefinition def = new RouteDefinition();
+    def.setActive(false);
+    def.setAuthor("tester");
+    def.setDescription("test description");
+    def.setName("X4");
+    def.setRecipients(recipients);
+    def.setRule(new DummyRule("test"));
+
+    DummyRuleManager mgr = (DummyRuleManager)context.getBean("testmgr");
+    mgr.setStoreException(new RuntimeException("Some exception"));
+    try {
+      classUnderTest.storeDefinition(def);
+      fail("Expected RuleException");
+    } catch (RuleException re) {
+      //pass
+    }
+
+    verifyDatabaseTables(null);
+    RouteDefinition result = classUnderTest.getDefinition("X4");
+    assertNull(result);
   }
 }

@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -48,7 +49,7 @@ public class XmlRpcConfigurationManagerDBTest extends TestCase {
   public void setUp() throws Exception {
     helper.cleanInsert(this);
     classUnderTest = new XmlRpcConfigurationManager();
-    classUnderTest.setDataSource(helper.getSource());
+    classUnderTest.setJdbcTemplate((SimpleJdbcOperations)context.getBean("jdbcTemplate"));
   }
   
   /**
@@ -64,12 +65,12 @@ public class XmlRpcConfigurationManagerDBTest extends TestCase {
    * @throws Exception
    */
   protected void verifyDatabaseTables(String extras) throws Exception {
-    ITable expected = helper.getXlsTable(this, extras, "adaptors");
-    ITable actual = helper.getDatabaseTable("adaptors");
+    ITable expected = helper.getXlsTable(this, extras, "beast_adaptors");
+    ITable actual = helper.getDatabaseTable("beast_adaptors");
     Assertion.assertEquals(expected, actual);
 
-    expected = helper.getXlsTable(this, extras, "adaptors_xmlrpc");
-    actual = helper.getDatabaseTable("adaptors_xmlrpc");
+    expected = helper.getXlsTable(this, extras, "beast_adaptors_xmlrpc");
+    actual = helper.getDatabaseTable("beast_adaptors_xmlrpc");
     Assertion.assertEquals(expected, actual);
   }
   

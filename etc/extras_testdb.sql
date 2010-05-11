@@ -19,7 +19,10 @@ END;
 $$ LANGUAGE plpgsql
 ;
 
-CREATE TRIGGER set_adaptor_id_seq_to_max AFTER INSERT OR UPDATE ON adaptors
+CREATE TRIGGER set_beast_adaptor_id_seq_to_max AFTER INSERT OR UPDATE ON beast_adaptors
   FOR EACH STATEMENT EXECUTE PROCEDURE set_seq_to_max('adaptor_id')
 ;
 
+CREATE TRIGGER set_beast_rule_id_seq_to_max AFTER INSERT OR UPDATE ON beast_router_rules
+  FOR EACH STATEMENT EXECUTE PROCEDURE set_seq_to_max('rule_id')
+;

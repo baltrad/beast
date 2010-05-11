@@ -35,8 +35,7 @@ import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.pgfwk.BaltradXmlRpcServer;
 import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
-import eu.baltrad.beast.rules.IRule;
-import eu.baltrad.beast.rules.IRuleFactory;
+import eu.baltrad.beast.rules.groovy.GroovyRule;
 
 /**
  * More of a overall system view test, performs all steps to verify
@@ -61,11 +60,6 @@ public class BltManagerTest extends TestCase {
   private TimingGeneratorPlugin generator = null;
   
   /**
-   * The rule factory
-   */
-  private IRuleFactory factory = null;
-  
-  /**
    * Extracts only the class name (no package included).
    * @param clz the class
    * @return the name
@@ -87,10 +81,13 @@ public class BltManagerTest extends TestCase {
     
     ApplicationContext dbcontext = new ClassPathXmlApplicationContext("file:"+f.getAbsolutePath());
     SimpleJdbcTemplate template = (SimpleJdbcTemplate)dbcontext.getBean("jdbcTemplate");
-    template.update("delete from router_dest");
-    template.update("delete from adaptors_xmlrpc");
-    template.update("delete from adaptors");
-    template.update("delete from router_rules");
+    template.update("delete from beast_router_dest");
+    template.update("delete from beast_adaptors_xmlrpc");
+    template.update("delete from beast_adaptors");
+    template.update("delete from beast_composite_sources");
+    template.update("delete from beast_composite_rules");
+    template.update("delete from beast_groovy_rules");
+    template.update("delete from beast_router_rules");
   }
   
   public void setUp() throws Exception {
@@ -106,7 +103,6 @@ public class BltManagerTest extends TestCase {
     server = BaltradXmlRpcServer.createServerFromArguments(args);
     server.start();
     classUnderTest = (BltMessageManager)server.getContext().getBean("manager");
-    factory = (IRuleFactory)server.getContext().getBean("rulefactory");
     generator = (TimingGeneratorPlugin)server.getContext().getBean("a.TimingGenerator");
   }
   
@@ -115,7 +111,6 @@ public class BltManagerTest extends TestCase {
     server = null;
     classUnderTest = null;
     generator = null;
-    factory = null;
   }
   
   public void testManage_forwardGenerateRule() throws Exception {
@@ -140,9 +135,7 @@ public class BltManagerTest extends TestCase {
     def.setAuthor("anders");
     def.setDescription("test");
     def.setRecipients(recipients);
-    // Scripted groovy rule
-    IRule rule = factory.create("groovy", getForwardingRule());
-    def.setRule(rule);
+    def.setRule(getForwardingRule());
     
     // Register the routing rule in the database
     routerManager.storeDefinition(def);
@@ -183,9 +176,7 @@ public class BltManagerTest extends TestCase {
     def.setAuthor("anders");
     def.setDescription("test");
     def.setRecipients(recipients);
-    // Scripted groovy rule
-    IRule rule = factory.create("groovy", getAlertToGenerateRule());
-    def.setRule(rule);
+    def.setRule(getAlertToGenerateRule());
     
     // Register the routing rule in the database
     routerManager.storeDefinition(def);
@@ -205,7 +196,7 @@ public class BltManagerTest extends TestCase {
   }
   
   
-  protected String getForwardingRule() {
+  protected GroovyRule getForwardingRule() {
     StringBuffer buf = new StringBuffer();
     buf.append("import eu.baltrad.beast.rules.IScriptableRule;\n");
     buf.append("import eu.baltrad.beast.message.IBltMessage;\n");
@@ -217,10 +208,12 @@ public class BltManagerTest extends TestCase {
     buf.append("    }\n");
     buf.append("  }\n");
     buf.append("}\n");
-    return buf.toString();
+    GroovyRule rule = new GroovyRule();
+    rule.setScript(buf.toString());
+    return rule;
   }
 
-  protected String getAlertToGenerateRule() {
+  protected GroovyRule getAlertToGenerateRule() {
     StringBuffer buf = new StringBuffer();
     buf.append("import eu.baltrad.beast.rules.IScriptableRule;\n");
     buf.append("import eu.baltrad.beast.message.IBltMessage;\n");
@@ -238,7 +231,9 @@ public class BltManagerTest extends TestCase {
     buf.append("    return result;\n");
     buf.append("  }\n");
     buf.append("}\n");
-    return buf.toString();
+    GroovyRule rule = new GroovyRule();
+    rule.setScript(buf.toString());
+    return rule;
   }
   
 }

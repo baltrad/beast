@@ -28,10 +28,12 @@ public class ScriptedRule implements IRule {
    * The script rule.
    */
   private IScriptableRule rule = null;
+  
   /**
    * The script
    */
   private String definition = null;
+  
   /**
    * What type of script this rule is defined by
    */
@@ -59,7 +61,7 @@ public class ScriptedRule implements IRule {
   /**
    * @see eu.baltrad.beast.rules.IRule#getDefinition()
    */
-  @Override
+  //@Override
   public String getDefinition() {
     return this.definition;
   }

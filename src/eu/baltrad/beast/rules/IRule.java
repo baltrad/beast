@@ -37,13 +37,6 @@ public interface IRule {
   public IBltMessage handle(IBltMessage message);
 
   /**
-   * Returns the textual description of the rule. for example, a script, a 
-   * description of what the rule does, etc.
-   * @return
-   */
-  public String getDefinition();
-  
-  /**
    * A description on what type of rule this is, e.g. static, groovy, etc...
    * @return the type
    */

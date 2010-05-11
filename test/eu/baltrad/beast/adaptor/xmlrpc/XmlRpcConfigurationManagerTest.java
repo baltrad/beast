@@ -65,7 +65,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("http://somepath/somewhere");
     conf.setTimeout(6000);
     
-    jdbc.update("insert into adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
+    jdbc.update("insert into beast_adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
         new Object[]{2, "http://somepath/somewhere", (long)6000});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
@@ -96,7 +96,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("http://somepath/somewhere");
     conf.setTimeout(6000);
     
-    jdbc.update("insert into adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
+    jdbc.update("insert into beast_adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
         new Object[]{2, "http://somepath/somewhere", (long)6000});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
@@ -161,7 +161,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("http://somepath/somewhere");
     conf.setTimeout(6000);
     
-    jdbc.update("update adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
+    jdbc.update("update beast_adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
         new Object[]{"http://somepath/somewhere", (long)6000, 2});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
@@ -191,7 +191,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("http://somepath/somewhere");
     conf.setTimeout(6000);
     
-    jdbc.update("update adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
+    jdbc.update("update beast_adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
         new Object[]{"http://somepath/somewhere", (long)6000, 2});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
@@ -247,7 +247,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
     
-    jdbc.update("delete from adaptors_xmlrpc where adaptor_id=?",
+    jdbc.update("delete from beast_adaptors_xmlrpc where adaptor_id=?",
         new Object[]{10});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
@@ -268,7 +268,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
     
-    jdbc.update("delete from adaptors_xmlrpc where adaptor_id=?",
+    jdbc.update("delete from beast_adaptors_xmlrpc where adaptor_id=?",
         new Object[]{10});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
@@ -295,7 +295,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     foundEntry.put("uri", "http://someurl");
     foundEntry.put("timeout", (int)2000);
     
-    jdbc.queryForMap("select uri, timeout from adaptors_xmlrpc where adaptor_id=?", new Object[]{10});
+    jdbc.queryForMap("select uri, timeout from beast_adaptors_xmlrpc where adaptor_id=?", new Object[]{10});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(foundEntry);
 

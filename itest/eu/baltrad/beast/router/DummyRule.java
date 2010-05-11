@@ -16,22 +16,40 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.rules.composite;
+package eu.baltrad.beast.router;
 
-import java.util.List;
+import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.rules.IRule;
 
 /**
  * @author Anders Henja
+ *
  */
-public interface ICompositingManager {
-  /**
-   * @return the list of compositing rules
-   */
-  public List<CompositingRule> getRules();
+public class DummyRule implements IRule {
+  private String type = null;
+  private IBltMessage message = null;
+  private IBltMessage resultMessage = null;
   
-  /**
-   * Stores a compositing rule in the database
-   * @param rule a rule
-   */
-  public void store(CompositingRule rule);
+  public DummyRule(String type) {
+    this.type = type;
+  }
+  
+  @Override
+  public String getType() {
+    return this.type;
+  }
+
+  @Override
+  public IBltMessage handle(IBltMessage message) {
+    this.message = message;
+    return this.resultMessage;
+  }
+  
+  public IBltMessage getMessage() {
+    return this.message;
+  }
+  
+  public void setResultMessage(IBltMessage msg) {
+    this.resultMessage = msg;
+  }
 }

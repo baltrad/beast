@@ -16,7 +16,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.rules;
+package eu.baltrad.beast.rules.groovy;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,14 +24,20 @@ import java.io.FileReader;
 import java.net.URL;
 
 import junit.framework.TestCase;
+
+import org.easymock.MockControl;
+
+import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
+import eu.baltrad.beast.rules.IScriptableRule;
+import eu.baltrad.beast.rules.RuleException;
 
 /**
  * @author Anders Henja
  *
  */
-public class GroovyRuleCreatorTest extends TestCase {
+public class GroovyRuleTest extends TestCase {
   protected String readScript(String scriptname) throws Exception {
     StringBuffer buffer = new StringBuffer();
     URL url = this.getClass().getResource(scriptname);
@@ -45,40 +51,81 @@ public class GroovyRuleCreatorTest extends TestCase {
     }
     return buffer.toString();
   }
-  
-  public void testCreate_simpleRule() throws Exception {
-    // setup
-    String script = readScript("SimpleRule.groovy");
-    GroovyRuleCreator classUnderTest = new GroovyRuleCreator();
-    BltCommandMessage msg = new BltCommandMessage();
-    msg.setCommand("ls -la");
 
-    // Test
-    IRule rule = classUnderTest.create(script);
-    
-    // Verify
-    BltAlertMessage result = (BltAlertMessage)rule.handle(msg);
-    assertEquals(GroovyRuleCreator.TYPE, rule.getType());
-    assertEquals(script, rule.getDefinition());
-    assertEquals("ls -la", result.getMessage());
+  public void testType() {
+    assertEquals("groovy", GroovyRule.TYPE);
   }
-  
-  public void testCreate_badRule() throws Exception {
-    // setup
-    String script = readScript("BadRule.groovy");
-    GroovyRuleCreator classUnderTest = new GroovyRuleCreator();
 
-    // Test
+  public void testGetType() {
+    GroovyRule rule = new GroovyRule();
+    assertEquals(GroovyRule.TYPE, rule.getType());
+  }
+
+  public void testHandle() throws Exception {
+    IBltMessage msg = new IBltMessage() { };
+    IBltMessage hmsg = new IBltMessage() { };
+    
+    MockControl sruleControl = MockControl.createControl(IScriptableRule.class);
+    IScriptableRule srule = (IScriptableRule)sruleControl.getMock();
+    
+    srule.handle(msg);
+    sruleControl.setReturnValue(hmsg);
+    
+    GroovyRule classUnderTest = new GroovyRule();
+    classUnderTest.setScriptableRule(srule);
+    
+    sruleControl.replay();
+    
+    IBltMessage result = classUnderTest.handle(msg);
+    
+    sruleControl.verify();
+    assertSame(hmsg, result);
+  }
+
+  public void testHandle_noScript() throws Exception {
+    IBltMessage msg = new IBltMessage() { };
+    
+    GroovyRule classUnderTest = new GroovyRule();
+    
     try {
-      classUnderTest.create(script);
+      classUnderTest.handle(msg);
       fail("Expected RuleException");
     } catch (RuleException e) {
       // pass
     }
-  }  
+  }
+
+  public void testHandle_nullMessage() throws Exception {
+    GroovyRule classUnderTest = new GroovyRule();
+    
+    try {
+      classUnderTest.handle(null);
+      fail("Expected NullPointerException");
+    } catch (NullPointerException e) {
+      // pass
+    }
+  }
   
-  public void testGetType() {
-    GroovyRuleCreator classUnderTest = new GroovyRuleCreator();
-    assertEquals("groovy", classUnderTest.getType());
+  
+  public void testSetScript_SimpleRule() throws Exception {
+    BltCommandMessage msg = new BltCommandMessage();
+    msg.setCommand("ls -la");
+
+    GroovyRule rule = new GroovyRule();
+    rule.setScript(readScript("SimpleRule.groovy"));
+    
+    // Verify that the rule has loaded properly
+    BltAlertMessage result = (BltAlertMessage)rule.handle(msg);
+    assertEquals("ls -la", result.getMessage());
+  }
+  
+  public void testSetScript_BadRule() throws Exception {
+    GroovyRule rule = new GroovyRule();
+    try {
+      rule.setScript(readScript("BadRule.groovy"));
+      fail("Expected RuleException");
+    } catch (RuleException e) {
+      // pass
+    }
   }
 }

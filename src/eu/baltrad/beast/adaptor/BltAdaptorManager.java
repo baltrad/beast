@@ -27,13 +27,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
@@ -47,7 +45,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   /**
    * The available types with their corresponding managers
    */
-  Map<String, IAdaptorConfigurationManager> typeRegistry = null;
+  private Map<String, IAdaptorConfigurationManager> typeRegistry = null;
   
   /**
    * The database access
@@ -68,11 +66,12 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   }
   
   /**
-   * Sets the data source
-   * @param source the data source to set
+   * Clears the registry
+   * @return the cleared registry
    */
-  public void setDataSource(DataSource source) {
-    this.template = new SimpleJdbcTemplate(source);
+  Map<String, IAdaptorConfigurationManager> clearRegistry() {
+    typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();    
+    return typeRegistry;
   }
   
   /**
@@ -87,11 +86,18 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    * Sets the available types
    * @param typeRegistry the type registry
    */
-  public void setTypeRegistry(List<IAdaptorConfigurationManager> managers) {
+  public void setTypes(List<IAdaptorConfigurationManager> managers) {
     this.typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();
     for (IAdaptorConfigurationManager mgr: managers) {
       this.typeRegistry.put(mgr.getType(), mgr);
     }
+  }
+  
+  /**
+   * @return the type registry
+   */
+  public Map<String, IAdaptorConfigurationManager> getTypeRegistry() {
+    return this.typeRegistry;
   }
   
   /**
@@ -106,6 +112,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   /**
    * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#store(java.lang.String, java.lang.String, eu.baltrad.beast.adaptor.IAdaptor)
    */
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
   @Override
   public synchronized IAdaptor register(IAdaptorConfiguration configuration) {
     String name = configuration.getName();
@@ -115,23 +122,14 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     if (mgr != null) {
       int index = 0;
       try {
-        template.update("insert into adaptors (name,type) values (?,?)",
+        template.update("insert into beast_adaptors (name,type) values (?,?)",
             new Object[]{name,type});
-        index = template.queryForInt("select adaptor_id from adaptors where name=?", name);
-      } catch (DataAccessException e) {
-        throw new AdaptorException("Failed to add adaptor", e);
-      }
-      
-      try {
+        index = template.queryForInt("select adaptor_id from beast_adaptors where name=?", name);
         IAdaptor result = mgr.store(index, configuration);
         adaptors.put(name, result);
         return result;
       } catch (Throwable t) {
-        try {
-          template.update("delete adaptors where adaptor_id=?", new Object[]{index});
-        } catch (Throwable x) {
-        }
-        throw new AdaptorException("Failed to store data", t);
+        throw new AdaptorException("Failed to add adaptor");
       }
     }
     throw new AdaptorException("No such type: " + type);
@@ -140,6 +138,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   /**
    * @see IBltAdaptorManager#reregister(IAdaptorConfiguration)
    */
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
   @Override
   public synchronized IAdaptor reregister(IAdaptorConfiguration configuration) {
     String name = configuration.getName();
@@ -148,7 +147,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     IAdaptor result = null;
     
     try {
-      entry = template.queryForMap("select type, adaptor_id from adaptors where name=?", new Object[]{name});
+      entry = template.queryForMap("select type, adaptor_id from beast_adaptors where name=?", new Object[]{name});
     } catch (Throwable t) {
       throw new AdaptorException("No configuration with that name stored");
     }
@@ -171,6 +170,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    * @return an adaptor
    * @throws AdaptorException on failure
    */
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
   protected IAdaptor updateAdaptorConfiguration(int adaptor_id, IAdaptorConfiguration configuration) {
     String type = configuration.getType();
     IAdaptorConfigurationManager mgr = typeRegistry.get(type);
@@ -186,6 +186,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    * @return an adaptor
    * @throws AdaptorException on failure
    */
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
   protected IAdaptor redefineAdaptorConfiguration(int adaptor_id, String type, IAdaptorConfiguration configuration) {
     String ntype = configuration.getType();
     IAdaptorConfigurationManager mgr = typeRegistry.get(ntype);
@@ -193,9 +194,8 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     
     // Try to modify type for the adaptor
     try {
-      template.update("update adaptors set type=? where adaptor_id=?", new Object[]{ntype, adaptor_id});
+      template.update("update beast_adaptors set type=? where adaptor_id=?", new Object[]{ntype, adaptor_id});
     } catch (Throwable t) {
-      mgr.remove(adaptor_id);
       throw new AdaptorException("Failed to change type of adaptor");
     }
     
@@ -213,15 +213,16 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   /**
    * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#unregister(java.lang.String)
    */
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
   @Override  
   public void unregister(String name) {
-    Map<String, Object> result = template.queryForMap("select adaptor_id,type from adaptors where name=?",
+    Map<String, Object> result = template.queryForMap("select adaptor_id,type from beast_adaptors where name=?",
         new Object[]{name});
     String type = (String)result.get("type");
     int adaptor_id = (Integer)result.get("adaptor_id");
     IAdaptorConfigurationManager mgr = typeRegistry.get(type);
     mgr.remove(adaptor_id);
-    template.update("delete from adaptors where adaptor_id=?",
+    template.update("delete from beast_adaptors where adaptor_id=?",
         new Object[]{adaptor_id});
     adaptors.remove(name);
   }
@@ -332,7 +333,12 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    List<IAdaptor> l = template.query("select adaptor_id, name, type from adaptors", getAdaptorMapper(), (Object[])null);
+    adaptors = new HashMap<String, IAdaptor>();
+    
+    List<IAdaptor> l = template.query("select adaptor_id, name, type from beast_adaptors",
+        getAdaptorMapper(),
+        (Object[])null);
+    
     for (IAdaptor adaptor: l) {
       if (adaptor != null) {
         adaptors.put(adaptor.getName(), adaptor);

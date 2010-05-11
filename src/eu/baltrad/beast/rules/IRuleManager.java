@@ -16,30 +16,38 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.rules.composite;
-
-import eu.baltrad.beast.rules.IRule;
-import eu.baltrad.beast.rules.IRuleCreator;
+package eu.baltrad.beast.rules;
 
 /**
  * @author Anders Henja
+ *
  */
-public class CompositeCreator implements IRuleCreator {
-  public final static String TYPE = "blt_composite";
-
+public interface IRuleManager {
   /**
-   * @see eu.baltrad.beast.rules.IRuleCreator#create(java.lang.String)
+   * Persists the rule if there is any reason to do so
+   * @param rule the rule to persist
+   * @throws RuleException if rule not can be loaded
    */
-  @Override
-  public IRule create(String definition) {
-    return null;
-  }
-
+  public void store(int rule_id, IRule rule);
+  
   /**
-   * @see eu.baltrad.beast.rules.IRuleCreator#getType()
+   * Loads a rule
+   * @param rule_id the rule to load
+   * @return a rule
+   * @throws RuleException if rule not can be loaded
    */
-  @Override
-  public String getType() {
-    return TYPE;
-  }
+  public IRule load(int rule_id); 
+  
+  /**
+   * Updates the rule with specified id
+   * @param rule_id the id of the rule to update
+   * @param rule the rule
+   */
+  public void update(int rule_id, IRule rule);
+  
+  /**
+   * Deletes the rule with the specified id
+   * @param rule_id the id of the rule to delete
+   */
+  public void delete(int rule_id);
 }

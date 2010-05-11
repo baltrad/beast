@@ -18,10 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
@@ -56,12 +53,7 @@ public class BltAdaptorManagerDBTest extends TestCase {
    */
   public void setUp() throws Exception {
    helper.cleanInsert(this);
-   List<IAdaptorConfigurationManager> types = new ArrayList<IAdaptorConfigurationManager>();
-   types.add((IAdaptorConfigurationManager)context.getBean("xmlrpcmgr"));
-   
-   classUnderTest = new BltAdaptorManager();
-   classUnderTest.setDataSource((DataSource)context.getBean("dataSource"));
-   classUnderTest.setTypeRegistry(types);
+   classUnderTest = (BltAdaptorManager)context.getBean("adaptormgr");
    classUnderTest.afterPropertiesSet();
   }
   
@@ -77,12 +69,12 @@ public class BltAdaptorManagerDBTest extends TestCase {
    * @throws Exception
    */
   protected void verifyDatabaseTables(String extras) throws Exception {
-    ITable expected = helper.getXlsTable(this, extras, "adaptors");
-    ITable actual = helper.getDatabaseTable("adaptors");
+    ITable expected = helper.getXlsTable(this, extras, "beast_adaptors");
+    ITable actual = helper.getDatabaseTable("beast_adaptors");
     Assertion.assertEquals(expected, actual);
 
-    expected = helper.getXlsTable(this, extras, "adaptors_xmlrpc");
-    actual = helper.getDatabaseTable("adaptors_xmlrpc");
+    expected = helper.getXlsTable(this, extras, "beast_adaptors_xmlrpc");
+    actual = helper.getDatabaseTable("beast_adaptors_xmlrpc");
     Assertion.assertEquals(expected, actual);
   }
 
@@ -153,7 +145,7 @@ public class BltAdaptorManagerDBTest extends TestCase {
     config.setURL("http://someone/somewhere/somewhereelse");
     config.setTimeout(1000);
     
-    classUnderTest.typeRegistry.put("HTTP", httpAdaptorManager);
+    classUnderTest.getTypeRegistry().put("HTTP", httpAdaptorManager);
     
     httpAdaptorManager.remove(1);
     

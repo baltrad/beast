@@ -69,8 +69,7 @@ public class BltAdaptorManagerTest extends TestCase {
     jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock(); 
 
     classUnderTest = new BltAdaptorManager();
-    classUnderTest.typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();
-    classUnderTest.typeRegistry.put("XYZ", xyzManager);
+    classUnderTest.getTypeRegistry().put("XYZ", xyzManager);
     classUnderTest.setJdbcTemplate(jdbcTemplate);
   }
   
@@ -137,14 +136,14 @@ public class BltAdaptorManagerTest extends TestCase {
     managerControl.replay();
    
     // Execute
-    classUnderTest.setTypeRegistry(list);
+    classUnderTest.setTypes(list);
     
     // Verify
     verify();
     managerControl.verify();
-    IAdaptorConfigurationManager result = classUnderTest.typeRegistry.get("XYZ");
+    IAdaptorConfigurationManager result = classUnderTest.getTypeRegistry().get("XYZ");
     assertSame(xyzManager, result);
-    result = classUnderTest.typeRegistry.get("ZZZ");
+    result = classUnderTest.getTypeRegistry().get("ZZZ");
     assertSame(manager, result);
   }
   
@@ -154,8 +153,8 @@ public class BltAdaptorManagerTest extends TestCase {
     MockControl manager2Control = MockControl.createControl(IAdaptorConfigurationManager.class);
     IAdaptorConfigurationManager manager2 = (IAdaptorConfigurationManager)managerControl.getMock();
     
-    classUnderTest.typeRegistry.put("ZZZ", manager);
-    classUnderTest.typeRegistry.put("ABC", manager2);
+    classUnderTest.getTypeRegistry().put("ZZZ", manager);
+    classUnderTest.getTypeRegistry().put("ABC", manager2);
     
     replay();
     managerControl.replay();
@@ -183,11 +182,11 @@ public class BltAdaptorManagerTest extends TestCase {
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     };
 
-    jdbcTemplate.update("insert into adaptors (name,type) values (?,?)",
+    jdbcTemplate.update("insert into beast_adaptors (name,type) values (?,?)",
         new Object[]{"SA1","XYZ"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
-    jdbcTemplate.queryForInt("select adaptor_id from adaptors where name=?", 
+    jdbcTemplate.queryForInt("select adaptor_id from beast_adaptors where name=?", 
         new Object[]{"SA1"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(2);
@@ -206,7 +205,7 @@ public class BltAdaptorManagerTest extends TestCase {
   }
 
   public void testRegister_duplicateKey() {
-    jdbcTemplate.update("insert into adaptors (name,type) values (?,?)",
+    jdbcTemplate.update("insert into beast_adaptors (name,type) values (?,?)",
         new Object[]{"SA1","XYZ"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
@@ -225,36 +224,6 @@ public class BltAdaptorManagerTest extends TestCase {
     verify();
   }
 
-  public void testRegister_failedToStoreAdaptor() {
-    jdbcTemplate.update("insert into adaptors (name,type) values (?,?)",
-        new Object[]{"SA1","XYZ"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
-    jdbcTemplate.queryForInt("select adaptor_id from adaptors where name=?", 
-        new Object[]{"SA1"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(2);
-    xyzManager.store(2, xyzConfiguration);
-    xyzManagerControl.setThrowable(new AdaptorException());
-    jdbcTemplate.update("delete adaptors where adaptor_id=?",
-        new Object[]{2});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
-    
-    replay();
-    
-    // Execute
-    try {
-      classUnderTest.register(xyzConfiguration);
-      fail("Expected AdaptorException");
-    } catch (AdaptorException e) {
-      // pass
-    }
-
-    // Verify
-    verify();
-  }
-  
   public void testReregister_sameType() {
     MockControl reregisterControl = MockControl.createControl(ReregisterMethods.class);
     final ReregisterMethods reregister = (ReregisterMethods)reregisterControl.getMock();
@@ -270,7 +239,7 @@ public class BltAdaptorManagerTest extends TestCase {
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     };
 
-    jdbcTemplate.queryForMap("select type, adaptor_id from adaptors where name=?",
+    jdbcTemplate.queryForMap("select type, adaptor_id from beast_adaptors where name=?",
         new Object[]{"SA1"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(map);
@@ -315,7 +284,7 @@ public class BltAdaptorManagerTest extends TestCase {
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     };
 
-    jdbcTemplate.queryForMap("select type, adaptor_id from adaptors where name=?",
+    jdbcTemplate.queryForMap("select type, adaptor_id from beast_adaptors where name=?",
         new Object[]{"SA1"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(map);
@@ -346,7 +315,7 @@ public class BltAdaptorManagerTest extends TestCase {
   }
   
   public void testReregister_nonExisting() {
-    jdbcTemplate.queryForMap("select type, adaptor_id from adaptors where name=?",
+    jdbcTemplate.queryForMap("select type, adaptor_id from beast_adaptors where name=?",
         new Object[]{"SA1"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
@@ -397,12 +366,12 @@ public class BltAdaptorManagerTest extends TestCase {
 
     xyzManager.store(2, xyzConfiguration);
     xyzManagerControl.setReturnValue(adaptor);
-    jdbcTemplate.update("update adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
+    jdbcTemplate.update("update beast_adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     oldtypeManager.remove(2);
 
-    classUnderTest.typeRegistry.put("OLDTYPE", oldtypeManager);
+    classUnderTest.getTypeRegistry().put("OLDTYPE", oldtypeManager);
     
     replay();
     oldtypeManagerControl.replay();
@@ -440,10 +409,9 @@ public class BltAdaptorManagerTest extends TestCase {
 
     xyzManager.store(2, xyzConfiguration);
     xyzManagerControl.setReturnValue(adaptor);
-    jdbcTemplate.update("update adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
+    jdbcTemplate.update("update beast_adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
-    xyzManager.remove(2);
     
     replay();
 
@@ -470,13 +438,13 @@ public class BltAdaptorManagerTest extends TestCase {
 
     xyzManager.store(2, xyzConfiguration);
     xyzManagerControl.setReturnValue(adaptor);
-    jdbcTemplate.update("update adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
+    jdbcTemplate.update("update beast_adaptors set type=? where adaptor_id=?", new Object[]{"XYZ", 2});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     oldtypeManager.remove(2);
     oldtypeManagerControl.setThrowable(new AdaptorException());
 
-    classUnderTest.typeRegistry.put("OLDTYPE", oldtypeManager);
+    classUnderTest.getTypeRegistry().put("OLDTYPE", oldtypeManager);
     
     replay();
     oldtypeManagerControl.replay();
@@ -501,14 +469,14 @@ public class BltAdaptorManagerTest extends TestCase {
       public void handle(IBltMessage msg, IAdaptorCallback callback) {}
     });
     
-    jdbcTemplate.queryForMap("select adaptor_id,type from adaptors where name=?",
+    jdbcTemplate.queryForMap("select adaptor_id,type from beast_adaptors where name=?",
         new Object[]{"SA1"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(found);
     
     xyzManager.remove(10);
     
-    jdbcTemplate.update("delete from adaptors where adaptor_id=?",
+    jdbcTemplate.update("delete from beast_adaptors where adaptor_id=?",
         new Object[]{10});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
@@ -688,7 +656,7 @@ public class BltAdaptorManagerTest extends TestCase {
       }
     };
     
-    jdbcTemplate.query("select adaptor_id, name, type from adaptors", mapper, (Object[])null);
+    jdbcTemplate.query("select adaptor_id, name, type from beast_adaptors", mapper, (Object[])null);
     jdbcControl.setReturnValue(readAdaptors);
     
     classUnderTest = new BltAdaptorManager() {
@@ -697,8 +665,7 @@ public class BltAdaptorManagerTest extends TestCase {
       }
     };
     classUnderTest.setJdbcTemplate(jdbcTemplate);
-    classUnderTest.typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();
-    classUnderTest.typeRegistry.put("XYZ", xyzManager);
+    classUnderTest.getTypeRegistry().put("XYZ", xyzManager);
     
     replay();
     

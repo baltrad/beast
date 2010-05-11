@@ -34,7 +34,6 @@ public class RouteDefinitionTest extends TestCase {
   public void testSetGetRule() {
     RouteDefinition classUnderTest = new RouteDefinition();
     IRule rule = new IRule() {
-      public String getDefinition() {return null;}
       public String getType() {return null;}
       public IBltMessage handle(IBltMessage message) {return null;}
     };

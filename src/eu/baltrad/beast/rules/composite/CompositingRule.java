@@ -45,6 +45,11 @@ import eu.baltrad.fc.oh5.File;
  */
 public class CompositingRule implements IRule, ITimeoutRule {
   /**
+   * The name of this static composite type
+   */
+  public final static String TYPE = "blt_composite";
+  
+  /**
    * The catalog for database access
    */
   private Catalog catalog = null;
@@ -95,10 +100,24 @@ public class CompositingRule implements IRule, ITimeoutRule {
   }
   
   /**
+   * @return the interval
+   */
+  public int getInterval() {
+    return this.interval;
+  }
+  
+  /**
    * @param sources the list of sources to set
    */
   public void setSources(List<String> sources) {
     this.sources = sources;
+  }
+  
+  /**
+   * @return a list of sources
+   */
+  public List<String> getSources() {
+    return this.sources;
   }
   
   /**
@@ -109,13 +128,12 @@ public class CompositingRule implements IRule, ITimeoutRule {
   }
   
   /**
-   * @see eu.baltrad.beast.rules.IRule#getDefinition()
+   * @return an area
    */
-  @Override
-  public String getDefinition() {
-    return "Compositing rule";
+  public String getArea() {
+    return this.area;
   }
-
+  
   /**
    * @see eu.baltrad.beast.rules.IRule#getType()
    */

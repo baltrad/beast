@@ -162,8 +162,13 @@ public class BeastDBTestHelper {
     Connection conn = source.getConnection();
     SimpleJdbcTemplate template = new SimpleJdbcTemplate(source);
     try {
-      template.update("delete from router_dest");
-      template.update("delete from adaptors_xmlrpc");
+      template.update("delete from beast_router_dest");
+      template.update("delete from beast_groovy_rules");
+      template.update("delete from beast_composite_sources");
+      template.update("delete from beast_composite_rules");
+      template.update("delete from beast_adaptors_xmlrpc");
+      template.update("delete from beast_adaptors");
+      template.update("delete from beast_router_rules");
       IDatabaseConnection connection = getConnection(conn);
       DatabaseOperation.CLEAN_INSERT.execute(connection, getXlsDataset(tc, null));
     } finally {

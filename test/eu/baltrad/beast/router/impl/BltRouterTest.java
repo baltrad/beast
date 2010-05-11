@@ -24,7 +24,6 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
@@ -33,7 +32,6 @@ import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
-import eu.baltrad.beast.rules.RuleException;
 
 
 /**
@@ -487,59 +485,6 @@ public class BltRouterTest extends TestCase {
     assertEquals("Adaptor3", result.get(1).getDestination());
   }
   
-  
-  public void testDeleteDefinition() {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
-    
-    jdbc.update(null, new Object[]{});
-    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
-    jdbcControl.setReturnValue(0);
-
-    jdbc.update(null, new Object[]{});
-    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
-    jdbcControl.setReturnValue(0);
-
-    BltRouter classUnderTest = new BltRouter();
-    classUnderTest.setJdbcTemplate(jdbc);
-    classUnderTest.setDefinitions(new ArrayList<RouteDefinition>());
-    jdbcControl.replay();
-
-    // execute test
-    classUnderTest.deleteDefinition("X");
-    
-    // verify
-    jdbcControl.verify();
-  }
-  
-  public void testDeleteDefinition_throwsException() {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
-    
-    jdbc.update(null, new Object[]{});
-    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
-    jdbcControl.setReturnValue(0);
-
-    jdbc.update(null, new Object[]{});
-    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
-    jdbcControl.setThrowable(new RuntimeException());
-
-    BltRouter classUnderTest = new BltRouter();
-    classUnderTest.setJdbcTemplate(jdbc);
-    jdbcControl.replay();
-
-    // execute test
-    try {
-      classUnderTest.deleteDefinition("X");
-      fail("Expected RuleException");
-    } catch (RuleException e) {
-      // pass
-    }
-    
-    // verify
-    jdbcControl.verify();
-  }  
-  
   public void testGetDefinitions() throws Exception {
     List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
     
@@ -565,52 +510,6 @@ public class BltRouterTest extends TestCase {
     assertSame(d2, result);
   }
   
-  
-  
-  public void testStoreRecipients() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
-    
-    List<String> recipients = new ArrayList<String>();
-    recipients.add("X1");
-    recipients.add("X2");
-    
-    jdbc.update(null, new Object[]{});
-    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
-    jdbcControl.setReturnValue(0);
-    jdbc.update(null, new Object[]{});
-    jdbcControl.setMatcher(MockControl.ALWAYS_MATCHER);
-    jdbcControl.setReturnValue(0);
-    
-    BltRouter classUnderTest = new BltRouter();
-    classUnderTest.setJdbcTemplate(jdbc);
-
-    jdbcControl.replay();
-    
-    // execute
-    classUnderTest.storeRecipients("D1", recipients);
-    
-    // verify
-    jdbcControl.verify();
-  }
-
-  public void testStoreRecipients_nullList() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
-    
-    BltRouter classUnderTest = new BltRouter();
-    classUnderTest.setJdbcTemplate(jdbc);
-
-    jdbcControl.replay();
-    
-    // execute
-    classUnderTest.storeRecipients("D1", null);
-    
-    // verify
-    jdbcControl.verify();
-  }
-
-  
   public void testCreate() throws Exception {
     String name = "MyName";
     String author = "nisse";
@@ -620,7 +519,6 @@ public class BltRouterTest extends TestCase {
     IRule rule = new IRule() {
       public IBltMessage handle(IBltMessage message) {return null;}
       public String getType() {return null;}
-      public String getDefinition() {return null;}
     };
     BltRouter classUnderTest = new BltRouter();
     RouteDefinition result = classUnderTest.create(name, author, active, description, recipients, rule);

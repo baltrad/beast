@@ -22,13 +22,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sql.DataSource;
+import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
@@ -39,7 +39,7 @@ import eu.baltrad.beast.router.IRouter;
 import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
-import eu.baltrad.beast.rules.IRuleFactory;
+import eu.baltrad.beast.rules.IRuleManager;
 import eu.baltrad.beast.rules.RuleException;
 
 /**
@@ -60,7 +60,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   /**
    * The rule factory. 
    */
-  private IRuleFactory factory = null;
+  private Map<String, IRuleManager> ruleManagers = null;
   
   /**
    * Constructor
@@ -68,30 +68,21 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   public BltRouter() {
     definitions = new ArrayList<RouteDefinition>();
   };
-  
-  /**
-   * Sets the data source that should be used by the SimpleJdbcTemplate instance
-   * @param source the data source
-   */
-  public void setDataSource(DataSource source) {
-    template = new SimpleJdbcTemplate(source);
-  }
 
   /**
-   * Sets the jdbc template, mostly used for testing since {@link #setDataSource(DataSource)} will create
-   * a simple jdbc template.
+   * Sets the jdbc template.
    * @param template the template
    */
-  void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(SimpleJdbcOperations template) {
     this.template = template;
   }
   
   /**
-   * Sets the rule factory.
-   * @param factory the factory to set
+   * Sets the rule managers.
+   * @param ruleManagers the rule managers to set
    */
-  public void setRuleFactory(IRuleFactory factory) {
-    this.factory = factory;
+  public void setRuleManagers(Map<String,IRuleManager> ruleManagers) {
+    this.ruleManagers = ruleManagers;
   }
   
   /**
@@ -198,21 +189,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
     return result;
 	}
 
-  /**
-   * @see eu.baltrad.beast.router.IRouterManager#deleteDefinition(java.lang.String)
-   */
-  @Override
-  public synchronized void deleteDefinition(String name) {
-    try {
-      template.update("delete from router_dest where name=?", new Object[]{name});
-      template.update("delete from router_rules where name=?", new Object[]{name});
-    } catch (Throwable t) {
-      throw new RuleException("Failed to remove rule: '" + name+"'");
-    }
-    removeDefinitionFromList(name);
-  }
-
-  /**
+	/**
    * @see eu.baltrad.beast.router.IRouterManager#getDefinition(java.lang.String)
    */
   @Override
@@ -234,129 +211,6 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   }
 
   /**
-   * @see eu.baltrad.beast.router.IRouterManager#storeDefinition(eu.baltrad.beast.router.RouteDefinition)
-   */
-  @Override
-  public synchronized void storeDefinition(RouteDefinition def) {
-    IRule rule = def.getRule();
-    String type = rule.getType();
-    String definition = rule.getDefinition();
-    try {
-      template.update(
-          "insert into router_rules (name,type,author,description,active,definition)"+
-          "  values (?,?,?,?,?,?)",
-          new Object[]{def.getName(), type, def.getAuthor(), def.getDescription(), 
-              def.isActive(), definition});
-      storeRecipients(def.getName(), def.getRecipients());
-    } catch (Throwable t) {
-      throw new RuleException("Failed to add router rule definition: " + t.getMessage(), t);
-    }
-    this.definitions.add(def);
-  }
-
-  /**
-   * @see eu.baltrad.beast.router.IRouterManager#updateDefinition(eu.baltrad.beast.router.RouteDefinition)
-   */
-  @Override
-  public synchronized void updateDefinition(RouteDefinition def) {
-    IRule rule = def.getRule();
-    String type = rule.getType();
-    String definition = rule.getDefinition();
-    try {
-      template.update("update router_rules set type=?, author=?, description=?, active=?, definition=? where name=?", 
-          new Object[]{type, def.getAuthor(), def.getDescription(), def.isActive(), definition, def.getName()});
-      template.update("delete from router_dest where name=?", def.getName());
-      storeRecipients(def.getName(), def.getRecipients());
-    } catch (Throwable t) {
-      throw new RuleException("Failed to update router rule definition: " + t.getMessage(), t);
-    }
-    // If all went well, then replace the existing definition with the new one.
-    removeDefinitionFromList(def.getName());
-    definitions.add(def);
-  }
- 
-  /**
-   * @see eu.baltrad.beast.router.IRouterManager#create(String,String,boolean,String,IRule)
-   */
-  @Override
-  public RouteDefinition create(String name, String author, boolean active, String description, List<String> recipients, IRule rule) {
-    RouteDefinition result = new RouteDefinition();
-    result.setActive(active);
-    result.setAuthor(author);
-    result.setDescription(description);
-    result.setName(name);
-    result.setRecipients(recipients);
-    result.setRule(rule);
-    return result;
-  }
-  
-  /**
-   * Spring framework will call this function after the bean has been created.
-   */
-  public synchronized void afterPropertiesSet() throws Exception {
-    ParameterizedRowMapper<RouteDefinition> mapper = new ParameterizedRowMapper<RouteDefinition>() {
-      public RouteDefinition mapRow(ResultSet rs, int rowNum) throws SQLException {
-        String name = rs.getString("name");
-        String type = rs.getString("type");
-        String author = rs.getString("author");
-        String descr = rs.getString("description");
-        String definition = rs.getString("definition");
-        boolean active = rs.getBoolean("active");
-            
-        RouteDefinition rd = new RouteDefinition();
-        rd.setName(name);
-        rd.setAuthor(author);
-        rd.setDescription(descr);
-        rd.setActive(active);
-        try {
-          IRule rule = factory.create(type, definition);
-          rd.setRule(rule);
-        } catch (RuleException re) {
-          re.printStackTrace();
-        }
-        return rd;
-      }
-    };
-        
-    definitions = template.query("select name,type,author,description,active,definition from router_rules",
-            mapper, new Object[]{});
-        
-    for (RouteDefinition def: definitions) {
-      def.setRecipients(getRecipients(def.getName()));
-    }
-  }
-  
-  /**
-   * Stores the recipients
-   * @param name - the route definition name
-   * @param recipients a list of recipients
-   */
-  protected void storeRecipients(String name, List<String> recipients) {
-    if (recipients != null) {
-      for (String rec: recipients) {
-        template.update("insert into router_dest (name, recipient) values (?,?)",
-            new Object[]{name, rec});
-      }
-    }
-  }
-  
-  /**
-   * Returns the recipients for the routing definition with specified name
-   * @param name the name of the routing defintion.
-   * @return a list of recipients.
-   */
-  protected synchronized List<String> getRecipients(String name) {
-    ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
-      public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return rs.getString("name");
-      }
-    };    
-    return template.query("select ad.name from adaptors ad, router_dest rd, router_rules rr where rr.name=? and rd.name=rr.name and rd.recipient=ad.name",
-        mapper,
-        name);
-  }
-  
-  /**
    * Removes the specified definition from the list.
    * @param name the name of the definition that should be removed
    */
@@ -374,5 +228,174 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
       definitions.remove(indexToRemove);
     }    
   }
+
+  /**
+   * @see eu.baltrad.beast.router.IRouterManager#create(String,String,boolean,String,IRule)
+   */
+  @Override
+  public RouteDefinition create(String name, String author, boolean active, String description, List<String> recipients, IRule rule) {
+    RouteDefinition result = new RouteDefinition();
+    result.setActive(active);
+    result.setAuthor(author);
+    result.setDescription(description);
+    result.setName(name);
+    result.setRecipients(recipients);
+    result.setRule(rule);
+    return result;
+  }
   
+
+  // DB-specific stuff below.
+  
+  /**
+   * @see eu.baltrad.beast.router.IRouterManager#deleteDefinition(java.lang.String)
+   */
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+  @Override
+  public synchronized void deleteDefinition(String name) {
+    try {
+      Map<String, Object> values = template.queryForMap(
+          "select rule_id, type from beast_router_rules where name=?",
+          new Object[]{name});
+      int rule_id = (Integer)values.get("rule_id");
+      IRuleManager manager = ruleManagers.get(values.get("type"));
+      manager.delete(rule_id);
+      template.update("delete from beast_router_dest where rule_id=?", new Object[]{rule_id});
+      template.update("delete from beast_router_rules where rule_id=?", new Object[]{rule_id});
+    } catch (Throwable t) {
+      throw new RuleException("Failed to remove rule: '" + name+"'");
+    }
+    removeDefinitionFromList(name);
+  }
+
+  /**
+   * @see eu.baltrad.beast.router.IRouterManager#storeDefinition(eu.baltrad.beast.router.RouteDefinition)
+   */
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+  @Override
+  public synchronized void storeDefinition(RouteDefinition def) {
+    IRule rule = def.getRule();
+    String type = rule.getType();
+    IRuleManager manager = ruleManagers.get(type);
+    try {
+      template.update(
+          "insert into beast_router_rules (name,type,author,description,active)"+
+          " values (?,?,?,?,?)",
+          new Object[]{def.getName(), type, def.getAuthor(), def.getDescription(), 
+              def.isActive()});
+      int ruleid = template.queryForInt(
+          "select rule_id from beast_router_rules where name=?",
+          new Object[]{def.getName()});
+      manager.store(ruleid, rule);
+      storeRecipients(ruleid, def.getRecipients());
+    } catch (Throwable t) {
+      throw new RuleException("Failed to add router rule definition: " + t.getMessage(), t);
+    }
+    this.definitions.add(def);
+  }
+
+  /**
+   * @see eu.baltrad.beast.router.IRouterManager#updateDefinition(eu.baltrad.beast.router.RouteDefinition)
+   */
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+  @Override
+  public synchronized void updateDefinition(RouteDefinition def) {
+    IRule rule = def.getRule();
+    String type = rule.getType();
+    try {
+      Map<String, Object> values = template.queryForMap(
+          "select rule_id, type from beast_router_rules where name=?",
+          new Object[]{def.getName()});
+      int rule_id = (Integer)values.get("rule_id");
+      IRuleManager manager = ruleManagers.get(values.get("type"));
+      template.update("update beast_router_rules set type=?, author=?, description=?, active=? where rule_id=?", 
+          new Object[]{type, def.getAuthor(), def.getDescription(), def.isActive(), rule_id});
+      manager.delete(rule_id);
+      
+      // store the new rule
+      ruleManagers.get(def.getRule().getType()).store(rule_id, rule);
+
+      // replace recipients
+      storeRecipients(rule_id, def.getRecipients());
+    } catch (Throwable t) {
+      throw new RuleException("Failed to update router rule definition: " + t.getMessage(), t);
+    }
+    
+    // If all went well, then replace the existing definition with the new one.
+    removeDefinitionFromList(def.getName());
+    definitions.add(def);
+  }
+ 
+  /**
+   * Spring framework will call this function after the bean has been created.
+   */
+  @Override
+  public synchronized void afterPropertiesSet() throws Exception {
+    ParameterizedRowMapper<RouteDefinition> mapper = getRouteDefinitionMapper();
+        
+    definitions = template.query(
+        "select rule_id, name,type,author,description,active from beast_router_rules",
+        mapper);
+  }
+  
+  /**
+   * Stores the recipients
+   * @param name - the route definition name
+   * @param recipients a list of recipients
+   */
+  protected void storeRecipients(int rule_id, List<String> recipients) {
+    template.update("delete from beast_router_dest where rule_id=?",
+        new Object[]{rule_id});
+    if (recipients != null) {
+      for (String rec: recipients) {
+        template.update("insert into beast_router_dest (rule_id, recipient) values (?,?)",
+            new Object[]{rule_id, rec});
+      }
+    }
+  }
+  
+  /**
+   * Returns the recipients for the routing definition with specified name
+   * @param name the name of the routing defintion.
+   * @return a list of recipients.
+   */
+  protected synchronized List<String> getRecipients(int rule_id) {
+    ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+      public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return rs.getString("name");
+      }
+    };
+    return template.query("select ad.name from beast_adaptors ad, beast_router_dest rd, beast_router_rules rr where rr.rule_id=? and rd.rule_id=rr.rule_id and rd.recipient=ad.name",
+        mapper,
+        rule_id);
+  }
+  
+  protected ParameterizedRowMapper<RouteDefinition> getRouteDefinitionMapper() {
+    return new ParameterizedRowMapper<RouteDefinition>() {
+      public RouteDefinition mapRow(ResultSet rs, int rowNum) throws SQLException {
+        int rule_id = rs.getInt("rule_id");
+        String name = rs.getString("name");
+        String type = rs.getString("type");
+        String author = rs.getString("author");
+        String descr = rs.getString("description");
+        boolean active = rs.getBoolean("active");
+          
+        RouteDefinition rd = new RouteDefinition();
+        rd.setName(name);
+        rd.setAuthor(author);
+        rd.setDescription(descr);
+        rd.setActive(active);
+        try {
+          IRuleManager manager = ruleManagers.get(type);
+          if (manager != null) {
+            rd.setRule(manager.load(rule_id));
+          }
+        } catch (RuleException re) {
+          re.printStackTrace();
+        }
+        rd.setRecipients(getRecipients(rule_id));
+        return rd;
+      }
+    };
+  }
 }

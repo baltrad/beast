@@ -48,7 +48,6 @@ public class CatalogITest extends TestCase {
   
   public CatalogITest(String name) {
     super(name);
-    //System.out.println("LIBRARYPATH: " + System.getProperty("java.library.path"));
 
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("testHelper");
