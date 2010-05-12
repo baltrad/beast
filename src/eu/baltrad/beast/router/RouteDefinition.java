@@ -153,4 +153,15 @@ public class RouteDefinition {
   public String getDescription() {
     return description;
   }
+  
+  /**
+   * Returns the type of the rule.
+   * @return the rule type (or null if no rule has been set)
+   */
+  public String getRuleType() {
+    if (rule != null) {
+      return rule.getType();
+    }
+    return null;
+  }
 }

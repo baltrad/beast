@@ -135,4 +135,30 @@ public class RouteDefinitionTest extends TestCase {
     iruleControl.verify();
   }
   
+  public void testGetRuleType() throws Exception {
+    MockControl iruleControl = MockControl.createControl(IRule.class);
+    IRule irule = (IRule)iruleControl.getMock();
+    
+    irule.getType();
+    iruleControl.setReturnValue("atype");
+    
+    RouteDefinition classUnderTest = new RouteDefinition();
+    classUnderTest.setRule(irule);
+    
+    iruleControl.replay();
+
+    String result = classUnderTest.getRuleType();
+    
+    iruleControl.verify();
+    assertEquals("atype", result);
+  }
+
+  public void testGetRuleType_noRule() throws Exception {
+    
+    RouteDefinition classUnderTest = new RouteDefinition();
+    
+    String result = classUnderTest.getRuleType();
+    
+    assertEquals(null, result);
+  }
 }
