@@ -139,7 +139,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
    */
   @Override
   public String getType() {
-    return "static";
+    return "blt_composite";
   }
 
   /**

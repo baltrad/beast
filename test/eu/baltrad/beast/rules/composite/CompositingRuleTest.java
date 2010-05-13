@@ -92,6 +92,10 @@ public class CompositingRuleTest extends TestCase {
     }
   }
   
+  public void testGetType() {
+    assertEquals("blt_composite", classUnderTest.getType());
+  }
+  
   public void testHandle() throws Exception {
     Date date = new Date(2010, 1, 1);
     Time time = new Time(10, 0, 0);
