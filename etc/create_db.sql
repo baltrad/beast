@@ -36,7 +36,7 @@ create table beast_composite_rules (
 );
 
 create table beast_composite_sources (
-  rule_id integer PRIMARY KEY REFERENCES beast_composite_rules(rule_id),
+  rule_id integer REFERENCES beast_composite_rules(rule_id),
   source text
 );
 
