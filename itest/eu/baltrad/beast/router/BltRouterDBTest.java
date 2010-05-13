@@ -41,7 +41,6 @@ public class BltRouterDBTest extends TestCase {
   private BltRouter classUnderTest = null;
   private ApplicationContext context = null;
   private BeastDBTestHelper helper = null;
-  //private Map<String, IRuleManager> ruleMap = null;
   public BltRouterDBTest(String name) {
     super(name);
   }
@@ -63,7 +62,6 @@ public class BltRouterDBTest extends TestCase {
   public void tearDown() throws Exception {
     context = null;
     helper = null;
-    //ruleMap = null;
     classUnderTest = null;
   }
   

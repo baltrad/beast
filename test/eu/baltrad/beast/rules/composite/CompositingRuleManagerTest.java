@@ -37,6 +37,7 @@ public class CompositingRuleManagerTest extends TestCase {
   private static interface ManagerMethods {
     public CompositingRule createRule();
     public void storeSources(int rule_id, List<String> sources);
+    public List<String> getSources(int rule_id);
   };
 
   private CompositingRuleManager classUnderTest = null;
@@ -240,5 +241,41 @@ public class CompositingRuleManagerTest extends TestCase {
     
     verify();
     assertSame(sources, result);
+  }
+  
+  public void testGetCompsiteRuleMapper() throws Exception {
+    MockControl rsControl = MockControl.createControl(ResultSet.class);
+    ResultSet rs = (ResultSet)rsControl.getMock();
+    List<String> sources = new ArrayList<String>();
+    MockControl methodControl = MockControl.createControl(ManagerMethods.class);
+    final ManagerMethods method = (ManagerMethods)methodControl.getMock();
+    
+    rs.getInt("rule_id");
+    rsControl.setReturnValue(10);
+    rs.getString("area");
+    rsControl.setReturnValue("abc");
+    rs.getInt("interval");
+    rsControl.setReturnValue(15);
+    method.getSources(10);
+    methodControl.setReturnValue(sources);
+    
+    classUnderTest = new CompositingRuleManager() {
+      protected List<String> getSources(int rule_id) {
+        return method.getSources(rule_id);
+      }
+    };
+    
+    ParameterizedRowMapper<CompositingRule> mapper = classUnderTest.getCompsiteRuleMapper();
+    
+    rsControl.replay();
+    methodControl.replay();
+    
+    CompositingRule result = mapper.mapRow(rs, 1);
+    
+    rsControl.verify();
+    methodControl.verify();
+    assertEquals("abc", result.getArea());
+    assertEquals(15, result.getInterval());
+    assertSame(sources, result.getSources());
   }
 }

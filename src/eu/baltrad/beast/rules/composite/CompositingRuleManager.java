@@ -133,7 +133,7 @@ public class CompositingRuleManager implements IRuleManager {
         result.setArea(rs.getString("area"));
         result.setInterval(rs.getInt("interval"));
         result.setSources(getSources(rule_id));
-        return null;
+        return result;
       }
     };
   }
