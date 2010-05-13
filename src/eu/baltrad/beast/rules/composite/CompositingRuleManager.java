@@ -102,9 +102,11 @@ public class CompositingRuleManager implements IRuleManager {
   protected void storeSources(int rule_id, List<String> sources) {
     template.update("delete from beast_composite_sources where rule_id=?",
         new Object[]{rule_id});
-    for (String src : sources) {
-      template.update("insert into beast_composite_sources (rule_id, source)"+
-          " values (?,?)", new Object[]{rule_id, src});
+    if (sources != null) {
+      for (String src : sources) {
+        template.update("insert into beast_composite_sources (rule_id, source)"+
+            " values (?,?)", new Object[]{rule_id, src});
+      }
     }
   }
   

@@ -214,6 +214,18 @@ public class CompositingRuleManagerTest extends TestCase {
     verify();
   }
   
+  public void testStoreSources_nullSources() throws Exception {
+    jdbc.update("delete from beast_composite_sources where rule_id=?",
+        new Object[]{13});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+    
+    replay();
+    classUnderTest.storeSources(13, null);
+    verify();
+  }
+
+  
   public void testGetSources() throws Exception {
     List<String> sources = new ArrayList<String>();
     
@@ -277,5 +289,5 @@ public class CompositingRuleManagerTest extends TestCase {
     assertEquals("abc", result.getArea());
     assertEquals(15, result.getInterval());
     assertSame(sources, result.getSources());
-  }
+  }  
 }
