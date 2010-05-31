@@ -69,6 +69,13 @@ public class TimeoutTask extends TimerTask {
   }
 
   /**
+   * Stops the task, @see java.util.TimerTask#cancel().
+   */
+  public boolean stop() {
+    return super.cancel();
+  }
+
+  /**
    * @param id the id to set
    */
   public void setId(long id) {

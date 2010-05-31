@@ -30,6 +30,7 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.fc.oh5.File;
 
 /**
@@ -41,6 +42,7 @@ public class CompositingRuleITest extends TestCase {
   private Catalog catalog = null;
   private CompositingRule classUnderTest = null;
   private BeastDBTestHelper helper = null;
+  private TimeoutManager timeoutManager = null;
   
   private static String[] FIXTURES = {
     "fixtures/pvol_seang_20090501T110100Z.h5",
@@ -54,6 +56,7 @@ public class CompositingRuleITest extends TestCase {
     super(name);
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");
+    timeoutManager = (TimeoutManager)context.getBean("timeoutmanager");
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.createBaltradDbPath();
   }
@@ -61,6 +64,7 @@ public class CompositingRuleITest extends TestCase {
   public void setUp() throws Exception {
     classUnderTest = new CompositingRule();
     classUnderTest.setCatalog(catalog);
+    classUnderTest.setTimeoutManager(timeoutManager);
     helper.purgeBaltradDB();
   }
   

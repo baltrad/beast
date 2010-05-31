@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.DateTime;
@@ -35,6 +36,8 @@ import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
+import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.Time;
 import eu.baltrad.fc.oh5.File;
@@ -52,8 +55,18 @@ public class CompositingRule implements IRule, ITimeoutRule {
   /**
    * The catalog for database access
    */
-  private Catalog catalog = null;
+  Catalog catalog = null;
 
+  /**
+   * The timeout manager
+   */
+  TimeoutManager timeoutManager = null;
+  
+  /**
+   * The unique rule id separating this compositing rule from the others.
+   */
+  private int ruleid = -1;
+  
   /**
    * The interval in minutes for a composite.
    * Always starts at 0 and interval minutes ahead.
@@ -68,6 +81,11 @@ public class CompositingRule implements IRule, ITimeoutRule {
   private int interval = 15;
   
   /**
+   * The timeout, if 0, no timeout
+   */
+  private int timeout = 0;
+  
+  /**
    * A list of sources (e.g. seang, sekkr, ...)
    */
   private List<String> sources = new ArrayList<String>();
@@ -80,10 +98,32 @@ public class CompositingRule implements IRule, ITimeoutRule {
   /**
    * @param catalog the catalog to set
    */
-  public void setCatalog(Catalog catalog) {
+  protected void setCatalog(Catalog catalog) {
     this.catalog = catalog;
   }
 
+  /**
+   * @param mgr the timeout manager to set
+   */
+  protected void setTimeoutManager(TimeoutManager mgr) {
+    this.timeoutManager = mgr;
+  }
+  
+  /**
+   * Should only be called by this package.
+   * @param ruleid the ruleid to set
+   */
+  void setRuleid(int ruleid) {
+    this.ruleid = ruleid;
+  }
+
+  /**
+   * @return the ruleid
+   */
+  public int getRuleid() {
+    return ruleid;
+  }
+  
   /**
    * Sets the interval to be used. Must be a valid integer that
    * is greater than 0 and evenly dividable by 60. E.g.
@@ -104,6 +144,20 @@ public class CompositingRule implements IRule, ITimeoutRule {
    */
   public int getInterval() {
     return this.interval;
+  }
+  
+  /**
+   * @param timeout the timeout in seconds
+   */
+  public void setTimeout(int timeout) {
+    this.timeout = timeout;
+  }
+  
+  /*
+   * @return the timeout in seconds
+   */
+  public int getTimeout(int timeout) {
+    return this.timeout;
   }
   
   /**
@@ -146,29 +200,77 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
   @Override
-  public IBltMessage handle(IBltMessage message) {
-    if (message instanceof BltDataMessage) {
-      File file = ((BltDataMessage)message).getFile();
-      if (file.what_object().equals("PVOL")) {
-        Time t = file.what_time();
-        Date d = file.what_date();
-        DateTime nominalTime = getNominalTime(d, t);
-        TimeIntervalFilter filter = createFilter(nominalTime);
-        List<CatalogEntry> entries = catalog.fetch(filter);
-        if (areCriteriasMet(entries)) {
-          return createMessage(nominalTime, entries);
+  public synchronized IBltMessage handle(IBltMessage message) {
+    IBltMessage result = null;
+    initialize();
+    CompositingTimerData data = createTimerData(message);
+    if (data != null) {
+      List<CatalogEntry> entries = fetchEntries(data.getDateTime());
+      TimeoutTask tt = timeoutManager.getRegisteredTask(data);
+      if (areCriteriasMet(entries)) {
+        result = createMessage(data.getDateTime(), entries);
+        if (tt != null) {
+          timeoutManager.unregister(tt.getId());
+        }
+      } else {
+        if (tt == null) {
+          timeoutManager.register(this, timeout*1000, data);
         }
       }
     }
-    return null;
+    return result;
   }
 
   /**
    * @see eu.baltrad.beast.rules.timer.ITimeoutRule#timeout(long, int, Object)
    */
   @Override
-  public IBltMessage timeout(long id, int why, Object data) {
-    return null;
+  public synchronized IBltMessage timeout(long id, int why, Object data) {
+    IBltMessage result = null;
+    initialize();
+    CompositingTimerData ctd = (CompositingTimerData)data;
+    if (ctd != null) {
+      List<CatalogEntry> entries = fetchEntries(ctd.getDateTime());
+      result = createMessage(ctd.getDateTime(), entries);
+    }
+    return result;
+  }
+  
+  /**
+   * Initializes the nessecary components like catalog and
+   * timeout manager.
+   * @throws RuntimeException if the nessecary components not could be aquired
+   */
+  protected synchronized void initialize() {
+    if (catalog == null) {
+      catalog = ManagerContext.getCatalog();
+    }
+    if (timeoutManager == null) {
+      timeoutManager = ManagerContext.getTimeoutManager();
+    }
+    if (catalog == null || timeoutManager == null) {
+      throw new RuntimeException();
+    }
+  }
+  
+  /**
+   * If possible creates a CompositingTimerData.
+   * @param message the message (that should be a BltDataMessage)
+   * @return a compositing timer data or null if not possible
+   */
+  protected CompositingTimerData createTimerData(IBltMessage message) {
+    CompositingTimerData result = null;
+    if (message instanceof BltDataMessage) {
+      File file = ((BltDataMessage)message).getFile();
+      if (file.what_object().equals("PVOL")) {
+        Time t = file.what_time();
+        Date d = file.what_date();
+        DateTime nominalTime = getNominalTime(d, t);
+        result = new CompositingTimerData(ruleid, nominalTime);
+      }
+    }
+    
+    return result;
   }
   
   /**
@@ -272,6 +374,18 @@ public class CompositingRule implements IRule, ITimeoutRule {
     result.setArguments(args);
     
     return result;
+  }
+  
+  /**
+   * Fetches the entries that are from the nominal time up until 
+   * the stop time defined by the interval.
+   * @param nominalTime the nominal time
+   * @return a list of entries
+   */
+  protected List<CatalogEntry> fetchEntries(DateTime nominalTime) {
+    TimeIntervalFilter filter = createFilter(nominalTime);
+    List<CatalogEntry> entries = catalog.fetch(filter);
+    return entries;
   }
   
   /**

@@ -77,6 +77,107 @@ public class TimeoutManagerTest extends TestCase {
     managerControl.verify();
   }
   
+  public void testIsRegistered() throws Exception {
+    TimeoutTask t1 = new TimeoutTask();
+    t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
+    TimeoutTask t2 = new TimeoutTask();
+    t2.setData(new String("DEF"));
+    TimeoutTask t3 = new TimeoutTask();
+    t3.setData(new String("GHI"));
+    classUnderTest.tasks.put(new Long(1), t1);
+    classUnderTest.tasks.put(new Long(2), t2);
+    classUnderTest.tasks.put(new Long(3), t3);
+    
+    assertEquals(false, classUnderTest.isRegistered(new String("ADE")));
+    assertEquals(true, classUnderTest.isRegistered(new String("ABC")));
+    assertEquals(true, classUnderTest.isRegistered(new String("GHI")));
+  }
+
+  public void testIsRegistered_nullData() throws Exception {
+    TimeoutTask t1 = new TimeoutTask();
+    t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
+    TimeoutTask t2 = new TimeoutTask();
+    t2.setData(null);
+    TimeoutTask t3 = new TimeoutTask();
+    t3.setData(new String("GHI"));
+    classUnderTest.tasks.put(new Long(1), t1);
+    classUnderTest.tasks.put(new Long(2), t2);
+    classUnderTest.tasks.put(new Long(3), t3);
+    
+    assertEquals(false, classUnderTest.isRegistered(new String("ADE")));
+  }
+
+  public void testIsRegistered_nullTest() throws Exception {
+    TimeoutTask t1 = new TimeoutTask();
+    t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
+    TimeoutTask t2 = new TimeoutTask();
+    t2.setData(new String("DEF"));
+    TimeoutTask t3 = new TimeoutTask();
+    t3.setData(new String("GHI"));
+    classUnderTest.tasks.put(new Long(1), t1);
+    classUnderTest.tasks.put(new Long(2), t2);
+    classUnderTest.tasks.put(new Long(3), t3);
+    
+    assertEquals(false, classUnderTest.isRegistered(null));
+  }
+  
+  public void testGetRegisteredTask() throws Exception {
+    TimeoutTask t1 = new TimeoutTask();
+    t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
+    TimeoutTask t2 = new TimeoutTask();
+    t2.setData(new String("DEF"));
+    TimeoutTask t3 = new TimeoutTask();
+    t3.setData(new String("GHI"));
+    classUnderTest.tasks.put(new Long(1), t1);
+    classUnderTest.tasks.put(new Long(2), t2);
+    classUnderTest.tasks.put(new Long(3), t3);
+
+    TimeoutTask r1 = classUnderTest.getRegisteredTask("ABC");
+    TimeoutTask r2 = classUnderTest.getRegisteredTask("DEF");
+    TimeoutTask r3 = classUnderTest.getRegisteredTask("GHI");
+    TimeoutTask r4 = classUnderTest.getRegisteredTask("HIJ");
+
+    assertSame(t1, r1);
+    assertSame(t2, r2);
+    assertSame(t3, r3);
+    assertEquals(null, r4);
+  }
+
+  public void testGetRegisteredTask_nullData() throws Exception {
+    TimeoutTask t1 = new TimeoutTask();
+    t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
+    TimeoutTask t2 = new TimeoutTask();
+    TimeoutTask t3 = new TimeoutTask();
+    t3.setData(new String("GHI"));
+    classUnderTest.tasks.put(new Long(1), t1);
+    classUnderTest.tasks.put(new Long(2), t2);
+    classUnderTest.tasks.put(new Long(3), t3);
+
+    TimeoutTask r1 = classUnderTest.getRegisteredTask("ABC");
+    TimeoutTask r2 = classUnderTest.getRegisteredTask("DEF");
+    TimeoutTask r3 = classUnderTest.getRegisteredTask("GHI");
+    TimeoutTask r4 = classUnderTest.getRegisteredTask("HIJ");
+
+    assertSame(t1, r1);
+    assertEquals(null, r2);
+    assertSame(t3, r3);
+    assertEquals(null, r4);
+  }
+
+  public void testGetRegisteredTask_null() throws Exception {
+    TimeoutTask t1 = new TimeoutTask();
+    t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
+    TimeoutTask t2 = new TimeoutTask();
+    t2.setData(new String("DEF"));
+    TimeoutTask t3 = new TimeoutTask();
+    t3.setData(new String("GHI"));
+    classUnderTest.tasks.put(new Long(1), t1);
+    classUnderTest.tasks.put(new Long(2), t2);
+    classUnderTest.tasks.put(new Long(3), t3);
+    TimeoutTask r1 = classUnderTest.getRegisteredTask(null);
+    assertSame(null, r1);
+  }
+  
   public void testRegister() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
@@ -128,6 +229,24 @@ public class TimeoutManagerTest extends TestCase {
     taskControl.verify();
   }
  
+  public void testUnregister() throws Exception {
+    MockControl taskControl = MockClassControl.createControl(TimeoutTask.class);
+    TimeoutTask task = (TimeoutTask)taskControl.getMock();
+
+    classUnderTest.tasks.put((long)0, task);
+    
+    task.stop();
+    taskControl.setReturnValue(true);
+    
+    replay();
+    taskControl.replay();
+
+    classUnderTest.unregister(0);
+    
+    verify();
+    taskControl.verify();
+  }
+  
   public void testNewId() {
     classUnderTest = new TimeoutManager();
     classUnderTest.setStartID(10);

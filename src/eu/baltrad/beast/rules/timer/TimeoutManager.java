@@ -87,6 +87,40 @@ public class TimeoutManager implements ITimeoutTaskListener {
   }
   
   /**
+   * Checks if any task contains a data object equal to the provided data object.
+   * @param data the data object
+   * @return true if found otherwise false
+   */
+  public synchronized boolean isRegistered(Object data) {
+    if (data != null) {
+      for (TimeoutTask t : tasks.values()) {
+        Object o = t.getData();
+        if (o != null && o.equals(data)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * Returns the task matching the provided data if any
+   * @param data the data object to match against
+   * @return the object if found otherwise null
+   */
+  public synchronized TimeoutTask getRegisteredTask(Object data) {
+    if (data != null) {
+      for (TimeoutTask t : tasks.values()) {
+        Object o = t.getData();
+        if (o != null && o.equals(data)) {
+          return t;
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
    * Registers a timeout that should be triggered after delay (ms).
    * @param rule the rule to be called
    * @param delay the delay in miliseconds
@@ -112,6 +146,18 @@ public class TimeoutManager implements ITimeoutTaskListener {
     }
   }
 
+  /**
+   * Unregisters the task with the specified id
+   * @param id the id
+   */
+  public synchronized void unregister(long id) {
+    TimeoutTask task = tasks.get(id);
+    if (task != null) {
+      task.stop();
+      tasks.remove(id);
+    }
+  }
+  
   /**
    * Sets the start value for the id-sequence
    * @param v

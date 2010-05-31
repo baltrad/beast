@@ -150,6 +150,7 @@ public class CompositingRuleManagerTest extends TestCase {
     
     verify();
     methodsControl.verify();
+    assertEquals(13, rule.getRuleid());
   }
   
   public void testUpdate() throws Exception {
@@ -183,6 +184,7 @@ public class CompositingRuleManagerTest extends TestCase {
     
     verify();
     methodsControl.verify();
+    assertEquals(13, rule.getRuleid());
   }
   
   public void testStoreSources() throws Exception {
@@ -289,5 +291,6 @@ public class CompositingRuleManagerTest extends TestCase {
     assertEquals("abc", result.getArea());
     assertEquals(15, result.getInterval());
     assertSame(sources, result.getSources());
+    assertEquals(10, result.getRuleid());
   }  
 }

@@ -79,6 +79,7 @@ public class CompositingRuleManager implements IRuleManager {
         "insert into beast_composite_rules (rule_id, area, interval)"+
         " values (?,?,?)", new Object[]{ruleId, area, interval});
     storeSources(ruleId, crule.getSources());
+    crule.setRuleid(ruleId);
   }
 
   /**
@@ -91,6 +92,7 @@ public class CompositingRuleManager implements IRuleManager {
         "update beast_composite_rules set area=?, interval=? where rule_id=?",
         new Object[]{crule.getArea(), crule.getInterval(), ruleId});
     storeSources(ruleId, crule.getSources());
+    crule.setRuleid(ruleId);
   }
   
   /**
@@ -132,6 +134,7 @@ public class CompositingRuleManager implements IRuleManager {
           throws SQLException {
         CompositingRule result = new CompositingRule();
         int rule_id = rs.getInt("rule_id");
+        result.setRuleid(rule_id);
         result.setArea(rs.getString("area"));
         result.setInterval(rs.getInt("interval"));
         result.setSources(getSources(rule_id));

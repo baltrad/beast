@@ -129,14 +129,17 @@ public class DateTime {
    * @param dt the date time to compare with
    * @return true if equality
    */
-  public boolean equals(DateTime dt) {
+  public boolean equals(Object odt) {
     boolean result = false;
-    Date d = dt.getDate();
-    Time t = dt.getTime();
-    if (d != null && t != null && date != null && time != null) {
-      if (d.year() == date.year() && d.month() == date.month() && d.day() == date.day() &&
-          t.hour() == time.hour() && t.minute() == time.minute() && t.second() == time.second()) {
-        result = true;
+    if (odt instanceof DateTime && odt.getClass() == DateTime.class) { 
+      DateTime dt = (DateTime)odt;
+      Date d = dt.getDate();
+      Time t = dt.getTime();
+      if (d != null && t != null && date != null && time != null) {
+        if (d.year() == date.year() && d.month() == date.month() && d.day() == date.day() &&
+            t.hour() == time.hour() && t.minute() == time.minute() && t.second() == time.second()) {
+          result = true;
+        }
       }
     }
     return result;
@@ -145,7 +148,11 @@ public class DateTime {
   public String toString() {
     StringBuffer b = new StringBuffer();
     Formatter formatter = new Formatter(b);
-    formatter.format("%d-%02d-%02d %02d:%02d:%02d", date.year(), date.month(), date.day(), time.hour(), time.minute(), time.second());
+    if (date != null && time != null) {
+      formatter.format("%d-%02d-%02d %02d:%02d:%02d", date.year(), date.month(), date.day(), time.hour(), time.minute(), time.second());
+    } else {
+      formatter.format("unknown");
+    }
     return b.toString();
   }
 }
