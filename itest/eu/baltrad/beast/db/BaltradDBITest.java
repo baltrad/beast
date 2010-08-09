@@ -85,11 +85,15 @@ public class BaltradDBITest extends TestCase {
     catalogue = null;
   }
   
+  public void XtestLoadWithNonExistingPath() {
+    catalogue = new FileCatalog(helper.getBaltradDbUri(), "/mr/yoda");
+  }
+  
   public void test_find_seang() throws Exception {
     Query q = catalogue.query();
     ExpressionFactory xpr = new ExpressionFactory();
-    q.fetch(xpr.attribute("path"));
-    q.filter(xpr.attribute("src_node").eq(xpr.string("seang")));
+    q.fetch(xpr.attribute("file:path"));
+    q.filter(xpr.attribute("what/source:node").eq(xpr.string("seang")));
     ResultSet rs = q.execute();
     assertEquals(1, rs.size());
     rs.next();
@@ -103,7 +107,7 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
-    q.fetch(xpr.attribute("src_node"));
+    q.fetch(xpr.attribute("what/source:node"));
 
     ResultSet rs = q.execute();
     assertEquals(12, rs.size());
@@ -129,9 +133,9 @@ public class BaltradDBITest extends TestCase {
     Query q = catalogue.query();
     ExpressionFactory xpr = new ExpressionFactory();
     
-    q.fetch(xpr.attribute("src_node"));
-    Expression e1 = xpr.attribute("src_node").eq(xpr.string("sekir"));
-    Expression e2 = xpr.attribute("src_node").eq(xpr.string("selul"));
+    q.fetch(xpr.attribute("what/source:node"));
+    Expression e1 = xpr.attribute("what/source:node").eq(xpr.string("sekir"));
+    Expression e2 = xpr.attribute("what/source:node").eq(xpr.string("selul"));
     q.filter(xpr.or_(e1, e2));
     ResultSet rs = q.execute();
     assertEquals(2, rs.size());
@@ -154,8 +158,8 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
-    q.fetch(xpr.attribute("src_node"));
-    q.filter(xpr.attribute("src_node").ne(xpr.string("sekir")));
+    q.fetch(xpr.attribute("what/source:node"));
+    q.filter(xpr.attribute("what/source:node").ne(xpr.string("sekir")));
     ResultSet rs = q.execute();
     assertEquals(11, rs.size());
     while (rs.next()) {
@@ -180,9 +184,9 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<Double> result = new HashSet<Double>();
     
-    q.fetch(xpr.attribute("src_node"));
+    q.fetch(xpr.attribute("what/source:node"));
     q.fetch(xpr.attribute("where/elangle"));
-    q.filter(xpr.attribute("src_node").eq(xpr.string("searl")));
+    q.filter(xpr.attribute("what/source:node").eq(xpr.string("searl")));
     q.filter(xpr.attribute("where/elangle").between(xpr.real(-1.0), xpr.real(5.0)));
     
     ResultSet rs = q.execute();

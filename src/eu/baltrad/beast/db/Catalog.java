@@ -75,8 +75,8 @@ public class Catalog implements InitializingBean {
     
     Query q = fc.query();
     
-    q.fetch(xpr.attribute("path"));
-    q.fetch(xpr.attribute("src_node"));
+    q.fetch(xpr.attribute("file:path"));
+    q.fetch(xpr.attribute("what/source:node"));
     q.fetch(xpr.attribute("what/date"));
     q.fetch(xpr.attribute("what/time"));
     q.fetch(xpr.attribute("what/object"));
