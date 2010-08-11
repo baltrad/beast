@@ -75,9 +75,11 @@ public class TimeoutManagerITest extends TestCase {
   private static class TimeoutValues {
     public long id;
     public int why;
+    public long when;
     public TimeoutValues() {
       id = 0;
       why = 0;
+      when = 0;
     }
   }
   
@@ -89,6 +91,8 @@ public class TimeoutManagerITest extends TestCase {
       public synchronized IBltMessage timeout(long id, int why, Object data) {
         result.id = id;
         result.why = why;
+        result.when = System.currentTimeMillis();
+        System.out.println("THRNAME: " + Thread.currentThread().getName());
         notify();
         return message;
       }
@@ -98,6 +102,8 @@ public class TimeoutManagerITest extends TestCase {
     
     replay();
     
+    long now = System.currentTimeMillis();
+    System.out.println("REGISTERING AS: " + Thread.currentThread().getName());
     long id = classUnderTest.register(rule, 1000, null);
     synchronized(rule) {
       try {
@@ -105,6 +111,7 @@ public class TimeoutManagerITest extends TestCase {
       } catch (Throwable t) {
       }
     }
+    System.out.println("timeout occured after: " + (result.when - now) + " ms");
     verify();
     assertEquals(ITimeoutRule.TIMEOUT, result.why);
     assertEquals(id, result.id);
