@@ -24,7 +24,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import eu.baltrad.beast.manager.IBltMessageManager;
-import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 
 /**
  * Will trigger the IBeastJob that has been stored in the jobdetail.
@@ -37,11 +37,23 @@ public class BeastJobInvoker implements Job {
   @Override
   public void execute(JobExecutionContext ctx) throws JobExecutionException {
     JobDetail detail = ctx.getJobDetail() ;
-    IBeastJob job = (IBeastJob)detail.getJobDataMap().get("job");
     IBltMessageManager mgr = (IBltMessageManager)detail.getJobDataMap().get("messageManager");
-    IBltMessage msg = job.trigger();
-    if (msg != null) {
-      mgr.manage(msg);
-    }
+    String id = ctx.getTrigger().getName();
+    String name = detail.getName();
+    BltTriggerJobMessage msg = createMessage(id, name);
+    mgr.manage(msg);
+  }
+  
+  /**
+   * Creates a scheduled job message
+   * @param id the id
+   * @param name the name
+   * @return the message
+   */
+  protected BltTriggerJobMessage createMessage(String id, String name) {
+    BltTriggerJobMessage result = new BltTriggerJobMessage();
+    result.setId(id);
+    result.setName(name);
+    return result;
   }
 }

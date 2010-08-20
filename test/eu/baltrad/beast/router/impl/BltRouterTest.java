@@ -28,6 +28,7 @@ import org.easymock.MockControl;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.message.mo.BltRoutedMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
 import eu.baltrad.beast.router.RouteDefinition;
@@ -38,6 +39,11 @@ import eu.baltrad.beast.rules.IRule;
  * @author Anders Henja
  */
 public class BltRouterTest extends TestCase {
+  private static interface MockMethods {
+    public List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg, RouteDefinition def);
+    public RouteDefinition getDefinition(String name);
+  };
+  
   private MockControl ruleControl = null;
   private IRule rule = null;
   private MockControl rule2Control = null;
@@ -58,10 +64,12 @@ public class BltRouterTest extends TestCase {
     definitions = new ArrayList<RouteDefinition>();
     
     RouteDefinition def = new RouteDefinition();
+    def.setName("R1");
     def.setRule(rule);
     definitions.add(def);
     
     def = new RouteDefinition();
+    def.setName("R2");
     def.setRule(rule2);
     List<String> d2recipients = new ArrayList<String>();
     d2recipients.add("Adaptor1");
@@ -69,6 +77,7 @@ public class BltRouterTest extends TestCase {
     definitions.add(def);
     
     def = new RouteDefinition();
+    def.setName("R3");
     def.setRule(rule3);
     List<String> d3recipients = new ArrayList<String>();
     d3recipients.add("Adaptor2");
@@ -99,36 +108,114 @@ public class BltRouterTest extends TestCase {
   }
 
   public void testGetMultiRoutedMessages() throws Exception {
+    MockControl methodsControl = MockControl.createControl(MockMethods.class);
+    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    
     IBltMessage message = new IBltMessage() {};
-    IBltMessage r2message = new IBltMessage() {};
-    IBltMessage r3message = new IBltMessage() {};
+    BltMultiRoutedMessage m1 = new BltMultiRoutedMessage();
+    BltMultiRoutedMessage m2 = new BltMultiRoutedMessage();
+    BltMultiRoutedMessage m3 = new BltMultiRoutedMessage();
+    List<IMultiRoutedMessage> l1 = new ArrayList<IMultiRoutedMessage>();
+    l1.add(m1);
+    l1.add(m2);
+    List<IMultiRoutedMessage> l2 = new ArrayList<IMultiRoutedMessage>();
+    l1.add(m3);
     
-    rule.handle(message);
-    ruleControl.setReturnValue(null);
-    rule2.handle(message);
-    rule2Control.setReturnValue(r2message);
-    rule3.handle(message);
-    rule3Control.setReturnValue(r3message);
+    methods.getMultiRoutedMessages(message, definitions.get(0));
+    methodsControl.setReturnValue(new ArrayList<IMultiRoutedMessage>());
+    methods.getMultiRoutedMessages(message, definitions.get(1));
+    methodsControl.setReturnValue(l1);
+    methods.getMultiRoutedMessages(message, definitions.get(2));
+    methodsControl.setReturnValue(l2);
     
-    BltRouter classUnderTest = new BltRouter();
+    BltRouter classUnderTest = new BltRouter() {
+      protected List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg, RouteDefinition def) {
+        return methods.getMultiRoutedMessages(msg, def);
+      }
+    };
     classUnderTest.setDefinitions(definitions);
     
     replay();
+    methodsControl.replay();
     
     List<IMultiRoutedMessage> result = classUnderTest.getMultiRoutedMessages(message);
     
     verify();
+    methodsControl.verify();
     
-    assertEquals(2, result.size());
-    assertSame(r2message, result.get(0).getMessage());
-    assertEquals(1, result.get(0).getDestinations().size());
-    assertEquals("Adaptor1", result.get(0).getDestinations().get(0));
-    assertSame(r3message, result.get(1).getMessage());
-    assertEquals(2, result.get(1).getDestinations().size());
-    assertEquals("Adaptor2", result.get(1).getDestinations().get(0));
-    assertEquals("Adaptor3", result.get(1).getDestinations().get(1));
+    assertEquals(3, result.size());
+    assertSame(m1, result.get(0));
+    assertSame(m2, result.get(1));
+    assertSame(m3, result.get(2));
   }
 
+  public void testGetMultiRoutedMessage_triggerJob() throws Exception {
+    MockControl methodsControl = MockControl.createControl(MockMethods.class);
+    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    BltTriggerJobMessage msg = new BltTriggerJobMessage();
+    msg.setId("1");
+    msg.setName("R2");
+
+    RouteDefinition d = new RouteDefinition();
+    List<IMultiRoutedMessage> l1 = new ArrayList<IMultiRoutedMessage>();
+    BltMultiRoutedMessage m1 = new BltMultiRoutedMessage();
+    BltMultiRoutedMessage m2 = new BltMultiRoutedMessage();
+    l1.add(m1);
+    l1.add(m2);
+    
+    methods.getDefinition("R2");
+    methodsControl.setReturnValue(d);
+    methods.getMultiRoutedMessages(msg, d);
+    methodsControl.setReturnValue(l1);
+    
+    BltRouter classUnderTest = new BltRouter() {
+      public RouteDefinition getDefinition(String name) {
+        return methods.getDefinition(name);
+      }
+      protected List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg, RouteDefinition def) {
+        return methods.getMultiRoutedMessages(msg, def);
+      }
+    };
+    classUnderTest.setDefinitions(definitions);
+    
+    replay();
+    methodsControl.replay();
+    
+    List<IMultiRoutedMessage> result = classUnderTest.getMultiRoutedMessages(msg);
+    
+    verify();
+    methodsControl.verify();
+    assertEquals(2, result.size());
+    assertSame(m1, result.get(0));
+    assertSame(m2, result.get(1));
+  }
+  
+  public void testGetMultiRoutedMessagesFromDefinition() throws Exception {
+    RouteDefinition d = new RouteDefinition();
+    List<String> r = new ArrayList<String>();
+    r.add("A");
+    r.add("B");
+    d.setRule(rule);
+    d.setRecipients(r);
+    
+    IBltMessage msg = new IBltMessage() {};
+    IBltMessage msg2 = new IBltMessage() {};
+    rule.handle(msg);
+    ruleControl.setReturnValue(msg2);
+    
+    replay();
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(definitions);
+    
+    List<IMultiRoutedMessage> result = classUnderTest.getMultiRoutedMessages(msg, d);
+    
+    verify();
+    assertEquals(1, result.size());
+    assertSame(msg2, result.get(0).getMessage());
+    assertSame(r, result.get(0).getDestinations());
+  }
+  
   private static class MRM implements IBltMessage, IMultiRoutedMessage {
     private IBltMessage msg = null;
     private List<String> destinations = null;

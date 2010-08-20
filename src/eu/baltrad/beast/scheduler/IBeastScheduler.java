@@ -18,21 +18,42 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.scheduler;
 
+import java.util.List;
+
 /**
  * @author Anders Henja
  */
 public interface IBeastScheduler {
   /**
    * Registers a job
-   * @param id - the job id
    * @param cron - the cron expression
-   * @param r the job
+   * @param jobName - the name of the job to be executed
+   * @returns the id for this scheduled job
    */
-  public void register(String id, String cron, IBeastJob job);
+  public int register(String cron, String jobName);
   
   /**
    * Unregisters the specified job
    * @param id the jobid
    */
-  public void unregister(String id);
+  public void unregister(int id);
+  
+  /**
+   * @return the schedule
+   */
+  public List<CronEntry> getSchedule();
+  
+  /**
+   * Returns the schedule for the specified job
+   * @param job the job
+   * @return the schedule
+   */
+  public List<CronEntry> getSchedule(String job);
+  
+  /**
+   * Returns the entry for the specified id
+   * @param id the id
+   * @return the entry or null if not found
+   */
+  public CronEntry getEntry(int id);
 }

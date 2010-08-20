@@ -22,6 +22,7 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 
 /**
  * @author Anders Henja
@@ -38,6 +39,8 @@ public class XmlRpcCommandGenerator implements IXmlRpcCommandGenerator {
       return createCommand((BltAlertMessage)message);
     } else if (message.getClass() == BltGenerateMessage.class) {
       return createCommand((BltGenerateMessage)message);
+    } else if (message.getClass() == BltTriggerJobMessage.class) {
+      return createCommand((BltTriggerJobMessage)message);
     }
     throw new XmlRpcCommandException("Can not handle message of type: " + message.getClass().getName());
   }
@@ -83,6 +86,22 @@ public class XmlRpcCommandGenerator implements IXmlRpcCommandGenerator {
     Object[] objects = new Object[]{algorithm,files,arguments};
     XmlRpcCommand command = new XmlRpcCommand();
     command.setMethod("generate");
+    command.setObjects(objects);
+    return command;    
+  }
+  
+  /**
+   * Creates an XmlRpcCommand for sending a trigger job message.
+   * @param message the message
+   * @return the command
+   */
+  protected XmlRpcCommand createCommand(BltTriggerJobMessage message) {
+    String id = message.getId();
+    String name = message.getName();
+    String[] args = message.getArgs();
+    Object[] objects = new Object[]{id,name,args};
+    XmlRpcCommand command = new XmlRpcCommand();
+    command.setMethod("triggerjob");
     command.setObjects(objects);
     return command;    
   }

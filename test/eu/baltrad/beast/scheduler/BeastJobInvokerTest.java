@@ -24,19 +24,23 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.springframework.scheduling.quartz.CronTriggerBean;
 
 import eu.baltrad.beast.manager.IBltMessageManager;
-import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 
 /**
  * @author Anders Henja
  *
  */
 public class BeastJobInvokerTest extends TestCase {
+  private static interface MockMethods {
+    public BltTriggerJobMessage createMessage(String id, String name);
+  };
+  private MockControl methodsControl = null;
+  private MockMethods methods = null;
   private MockControl ctxControl = null;
   private JobExecutionContext ctx = null;
-  private MockControl jobControl = null;
-  private IBeastJob job = null;
   private MockControl msgManagerControl = null;
   private IBltMessageManager msgManager = null;
   
@@ -44,13 +48,18 @@ public class BeastJobInvokerTest extends TestCase {
   
   public void setUp() throws Exception {
     super.setUp();
-    classUnderTest = new BeastJobInvoker();
+    methodsControl = MockControl.createControl(MockMethods.class);
+    methods = (MockMethods)methodsControl.getMock();
     ctxControl = MockClassControl.createControl(JobExecutionContext.class);
     ctx = (JobExecutionContext)ctxControl.getMock();
-    jobControl = MockControl.createControl(IBeastJob.class);
-    job = (IBeastJob)jobControl.getMock();
     msgManagerControl = MockControl.createControl(IBltMessageManager.class);
-    msgManager = (IBltMessageManager)msgManagerControl.getMock();    
+    msgManager = (IBltMessageManager)msgManagerControl.getMock();
+    
+    classUnderTest = new BeastJobInvoker() {
+      protected BltTriggerJobMessage createMessage(String id, String name) {
+        return methods.createMessage(id, name);
+      }
+    };
   }
   
   public void tearDown() throws Exception {
@@ -60,26 +69,31 @@ public class BeastJobInvokerTest extends TestCase {
   
   protected void replay() {
     ctxControl.replay();
-    jobControl.replay();
     msgManagerControl.replay();
+    methodsControl.replay();
   }
   
   protected void verify() {
     ctxControl.verify();
-    jobControl.verify();
     msgManagerControl.verify();
+    methodsControl.verify();
   }
   
   public void testExecute() throws Exception {
+    CronTriggerBean trigger = new CronTriggerBean();
+    trigger.setName("a.id");
     JobDetail detail = new JobDetail();
-    detail.getJobDataMap().put("job", job);
+    detail.setName("a.name");
     detail.getJobDataMap().put("messageManager", msgManager);
+
+    BltTriggerJobMessage msg = new BltTriggerJobMessage();
     
-    IBltMessage msg = new IBltMessage() {};
     ctx.getJobDetail();
     ctxControl.setReturnValue(detail);
-    job.trigger();
-    jobControl.setReturnValue(msg);
+    ctx.getTrigger();
+    ctxControl.setReturnValue(trigger);
+    methods.createMessage("a.id", "a.name");
+    methodsControl.setReturnValue(msg);
     msgManager.manage(msg);
     
     replay();
@@ -89,20 +103,10 @@ public class BeastJobInvokerTest extends TestCase {
     verify();
   }
   
-  public void testExecute_noReturnedMessage() throws Exception {
-    JobDetail detail = new JobDetail();
-    detail.getJobDataMap().put("job", job);
-    detail.getJobDataMap().put("messageManager", msgManager);
-    
-    ctx.getJobDetail();
-    ctxControl.setReturnValue(detail);
-    job.trigger();
-    jobControl.setReturnValue(null);
-    
-    replay();
-    
-    classUnderTest.execute(ctx);
-
-    verify();
+  public void testCreateMessage() throws Exception {
+    classUnderTest = new BeastJobInvoker();
+    BltTriggerJobMessage result = classUnderTest.createMessage("a.id", "a.name");
+    assertEquals("a.id", result.getId());
+    assertEquals("a.name", result.getName());
   }
 }

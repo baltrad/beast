@@ -18,17 +18,32 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.scheduler;
 
-import eu.baltrad.beast.message.IBltMessage;
+import junit.framework.TestCase;
 
 /**
- * A specific job that should be executed.
  * @author Anders Henja
+ *
  */
-public interface IBeastJob {
-  /**
-   * The trigger function. If something should occur, return a message
-   * in order to get it executed.
-   * @return a baltrad message if something should occur
-   */
-  public IBltMessage trigger();
+public class CronEntryTest extends TestCase {
+  private CronEntry classUnderTest = null;
+  
+  public void setUp() throws Exception {
+    classUnderTest = new CronEntry();
+  }
+  
+  public void tearDown() throws Exception {
+    classUnderTest = null;
+  }
+  
+  public void testId() {
+    assertEquals(0, classUnderTest.getId());
+    classUnderTest.setId(1);
+    assertEquals(1, classUnderTest.getId());
+  }
+  
+  public void testExpression() {
+    assertEquals(null, classUnderTest.getExpression());
+    classUnderTest.setExpression("a");
+    assertEquals("a", classUnderTest.getExpression());
+  }
 }

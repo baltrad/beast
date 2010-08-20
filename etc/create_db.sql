@@ -40,3 +40,9 @@ create table beast_composite_sources (
   source text
 );
 
+create table beast_scheduled_jobs (
+  id SERIAL PRIMARY KEY,
+  expression text NOT NULL,
+  name text NOT NULL
+);
+

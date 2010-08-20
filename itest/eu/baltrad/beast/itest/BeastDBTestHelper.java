@@ -248,8 +248,10 @@ public class BeastDBTestHelper {
     };
     java.io.File dir = new java.io.File(pth);
     String[] list = dir.list(filter);
-    for (String n : list) {
-      (new java.io.File(pth, n)).delete();
+    if (list != null) {
+      for (String n : list) {
+        (new java.io.File(pth, n)).delete();
+      }
     }
 
     SimpleJdbcTemplate template = new SimpleJdbcTemplate(getSource());

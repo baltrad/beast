@@ -10,3 +10,5 @@ drop table if exists router_dest;
 drop table if exists adaptors_xmlrpc;
 drop table if exists adaptors; 
 drop table if exists router_rules;
+
+drop table if exists beast_scheduled_jobs;

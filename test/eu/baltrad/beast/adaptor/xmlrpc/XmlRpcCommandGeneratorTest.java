@@ -22,6 +22,7 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import junit.framework.TestCase;
 
 /**
@@ -84,6 +85,22 @@ public class XmlRpcCommandGeneratorTest extends TestCase {
     assertEquals("x.C", objs[0]);
     assertEquals("x", ((Object[])objs[1])[0]);
     assertEquals("y", ((Object[])objs[1])[1]);
+    assertEquals("o", ((Object[])objs[2])[0]);
+    assertEquals("a", ((Object[])objs[2])[1]);
+  }
+
+  public void testGenerateBltTriggerJob() throws Exception {
+    BltTriggerJobMessage msg = new BltTriggerJobMessage();
+    msg.setId("a.id");
+    msg.setName("a.name");
+    msg.setArgs(new String[]{"o", "a"});
+    
+    XmlRpcCommand command = classUnderTest.generate(msg);
+    assertEquals("triggerjob", command.getMethod());
+    Object[] objs = command.getObjects();
+    assertEquals(3, objs.length);
+    assertEquals("a.id", objs[0]);
+    assertEquals("a.name", objs[1]);
     assertEquals("o", ((Object[])objs[2])[0]);
     assertEquals("a", ((Object[])objs[2])[1]);
   }

@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.message.mo.BltRoutedMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
 import eu.baltrad.beast.router.IRouter;
@@ -113,31 +114,50 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	    rms.setDestinations(destinations);
 	    result.add(rms);
 	  } else {
-      for (RouteDefinition d : definitions) {
-        IBltMessage nmsg = d.getRule().handle(msg);
-        if (nmsg != null) {
-          if (nmsg instanceof IMultiRoutedMessage) {
-            result.add((IMultiRoutedMessage) nmsg);
-          } else if (nmsg instanceof IRoutedMessage) {
-            BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
-            rms.setMessage(((IRoutedMessage) nmsg).getMessage());
-            List<String> destinations = new ArrayList<String>();
-            destinations.add(((IRoutedMessage) nmsg).getDestination());
-            rms.setDestinations(destinations);
-            result.add(rms);
-          } else {
-            BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
-            rms.setMessage(nmsg);
-            rms.setDestinations(d.getRecipients());
-            result.add(rms);
-          }
-        }
-      }
+	    if (msg instanceof BltTriggerJobMessage) {
+	      String job = ((BltTriggerJobMessage)msg).getName();
+	      RouteDefinition d = getDefinition(job);
+	      result.addAll(getMultiRoutedMessages(msg, d));
+	    } else {
+	      for (RouteDefinition d : definitions) {
+	        result.addAll(getMultiRoutedMessages(msg, d));
+	      }
+	    }
 	  }
 	  return result;
 	}
 
-	 /**
+	/**
+	 * Used to get the routed messages from a specific rule 
+	 * @param msg the message
+	 * @param def the rule
+	 */
+	protected List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg, RouteDefinition def) {
+	  List<IMultiRoutedMessage> result = new ArrayList<IMultiRoutedMessage>();
+	  if (def != null) {
+	    IBltMessage nmsg = def.getRule().handle(msg);
+	    if (nmsg != null) {
+	      if (nmsg instanceof IMultiRoutedMessage) {
+	        result.add((IMultiRoutedMessage) nmsg);
+	      } else if (nmsg instanceof IRoutedMessage) {
+	        BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
+	        rms.setMessage(((IRoutedMessage) nmsg).getMessage());
+	        List<String> destinations = new ArrayList<String>();
+	        destinations.add(((IRoutedMessage) nmsg).getDestination());
+	        rms.setDestinations(destinations);
+	        result.add(rms);
+	      } else {
+	        BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
+	        rms.setMessage(nmsg);
+	        rms.setDestinations(def.getRecipients());
+	        result.add(rms);
+	      }
+	    }
+	  }
+    return result;
+	}
+	
+	/**
    * @see IRouter#getRoutedMessages(IBltMessage)
    * @param msg - the message that should result in the routed messages.
    * @return a list of zero or more routed messages.
@@ -159,36 +179,54 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
         }
       }
     } else {
-      for (RouteDefinition d : definitions) {
-        IBltMessage nmsg = d.getRule().handle(msg);
-        if (nmsg != null) {
-          if (nmsg instanceof IRoutedMessage) {
-            result.add((IRoutedMessage) nmsg);
-          } else if (nmsg instanceof IMultiRoutedMessage) {
-            List<String> recipients = ((IMultiRoutedMessage) nmsg)
-                .getDestinations();
-            if (recipients != null) {
-              for (String r : recipients) {
-                BltRoutedMessage bmsg = new BltRoutedMessage();
-                bmsg.setDestination(r);
-                bmsg.setMessage(((IMultiRoutedMessage) nmsg).getMessage());
-                result.add(bmsg);
-              }
-            }
-          } else {
-            for (String r : d.getRecipients()) {
-              BltRoutedMessage bmsg = new BltRoutedMessage();
-              bmsg.setDestination(r);
-              bmsg.setMessage(nmsg);
-              result.add(bmsg);
-            }
-          }
+      if (msg instanceof BltTriggerJobMessage) {
+        String job = ((BltTriggerJobMessage)msg).getName();
+        RouteDefinition d = getDefinition(job);
+        result.addAll(getRoutedMessages(msg, d));        
+      } else {
+        for (RouteDefinition d : definitions) {
+          result.addAll(getRoutedMessages(msg, d));
         }
       }
     }
     return result;
 	}
 
+	 /**
+   * Used to get the routed messages from a specific rule 
+   * @param msg the message
+   * @param def the rule
+   */
+	protected List<IRoutedMessage> getRoutedMessages(IBltMessage msg, RouteDefinition def) {
+	  List<IRoutedMessage> result = new ArrayList<IRoutedMessage>();
+	  if (def != null) {
+	    IBltMessage nmsg = def.getRule().handle(msg);
+	    if (nmsg != null) {
+	      if (nmsg instanceof IRoutedMessage) {
+	        result.add((IRoutedMessage) nmsg);
+	      } else if (nmsg instanceof IMultiRoutedMessage) {
+	        List<String> recipients = ((IMultiRoutedMessage) nmsg).getDestinations();
+	        if (recipients != null) {
+	          for (String r : recipients) {
+	            BltRoutedMessage bmsg = new BltRoutedMessage();
+	            bmsg.setDestination(r);
+	            bmsg.setMessage(((IMultiRoutedMessage) nmsg).getMessage());
+	            result.add(bmsg);
+	          }
+	        }
+	      } else {
+	        for (String r : def.getRecipients()) {
+	          BltRoutedMessage bmsg = new BltRoutedMessage();
+	          bmsg.setDestination(r);
+	          bmsg.setMessage(nmsg);
+	          result.add(bmsg);
+	        }
+	      }
+	    }
+	  }
+	  return result;
+	}
+	
 	/**
    * @see eu.baltrad.beast.router.IRouterManager#getDefinition(java.lang.String)
    */
