@@ -51,7 +51,7 @@ public class CronEntry {
    * @param expression the cron expression
    * @param name the name of the job to be executed
    */
-  CronEntry(int id, String expression, String name) {
+  public CronEntry(int id, String expression, String name) {
     setId(id);
     setExpression(expression);
     setName(name);
@@ -60,7 +60,7 @@ public class CronEntry {
   /**
    * @param id the id to set
    */
-  void setId(int id) {
+  public void setId(int id) {
     this.id = id;
   }
   
