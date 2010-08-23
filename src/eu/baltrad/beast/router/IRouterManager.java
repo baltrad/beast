@@ -29,6 +29,12 @@ import eu.baltrad.beast.rules.IRule;
  */
 public interface IRouterManager {
   /**
+   * Returns a list of registered definition names.
+   * @return the list of names
+   */
+  public List<String> getNames();
+  
+  /**
    * Gets the current routing definitions
    * 
    * @return a list of routing definitions

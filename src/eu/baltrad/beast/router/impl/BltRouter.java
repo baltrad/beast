@@ -227,6 +227,19 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	  return result;
 	}
 	
+	
+  /**
+   * @see eu.baltrad.beast.router.IRouterManager#getNames()
+   */
+  @Override
+	public synchronized List<String> getNames() {
+    List<String> result = new ArrayList<String>();
+    for (RouteDefinition def : definitions) {
+      result.add(def.getName());
+    }
+	  return result;
+	}
+	
 	/**
    * @see eu.baltrad.beast.router.IRouterManager#getDefinition(java.lang.String)
    */

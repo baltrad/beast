@@ -572,6 +572,39 @@ public class BltRouterTest extends TestCase {
     assertEquals("Adaptor3", result.get(1).getDestination());
   }
   
+  public void testGetNames() throws Exception {
+    List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
+    RouteDefinition d1 = new RouteDefinition();
+    d1.setName("ABC");
+    RouteDefinition d2 = new RouteDefinition();
+    d2.setName("DEF");
+    RouteDefinition d3 = new RouteDefinition();
+    d3.setName("GHI");
+    
+    defs.add(d1);
+    defs.add(d2);
+    defs.add(d3);
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(defs);
+
+    List<String> result = classUnderTest.getNames();
+    assertEquals(3, result.size());
+    assertEquals("ABC", result.get(0));
+    assertEquals("DEF", result.get(1));
+    assertEquals("GHI", result.get(2));
+  }
+
+  public void testGetNames_nothingRegistered() throws Exception {
+    List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(defs);
+
+    List<String> result = classUnderTest.getNames();
+    assertEquals(0, result.size());
+  }
+  
   public void testGetDefinitions() throws Exception {
     List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
     
