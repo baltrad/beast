@@ -126,7 +126,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
   }
 
   /**
-   * @see eu.baltrad.beast.scheduler.IBeastScheduler#register(java.lang.String, eu.baltrad.beast.scheduler.IBeastJob)
+   * @see eu.baltrad.beast.scheduler.IBeastScheduler#register(java.lang.String, java.lang.String)
    */
   @Override
   @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
@@ -149,6 +149,10 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
     }
   }
 
+  /**
+   * @see eu.baltrad.beast.scheduler.IBeastScheduler#reregister(int, java.lang.String)
+   */
+  @Override
   @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
   public void reregister(int id, String expression, String name) {
     try {

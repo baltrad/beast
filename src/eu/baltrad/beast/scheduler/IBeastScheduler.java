@@ -33,6 +33,14 @@ public interface IBeastScheduler {
   public int register(String cron, String jobName);
   
   /**
+   * Reregisters a job
+   * @param id the id of the job
+   * @param expression the cron expression
+   * @param name the name of the job to be executed
+   */
+  public void reregister(int id, String expression, String name);
+  
+  /**
    * Unregisters the specified job
    * @param id the jobid
    */
