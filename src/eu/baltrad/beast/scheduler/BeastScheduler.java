@@ -308,8 +308,8 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
     try {
       Scheduler scheduler = sf.getScheduler();
       CronTriggerBean trigger = createTrigger(entry);
-      registerJob(entry.getName());
       scheduler.unscheduleJob(""+id, "beast");
+      registerJob(entry.getName());
       scheduler.scheduleJob(trigger);
     } catch (org.quartz.SchedulerException e) {
       throw new SchedulerException(e);
