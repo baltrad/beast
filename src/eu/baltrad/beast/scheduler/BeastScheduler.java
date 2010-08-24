@@ -149,6 +149,21 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
     }
   }
 
+  @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+  public void reregister(int id, String expression, String name) {
+    try {
+      CronEntry entry = createCronEntry(expression, name);
+      entry.setId(id);
+      
+      template.update("update beast_scheduled_jobs set expression=?, name=? where id=?",
+          new Object[]{expression, name, id});
+
+      rescheduleJob(id, entry);
+    } catch (DataAccessException e) {
+      throw new SchedulerException(e);
+    }
+  }
+
   /**
    * @see eu.baltrad.beast.scheduler.IBeastScheduler#unregister(java.lang.String)
    */
@@ -267,13 +282,31 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
    * @param entry the entry (must be valid)
    * @throws SchedulerException on error
    */
-  protected void scheduleJob(CronEntry entry) throws SchedulerException {
+  protected void scheduleJob(CronEntry entry) {
     try {
       CronTriggerBean trigger = createTrigger(entry);
       
       registerJob(entry.getName());
       
       sf.getScheduler().scheduleJob(trigger);
+    } catch (org.quartz.SchedulerException e) {
+      throw new SchedulerException(e);
+    }
+  }
+
+  /**
+   * Reschedules the job
+   * @param id the id of the trigger to be rescheduled
+   * @param entry the job
+   * @throws SchedulerException
+   */
+  protected void rescheduleJob(int id, CronEntry entry) {
+    try {
+      Scheduler scheduler = sf.getScheduler();
+      CronTriggerBean trigger = createTrigger(entry);
+      registerJob(entry.getName());
+      scheduler.unscheduleJob(""+id, "beast");
+      scheduler.scheduleJob(trigger);
     } catch (org.quartz.SchedulerException e) {
       throw new SchedulerException(e);
     }

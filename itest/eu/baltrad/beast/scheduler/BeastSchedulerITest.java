@@ -101,6 +101,16 @@ public class BeastSchedulerITest extends TestCase {
     verifyDatabaseTables("register");
   }
   
+  public void testReregister() throws Exception {
+    classUnderTest.reregister(2, "2 * * * * ?", "pelle");
+    
+    CronEntry entry = classUnderTest.getEntry(2);
+    assertEquals(2, entry.getId());
+    assertEquals("pelle", entry.getName());
+    assertEquals("2 * * * * ?", entry.getExpression());
+    verifyDatabaseTables("reregister");
+  }
+  
   public void testUnregister() throws Exception {
     classUnderTest.unregister(2);
     verifyDatabaseTables("unregister");

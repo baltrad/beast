@@ -31,6 +31,7 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.quartz.CronTrigger;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerConfigException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -56,6 +57,7 @@ public class BeastSchedulerTest extends TestCase {
     public NamedParameterJdbcTemplate getNamedParameterTemplate();
     public GeneratedKeyHolder createKeyHolder();
     public void scheduleJob(CronEntry entry) throws SchedulerException;
+    public void rescheduleJob(int id, CronEntry entry) throws SchedulerException;
     public void registerJob(String jobName) throws org.quartz.SchedulerException;
     public BeanPropertySqlParameterSource getParameterSource(CronEntry entry);
     public CronTriggerBean createTrigger(CronEntry entry);
@@ -92,6 +94,9 @@ public class BeastSchedulerTest extends TestCase {
       }
       protected void scheduleJob(CronEntry entry) throws SchedulerException {
         methods.scheduleJob(entry);
+      }
+      protected void rescheduleJob(int id, CronEntry entry) throws SchedulerException {
+        methods.rescheduleJob(id, entry);
       }
       protected void registerJob(String jobName) throws org.quartz.SchedulerException {
         methods.registerJob(jobName);
@@ -277,6 +282,26 @@ public class BeastSchedulerTest extends TestCase {
     verify();
     nptControl.verify();    
   }
+
+  public void testReregister() throws Exception {
+    CronEntry entry = new CronEntry();
+    
+    methods.createCronEntry("0 * * * * ?", "ABC");
+    methodsControl.setReturnValue(entry);
+    jdbc.update("update beast_scheduled_jobs set expression=?, name=? where id=?",
+        new Object[]{"0 * * * * ?", "ABC", 10});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+    
+    methods.rescheduleJob(10, entry);
+    
+    replay();
+    
+    classUnderTest.reregister(10, "0 * * * * ?", "ABC");
+    
+    verify();
+  }
+  
   
   public void testUnregister() throws Exception {
     MockControl schedControl = MockControl.createControl(Scheduler.class);
@@ -467,6 +492,43 @@ public class BeastSchedulerTest extends TestCase {
     schedControl.replay();
     
     classUnderTest.scheduleJob(entry);
+    
+    verify();
+    schedControl.verify();
+  }
+
+  public void testRescheduleJob() throws Exception {
+    MockControl schedControl = MockControl.createControl(Scheduler.class);
+    Scheduler scheduler = (Scheduler)schedControl.getMock();
+    CronTriggerBean triggerBean = new CronTriggerBean();
+    CronEntry entry = new CronEntry(1, "0 * * * * ?", "A");
+    
+    methods.createTrigger(entry);
+    methodsControl.setReturnValue(triggerBean);
+    methods.registerJob("A");
+    sfBean.getScheduler();
+    sfControl.setReturnValue(scheduler);
+    
+    scheduler.unscheduleJob("1", "beast");
+    schedControl.setReturnValue(true);
+    scheduler.scheduleJob(triggerBean);
+    schedControl.setReturnValue(new Date());
+    
+    classUnderTest = new BeastScheduler() {
+      protected CronTriggerBean createTrigger(CronEntry entry) {
+        return methods.createTrigger(entry);
+      }
+      protected void registerJob(String jobName) throws org.quartz.SchedulerException {
+        methods.registerJob(jobName);
+      }      
+    };
+    classUnderTest.setSchedulerFactoryBean(sfBean);
+    
+    
+    replay();
+    schedControl.replay();
+    
+    classUnderTest.rescheduleJob(1, entry);
     
     verify();
     schedControl.verify();
