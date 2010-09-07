@@ -85,7 +85,13 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <include name="cglib/*.jar"/>
     </fileset>
   </path>
-	
+
+  <path id="doxygen.classpath">
+    <fileset dir="${lib.dir}/doxygen">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
   <!-- This loads cobertura, code coverage -->
   <property name="cobertura.dir" value="${lib.dir}/cobertura" />
   <path id="cobertura.classpath">
@@ -147,8 +153,20 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   	<copy file="${etc.dir}/pgfwkplugin" todir="${prefix}/beast/bin" />
     <chmod file="${prefix}/beast/bin/pgfwkplugin" perm="755"/>
   </target>
+
+  <target name="-install-doc-files">
+  	<mkdir dir="${prefix}/beast" />
+  	<mkdir dir="${prefix}/beast/doc" />
+  	<copy todir="${prefix}/beast/doc">
+      <fileset dir="${dist.dir}/doxygen/html">
+        <include name="**/*.*" />
+      </fileset>
+  	</copy>
+  </target>
 	
   <target name="install" depends="distribution, -install-files" />
+	
+  <target name="install-doc" depends="doc, -install-doc-files" />
 
   <!-- This is the overall build script that can be used to get a full build & test sequence --> 
   <target name="hudson" depends="build,test.coverage" />
@@ -389,6 +407,12 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       </fileset>
     </copy>
   	<mkdir dir="${blt.db.path}" />
+  </target>
+	
+  <target name="doc" description="Generates doxygen">
+    <taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask" classpathref="doxygen.classpath" />
+  	<mkdir dir="${dist.dir}/doxygen" />
+    <doxygen configFilename="doxygen/beast_doxygen.cfg"/>
   </target>
 </project>
 
