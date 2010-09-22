@@ -375,7 +375,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <classpath location="${build.itest.dir}" />
       <classpath refid="cobertura.classpath" />
       <batchtest fork="true" todir="${dist.dir}/junit-reports">
-        <!--<fileset dir="${build.test.dir}" includes="**/*Test.class"/>-->
+        <fileset dir="${build.test.dir}" includes="**/*Test.class"/>
         <fileset dir="${build.itest.dir}" includes="**/*Test.class"/>
       </batchtest>
     </junit>
