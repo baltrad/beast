@@ -39,13 +39,12 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
  */
 public class BltAdaptorManagerDBTest extends TestCase {
   private BltAdaptorManager classUnderTest = null;
-  private ApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   
   public BltAdaptorManagerDBTest(String name) {
     super(name);
-    context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("testHelper");
+    ApplicationContext dbcontext = BeastDBTestHelper.loadDbContext(this);
+    helper = (BeastDBTestHelper)dbcontext.getBean("helper");
   }
   
   /**
@@ -53,14 +52,15 @@ public class BltAdaptorManagerDBTest extends TestCase {
    */
   public void setUp() throws Exception {
    helper.cleanInsert(this);
+   ApplicationContext context = BeastDBTestHelper.loadContext(this);
    classUnderTest = (BltAdaptorManager)context.getBean("adaptormgr");
-   classUnderTest.afterPropertiesSet();
   }
   
   /**
    * Teardown of test
    */
   public void tearDown() throws Exception {
+    helper.tearDown();
   }
 
   /**

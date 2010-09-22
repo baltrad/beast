@@ -37,8 +37,6 @@
 
   <bean id="dataFactory" class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory"/>
   
-  <bean id="testHelper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType" />
-  
   <bean id="xmlrpcmgr" class="eu.baltrad.beast.adaptor.xmlrpc.XmlRpcConfigurationManager" autowire="byType"/>
 
   <bean id="adaptormgr" class="eu.baltrad.beast.adaptor.BltAdaptorManager" autowire="byType">

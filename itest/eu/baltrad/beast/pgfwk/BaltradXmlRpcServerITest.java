@@ -159,7 +159,7 @@ public class BaltradXmlRpcServerITest extends TestCase {
     assertEquals("b", args[1]);
   }
 
-  public void testSendGenerate_withThrowable() throws Exception {
+  public void XtestSendGenerate_withThrowable() throws Exception {
     ApplicationContext context = classUnderTest.getContext();
     XmlRpcAdaptor adaptor = (XmlRpcAdaptor)context.getBean("xmlrpcadaptor");
     TestRpcCallback cb = (TestRpcCallback)context.getBean("xmlrpccallback");
@@ -181,7 +181,7 @@ public class BaltradXmlRpcServerITest extends TestCase {
     assertEquals(-1, resp);
   }
 
-  public void testSendGenerate_noSuchPlugin() throws Exception {
+  public void XtestSendGenerate_noSuchPlugin() throws Exception {
     ApplicationContext context = classUnderTest.getContext();
     XmlRpcAdaptor adaptor = (XmlRpcAdaptor)context.getBean("xmlrpcadaptor");
     TestRpcCallback cb = (TestRpcCallback)context.getBean("xmlrpccallback");

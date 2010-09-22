@@ -28,22 +28,22 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
+import eu.baltrad.beast.manager.IBltMessageManager;
+import eu.baltrad.beast.message.IBltMessage;
 
 /**
  * @author Anders Henja
  *
  */
 public class BeastSchedulerITest extends TestCase {
-  private ApplicationContext context = null;
-  //private Catalog catalog = null;
   private BeastScheduler classUnderTest = null;
   private BeastDBTestHelper helper = null;
+  private ApplicationContext context = null;
   
   public BeastSchedulerITest(String name) {
     super(name);
     context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("testHelper");
-    //catalog = (Catalog)context.getBean("catalog");
+    helper = (BeastDBTestHelper)context.getBean("helper");
   }
 
   public void setUp() throws Exception {
@@ -51,6 +51,12 @@ public class BeastSchedulerITest extends TestCase {
     helper.cleanInsert(this);
     classUnderTest = new BeastScheduler();
     classUnderTest.setJdbcTemplate((SimpleJdbcOperations)context.getBean("jdbcTemplate"));
+    classUnderTest.setMessageManager(new IBltMessageManager() {
+      public void shutdown() {
+      }
+      public void manage(IBltMessage message) {
+      }
+    });
     classUnderTest.afterPropertiesSet();
   }
   

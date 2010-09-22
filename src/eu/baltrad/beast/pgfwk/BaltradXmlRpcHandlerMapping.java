@@ -54,7 +54,7 @@ public class BaltradXmlRpcHandlerMapping  implements XmlRpcHandlerMapping {
    * @see org.apache.xmlrpc.server.XmlRpcHandlerMapping#getHandler(java.lang.String)
    */
   @Override
-  public XmlRpcHandler getHandler(String method)
+  public synchronized XmlRpcHandler getHandler(String method)
       throws XmlRpcNoSuchHandlerException, XmlRpcException {
     XmlRpcHandler handler = handlers.get(method);
     if (handler == null) {

@@ -122,7 +122,6 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
     for (CronEntry entry : entries) {
       scheduleJob(entry);
     }
-    
   }
 
   /**

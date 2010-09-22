@@ -29,4 +29,10 @@ public interface IBltMessageManager {
    * @param message the message to handle
    */
   public void manage(IBltMessage message); 
+  
+  /**
+   * Safely terminates the manager and ensures that pending
+   * messages are managed properly.
+   */
+  public void shutdown();
 }

@@ -32,6 +32,7 @@ public class TimeoutTaskFactory implements ITimeoutTaskFactory {
       task.setId(id);
       task.setRule(rule);
       task.setListener(listener);
+      task.setData(data);
       return task;
     }
     throw new TimeoutRuleException();

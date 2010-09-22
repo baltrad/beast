@@ -83,102 +83,40 @@ public class BltMessageManagerTest extends TestCase {
   
   public void testManage() throws Exception {
     IBltMessage message = new IBltMessage() {};
-    IMultiRoutedMessage m1 = new BltMultiRoutedMessage();
-    IMultiRoutedMessage m2 = new BltMultiRoutedMessage();
-    
-    List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
-    messages.add(m1);
-    messages.add(m2);
-
-    router.getMultiRoutedMessages(message);
-    routerControl.setReturnValue(messages);
-    manager.handle(m1);
-    manager.handle(m2);
-    
-    replay();
-    classUnderTest.manage(message);
-    
-    verify();
-  }  
-  
-  public void testManage_noRoute() {
-    IBltMessage message = new IBltMessage() {};
-    List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
-    router.getMultiRoutedMessages(message);
-    routerControl.setReturnValue(messages);
-    
-    replay();
-    classUnderTest.manage(message);
-    
-    verify();
-  }  
-  
-/*  
-  public void testManage() throws Exception {
-    IBltMessage message = new IBltMessage() {};
-    
-    final Runnable theRunnable = new Runnable() {
+    final Runnable r = new Runnable() {
+      @Override
       public void run() {
       }
     };
     
+    executor.execute(r);
+    
     classUnderTest = new BltMessageManager() {
-      protected Runnable createRunnable(final IBltMessage message) {
-        return theRunnable;
+      protected Runnable createRunnable(IBltMessage message) {
+        return r;
       }
     };
     classUnderTest.setExecutor(executor);
     
-    executor.execute(theRunnable);
-    
     replay();
     
     classUnderTest.manage(message);
-    
-    verify();
-  }
-
-  public void testManage_nullMessage() throws Exception {
-    
-    replay();
-    
-    try {
-      classUnderTest.manage(null);
-      fail("Expected NullPointerException");
-    } catch (NullPointerException npe) {
-      // pass
-    }
     
     verify();
   }
   
   public void testCreateRunnable() throws Exception {
     IBltMessage message = new IBltMessage() {};
-    IMultiRoutedMessage m1 = new BltMultiRoutedMessage();
-    IMultiRoutedMessage m2 = new BltMultiRoutedMessage();
-    
     List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
+    BltMultiRoutedMessage m1 = new BltMultiRoutedMessage();
+    BltMultiRoutedMessage m2 = new BltMultiRoutedMessage();
     messages.add(m1);
     messages.add(m2);
-
+    
     router.getMultiRoutedMessages(message);
     routerControl.setReturnValue(messages);
     manager.handle(m1);
     manager.handle(m2);
-    
-    replay();
-    
-    Runnable r = classUnderTest.createRunnable(message);
-    r.run(); // And verify that the calls are performed correctly.
-    
-    verify();
-  }
-  
-  public void testCreateRunnable_noRoute() {
-    IBltMessage message = new IBltMessage() {};
-    List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
-    router.getMultiRoutedMessages(message);
-    routerControl.setReturnValue(messages);
     
     replay();
     
@@ -186,20 +124,5 @@ public class BltMessageManagerTest extends TestCase {
     r.run();
     
     verify();
-  }
-  
-  public void testAfterPropertiesSet() throws Exception {
-    classUnderTest = new BltMessageManager();
-    assertEquals(null, classUnderTest.getExecutor());
-    
-    // Execute test
-    classUnderTest.afterPropertiesSet();
-    
-    // Verify
-    assertTrue(classUnderTest.getExecutor() != null);
-  }
-*/
-  public void testThis() {
-    
   }
 }

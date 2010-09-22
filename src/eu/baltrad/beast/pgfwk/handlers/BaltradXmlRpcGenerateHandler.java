@@ -57,6 +57,7 @@ public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationC
         ((IGeneratorPlugin)plugin).generate(algorithm, files, args);
         result = new Integer(0);
       } catch (Throwable t) {
+        t.printStackTrace();
       }
     }
     

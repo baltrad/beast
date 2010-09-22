@@ -152,6 +152,33 @@ public class BeastDBTestHelper {
     File f = new File(tc.getClass().getResource(cname).getFile());
     return new ClassPathXmlApplicationContext("file:"+f.getAbsolutePath());
   }
+
+  /**
+   * Loads an db application context from a test case. I.e. do not
+   * load the real application context. The reason for this is that
+   * when loading the application context afterPropertiesSet will be
+   * invoked.
+   * 
+   * @param tc
+   * @return
+   */
+  public static ApplicationContext loadDbContext(TestCase tc) {
+    String cln = getClassName(tc.getClass());
+    String cname = cln + "-dbcontext.xml";
+    File f = new File(tc.getClass().getResource(cname).getFile());
+    return new ClassPathXmlApplicationContext("file:"+f.getAbsolutePath());
+  }
+  
+  public void tearDown() throws Exception {
+    SimpleJdbcTemplate template = new SimpleJdbcTemplate(source);
+    template.update("delete from beast_router_dest");
+    template.update("delete from beast_groovy_rules");
+    template.update("delete from beast_composite_sources");
+    template.update("delete from beast_composite_rules");
+    template.update("delete from beast_adaptors_xmlrpc");
+    template.update("delete from beast_adaptors");
+    template.update("delete from beast_router_rules");
+  }
   
   /**
    * Performs a clean insert of the test case data
@@ -160,15 +187,8 @@ public class BeastDBTestHelper {
    */
   public void cleanInsert(TestCase tc) throws Exception {
     Connection conn = source.getConnection();
-    SimpleJdbcTemplate template = new SimpleJdbcTemplate(source);
     try {
-      template.update("delete from beast_router_dest");
-      template.update("delete from beast_groovy_rules");
-      template.update("delete from beast_composite_sources");
-      template.update("delete from beast_composite_rules");
-      template.update("delete from beast_adaptors_xmlrpc");
-      template.update("delete from beast_adaptors");
-      template.update("delete from beast_router_rules");
+      tearDown();
       IDatabaseConnection connection = getConnection(conn);
       DatabaseOperation.CLEAN_INSERT.execute(connection, getXlsDataset(tc, null));
     } finally {

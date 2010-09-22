@@ -62,10 +62,12 @@ public class CompositingRuleITest extends TestCase {
   }
 
   public void setUp() throws Exception {
+    helper.purgeBaltradDB();
+
     classUnderTest = new CompositingRule();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setTimeoutManager(timeoutManager);
-    helper.purgeBaltradDB();
+    classUnderTest.setTimeout(0); // no timeouts
   }
   
   public void tearDown() throws Exception {

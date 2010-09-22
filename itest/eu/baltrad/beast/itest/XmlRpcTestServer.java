@@ -73,16 +73,21 @@ public class XmlRpcTestServer extends Thread implements XmlRpcHandler, XmlRpcHan
   }
   
   public synchronized void shutdown() {
+    long currtime = System.currentTimeMillis();
+    long endtime = currtime + 1000;
     if (stopped == false) {
       stopped = true;
-      try {
-        // Sleep 1000ms so that any pending response can be processed before terminating
-        Thread.sleep(1000);
-      } catch (Throwable t) {
-        
+      while (currtime < endtime) {
+        try {
+          // Sleep 1000ms so that any pending response can be processed before terminating
+          wait(endtime - currtime);
+        } catch (Throwable t) {
+          t.printStackTrace();
+        }
+        currtime = System.currentTimeMillis();
       }
       server.shutdown();
-      notify();
+      notifyAll();
     }
   }
   
@@ -95,12 +100,12 @@ public class XmlRpcTestServer extends Thread implements XmlRpcHandler, XmlRpcHan
     }
     if (responseTimeout != 0) {
       try {
-        Thread.sleep(responseTimeout);
+        wait(responseTimeout);
       } catch (Throwable t) {
         //
       }
     }
-    notify();
+    notifyAll();
     return response;
   }
 
@@ -120,6 +125,7 @@ public class XmlRpcTestServer extends Thread implements XmlRpcHandler, XmlRpcHan
       currtime = System.currentTimeMillis();
     }
     shutdown();
+    notifyAll();
     return this.requestMethod;
   }
   
@@ -138,5 +144,6 @@ public class XmlRpcTestServer extends Thread implements XmlRpcHandler, XmlRpcHan
       currtime = System.currentTimeMillis();
     }
     shutdown();
+    notifyAll();
   }
 }

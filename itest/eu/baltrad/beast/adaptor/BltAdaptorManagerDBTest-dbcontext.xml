@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx = "http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
-           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
   <!-- Property placeholder configurer for expanding ${} into values -->
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>classpath:testdb.properties</value>
+        <value>testdb.properties</value>
       </list>
     </property>
   </bean>
@@ -19,11 +22,20 @@
     <property name="username" value="${db.user}"/>
     <property name="password" value="${db.pwd}"/>
   </bean>
-  
+
   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
-    <constructor-arg><ref bean="dataSource"/></constructor-arg>
+    <constructor-arg ref="dataSource"/>
+  </bean>
+
+  <!-- Enable transaction management -->
+  <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+     <property name="dataSource" ref="dataSource"/>
   </bean>
   
-  <bean id="helper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType"/>
+  <!-- we want transactions on classes -->
+  <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+
+  <bean id="dataFactory" class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory"/>
   
-</beans>  
+  <bean id="helper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType" />
+</beans>

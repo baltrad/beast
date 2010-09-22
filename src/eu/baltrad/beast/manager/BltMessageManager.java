@@ -20,7 +20,11 @@ package eu.baltrad.beast.manager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
@@ -33,7 +37,7 @@ import eu.baltrad.beast.router.IRouter;
  * the available adaptors/routes.
  * @author Anders Henja
  */
-public class BltMessageManager implements IBltMessageManager, InitializingBean {
+public class BltMessageManager implements IBltMessageManager, InitializingBean, DisposableBean {
   /**
    * The router
    */
@@ -48,6 +52,25 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
    * The executor
    */
   private ExecutorService executor = null;
+
+  /**
+   * Number of threads in the default executor 
+   */
+  private int poolSize = 10;
+  
+  /**
+   * Default constructor
+   */
+  public BltMessageManager() {
+  }
+
+  /**
+   * Constructor
+   * @param poolSize the number of threads in the default executor pool
+   */
+  public BltMessageManager(int poolSize) {
+    this.poolSize = poolSize;
+  }
   
   /**
    * @param router the router to set
@@ -80,24 +103,13 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
   /**
    * @see IBltMessageManager#manage(IBltMessage)
    */
-  public void manage(IBltMessage message) {
+  public synchronized void manage(IBltMessage message) {
+    Runnable r = createRunnable(message);
     try {
-      List<IMultiRoutedMessage> msgs = router.getMultiRoutedMessages(message);
-      for (IMultiRoutedMessage msg : msgs) {
-        manager.handle(msg);
-      }
-    } catch (Throwable t) {
-      t.printStackTrace();
-    }    
-/* Commented by AHE until I have time to investigate reason for hanging when
- * running the integration tests. 
-    if (message != null) {
-      Runnable r = createRunnable(message);
       executor.execute(r);
-    } else {
-      throw new NullPointerException();
+    }catch (Throwable t) {
+      t.printStackTrace();
     }
-*/    
   }
   
   /**
@@ -106,8 +118,6 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
    * @return a runnable
    */
   protected Runnable createRunnable(final IBltMessage message) {
-/* Commented by AHE until I have time to investigate reason for hanging when
- * running the integration tests. 
     return new Runnable() {
       @Override
       public void run() {
@@ -121,8 +131,6 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
         }
       }
     };
- */
-    return null;
   }
 
   /**
@@ -132,18 +140,44 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean {
    */
   @Override
   public synchronized void afterPropertiesSet() throws Exception {
-/* Commented by AHE until I have time to investigate reason for hanging when
- * running the integration tests.    
     if (executor == null) {
-      executor = Executors.newFixedThreadPool(10,new ThreadFactory() {
+      executor = Executors.newFixedThreadPool(poolSize, new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
           Thread th = new Thread(r);
           th.setDaemon(true);
           return th;
         }
-      });  
+      });
     }
-*/    
+  }
+  
+  @Override
+  public synchronized void shutdown() {
+    if (executor != null) {
+      executor.shutdown();
+      
+      try {
+        if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+          executor.shutdownNow();
+          if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+            System.out.println("Failed to terminate all pending jobs");
+          }
+        }
+      } catch (InterruptedException e) {
+        executor.shutdownNow();
+        Thread.currentThread().interrupt();
+      }
+      
+      executor = null;
+    }
+  }
+
+  /**
+   * @see org.springframework.beans.factory.DisposableBean#destroy()
+   */
+  @Override
+  public void destroy() throws Exception {
+    shutdown();
   }
 }

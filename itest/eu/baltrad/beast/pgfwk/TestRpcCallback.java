@@ -25,7 +25,7 @@ import eu.baltrad.beast.message.IBltMessage;
  * @author Anders Henja
  */
 public class TestRpcCallback implements IAdaptorCallback {
-  private IBltMessage message = null;
+  private volatile IBltMessage message = null;
   private Object result = null;
   private Throwable t = null;
   private boolean tout = false;
@@ -77,11 +77,13 @@ public class TestRpcCallback implements IAdaptorCallback {
     long endtime = currtime + timeout;
     while (message == null && (currtime < endtime)) {
       try {
+        notifyAll();
         wait(endtime - currtime);
       } catch (Throwable t) {
       }
       currtime = System.currentTimeMillis();
     }
+    notifyAll();
     return this.message;
   }
   
@@ -92,7 +94,7 @@ public class TestRpcCallback implements IAdaptorCallback {
   public synchronized void error(IBltMessage message, Throwable t) {
     this.message = message;
     this.t = t;
-    notify();
+    notifyAll();
   }
 
   /**
@@ -102,7 +104,7 @@ public class TestRpcCallback implements IAdaptorCallback {
   public synchronized void success(IBltMessage message, Object result) {
     this.message = message;
     this.result = result;
-    notify();
+    notifyAll();
   }
 
   /**
@@ -112,6 +114,6 @@ public class TestRpcCallback implements IAdaptorCallback {
   public synchronized void timeout(IBltMessage message) {
     this.message = message;
     this.tout = true; 
-    notify();
+    notifyAll();
   }
 }

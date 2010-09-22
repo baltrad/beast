@@ -37,5 +37,4 @@
   </bean>
   
   <bean id="catalog" class="eu.baltrad.beast.db.Catalog" autowire="byType"/>
-
 </beans>

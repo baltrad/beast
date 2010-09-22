@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.fc.FileSystemError;
 import eu.baltrad.fc.Query;
 import eu.baltrad.fc.ResultSet;
 import eu.baltrad.fc.expr.Expression;
@@ -38,7 +39,6 @@ import eu.baltrad.fc.oh5.File;
  *
  */
 public class BaltradDBITest extends TestCase {
-  private ApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   private FileCatalog catalogue = null;
   private String baltradDbPath = null;
@@ -60,8 +60,8 @@ public class BaltradDBITest extends TestCase {
   
   public BaltradDBITest(String name) {
     super(name);
-    context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("testHelper");
+    ApplicationContext context = BeastDBTestHelper.loadContext(this);
+    helper = (BeastDBTestHelper)context.getBean("helper");
     baltradDbPath = helper.getBaltradDbPth();
     catalogue = new FileCatalog(helper.getBaltradDbUri(), baltradDbPath);
   }
@@ -85,8 +85,13 @@ public class BaltradDBITest extends TestCase {
     catalogue = null;
   }
   
-  public void XtestLoadWithNonExistingPath() {
-    catalogue = new FileCatalog(helper.getBaltradDbUri(), "/mr/yoda");
+  public void testLoadWithNonExistingPath() {
+    try {
+      new FileCatalog(helper.getBaltradDbUri(), "/mr/yoda");
+      fail("Expected FileSystemError");
+    } catch (FileSystemError fse) {
+      // pass
+    }
   }
   
   public void test_find_seang() throws Exception {

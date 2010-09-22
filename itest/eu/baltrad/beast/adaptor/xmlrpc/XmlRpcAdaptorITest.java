@@ -33,6 +33,8 @@ import eu.baltrad.beast.message.mo.BltGenerateMessage;
  */
 public class XmlRpcAdaptorITest extends TestCase {
   
+  private XmlRpcTestServer server = null;
+  
   private class TestCallback implements IAdaptorCallback {
     private IBltMessage msg = null;
     boolean wasError = false;
@@ -68,10 +70,16 @@ public class XmlRpcAdaptorITest extends TestCase {
     }
   };
   
-  public void testHandleBltCommandMessage() throws Exception {
-    XmlRpcTestServer server = new XmlRpcTestServer(55555, new Integer(0));
+  public void setUp() throws Exception {
+    server = new XmlRpcTestServer(55555, new Integer(0));
     server.start();
-    
+  }
+  
+  public void tearDown() throws Exception {
+    server.shutdown();
+  }
+  
+  public void testHandleBltCommandMessage() throws Exception {
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
@@ -92,9 +100,6 @@ public class XmlRpcAdaptorITest extends TestCase {
   }
   
   public void testHandleBltAlertMessage() throws Exception {
-    XmlRpcTestServer server = new XmlRpcTestServer(55555, new Integer(0));
-    server.start();
-    
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
@@ -117,9 +122,6 @@ public class XmlRpcAdaptorITest extends TestCase {
   }
 
   public void testHandleBltGenerateMessage() throws Exception {
-    XmlRpcTestServer server = new XmlRpcTestServer(55555, new Integer(0));
-    server.start();
-    
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
@@ -153,9 +155,7 @@ public class XmlRpcAdaptorITest extends TestCase {
   }
   
   public void testHandle_timeout() throws Exception {
-    XmlRpcTestServer server = new XmlRpcTestServer(55555, new Integer(0));
     server.setResponseTimeout(2000);
-    server.start();
     
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
@@ -181,7 +181,7 @@ public class XmlRpcAdaptorITest extends TestCase {
     TestCallback cb = new TestCallback();
     XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
-    adaptor.setUrl("http://localhost:55555/xmlrpc");
+    adaptor.setUrl("http://localhost:55556/xmlrpc");
     adaptor.setGenerator(generator);
     adaptor.setTimeout(1000);
     adaptor.setCallback(cb);

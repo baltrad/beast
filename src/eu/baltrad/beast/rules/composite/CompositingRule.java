@@ -214,7 +214,9 @@ public class CompositingRule implements IRule, ITimeoutRule {
         }
       } else {
         if (tt == null) {
-          timeoutManager.register(this, timeout*1000, data);
+          if (timeout > 0) {
+            timeoutManager.register(this, timeout*1000, data);
+          }
         }
       }
     }

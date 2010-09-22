@@ -21,251 +21,254 @@ package eu.baltrad.beast.rules.timer;
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
-import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.ManagerContext;
-import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.rules.IScriptableRule;
 
 /**
  * @author Anders Henja
- *
  */
 public class TimeoutManagerITest extends TestCase {
-  private ApplicationContext context = null;
   private TimeoutManager classUnderTest = null;
+  private TimeoutTaskFactory factory = null;
   
-  private MockControl managerControl = null;
-  private IBltMessageManager manager = null;
+  private TestMsgManager manager = null;
   
   public TimeoutManagerITest(String name) {
     super(name);
-    context = BeastDBTestHelper.loadContext(this);
+  }
+  
+  private static class TestMsgManager implements IBltMessageManager {
+    private IBltMessage msg = null;
+    public synchronized IBltMessage getMessage() {
+      return this.msg;
+    }
+    
+    @Override
+    public synchronized void manage(IBltMessage message) {
+      this.msg = message;
+    }
+    
+    @Override
+    public void shutdown() {
+    }
   }
   
   /**
    * Setup of test
    */
   public void setUp() throws Exception {
-    managerControl = MockControl.createControl(IBltMessageManager.class);
-    manager = (IBltMessageManager)managerControl.getMock();
-    classUnderTest = (TimeoutManager)context.getBean("timeoutmanager");
+    manager = new TestMsgManager();
+    factory = new TimeoutTaskFactory();
+    classUnderTest = new TimeoutManager();
+    classUnderTest.setFactory(factory);
     classUnderTest.setMessageManager(manager);
+    
+    // Initialize the Manager context
+    new ManagerContext().setTimeoutManager(classUnderTest);
   }
   
   /**
    * Teardown of test
    */
   public void tearDown() throws Exception {
-    managerControl = null;
     manager = null;
+    factory = null;
+    classUnderTest.destroy();
     classUnderTest = null;
   }  
   
-  protected void replay() {
-    managerControl.replay();
-  }
-  
-  protected void verify() {
-    managerControl.verify();
-  }
-  
-  private static class TimeoutValues {
-    public long id;
-    public int why;
-    public long when;
-    public TimeoutValues() {
-      id = 0;
-      why = 0;
-      when = 0;
+  /**
+   * Test message used for passing in some relevant information
+   * to the test rule.
+   */
+  private static class TimeoutMessage implements IBltMessage {
+    private final static int REGISTER = 0;
+    private final static int CANCEL = 1;
+    private int operation = REGISTER;
+    private Object trigger = null;
+    public TimeoutMessage(int operation, Object trigger) {
+      this.operation = operation;
+      this.trigger = trigger;
+    }
+    public int getOperation() {
+      return this.operation;
+    }
+    public Object getTrigger() {
+      return this.trigger;
     }
   }
   
-  public void testTimeout() {
-    final TimeoutValues result = new TimeoutValues();
-    final IBltMessage message = new IBltMessage() {};
+  /**
+   * Test rule that implements both the timeout rule and the scriptable rule
+   */
+  private static class SimpleTimeoutRule implements ITimeoutRule, IScriptableRule {
+    long id = 0;
+    long ruleid = 0;
+    int why = 0;
+    volatile Object data = null;
+    IBltMessage result = null;
     
-    ITimeoutRule rule = new ITimeoutRule() {
-      public synchronized IBltMessage timeout(long id, int why, Object data) {
-        result.id = id;
-        result.why = why;
-        result.when = System.currentTimeMillis();
-        System.out.println("THRNAME: " + Thread.currentThread().getName());
-        notify();
-        return message;
-      }
-    };
-    
-    manager.manage(message);
-    
-    replay();
-    
-    long now = System.currentTimeMillis();
-    System.out.println("REGISTERING AS: " + Thread.currentThread().getName());
-    long id = classUnderTest.register(rule, 1000, null);
-    synchronized(rule) {
-      try {
-        rule.wait(1500);
-      } catch (Throwable t) {
-      }
+    public SimpleTimeoutRule(IBltMessage result) {
+      this.result = result;
     }
-    System.out.println("timeout occured after: " + (result.when - now) + " ms");
-    verify();
-    assertEquals(ITimeoutRule.TIMEOUT, result.why);
-    assertEquals(id, result.id);
-  }
+    
+    @Override
+    public synchronized IBltMessage timeout(long id, int why, Object data) {
+      this.id = id;
+      this.why = why;
+      this.data = data;
+      notifyAll();
+      return result;
+    }
+    
+    public synchronized int waitForTimeout(long timeout, Object data) {
+      long currtime = System.currentTimeMillis();
+      long endtime = currtime + timeout;
+      while (data != this.data && (currtime < endtime)) {
+        try {
+          wait((endtime - currtime));
+        } catch (Throwable t) {
+        }
+        currtime = System.currentTimeMillis();
+      }
+      notifyAll();
+      return this.why;
+    }
 
-  public void testTimeout_noReturnedMessage() {
-    final TimeoutValues result = new TimeoutValues();
-    
-    ITimeoutRule rule = new ITimeoutRule() {
-      public synchronized IBltMessage timeout(long id, int why, Object data) {
-        result.id = id;
-        result.why = why;
-        notify();
-        return null;
-      }
-    };
-    
-    replay();
-    
-    long id = classUnderTest.register(rule, 1000, null);
-    synchronized(rule) {
-      try {
-        rule.wait(1500);
-      } catch (Throwable t) {
-      }
-    }
-    verify();
-    assertEquals(ITimeoutRule.TIMEOUT, result.why);
-    assertEquals(id, result.id);
-  }
-  
-  public void testCancel() {
-    final TimeoutValues result = new TimeoutValues();
-    final IBltMessage message = new IBltMessage() {};
-    
-    ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why, Object data) {
-        result.id = id;
-        result.why = why;
-        return message;
-      }
-    };
-    
-    manager.manage(message);
-
-    replay();
-    
-    long id = classUnderTest.register(rule, 1000, null);
-    classUnderTest.cancel(id);
-    synchronized(rule) {
-      try {
-        rule.wait(1500);
-      } catch (Throwable t) {
-      }
-    }
-    verify();
-    
-    assertEquals(ITimeoutRule.CANCELLED, result.why);
-    assertEquals(id, result.id);
-  }
-
-  public void testCancel_noReturnedMessage() {
-    final TimeoutValues result = new TimeoutValues();
-    
-    ITimeoutRule rule = new ITimeoutRule() {
-      public IBltMessage timeout(long id, int why, Object data) {
-        result.id = id;
-        result.why = why;
-        return null;
-      }
-    };
-    
-    replay();
-    
-    long id = classUnderTest.register(rule, 1000, null);
-    classUnderTest.cancel(id);
-    synchronized(rule) {
-      try {
-        rule.wait(1500);
-      } catch (Throwable t) {
-      }
-    }
-    verify();
-    assertEquals(ITimeoutRule.CANCELLED, result.why);
-    assertEquals(id, result.id);
-  }
-  
-  private static class ExampleRule implements IScriptableRule, ITimeoutRule {
-    private long id = -1;
-    private long timeoutId = -1;
-    private int why = -1;
-    private IBltMessage resultMessage = null;
-    
+    @Override
     public IBltMessage handle(IBltMessage message) {
-      if (id < 0) {
-        id = ManagerContext.getTimeoutManager().register(this, 1000, null);
+      TimeoutMessage msg = (TimeoutMessage)message;
+      if (msg.getOperation() == TimeoutMessage.REGISTER) {
+        ruleid = ManagerContext.getTimeoutManager().register(this, 1000, msg.getTrigger());
       } else {
-        ManagerContext.getTimeoutManager().cancel(id);
-        id = -1;
+        ManagerContext.getTimeoutManager().cancel(ruleid);
       }
       return null;
     }
-    
-    public IBltMessage timeout(long id, int why, Object data) {
-      this.timeoutId = id;
-      this.why = why;
-      return resultMessage;
-    }
-    
-    public long getId() {
-      return this.id;
-    }
-    
-    public long getTimeoutId() {
-      return this.timeoutId;
-    }
-    
-    public int getWhy() {
-      return this.why;
-    }
   };
   
-  public void testRule_timeout() {
+  public void testTimeout() {
     IBltMessage message = new IBltMessage() {};
-    ExampleRule rule = new ExampleRule();
-    rule.handle(message);
-    synchronized (rule) {
-      try {
-        rule.wait(1500);
-      } catch (Throwable t) {
-        
-      }
-    }
-    assertEquals(rule.getId(), rule.getTimeoutId());
-    assertEquals(ITimeoutRule.TIMEOUT, rule.getWhy());
+    Object trigger = new Object();
+    SimpleTimeoutRule rule = new SimpleTimeoutRule(message);
+    
+    long id = classUnderTest.register(rule, 1000, trigger);
+    int why = rule.waitForTimeout(1500, trigger);
+    
+    assertEquals(ITimeoutRule.TIMEOUT, why);
+    assertEquals(id, rule.id);
+    assertSame(trigger, rule.data);
+    assertSame(message, manager.getMessage());
+  }
+
+  public void testTimeout_noReturnedMessage() {
+    Object trigger = new Object();
+    SimpleTimeoutRule rule = new SimpleTimeoutRule(null);
+    
+    long id = classUnderTest.register(rule, 1000, trigger);
+    int why = rule.waitForTimeout(1500, trigger);
+    
+    assertEquals(ITimeoutRule.TIMEOUT, why);
+    assertEquals(id, rule.id);
+    assertSame(trigger, rule.data);
+    assertEquals(null, manager.getMessage());
   }
   
-  public void testRule_cancel() {
-    long id = -1;
+  public void testCancel() {
     IBltMessage message = new IBltMessage() {};
-    IBltMessage message2 = new IBltMessage() {};
-    ExampleRule rule = new ExampleRule();
-    rule.handle(message);
-    id = rule.getId();
-    rule.handle(message2);
+    Object trigger = new Object();
+    SimpleTimeoutRule rule = new SimpleTimeoutRule(message);
     
-    synchronized (rule) {
-      try {
-        rule.wait(500);
-      } catch (Throwable t) {
-        
-      }
-    }
-    assertEquals(id, rule.getTimeoutId());
-    assertEquals(ITimeoutRule.CANCELLED, rule.getWhy());
+    long id = classUnderTest.register(rule, 1000, trigger);
+    classUnderTest.cancel(id);
+    int why = rule.waitForTimeout(1500, trigger);
+    
+    assertEquals(ITimeoutRule.CANCELLED, why);
+    assertEquals(id, rule.id);
+    assertSame(trigger, rule.data);
+    assertSame(message, manager.getMessage());
+  }
+
+  public void testCancel_noReturnedMessage() {
+    Object trigger = new Object();
+    SimpleTimeoutRule rule = new SimpleTimeoutRule(null);
+    
+    long id = classUnderTest.register(rule, 1000, trigger);
+    classUnderTest.cancel(id);
+    int why = rule.waitForTimeout(1500, trigger);
+
+    assertEquals(ITimeoutRule.CANCELLED, why);
+    assertEquals(id, rule.id);
+    assertSame(trigger, rule.data);
+    assertEquals(null, manager.getMessage());
+  }
+
+  public void testRule_timeout() {
+    Object trigger = new Object();
+    IBltMessage result = new IBltMessage() {};
+    TimeoutMessage msg = new TimeoutMessage(TimeoutMessage.REGISTER, trigger);
+    
+    SimpleTimeoutRule rule = new SimpleTimeoutRule(result);
+    rule.handle(msg);
+    
+    rule.waitForTimeout(1500, trigger);
+    assertEquals(rule.id, rule.ruleid);
+    assertEquals(ITimeoutRule.TIMEOUT, rule.why);
+    assertSame(trigger, rule.data);
+    assertSame(result, manager.getMessage());
+  }
+
+  public void testRule_timeoutNoMessage() {
+    Object trigger = new Object();
+    TimeoutMessage msg = new TimeoutMessage(TimeoutMessage.REGISTER, trigger);
+
+    SimpleTimeoutRule rule = new SimpleTimeoutRule(null);
+    rule.handle(msg);
+    
+    rule.waitForTimeout(1500, trigger);
+    
+    assertEquals(rule.id, rule.ruleid);
+    assertEquals(ITimeoutRule.TIMEOUT, rule.why);
+    assertSame(trigger, rule.data);
+    assertEquals(null, manager.getMessage());
+  }
+
+  
+  public void testRule_cancel() {
+    Object trigger = new Object();
+    IBltMessage result = new IBltMessage() {};
+    TimeoutMessage regmsg = new TimeoutMessage(TimeoutMessage.REGISTER, trigger);
+    TimeoutMessage cancelmsg = new TimeoutMessage(TimeoutMessage.CANCEL, trigger);
+    
+    SimpleTimeoutRule rule = new SimpleTimeoutRule(result);
+    rule.handle(regmsg);
+    rule.handle(cancelmsg);
+    
+    rule.waitForTimeout(1500, trigger);
+    
+    assertEquals(rule.id, rule.ruleid);
+    assertEquals(ITimeoutRule.CANCELLED, rule.why);
+    assertSame(trigger, rule.data);
+    assertSame(result, manager.getMessage());
+  }
+
+  public void testRule_cancelNoMessage() {
+    Object trigger = new Object();
+    TimeoutMessage regmsg = new TimeoutMessage(TimeoutMessage.REGISTER, trigger);
+    TimeoutMessage cancelmsg = new TimeoutMessage(TimeoutMessage.CANCEL, trigger);
+    
+    SimpleTimeoutRule rule = new SimpleTimeoutRule(null);
+    rule.handle(regmsg);
+    rule.handle(cancelmsg);
+    
+    rule.waitForTimeout(1500, trigger);
+    
+    assertEquals(rule.id, rule.ruleid);
+    assertEquals(ITimeoutRule.CANCELLED, rule.why);
+    assertSame(trigger, rule.data);
+    assertEquals(null, manager.getMessage());
   }
 }

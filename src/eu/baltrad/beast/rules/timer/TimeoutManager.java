@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
+import org.springframework.beans.factory.DisposableBean;
+
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.IBltMessage;
 
@@ -29,7 +31,7 @@ import eu.baltrad.beast.message.IBltMessage;
  * The manager keeping track on all timeouts.
  * @author Anders Henja
  */
-public class TimeoutManager implements ITimeoutTaskListener {
+public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
   /**
    * The unique id, incremented by one.
    */
@@ -56,7 +58,7 @@ public class TimeoutManager implements ITimeoutTaskListener {
   protected Map<Long, TimeoutTask> tasks = null;
   
   /**
-   * Constructor, same as invoking {@link #TimeoutManager(true)}.
+   * Default constructor
    */
   public TimeoutManager() {
     this.timer = new Timer(true);
@@ -195,6 +197,16 @@ public class TimeoutManager implements ITimeoutTaskListener {
     IBltMessage message = rule.timeout(id, ITimeoutRule.TIMEOUT, data);
     if (message != null) {
       messageManager.manage(message);
+    }
+  }
+
+  /**
+   * @see org.springframework.beans.factory.DisposableBean#destroy()
+   */
+  @Override
+  public void destroy() throws Exception {
+    if (this.timer != null) {
+      this.timer.cancel();
     }
   }
 }
