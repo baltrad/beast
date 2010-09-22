@@ -26,7 +26,7 @@ import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.message.MessageParserException;
 
 /**
- * Represents an alert message.
+ * Alert message
  * @author Anders Henja
  */
 public class BltAlertMessage implements IBltXmlMessage {

@@ -36,9 +36,9 @@ import eu.baltrad.beast.message.IBltMessage;
  *
  */
 public class BeastSchedulerITest extends TestCase {
+  private ApplicationContext context = null;
   private BeastScheduler classUnderTest = null;
   private BeastDBTestHelper helper = null;
-  private ApplicationContext context = null;
   
   public BeastSchedulerITest(String name) {
     super(name);
