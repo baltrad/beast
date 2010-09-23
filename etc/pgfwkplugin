@@ -41,7 +41,7 @@ DOBUILD=no
 DODEPLOY=no
 DOUNDEPLOY=no
 PLUGINNAME=
-PLUGINDIR=
+SOURCEDIR=
 
 # The beast jar file containing the xmlrpc server
 BEASTJAR=`ls -1 "$SCRIPTDIR"/*.jar`
@@ -117,7 +117,7 @@ assert_result() {
 }
 
 show_installed_plugins() {
-  PLUGINS=`ls -1 $PLUGINDIR`
+  PLUGINS=`ls -1 $PLUGINSDIR`
   echo "Installed plugins:"
   echo "$PLUGINS"
 }
