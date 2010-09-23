@@ -31,7 +31,6 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.quartz.CronTrigger;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerConfigException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.springframework.dao.DataRetrievalFailureException;

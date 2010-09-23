@@ -193,7 +193,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
    */
   @Override
   public String getType() {
-    return "blt_composite";
+    return TYPE;
   }
 
   /**
@@ -203,7 +203,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
   public synchronized IBltMessage handle(IBltMessage message) {
     IBltMessage result = null;
     initialize();
-    CompositingTimerData data = createTimerData(message);
+    CompositeTimerData data = createTimerData(message);
     if (data != null) {
       List<CatalogEntry> entries = fetchEntries(data.getDateTime());
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
@@ -230,7 +230,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
   public synchronized IBltMessage timeout(long id, int why, Object data) {
     IBltMessage result = null;
     initialize();
-    CompositingTimerData ctd = (CompositingTimerData)data;
+    CompositeTimerData ctd = (CompositeTimerData)data;
     if (ctd != null) {
       List<CatalogEntry> entries = fetchEntries(ctd.getDateTime());
       result = createMessage(ctd.getDateTime(), entries);
@@ -260,15 +260,15 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @param message the message (that should be a BltDataMessage)
    * @return a compositing timer data or null if not possible
    */
-  protected CompositingTimerData createTimerData(IBltMessage message) {
-    CompositingTimerData result = null;
+  protected CompositeTimerData createTimerData(IBltMessage message) {
+    CompositeTimerData result = null;
     if (message instanceof BltDataMessage) {
       File file = ((BltDataMessage)message).getFile();
       if (file.what_object().equals("PVOL")) {
         Time t = file.what_time();
         Date d = file.what_date();
         DateTime nominalTime = getNominalTime(d, t);
-        result = new CompositingTimerData(ruleid, nominalTime);
+        result = new CompositeTimerData(ruleid, nominalTime);
       }
     }
     

@@ -52,7 +52,7 @@ public class CompositingRuleTest extends TestCase {
   private TimeoutManager timeoutManager = null;
   
   private static interface ICompositingMethods {
-    public CompositingTimerData createTimerData(IBltMessage message);
+    public CompositeTimerData createTimerData(IBltMessage message);
     public List<CatalogEntry> fetchEntries(DateTime nominalTime);
     public TimeIntervalFilter createFilter(DateTime nominalTime);
     public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
@@ -124,7 +124,7 @@ public class CompositingRuleTest extends TestCase {
     IBltMessage resultMessage = new IBltMessage() {
     };
     DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
-    CompositingTimerData ctd = new CompositingTimerData(15, dt);
+    CompositeTimerData ctd = new CompositeTimerData(15, dt);
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     TimeoutTask tt = new TimeoutTask();
     tt.setId(10);
@@ -145,7 +145,7 @@ public class CompositingRuleTest extends TestCase {
       protected void initialize() {
         methods.initialize();
       }
-      protected CompositingTimerData createTimerData(IBltMessage m) {
+      protected CompositeTimerData createTimerData(IBltMessage m) {
         return methods.createTimerData(m);
       }
       protected List<CatalogEntry> fetchEntries(DateTime nt) {
@@ -178,7 +178,7 @@ public class CompositingRuleTest extends TestCase {
     IBltMessage message = new IBltMessage() {
     };
     DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
-    CompositingTimerData ctd = new CompositingTimerData(15, dt);
+    CompositeTimerData ctd = new CompositeTimerData(15, dt);
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     TimeoutTask tt = new TimeoutTask();
     tt.setId(10);
@@ -196,7 +196,7 @@ public class CompositingRuleTest extends TestCase {
       protected void initialize() {
         methods.initialize();
       }
-      protected CompositingTimerData createTimerData(IBltMessage m) {
+      protected CompositeTimerData createTimerData(IBltMessage m) {
         return methods.createTimerData(m);
       }
       protected List<CatalogEntry> fetchEntries(DateTime nt) {
@@ -229,7 +229,7 @@ public class CompositingRuleTest extends TestCase {
     IBltMessage message = new IBltMessage() {
     };
     DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
-    CompositingTimerData ctd = new CompositingTimerData(15, dt);
+    CompositeTimerData ctd = new CompositeTimerData(15, dt);
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     TimeoutTask tt = new TimeoutTask();
     tt.setId(10);
@@ -248,7 +248,7 @@ public class CompositingRuleTest extends TestCase {
       protected void initialize() {
         methods.initialize();
       }
-      protected CompositingTimerData createTimerData(IBltMessage m) {
+      protected CompositeTimerData createTimerData(IBltMessage m) {
         return methods.createTimerData(m);
       }
       protected List<CatalogEntry> fetchEntries(DateTime nt) {
@@ -283,7 +283,7 @@ public class CompositingRuleTest extends TestCase {
     MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
     final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
     DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
-    CompositingTimerData ctd = new CompositingTimerData(15, dt);
+    CompositeTimerData ctd = new CompositeTimerData(15, dt);
     IBltMessage resultMessage = new IBltMessage() {
     };
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
@@ -362,7 +362,7 @@ public class CompositingRuleTest extends TestCase {
     fileControl.replay();
     methodsControl.replay();
     
-    CompositingTimerData result = classUnderTest.createTimerData(dataMessage);
+    CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
     fileControl.verify();
@@ -395,7 +395,7 @@ public class CompositingRuleTest extends TestCase {
     fileControl.replay();
     methodsControl.replay();
     
-    CompositingTimerData result = classUnderTest.createTimerData(dataMessage);
+    CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
     fileControl.verify();
@@ -420,7 +420,7 @@ public class CompositingRuleTest extends TestCase {
     replay();
     methodsControl.replay();
     
-    CompositingTimerData result = classUnderTest.createTimerData(dataMessage);
+    CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
     methodsControl.verify();
@@ -441,7 +441,7 @@ public class CompositingRuleTest extends TestCase {
     replay();
     methodsControl.replay();
     
-    CompositingTimerData result = classUnderTest.createTimerData(null);
+    CompositeTimerData result = classUnderTest.createTimerData(null);
     
     verify();
     methodsControl.verify();
