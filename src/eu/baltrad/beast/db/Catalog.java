@@ -27,6 +27,8 @@ import org.springframework.beans.factory.InitializingBean;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.Query;
 import eu.baltrad.fc.ResultSet;
+import eu.baltrad.fc.Variant;
+import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -72,7 +74,7 @@ public class Catalog implements InitializingBean {
    */
   public List<CatalogEntry> fetch(ICatalogFilter filter) {
     List<CatalogEntry> result = new ArrayList<CatalogEntry>();
-    
+    String[] attributes = filter.getExtraAttributes();
     Query q = fc.query();
     
     q.fetch(xpr.attribute("file:path"));
@@ -80,6 +82,12 @@ public class Catalog implements InitializingBean {
     q.fetch(xpr.attribute("what/date"));
     q.fetch(xpr.attribute("what/time"));
     q.fetch(xpr.attribute("what/object"));
+    
+    if (attributes != null) {
+      for (String a : attributes) {
+        q.fetch(xpr.attribute(a));
+      }
+    }
     
     filter.apply(q);
     
@@ -89,9 +97,30 @@ public class Catalog implements InitializingBean {
         CatalogEntry entry = new CatalogEntry();
         entry.setPath(set.string(0));
         entry.setSource(set.string(1));
-        entry.setDate(set.date(2));
-        entry.setTime(set.time(3));
+        entry.setDateTime(new DateTime(set.date(2), set.time(3)));
         entry.setObject(set.string(4));
+        if (attributes != null) {
+          int alen = 5 + attributes.length;
+          int idx = 0;
+          for (int ctr = 5; ctr < alen; ctr++, idx++) {
+            Object obj = null;
+            Variant v = set.value_at(ctr);
+            if (v.is_bool()) {
+              obj = new Boolean(v.to_bool());
+            } else if (v.is_date()) {
+              obj = v.to_date();
+            } else if (v.is_double()) {
+              obj = new Double(v.to_double());
+            } else if (v.is_int64()) {
+              obj = new Long(v.to_int64());
+            } else if (v.is_string()) {
+              obj = v.to_string();
+            } else if (v.is_time()) {
+              obj = v.to_time();
+            }
+            entry.addAttribute(attributes[idx], obj);
+          }
+        }
         result.add(entry);
       }
     } catch (Throwable t) {

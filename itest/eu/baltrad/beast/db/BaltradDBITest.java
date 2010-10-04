@@ -192,13 +192,13 @@ public class BaltradDBITest extends TestCase {
     q.fetch(xpr.attribute("what/source:node"));
     q.fetch(xpr.attribute("where/elangle"));
     q.filter(xpr.attribute("what/source:node").eq(xpr.string("searl")));
-    q.filter(xpr.attribute("where/elangle").between(xpr.real(-1.0), xpr.real(5.0)));
+    q.filter(xpr.attribute("where/elangle").between(xpr.double_(-1.0), xpr.double_(5.0)));
     
     ResultSet rs = q.execute();
     assertEquals(6, rs.size());
     while (rs.next()) {
       assertEquals("searl", rs.string(0));
-      result.add(rs.real(1));
+      result.add(rs.double_(1));
     }
     rs.delete();
     assertTrue(result.contains(0.5));

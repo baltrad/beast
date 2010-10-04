@@ -19,31 +19,53 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
-import eu.baltrad.fc.Date;
+import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Query;
-import eu.baltrad.fc.Time;
 import eu.baltrad.fc.expr.ExpressionFactory;
-import eu.baltrad.fc.expr.Literal;
 
 /**
  * Fetches all objects that are within a specified start - stop
- * date/time interval.
+ * date/time interval. You can also ignore specifying start and/or
+ * stop date/time but if you ignore both you probably want to use
+ * a different filter.
+ * 
  * The filter compares:
- *   object equality
- *   start date <= requested <= stop date
- *   start time <= requested < stop time
- *  
- *  The filter matches equality on object
- * and start date/time <= requested < stop date/time.
+ *   object equality (REQUIRED)
+ *   source node id equality (OPTIONAL)
+ *   start date-time <= requested < stop date-time
+ *
+ * It is also possible to limit the number of returned values by using
+ * the limit. Default is unlimited (0). The limiting function is ordered
+ * by descending date/time which means that if you specify limit 1 it will
+ * be the most recent time within the time interval.
  * 
  * @author Anders Henja
  */
 public class TimeIntervalFilter implements ICatalogFilter {
+  /**
+   * The object type
+   */
   private String object = null;
-  private Date startDate = null;
-  private Time startTime = null;
-  private Date stopDate = null;
-  private Time stopTime = null;
+  
+  /**
+   * The source node id
+   */
+  private String source = null;
+  
+  /**
+   * The start date time
+   */
+  private DateTime startDT = null;
+  
+  /**
+   * The stop date time
+   */
+  private DateTime stopDT = null;
+  
+  /**
+   * The number of returned matches
+   */
+  private int limit = 0;
   
   /**
    * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.Query)
@@ -51,16 +73,38 @@ public class TimeIntervalFilter implements ICatalogFilter {
   @Override
   public void apply(Query query) {
     ExpressionFactory xpr = new ExpressionFactory();
-    Literal xprStartDate = xpr.date(startDate.year(), startDate.month(), startDate.day());
-    Literal xprStartTime = xpr.time(startTime.hour(), startTime.minute(), startTime.second());
-    Literal xprStopDate = xpr.date(stopDate.year(), stopDate.month(), stopDate.day());
-    Literal xprStopTime = xpr.time(stopTime.hour(), stopTime.minute(), stopTime.second());
+
+    if (object == null) {
+      throw new IllegalArgumentException("Must specify object type");
+    }
     
     query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string(object)));
-    query.filter(xpr.ge(xpr.attribute("what/date"), xprStartDate));
-    query.filter(xpr.ge(xpr.attribute("what/time"), xprStartTime));
-    query.filter(xpr.le(xpr.attribute("what/date"), xprStopDate));
-    query.filter(xpr.lt(xpr.attribute("what/time"), xprStopTime));
+    if (source != null) {
+      query.filter(xpr.eq(xpr.attribute("what/source:node"), xpr.string(source)));
+    }
+
+    if (startDT != null) {
+      query.filter(xpr.ge(xpr.attribute("what/date"), xpr.date(this.startDT)));
+      query.filter(xpr.ge(xpr.attribute("what/time"), xpr.time(this.startDT)));
+    }
+    if (stopDT != null) {
+      query.filter(xpr.le(xpr.attribute("what/date"), xpr.date(this.stopDT)));
+      query.filter(xpr.lt(xpr.attribute("what/time"), xpr.time(this.stopDT)));
+    }
+    
+    if (this.limit > 0) {
+      query.order_by(xpr.attribute("what/date"), Query.SortDirection.DESCENDING);
+      query.order_by(xpr.attribute("what/time"), Query.SortDirection.DESCENDING);
+      query.limit(this.limit);
+    }
+  }
+  
+  /**
+   * @see eu.baltrad.beast.db.ICatalogFilter#getExtraAttributes()
+   */
+  @Override
+  public String[] getExtraAttributes() {
+    return null;
   }
   
   /**
@@ -68,9 +112,8 @@ public class TimeIntervalFilter implements ICatalogFilter {
    * @param date the date to set
    * @param time the time to set
    */
-  public void setStartDateTime(Date date, Time time) {
-    this.startDate = date;
-    this.startTime = time;
+  public void setStartDateTime(DateTime dt) {
+    this.startDT = dt;
   }
   
   /**
@@ -78,9 +121,8 @@ public class TimeIntervalFilter implements ICatalogFilter {
    * @param date the date to set
    * @param time the time to set
    */
-  public void setStopDateTime(Date date, Time time) {
-    this.stopDate = date;
-    this.stopTime = time;
+  public void setStopDateTime(DateTime dt) {
+    this.stopDT = dt;
   }
   
   /**
@@ -94,35 +136,49 @@ public class TimeIntervalFilter implements ICatalogFilter {
   /**
    * @return the start date
    */
-  public Date getStartDate() {
-    return this.startDate;
+  public DateTime getStartDateTime() {
+    return this.startDT;
   }
   
-  /**
-   * @return the start time
-   */
-  public Time getStartTime() {
-    return this.startTime;
-  }
-
   /**
    * @return the stop date
    */
-  public Date getStopDate() {
-    return this.stopDate;
+  public DateTime getStopDateTime() {
+    return this.stopDT;
   }
-  
-  /**
-   * @return the stop time
-   */
-  public Time getStopTime() {
-    return this.stopTime;
-  }  
   
   /**
    * @return the object type
    */
   public String getObject() {
     return this.object;
+  }
+
+  /**
+   * @param source the source to set
+   */
+  public void setSource(String source) {
+    this.source = source;
+  }
+
+  /**
+   * @return the source
+   */
+  public String getSource() {
+    return source;
+  }
+
+  /**
+   * @param limit the limit to set
+   */
+  public void setLimit(int limit) {
+    this.limit = limit;
+  }
+
+  /**
+   * @return the limit
+   */
+  public int getLimit() {
+    return limit;
   }
 }

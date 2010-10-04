@@ -20,15 +20,16 @@ package eu.baltrad.beast.db;
 
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.springframework.context.ApplicationContext;
 
+import eu.baltrad.beast.db.filters.PolarScanAngleFilter;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.fc.Date;
+import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.Time;
 import eu.baltrad.fc.oh5.File;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
@@ -45,6 +46,12 @@ public class CatalogITest extends TestCase {
     "fixtures/pvol_searl_20090501T120000Z.h5",
     "fixtures/pvol_sease_20090501T120000Z.h5",
     "fixtures/pvol_sehud_20090501T120000Z.h5"};
+
+  private static String[] SCAN_FIXTURES = {
+    "fixtures/scan_sevil_20090501123100Z_1.0.h5",
+    "fixtures/scan_sevil_20090501123100Z_1.5.h5",
+    "fixtures/scan_sevil_20090501123100Z_2.0.h5"
+  };
   
   public CatalogITest(String name) {
     super(name);
@@ -70,7 +77,11 @@ public class CatalogITest extends TestCase {
       File result = catalog.catalog(getFilePath(n));
       assertNotNull(result);
     }
-    System.out.println("Catalogued " + FIXTURES.length + " files in " + (System.currentTimeMillis() - startTime) + "ms");
+    for (String n : SCAN_FIXTURES) {
+      File result = catalog.catalog(getFilePath(n));
+      assertNotNull(result);
+    }
+    System.out.println("Catalogued " + (FIXTURES.length+SCAN_FIXTURES.length) + " files in " + (System.currentTimeMillis() - startTime) + "ms");
   }
   
   public void tearDown() throws Exception {
@@ -81,8 +92,8 @@ public class CatalogITest extends TestCase {
     TimeIntervalFilter filter = new TimeIntervalFilter();
     
     filter.setObject("PVOL");
-    filter.setStartDateTime(new Date(2009,5,1), new Time(12, 0, 0));
-    filter.setStopDateTime(new Date(2009,5,1), new Time(12, 15, 0));
+    filter.setStartDateTime(new DateTime(2009,5,1,12, 0, 0));
+    filter.setStopDateTime(new DateTime(2009,5,1,12, 15, 0));
     
     List<CatalogEntry> result = classUnderTest.fetch(filter);
     
@@ -97,13 +108,78 @@ public class CatalogITest extends TestCase {
     TimeIntervalFilter filter = new TimeIntervalFilter();
     
     filter.setObject("PVOL");
-    filter.setStartDateTime(new Date(2009,5,1), new Time(11, 0, 0));
-    filter.setStopDateTime(new Date(2009,5,1), new Time(11, 15, 0));
+    filter.setStartDateTime(new DateTime(2009,5,1,11,0,0));
+    filter.setStopDateTime(new DateTime(2009,5,1,11, 15, 0));
     
     List<CatalogEntry> result = classUnderTest.fetch(filter);
     
     assertEquals(0, result.size());
   }
+  
+  public void testFetch_TimeIntervalFilter_previous() throws Exception {
+    // First we need to add one entry from the current time period
+    catalog.catalog(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    
+    // and now execute test, we shouldn't get the scan from specified time
+    TimeIntervalFilter filter = new TimeIntervalFilter();
+    filter.setStopDateTime(new DateTime(2009,5,1,12,46,0));
+    filter.setSource("sevil");
+    filter.setLimit(1);
+    filter.setObject("SCAN");
+    List<CatalogEntry> result = classUnderTest.fetch(filter);
+    assertEquals(1, result.size());
+    DateTime dt = result.get(0).getDateTime();
+    assertEquals(2009, dt.date().year());
+    assertEquals(5, dt.date().month());
+    assertEquals(1, dt.date().day());
+    assertEquals(12, dt.time().hour());
+    assertEquals(31, dt.time().minute());
+    assertEquals(0, dt.time().second());
+  }
+  
+  public void testFetch_PolarScanAngleFilter_ascending() throws Exception {
+    catalog.catalog(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+
+    PolarScanAngleFilter filter = new PolarScanAngleFilter();
+    filter.setSource("sevil");
+    filter.setDateTime(new DateTime(2009,5,1,12,31,0));
+    filter.setSortOrder(PolarScanAngleFilter.ASCENDING);
+    List<CatalogEntry> result = classUnderTest.fetch(filter);
+    assertEquals(3, result.size());
+    assertEquals(1.0, result.get(0).getAttribute("where/elangle"));
+    assertEquals(1.5, result.get(1).getAttribute("where/elangle"));
+    assertEquals(2.0, result.get(2).getAttribute("where/elangle"));
+  }
+
+  public void testFetch_PolarScanAngleFilter_descending() throws Exception {
+    catalog.catalog(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    
+    PolarScanAngleFilter filter = new PolarScanAngleFilter();
+    filter.setSource("sevil");
+    filter.setDateTime(new DateTime(2009,5,1,12,31,0));
+    filter.setSortOrder(PolarScanAngleFilter.DESCENDING);
+    List<CatalogEntry> result = classUnderTest.fetch(filter);
+    assertEquals(3, result.size());
+    assertEquals(2.0, result.get(0).getAttribute("where/elangle"));
+    assertEquals(1.5, result.get(1).getAttribute("where/elangle"));
+    assertEquals(1.0, result.get(2).getAttribute("where/elangle"));
+  }
+
+  public void testFetch_PolarScanAngleFilter_minMaxElevation() throws Exception {
+    catalog.catalog(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    
+    PolarScanAngleFilter filter = new PolarScanAngleFilter();
+    filter.setSource("sevil");
+    filter.setDateTime(new DateTime(2009,5,1,12,31,0));
+    filter.setSortOrder(PolarScanAngleFilter.ASCENDING);
+    filter.setMinElevation(0.0);
+    filter.setMaxElevation(1.5);
+    
+    List<CatalogEntry> result = classUnderTest.fetch(filter);
+    assertEquals(2, result.size());
+    assertEquals(1.0, result.get(0).getAttribute("where/elangle"));
+    assertEquals(1.5, result.get(1).getAttribute("where/elangle"));
+  }  
   
   protected CatalogEntry getEntryBySource(List<CatalogEntry> entries, String source) {
     for (CatalogEntry entry: entries) {

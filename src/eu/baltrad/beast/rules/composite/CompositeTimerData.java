@@ -18,7 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.composite;
 
-import eu.baltrad.beast.db.DateTime;
+import eu.baltrad.fc.DateTime;
 
 /**
  * Used for keeping track on registered tasks in the timeout manager.
@@ -56,7 +56,16 @@ public class CompositeTimerData {
 
     if (data instanceof CompositeTimerData && data.getClass() == CompositeTimerData.class) {
       CompositeTimerData ctd = (CompositeTimerData)data;
-      result = dt.equals(ctd.getDateTime()) && ctd.getRuleId() == this.ruleid;
+      DateTime odt = ctd.getDateTime();
+      if (dt.date().year() == odt.date().year() &&
+          dt.date().month() == odt.date().month() &&
+          dt.date().day() == odt.date().day() &&
+          dt.time().hour() == odt.time().hour() &&
+          dt.time().minute() == odt.time().minute() &&
+          dt.time().second() == odt.time().second() &&
+          ctd.getRuleId() == this.ruleid) {
+          result = true;
+      }
     }
     return result;
   }

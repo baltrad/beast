@@ -20,8 +20,6 @@ package eu.baltrad.beast.rules.timer;
 
 import junit.framework.TestCase;
 
-import org.easymock.MockControl;
-
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.IBltMessage;

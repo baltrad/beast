@@ -47,6 +47,8 @@ public class VolumeScanFilter implements ICatalogFilter {
     Literal xprStartTime = xpr.time(startTime.hour(), startTime.minute(), startTime.second());
     Literal xprStopDate = xpr.date(stopDate.year(), stopDate.month(), stopDate.day());
     Literal xprStopTime = xpr.time(stopTime.hour(), stopTime.minute(), stopTime.second());
+
+    System.out.println("SOURCE: " + source);
     
     query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
     query.filter(xpr.eq(xpr.attribute("what/source"), xpr.string(source)));
@@ -54,6 +56,14 @@ public class VolumeScanFilter implements ICatalogFilter {
     query.filter(xpr.ge(xpr.attribute("what/time"), xprStartTime));
     query.filter(xpr.le(xpr.attribute("what/date"), xprStopDate));
     query.filter(xpr.lt(xpr.attribute("what/time"), xprStopTime));    
+  }
+  
+  /**
+   * @see eu.baltrad.beast.db.ICatalogFilter#getExtraAttributes()
+   */
+  @Override
+  public String[] getExtraAttributes() {
+    return null;
   }
   
   /**

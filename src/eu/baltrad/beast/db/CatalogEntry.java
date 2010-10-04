@@ -18,8 +18,10 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.Time;
+import java.util.HashMap;
+import java.util.Map;
+
+import eu.baltrad.fc.DateTime;
 
 /**
  * @author Anders Henja
@@ -28,14 +30,14 @@ public class CatalogEntry {
   private String object = null;
   private String path = null;
   private String src = null;
-  private Date date = null;
-  private Time time = null;
+  private DateTime dt = null;
+  private Map<String, Object> attributes = null;
   
   /**
    * Default constructor
    */
   public CatalogEntry() {
-    
+    attributes = new HashMap<String, Object>();
   }
   
   /**
@@ -81,30 +83,33 @@ public class CatalogEntry {
   }
   
   /**
-   * @param date the date to set
+   * @param dt the date time to set
    */
-  public void setDate(Date date) {
-    this.date = date;
+  public void setDateTime(DateTime dt) {
+    this.dt = dt;
   }
   
   /**
-   * @return the date
+   * @return the date time
    */
-  public Date getDate() {
-    return date;
+  public DateTime getDateTime() {
+    return this.dt;
   }
   
   /**
-   * @param time the time to set
+   * Adds a attribute to the result
+   * @param name the name
+   * @param value the value
    */
-  public void setTime(Time time) {
-    this.time = time;
+  public void addAttribute(String name, Object value) {
+    attributes.put(name, value);
   }
   
   /**
-   * @return the time
+   * @param name the attributes name
+   * @return the value
    */
-  public Time getTime() {
-    return time;
+  public Object getAttribute(String name) {
+    return attributes.get(name);
   }
 }

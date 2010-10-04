@@ -29,7 +29,6 @@ import org.easymock.classextension.MockClassControl;
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.DateTime;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
@@ -38,6 +37,7 @@ import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.fc.Date;
+import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
 import eu.baltrad.fc.oh5.File;
 
@@ -579,11 +579,18 @@ public class CompositingRuleTest extends TestCase {
     
     TimeIntervalFilter result = classUnderTest.createFilter(startDT);
     assertNotNull(result);
-    assertSame(startDate, result.getStartDate());
-    assertSame(startTime, result.getStartTime());
-    assertSame(stopDate, result.getStopDate());
-    assertSame(stopTime, result.getStopTime());
+    assertSame(startDT, result.getStartDateTime());
+    assertSame(stopDT, result.getStopDateTime());
     assertEquals("PVOL", result.getObject());
+  }
+  
+  protected boolean compareDT(DateTime o1, DateTime o2) {
+    return (o1.date().year() == o2.date().year() &&
+            o1.date().month() == o2.date().month() &&
+            o1.date().day() == o2.date().day() &&
+            o1.time().hour() == o2.time().hour() &&
+            o1.time().minute() == o2.time().minute() &&
+            o1.time().second() == o2.time().second());
   }
   
   public void testGetNominalTime() throws Exception {
@@ -598,8 +605,8 @@ public class CompositingRuleTest extends TestCase {
     };
     
     for (int i = 0; i < TIME_TABLE.length; i++) {
-      DateTime dtResult = classUnderTest.getNominalTime(TIME_TABLE[i][0].getDate(), TIME_TABLE[i][0].getTime());
-      assertTrue("TT["+i+"] not as expected", dtResult.equals(TIME_TABLE[i][1]));
+      DateTime dtResult = classUnderTest.getNominalTime(TIME_TABLE[i][0].date(), TIME_TABLE[i][0].time());
+      assertTrue("TT["+i+"] not as expected", compareDT(dtResult, TIME_TABLE[i][1]));
     }
   }
 
@@ -617,7 +624,7 @@ public class CompositingRuleTest extends TestCase {
 
     for (int i = 0; i < TIME_TABLE.length; i++) {
       DateTime dtResult = classUnderTest.getStop(TIME_TABLE[i][0]);
-      assertTrue("TT["+i+"] not as expected", dtResult.equals(TIME_TABLE[i][1]));
+      assertTrue("TT["+i+"] not as expected", compareDT(dtResult, TIME_TABLE[i][1]));
     }
   }
   
@@ -646,8 +653,7 @@ public class CompositingRuleTest extends TestCase {
     CatalogEntry result = new CatalogEntry();
     result.setSource(src);
     result.setPath(file);
-    result.setDate(date);
-    result.setTime(time);
+    result.setDateTime(new DateTime(date, time));
     return result;
   }
 }

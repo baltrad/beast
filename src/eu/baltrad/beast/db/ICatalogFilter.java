@@ -30,4 +30,10 @@ public interface ICatalogFilter {
    * @param query the query to apply the filtering rules to
    */
   void apply(Query query);
+  
+  /**
+   * These attributes will be accessible within the CatalogEntry
+   * @return the extra attributes to fetch (may be NULL or empty)
+   */
+  String[] getExtraAttributes();
 }

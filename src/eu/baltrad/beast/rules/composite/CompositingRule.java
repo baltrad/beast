@@ -29,7 +29,6 @@ import java.util.Map;
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.DateTime;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
@@ -39,6 +38,7 @@ import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.fc.Date;
+import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
 import eu.baltrad.fc.oh5.File;
 
@@ -311,9 +311,9 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @param entries a list of entries
    * @return a list of files
    */
-  protected List<String> getFilesFromEntries(DateTime nominalTime, List<CatalogEntry> entries) {
+  protected List<String> getFilesFromEntries(DateTime nominalDT, List<CatalogEntry> entries) {
     Map<String, CatalogEntry> entryMap = new HashMap<String, CatalogEntry>();
-    GregorianCalendar nominalTimeCalendar = createCalendar(nominalTime.getDate(), nominalTime.getTime());
+    GregorianCalendar nominalTimeCalendar = createCalendar(nominalDT);
     List<String> result = new ArrayList<String>();
     
     for (CatalogEntry entry: entries) {
@@ -322,9 +322,9 @@ public class CompositingRule implements IRule, ITimeoutRule {
         if (!entryMap.containsKey(src)) {
           entryMap.put(src, entry);
         } else {
-          GregorianCalendar entryCalendar = createCalendar(entry.getDate(), entry.getTime());
+          GregorianCalendar entryCalendar = createCalendar(entry.getDateTime());
           CatalogEntry mapEntry = entryMap.get(src);
-          GregorianCalendar mapEntryCalendar = createCalendar(mapEntry.getDate(), mapEntry.getTime());
+          GregorianCalendar mapEntryCalendar = createCalendar(mapEntry.getDateTime());
         
           // If the entrys time is closer to the nominal time than the existing one, replace it
           if (Math.abs(entryCalendar.compareTo(nominalTimeCalendar)) < Math.abs(mapEntryCalendar.compareTo(nominalTimeCalendar))) {
@@ -347,8 +347,10 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @param time the time
    * @return a gregorian calendar
    */
-  protected GregorianCalendar createCalendar(Date date, Time time) {
+  protected GregorianCalendar createCalendar(DateTime dt) {
     GregorianCalendar c = new GregorianCalendar();
+    Date date = dt.date();
+    Time time = dt.time();
     c.set(date.year(), date.month()-1, date.day(), time.hour(), time.minute(), time.second());
     return c;
   }
@@ -359,14 +361,14 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @param entries the list of entries
    * @return a message if criterias are fullfilled, otherwise null
    */
-  protected IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries) {
+  protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
     BltGenerateMessage result = new BltGenerateMessage();
-    Date date = nominalTime.getDate();
-    Time time = nominalTime.getTime();
+    Date date = nominalDT.date();
+    Time time = nominalDT.time();
     
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
 
-    result.setFiles(getFilesFromEntries(nominalTime, entries).toArray(new String[0]));
+    result.setFiles(getFilesFromEntries(nominalDT, entries).toArray(new String[0]));
 
     String[] args = new String[3];
     args[0] = "--area="+area;
@@ -396,12 +398,12 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @param time the time
    * @returns a TimeIntervalFilter for polar volumes  
    */
-  protected TimeIntervalFilter createFilter(DateTime nominalTime) {
+  protected TimeIntervalFilter createFilter(DateTime nominalDT) {
     TimeIntervalFilter filter = new TimeIntervalFilter();
     filter.setObject("PVOL");
-    DateTime stopDT = getStop(nominalTime);
-    filter.setStartDateTime(nominalTime.getDate(), nominalTime.getTime());
-    filter.setStopDateTime(stopDT.getDate(), stopDT.getTime());
+    DateTime stopDT = getStop(nominalDT);
+    filter.setStartDateTime(nominalDT);
+    filter.setStopDateTime(stopDT);
     return filter;
   }
 
@@ -413,11 +415,8 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a nominal time
    */
   protected DateTime getNominalTime(Date d, Time t) {
-    DateTime result = new DateTime();
     int period = t.minute() / interval;
-    result.setTime(new Time(t.hour(), period*interval, 0));
-    result.setDate(d);
-    return result;
+    return new DateTime(d, new Time(t.hour(), period*interval, 0));
   }
   
   /**
@@ -426,16 +425,15 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return the stop date/time
    */
   protected DateTime getStop(DateTime dt) {
-    Date d = dt.getDate();
-    Time t = dt.getTime();
+    Date d = dt.date();
+    Time t = dt.time();
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(d.year(), d.month() - 1, d.day(), t.hour(), t.minute(), t.second());
     int period = t.minute() / interval;
     int minute = (period + 1) * interval;
     cal.set(Calendar.MINUTE, minute);
-    DateTime result = new DateTime();
-    result.setDate(new Date(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH)));
-    result.setTime(new Time(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND)));
-    return result;
+    Date nd = new Date(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+    Time nt = new Time(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
+    return new DateTime(nd, nt);
   }
 }

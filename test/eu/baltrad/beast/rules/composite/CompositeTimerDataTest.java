@@ -18,8 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.composite;
 
+import eu.baltrad.fc.DateTime;
 import junit.framework.TestCase;
-import eu.baltrad.beast.db.DateTime;
 
 /**
  * @author Anders Henja
