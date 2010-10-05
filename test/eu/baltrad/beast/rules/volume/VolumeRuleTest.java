@@ -56,7 +56,7 @@ public class VolumeRuleTest extends TestCase {
     public TimeIntervalFilter createFilter(DateTime nominalTime);
     public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
     public DateTime getPreviousDateTime(DateTime now, String source);
-    public List<Double> getElevationAngles(DateTime previousDateTime, String source);
+    public List<Double> getPreviousElevationAngles(DateTime previousDateTime, String source);
     public boolean areCriteriasMet(List<CatalogEntry> entries);
     public DateTime getNominalTime(Date d, Time t);
     public void initialize();
@@ -110,8 +110,8 @@ public class VolumeRuleTest extends TestCase {
       protected DateTime getPreviousDateTime(DateTime now, String source) {
         return methods.getPreviousDateTime(now, source);
       }
-      protected List<Double> getElevationAngles(DateTime time, String source) {
-        return methods.getElevationAngles(time, source);
+      protected List<Double> getPreviousElevationAngles(DateTime time, String source) {
+        return methods.getPreviousElevationAngles(time, source);
       }
     };
     classUnderTest.setCatalog(catalog);
@@ -121,7 +121,7 @@ public class VolumeRuleTest extends TestCase {
     
     methods.getPreviousDateTime(now, source);
     methodsControl.setReturnValue(null);
-    methods.getElevationAngles(null, source);
+    methods.getPreviousElevationAngles(null, source);
     methodsControl.setReturnValue(noAnglesList);
 
     replay();
@@ -151,8 +151,8 @@ public class VolumeRuleTest extends TestCase {
       protected DateTime getPreviousDateTime(DateTime now, String source) {
         return methods.getPreviousDateTime(now, source);
       }
-      protected List<Double> getElevationAngles(DateTime time, String source) {
-        return methods.getElevationAngles(time, source);
+      protected List<Double> getPreviousElevationAngles(DateTime time, String source) {
+        return methods.getPreviousElevationAngles(time, source);
       }
     };
     classUnderTest.setCatalog(catalog);
@@ -162,7 +162,7 @@ public class VolumeRuleTest extends TestCase {
     
     methods.getPreviousDateTime(now, source);
     methodsControl.setReturnValue(null);
-    methods.getElevationAngles(null, source);
+    methods.getPreviousElevationAngles(null, source);
     methodsControl.setReturnValue(noAnglesList);
 
     replay();
@@ -197,8 +197,8 @@ public class VolumeRuleTest extends TestCase {
       protected DateTime getPreviousDateTime(DateTime now, String source) {
         return methods.getPreviousDateTime(now, source);
       }
-      protected List<Double> getElevationAngles(DateTime time, String source) {
-        return methods.getElevationAngles(time, source);
+      protected List<Double> getPreviousElevationAngles(DateTime time, String source) {
+        return methods.getPreviousElevationAngles(time, source);
       }
     };
     classUnderTest.setCatalog(catalog);
@@ -208,7 +208,7 @@ public class VolumeRuleTest extends TestCase {
     
     methods.getPreviousDateTime(now, source);
     methodsControl.setReturnValue(previousTime);
-    methods.getElevationAngles(previousTime, source);
+    methods.getPreviousElevationAngles(previousTime, source);
     methodsControl.setReturnValue(anglesList);
 
     replay();

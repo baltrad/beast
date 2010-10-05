@@ -175,6 +175,8 @@ public class BeastDBTestHelper {
     template.update("delete from beast_groovy_rules");
     template.update("delete from beast_composite_sources");
     template.update("delete from beast_composite_rules");
+    template.update("delete from beast_volume_sources");
+    template.update("delete from beast_volume_rules");
     template.update("delete from beast_adaptors_xmlrpc");
     template.update("delete from beast_adaptors");
     template.update("delete from beast_router_rules");

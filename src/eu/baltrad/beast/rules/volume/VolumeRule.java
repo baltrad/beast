@@ -100,6 +100,11 @@ public class VolumeRule implements IRule, ITimeoutRule {
   private boolean ascending = true;
   
   /**
+   * The sources for which this rule applies
+   */
+  private List<String> sources = new ArrayList<String>();
+  
+  /**
    * @param catalog the catalog to set
    */
   protected void setCatalog(Catalog catalog) {
@@ -140,6 +145,20 @@ public class VolumeRule implements IRule, ITimeoutRule {
    */
   public int getTimeout() {
     return this.timeout;
+  }
+
+  /**
+   * @return the interval
+   */
+  public int getInterval() {
+    return interval;
+  }
+
+  /**
+   * @param interval the interval to set
+   */
+  public void setInterval(int interval) {
+    this.interval = interval;
   }
   
   /**
@@ -195,6 +214,20 @@ public class VolumeRule implements IRule, ITimeoutRule {
   }
   
   /**
+   * @param sources the sources for which this rule applies
+   */
+  public void setSources(List<String> sources) {
+    this.sources = sources;
+  }
+  
+  /**
+   * @return the sources for which this rule applies.
+   */
+  public List<String> getSources() {
+    return this.sources;
+  }
+  
+  /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
   @Override
@@ -243,7 +276,14 @@ public class VolumeRule implements IRule, ITimeoutRule {
    */
   @Override
   public IBltMessage timeout(long id, int why, Object data) {
-    return null;
+    IBltMessage result = null;
+    initialize();
+    VolumeTimerData vtd = (VolumeTimerData)data;
+    if (vtd != null) {
+      List<CatalogEntry> entries = fetchAllCurrentEntries(vtd.getDateTime(), vtd.getSource());
+      result = createMessage(vtd.getDateTime(), entries);
+    }
+    return result;
   }
 
   /**
@@ -254,7 +294,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
    */
   protected boolean areCriteriasMet(List<CatalogEntry> entries, DateTime dt, String source) {
     DateTime previousDateTime = getPreviousDateTime(dt, source);
-    List<Double> elevations = getElevationAngles(previousDateTime, source);
+    List<Double> elevations = getPreviousElevationAngles(previousDateTime, source);
     
     for (CatalogEntry ce : entries) {
       Double elangle = (Double)ce.getAttribute("where/elangle");
@@ -286,7 +326,9 @@ public class VolumeRule implements IRule, ITimeoutRule {
         long nbins = file.group("/dataset1/where").attribute("nbins").value().int64_();
         
         DateTime nominalTime = getNominalTime(d, t);
-        result = new VolumeTimerData(ruleid, nominalTime, s, nbins, rscale);
+        if (sources.size() == 0 || sources.contains(s)) {
+          result = new VolumeTimerData(ruleid, nominalTime, s, nbins, rscale);
+        }
       }
     }
     
@@ -386,7 +428,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
    * @param source the source
    * @return a list of elevation angles in degrees or a zero length list
    */
-  protected List<Double> getElevationAngles(DateTime time, String source) {
+  protected List<Double> getPreviousElevationAngles(DateTime time, String source) {
     List<Double> result = new ArrayList<Double>();
     if (time != null) {
       PolarScanAngleFilter psafilter = new PolarScanAngleFilter();
