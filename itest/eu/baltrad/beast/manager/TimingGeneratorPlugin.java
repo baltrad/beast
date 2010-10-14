@@ -45,7 +45,7 @@ public class TimingGeneratorPlugin implements IGeneratorPlugin {
    * @see eu.baltrad.beast.pgfwk.IGeneratorPlugin#generate(java.lang.String, java.lang.String[], java.lang.Object[])
    */
   @Override
-  public synchronized void generate(String algorithm, String[] files, Object[] arguments) {
+  public synchronized String generate(String algorithm, String[] files, Object[] arguments) {
     try {
       Long btime = Long.parseLong((String)arguments[0]);
       long difftime = System.currentTimeMillis() - btime;
@@ -55,6 +55,7 @@ public class TimingGeneratorPlugin implements IGeneratorPlugin {
     }
     ntimes = ntimes + 1;
     notifyAll();
+    return null;
   }
   
   /**

@@ -87,6 +87,7 @@ public class XmlRpcCommandGenerator implements IXmlRpcCommandGenerator {
     XmlRpcCommand command = new XmlRpcCommand();
     command.setMethod("generate");
     command.setObjects(objects);
+    
     return command;    
   }
   

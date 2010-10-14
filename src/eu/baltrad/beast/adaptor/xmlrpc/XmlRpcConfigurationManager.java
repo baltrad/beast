@@ -156,6 +156,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
       result.setName(name);
       result.setTimeout((Integer)found.get("timeout"));
       result.setUrl((String)found.get("uri"));
+      result.setGenerator(this.generator);
       return result;
     } catch (DataAccessException t) {
       t.printStackTrace();

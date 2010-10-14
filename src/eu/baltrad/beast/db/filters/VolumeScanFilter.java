@@ -48,8 +48,6 @@ public class VolumeScanFilter implements ICatalogFilter {
     Literal xprStopDate = xpr.date(stopDate.year(), stopDate.month(), stopDate.day());
     Literal xprStopTime = xpr.time(stopTime.hour(), stopTime.minute(), stopTime.second());
 
-    System.out.println("SOURCE: " + source);
-    
     query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
     query.filter(xpr.eq(xpr.attribute("what/source"), xpr.string(source)));
     query.filter(xpr.ge(xpr.attribute("what/date"), xprStartDate));

@@ -16,20 +16,42 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.pgfwk;
-
+package eu.baltrad.beast.adaptor.http;
 
 /**
- * All product generator plugins should implement this interface.
  * @author Anders Henja
  */
-public interface IGeneratorPlugin {
+public class HttpConnectorException extends RuntimeException {
   /**
-   * Manages a blt generation message
-   * @param algorithm - the algorithm used to get to this plugin
-   * @param files - a list of files
-   * @param arguments - a list of arguments
-   * @return a temporary string that should be injected into the data exchange or null if no result
+   * The default serial uid 
    */
-  public String generate(String algorithm, String[] files, Object[] arguments);
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * @see RuntimeException#RuntimeException()
+   */
+  public HttpConnectorException() {
+    super();
+  }
+  
+  /**
+   * @see RuntimeException#RuntimeException(String)
+   */
+  public HttpConnectorException(String message) {
+    super(message);
+  }
+
+  /**
+   * @see RuntimeException#RuntimeException(Throwable)
+   */
+  public HttpConnectorException(Throwable t) {
+    super(t);
+  }
+
+  /**
+   * @see RuntimeException#RuntimeException(String, Throwable)
+   */
+  public HttpConnectorException(String message, Throwable t) {
+    super(message, t);
+  }
 }

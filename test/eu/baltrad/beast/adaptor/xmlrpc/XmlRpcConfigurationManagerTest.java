@@ -299,9 +299,10 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(foundEntry);
 
+    XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
-
+    classUnderTest.setGenerator(generator);
     jdbcControl.replay();
     
     // Execute test
@@ -312,5 +313,6 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     assertEquals("SA1", result.getName());
     assertEquals(2000, result.getTimeout());
     assertEquals("http://someurl", result.getUrl());
+    assertSame(generator, result.getGenerator());
   }
 }

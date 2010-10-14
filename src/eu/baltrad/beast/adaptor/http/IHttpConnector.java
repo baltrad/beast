@@ -16,20 +16,18 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.pgfwk;
+package eu.baltrad.beast.adaptor.http;
 
+import eu.baltrad.beast.message.IBltMessage;
 
 /**
- * All product generator plugins should implement this interface.
  * @author Anders Henja
+ *
  */
-public interface IGeneratorPlugin {
+public interface IHttpConnector {
   /**
-   * Manages a blt generation message
-   * @param algorithm - the algorithm used to get to this plugin
-   * @param files - a list of files
-   * @param arguments - a list of arguments
-   * @return a temporary string that should be injected into the data exchange or null if no result
+   * Sends a message to a receiver
+   * @param message the message to send
    */
-  public String generate(String algorithm, String[] files, Object[] arguments);
+  public void send(IBltMessage message);
 }

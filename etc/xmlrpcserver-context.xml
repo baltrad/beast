@@ -4,6 +4,15 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+  <!-- Property placeholder configurer for expanding ${} into values -->
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:xmlrpcserver.properties</value>
+      </list>
+    </property>
+  </bean>
+
   <!-- alert plugins, add them as list -->
   <bean id="alerthandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcAlertHandler">
     <!-- add plugins here -->
@@ -12,10 +21,21 @@
   <!-- the command handler, should be exchanged if there is need for some other exec -->
   <bean id="commandhandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcCommandHandler" />
 
+  <!-- http connector for sending responses to the dex -->
+  <bean id="httpconnector" class="eu.baltrad.beast.adaptor.http.HttpConnector">
+    <property name="url" value="${server.url}" />
+    <!--
+    <property name="url" value="http://127.0.0.1:8080/BaltradDex/dispatch.htm"/>
+    -->
+  </bean>
+  
   <!-- generate plugins does not need to be added as properties to generate handler. The
        generate handler will check for bean-ids and verify that the specified class is
        implementing the IGeneratorPlugin interface -->
-  <bean id="generatehandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcGenerateHandler" />
+  <bean id="generatehandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcGenerateHandler" autowire="byType">
+    <property name="channel" value="${server.channel}"/>
+    <property name="sender" value="${server.user}"/>
+  </bean>
   
   <!-- the pg fwk handler that should be the front end for all requests -->
   <bean id="pgfwkhandler" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcHandlerMapping">

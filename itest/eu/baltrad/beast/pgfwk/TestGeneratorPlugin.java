@@ -82,7 +82,7 @@ public class TestGeneratorPlugin implements IGeneratorPlugin {
    * @see eu.baltrad.beast.pgfwk.IGeneratorPlugin#generate(java.lang.String, java.lang.String[], java.lang.Object[])
    */
   @Override
-  public void generate(String algorithm, String[] files, Object[] arguments) {
+  public String generate(String algorithm, String[] files, Object[] arguments) {
     this.algorithm = algorithm;
     this.files = files;
     this.args = arguments;
@@ -90,5 +90,6 @@ public class TestGeneratorPlugin implements IGeneratorPlugin {
     if (isFail()) {
       throw new RuntimeException();
     }
+    return null;
   }
 }

@@ -300,7 +300,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
           adaptor.handle(msg);
         }
       } catch (Throwable t) {
-        // do nothing
+        t.printStackTrace();
       }
     }
   }

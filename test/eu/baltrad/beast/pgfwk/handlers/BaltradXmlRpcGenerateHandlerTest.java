@@ -22,6 +22,8 @@ import org.apache.xmlrpc.XmlRpcRequest;
 import org.easymock.MockControl;
 import org.springframework.context.ApplicationContext;
 
+import eu.baltrad.beast.adaptor.http.IHttpConnector;
+import eu.baltrad.beast.message.mo.BltDataFrameMessage;
 import eu.baltrad.beast.pgfwk.IGeneratorPlugin;
 
 import junit.framework.TestCase;
@@ -30,8 +32,9 @@ import junit.framework.TestCase;
  * @author Anders Henja
  */
 public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
-  static interface CreateStringArrayMethod {
+  static interface MockMethods {
     public String[] createStringArray(Object[] arr);
+    public BltDataFrameMessage createMessage(String file);
   };
   
   public void testCreateStringArray() {
@@ -56,8 +59,8 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
   }
   
   public void testExecute() throws Exception {
-    MockControl strArrayControl = MockControl.createControl(CreateStringArrayMethod.class);
-    final CreateStringArrayMethod strArrayMethod = (CreateStringArrayMethod)strArrayControl.getMock();
+    MockControl methodsControl = MockControl.createControl(MockMethods.class);
+    final MockMethods methods = (MockMethods)methodsControl.getMock();
     
     MockControl contextControl = MockControl.createControl(ApplicationContext.class);
     ApplicationContext context = (ApplicationContext)contextControl.getMock();
@@ -68,18 +71,27 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     MockControl pluginControl = MockControl.createControl(IGeneratorPlugin.class);
     IGeneratorPlugin pluginMock = (IGeneratorPlugin)pluginControl.getMock();
     
+    MockControl connectorControl = MockControl.createControl(IHttpConnector.class);
+    IHttpConnector connector = (IHttpConnector)connectorControl.getMock();
+    
+    
     Object[] ofiles = new Object[0];
     Object[] oargs = new Object[0];
     String[] files = new String[0];
     String[] args = new String[0];
+    BltDataFrameMessage bltmessage = new BltDataFrameMessage();
     
     BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler() {
       protected String[] createStringArray(Object[] arr) {
-        return strArrayMethod.createStringArray(arr);
+        return methods.createStringArray(arr);
+      }
+      protected BltDataFrameMessage createMessage(String file) {
+        return methods.createMessage(file);
       }
     };
     classUnderTest.setApplicationContext(context);
-    
+    classUnderTest.setConnector(connector);
+
     request.getParameter(0);
     requestControl.setReturnValue("somemethod");
     request.getParameter(1);
@@ -87,17 +99,21 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     request.getParameter(2);
     requestControl.setReturnValue(oargs);
     
-    strArrayMethod.createStringArray(ofiles);
-    strArrayControl.setReturnValue(files);
-    strArrayMethod.createStringArray(oargs);
-    strArrayControl.setReturnValue(args);
+    methods.createStringArray(ofiles);
+    methodsControl.setReturnValue(files);
+    methods.createStringArray(oargs);
+    methodsControl.setReturnValue(args);
     
     context.getBean("somemethod");
     contextControl.setReturnValue(pluginMock);
     
     pluginMock.generate("somemethod", files, args);
-
-    strArrayControl.replay();
+    pluginControl.setReturnValue("filename");
+    methods.createMessage("filename");
+    methodsControl.setReturnValue(bltmessage);
+    connector.send(bltmessage);
+    
+    methodsControl.replay();
     contextControl.replay();
     requestControl.replay();
     pluginControl.replay();
@@ -106,7 +122,7 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     Object result = classUnderTest.execute(request);
     
     // verify
-    strArrayControl.verify();
+    methodsControl.verify();
     contextControl.verify();
     requestControl.verify();
     pluginControl.verify();
@@ -114,8 +130,8 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
   }
   
   public void testExecute_pluginNotFound() throws Exception {
-    MockControl strArrayControl = MockControl.createControl(CreateStringArrayMethod.class);
-    final CreateStringArrayMethod strArrayMethod = (CreateStringArrayMethod)strArrayControl.getMock();
+    MockControl methodsControl = MockControl.createControl(MockMethods.class);
+    final MockMethods methods = (MockMethods)methodsControl.getMock();
     
     MockControl contextControl = MockControl.createControl(ApplicationContext.class);
     ApplicationContext context = (ApplicationContext)contextControl.getMock();
@@ -130,7 +146,7 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     
     BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler() {
       protected String[] createStringArray(Object[] arr) {
-        return strArrayMethod.createStringArray(arr);
+        return methods.createStringArray(arr);
       }
     };
     classUnderTest.setApplicationContext(context);
@@ -142,15 +158,15 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     request.getParameter(2);
     requestControl.setReturnValue(oargs);
     
-    strArrayMethod.createStringArray(ofiles);
-    strArrayControl.setReturnValue(files);
-    strArrayMethod.createStringArray(oargs);
-    strArrayControl.setReturnValue(args);
+    methods.createStringArray(ofiles);
+    methodsControl.setReturnValue(files);
+    methods.createStringArray(oargs);
+    methodsControl.setReturnValue(args);
     
     context.getBean("somemethod");
     contextControl.setReturnValue(null);
 
-    strArrayControl.replay();
+    methodsControl.replay();
     contextControl.replay();
     requestControl.replay();
     
@@ -158,15 +174,15 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     Object result = classUnderTest.execute(request);
     
     // verify
-    strArrayControl.verify();
+    methodsControl.verify();
     contextControl.verify();
     requestControl.verify();
     assertEquals(-1, result);
   }
   
   public void testExecute_pluginNotIGenerator() throws Exception {
-    MockControl strArrayControl = MockControl.createControl(CreateStringArrayMethod.class);
-    final CreateStringArrayMethod strArrayMethod = (CreateStringArrayMethod)strArrayControl.getMock();
+    MockControl methodsControl = MockControl.createControl(MockMethods.class);
+    final MockMethods methods = (MockMethods)methodsControl.getMock();
     
     MockControl contextControl = MockControl.createControl(ApplicationContext.class);
     ApplicationContext context = (ApplicationContext)contextControl.getMock();
@@ -183,7 +199,7 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     
     BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler() {
       protected String[] createStringArray(Object[] arr) {
-        return strArrayMethod.createStringArray(arr);
+        return methods.createStringArray(arr);
       }
     };
     classUnderTest.setApplicationContext(context);
@@ -195,15 +211,15 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     request.getParameter(2);
     requestControl.setReturnValue(oargs);
     
-    strArrayMethod.createStringArray(ofiles);
-    strArrayControl.setReturnValue(files);
-    strArrayMethod.createStringArray(oargs);
-    strArrayControl.setReturnValue(args);
+    methods.createStringArray(ofiles);
+    methodsControl.setReturnValue(files);
+    methods.createStringArray(oargs);
+    methodsControl.setReturnValue(args);
     
     context.getBean("somemethod");
     contextControl.setReturnValue(plugin);
 
-    strArrayControl.replay();
+    methodsControl.replay();
     contextControl.replay();
     requestControl.replay();
     
@@ -211,9 +227,21 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     Object result = classUnderTest.execute(request);
     
     // verify
-    strArrayControl.verify();
+    methodsControl.verify();
     contextControl.verify();
     requestControl.verify();
     assertEquals(-1, result);
   }  
+  
+  public void testCreateMessage() throws Exception {
+    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
+    classUnderTest.setChannel("se_channel");
+    classUnderTest.setSender("admin");
+    
+    BltDataFrameMessage message = classUnderTest.createMessage("somefile");
+    
+    assertEquals("se_channel", message.getChannel());
+    assertEquals("admin", message.getSender());
+    assertEquals("somefile", message.getFilename());
+  }
 }

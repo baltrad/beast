@@ -143,6 +143,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
         <include name="xmlrpcserver-context.xml" />
         <include name="build-plugin.xml" />
       	<include name="log4j.properties" />
+      	<include name="xmlrpcserver.properties" />
       </fileset>
   	</copy>
   	<!-- remove old beast.jar that contained version information -->
