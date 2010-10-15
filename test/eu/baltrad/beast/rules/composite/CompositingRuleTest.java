@@ -620,6 +620,7 @@ public class CompositingRuleTest extends TestCase {
         {new DateTime(2010,1,1,1,39,0), new DateTime(2010,1,1,1,40,0)},
         {new DateTime(2010,1,1,1,59,0), new DateTime(2010,1,1,2,0,0)},
         {new DateTime(2010,1,1,23,59,0), new DateTime(2010,1,2,0,0,0)},
+        {new DateTime(2010,1,1,12,0,0), new DateTime(2010,1,1,12,10,0)},
     };
 
     for (int i = 0; i < TIME_TABLE.length; i++) {

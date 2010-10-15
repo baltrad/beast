@@ -433,7 +433,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
     int minute = (period + 1) * interval;
     cal.set(Calendar.MINUTE, minute);
     Date nd = new Date(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
-    Time nt = new Time(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
+    Time nt = new Time(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
     return new DateTime(nd, nt);
   }
 }
