@@ -72,7 +72,7 @@ public class PolarScanAngleFilter implements ICatalogFilter {
     if (dt == null || source == null) {
       throw new IllegalArgumentException("datetime and source id required");
     }
-    
+
     query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
     query.filter(xpr.eq(xpr.attribute("what/source:node"), xpr.string(source)));
 
@@ -87,6 +87,8 @@ public class PolarScanAngleFilter implements ICatalogFilter {
     } else {
       query.order_by(xpr.attribute("where/elangle"), Query.SortDirection.DESCENDING);
     }
+    
+    query.fetch(xpr.attribute("where/elangle"));
   }
 
   /**

@@ -20,6 +20,9 @@ package eu.baltrad.beast.rules.timer;
 
 import java.util.TimerTask;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 /**
  * @author Anders Henja
  */
@@ -45,6 +48,11 @@ public class TimeoutTask extends TimerTask {
   private ITimeoutTaskListener listener = null;
   
   /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(TimeoutTask.class);
+
+  /**
    * Default constructor
    */
   public TimeoutTask() {
@@ -55,6 +63,7 @@ public class TimeoutTask extends TimerTask {
    */
   @Override
   public void run() {
+    logger.debug("run()");
     listener.timeoutNotification(id, rule, data);
   }
 
@@ -63,6 +72,7 @@ public class TimeoutTask extends TimerTask {
    */
   @Override
   public boolean cancel() {
+    logger.debug("cancel()");
     boolean result = super.cancel();
     listener.cancelNotification(id, rule, data);
     return result;
@@ -72,6 +82,8 @@ public class TimeoutTask extends TimerTask {
    * Stops the task, @see java.util.TimerTask#cancel().
    */
   public boolean stop() {
+    logger.debug("stop()");
+    
     return super.cancel();
   }
 
@@ -79,6 +91,7 @@ public class TimeoutTask extends TimerTask {
    * @param id the id to set
    */
   public void setId(long id) {
+    logger.debug("setId("+id+")");
     this.id = id;
   }
 

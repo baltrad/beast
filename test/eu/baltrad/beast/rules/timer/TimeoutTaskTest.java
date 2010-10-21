@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.timer;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
@@ -59,6 +61,7 @@ public class TimeoutTaskTest extends TestCase {
   public void testRun() {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
+      public void setRecipients(List<String> recipients) {}
     };
     classUnderTest.setId(10);
     classUnderTest.setRule(rule);
@@ -72,6 +75,7 @@ public class TimeoutTaskTest extends TestCase {
   public void testCancel() {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
+      public void setRecipients(List<String> recipients) {}
     };
     classUnderTest.setId(10);
     classUnderTest.setRule(rule);

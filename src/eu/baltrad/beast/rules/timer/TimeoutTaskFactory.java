@@ -18,15 +18,24 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.timer;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 /**
  * @author Anders Henja
  */
 public class TimeoutTaskFactory implements ITimeoutTaskFactory {
   /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(TimeoutTaskFactory.class);
+
+  /**
    * @see eu.baltrad.beast.rules.timer.ITimeoutTaskFactory#create(eu.baltrad.beast.rules.timer.ITimeoutRule, long, eu.baltrad.beast.rules.timer.ITimeoutTaskListener)
    */
   @Override
   public TimeoutTask create(ITimeoutRule rule, long id, Object data, ITimeoutTaskListener listener) {
+    logger.debug("create(ITimeoutRule, " + id + ",...)");
     if (rule != null && listener != null) {
       TimeoutTask task = new TimeoutTask();
       task.setId(id);

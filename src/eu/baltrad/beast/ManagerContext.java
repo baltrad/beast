@@ -23,6 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
  * Inject instances to be accessible statically. If there
@@ -39,6 +40,11 @@ public class ManagerContext implements InitializingBean {
    * The catalog for db access
    */
   protected static Catalog catalog = null;
+  
+  /**
+   * The utilities
+   */
+  protected static IRuleUtilities utilities = null;
   
   /**
    * @param manager the timeout manager to set
@@ -67,6 +73,20 @@ public class ManagerContext implements InitializingBean {
   public static Catalog getCatalog() {
     return catalog;
   }
+
+  /**
+   * @param catalog the catalog to set
+   */
+  public void setUtilities(IRuleUtilities utils) {
+    utilities = utils;
+  }
+  
+  /**
+   * @return the catalog
+   */
+  public static IRuleUtilities getUtilities() {
+    return utilities;
+  }
   
   /**
    * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -78,6 +98,9 @@ public class ManagerContext implements InitializingBean {
     }
     if (catalog == null) {
       throw new BeanCreationException("catalog not set");
+    }
+    if (utilities == null) {
+      throw new BeanCreationException("utilities not set");
     }
   }
 }

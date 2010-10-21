@@ -193,6 +193,8 @@ public class BeastDBTestHelper {
       tearDown();
       IDatabaseConnection connection = getConnection(conn);
       DatabaseOperation.CLEAN_INSERT.execute(connection, getXlsDataset(tc, null));
+    } catch (Throwable t) {
+      t.printStackTrace();
     } finally {
       DataSourceUtils.releaseConnection(conn, source);
     }   

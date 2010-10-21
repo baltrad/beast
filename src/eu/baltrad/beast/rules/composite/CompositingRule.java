@@ -19,12 +19,11 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Formatter;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
@@ -33,10 +32,12 @@ import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
@@ -61,6 +62,11 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * The timeout manager
    */
   TimeoutManager timeoutManager = null;
+  
+  /**
+   * Utilities that simplifies database access
+   */
+  private IRuleUtilities ruleUtil = null;
   
   /**
    * The unique rule id separating this compositing rule from the others.
@@ -96,6 +102,22 @@ public class CompositingRule implements IRule, ITimeoutRule {
   private String area = null;
   
   /**
+   * If composite should be generated from scans or volumes.
+   */
+  private boolean scanBased = false;
+  
+  /**
+   * The recipients that are affected by this rule. Used
+   * for generating timeout message
+   */
+  private List<String> recipients = new ArrayList<String>();
+  
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(CompositingRule.class);
+
+  /**
    * @param catalog the catalog to set
    */
   protected void setCatalog(Catalog catalog) {
@@ -110,20 +132,19 @@ public class CompositingRule implements IRule, ITimeoutRule {
   }
   
   /**
-   * Should only be called by this package.
    * @param ruleid the ruleid to set
    */
-  void setRuleid(int ruleid) {
+  public void setRuleId(int ruleid) {
     this.ruleid = ruleid;
   }
 
   /**
    * @return the ruleid
    */
-  public int getRuleid() {
+  public int getRuleId() {
     return ruleid;
   }
-  
+
   /**
    * Sets the interval to be used. Must be a valid integer that
    * is greater than 0 and evenly dividable by 60. E.g.
@@ -156,7 +177,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
   /*
    * @return the timeout in seconds
    */
-  public int getTimeout(int timeout) {
+  public int getTimeout() {
     return this.timeout;
   }
   
@@ -196,13 +217,130 @@ public class CompositingRule implements IRule, ITimeoutRule {
     return TYPE;
   }
 
+
+  /**
+   * @param scanBased the scanBased to set
+   */
+  public void setScanBased(boolean scanBased) {
+    this.scanBased = scanBased;
+  }
+
+  /**
+   * @return the scanBased
+   */
+  public boolean isScanBased() {
+    return scanBased;
+  }
+
+  /**
+   * @param ruleUtil the ruleUtil to set
+   */
+  public void setRuleUtilities(IRuleUtilities ruleUtil) {
+    this.ruleUtil = ruleUtil;
+  }
+
+  /**
+   * @return the ruleUtil
+   */
+  public IRuleUtilities getRuleUtilities() {
+    return ruleUtil;
+  }
   /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
   @Override
   public synchronized IBltMessage handle(IBltMessage message) {
-    IBltMessage result = null;
+    logger.debug("handle(IBltMessage)");
     initialize();
+    
+    if (message instanceof BltDataMessage) {
+      File file = ((BltDataMessage)message).getFile();
+      String object = file.what_object();
+      if (object != null && object.equals("SCAN") && isScanBased()) {
+        return handleCompositeFromScans(message);
+      } else if (object != null && object.equals("PVOL") && !isScanBased()) {
+        return handleCompositeFromVolume(message);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Handles generation of a composite from a number of scans
+   * @param data the composite timer data
+   * @return a message or null if criterias not have been met.
+   */
+  protected IBltMessage handleCompositeFromScans(IBltMessage message) {
+    logger.debug("handleCompositeFromScans(IBltMessage)");
+
+    IBltMessage result = null;
+    List<CatalogEntry> prevAngles = null;
+    CompositeTimerData data = createTimerData(message);
+    if (data != null) {
+      TimeoutTask tt = timeoutManager.getRegisteredTask(data);
+      if (tt == null) {
+        DateTime prevDateTime = ruleUtil.createPrevNominalTime(data.getDateTime(), interval);
+        prevAngles = ruleUtil.fetchLowestSourceElevationAngle(prevDateTime, data.getDateTime(), sources);
+        data.setPreviousAngles(prevAngles);
+      } else {
+        data = (CompositeTimerData)tt.getData();
+      }
+    
+      result = createCompositeScanMessage(data);
+      if (result != null) {
+        if (tt != null) {
+          timeoutManager.unregister(tt.getId());
+        }
+      } else {
+        if (tt == null && timeout > 0) {
+          timeoutManager.register(this, timeout*1000, data);
+        }
+      }
+    }
+    
+    return result;
+  }
+
+
+  /**
+   * Creates a composite scan message if criterias are met.
+   * @param data the composite timer data
+   * @return a message if criterias are met, otherwise null
+   */
+  protected IBltMessage createCompositeScanMessage(CompositeTimerData data) {
+    logger.debug("createCompositeScanMessage(CompositeTimerData)");
+
+    DateTime nextTime = ruleUtil.createNextNominalTime(data.getDateTime(), interval);
+    List<CatalogEntry> currAngles = ruleUtil.fetchLowestSourceElevationAngle(data.getDateTime(), nextTime, sources);
+    List<CatalogEntry> prevAngles = data.getPreviousAngles();
+    
+    for (String src : sources) {
+      CatalogEntry pentry = ruleUtil.getEntryBySource(src, prevAngles);
+      CatalogEntry entry = ruleUtil.getEntryBySource(src, currAngles);
+      if (pentry != null && entry != null) {
+        double pelangle = (Double)pentry.getAttribute("where/elangle");
+        double elangle = (Double)entry.getAttribute("where/elangle");
+        if (pelangle < elangle) {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    }
+
+    return createMessage(data.getDateTime(), currAngles);
+  }
+
+  /**
+   * Determines if a composite should be generated from a number
+   * of volumes or not.
+   * @param data the composite timer data
+   * @return the message or null if criterias not have been met.
+   */
+  protected IBltMessage handleCompositeFromVolume(IBltMessage message) {
+    logger.debug("handleCompositeFromVolume(IBltMessage)");
+
+    IBltMessage result = null;
     CompositeTimerData data = createTimerData(message);
     if (data != null) {
       List<CatalogEntry> entries = fetchEntries(data.getDateTime());
@@ -222,20 +360,31 @@ public class CompositingRule implements IRule, ITimeoutRule {
     }
     return result;
   }
-
+  
   /**
    * @see eu.baltrad.beast.rules.timer.ITimeoutRule#timeout(long, int, Object)
    */
   @Override
   public synchronized IBltMessage timeout(long id, int why, Object data) {
-    IBltMessage result = null;
+    logger.debug("timeout("+id+","+why+"," + data + ")");
     initialize();
     CompositeTimerData ctd = (CompositeTimerData)data;
     if (ctd != null) {
-      List<CatalogEntry> entries = fetchEntries(ctd.getDateTime());
-      result = createMessage(ctd.getDateTime(), entries);
+      List<CatalogEntry> entries = null;
+      
+      if (ctd.isScanBased()) {
+        DateTime nextTime = ruleUtil.createNextNominalTime(ctd.getDateTime(), interval);
+        entries = ruleUtil.fetchLowestSourceElevationAngle(ctd.getDateTime(), nextTime, sources);
+      } else {
+        entries = fetchEntries(ctd.getDateTime());
+      }
+      IBltMessage msgtosend = createMessage(ctd.getDateTime(), entries);
+      BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
+      mrmsg.setDestinations(recipients);
+      mrmsg.setMessage(msgtosend);
+      return mrmsg;
     }
-    return result;
+    return null;
   }
   
   /**
@@ -244,13 +393,18 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @throws RuntimeException if the nessecary components not could be aquired
    */
   protected synchronized void initialize() {
+    logger.debug("initialize()");
+    
     if (catalog == null) {
       catalog = ManagerContext.getCatalog();
     }
     if (timeoutManager == null) {
       timeoutManager = ManagerContext.getTimeoutManager();
     }
-    if (catalog == null || timeoutManager == null) {
+    if (ruleUtil == null) {
+      ruleUtil = ManagerContext.getUtilities();
+    }
+    if (catalog == null || timeoutManager == null || ruleUtil == null) {
       throw new RuntimeException();
     }
   }
@@ -261,14 +415,18 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a compositing timer data or null if not possible
    */
   protected CompositeTimerData createTimerData(IBltMessage message) {
+    logger.debug("createTimerData(IBltMessage)");
     CompositeTimerData result = null;
     if (message instanceof BltDataMessage) {
       File file = ((BltDataMessage)message).getFile();
-      if (file.what_object().equals("PVOL")) {
-        Time t = file.what_time();
-        Date d = file.what_date();
-        DateTime nominalTime = getNominalTime(d, t);
+      String object = file.what_object();
+      Time t = file.what_time();
+      Date d = file.what_date();
+      DateTime nominalTime = ruleUtil.createNominalTime(d, t, interval);
+      if (!isScanBased() && object.equals("PVOL")) {
         result = new CompositeTimerData(ruleid, nominalTime);
+      } else if (isScanBased() && object.equals("SCAN")) {
+        result = new CompositeTimerData(ruleid, nominalTime, true);
       }
     }
     
@@ -282,7 +440,8 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return true if the criterias has been met.
    */
   protected boolean areCriteriasMet(List<CatalogEntry> entries) {
-    List<String> es = getSourcesFromEntries(entries);
+    logger.debug("areCriteriasMet(List<CatalogEntry>)");
+    List<String> es = ruleUtil.getSourcesFromEntries(entries);
     for (String s : sources) {
       if (!es.contains(s)) {
         return false;
@@ -292,69 +451,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
   }
   
   /**
-   * Creates a list of sources from the entries
-   * @param entries a list of entries
-   * @return a list of sources
-   */
-  protected List<String> getSourcesFromEntries(List<CatalogEntry> entries) {
-    List<String> result = new ArrayList<String>();
-    for (CatalogEntry entry : entries) {
-      result.add(entry.getSource());
-    }
-    return result;
-  }
-  
-  /**
-   * Creates a list of files from the entries. If the list contains more than
-   * one entry from the same source, the one nearest in time to the nominal time 
-   * will be used.
-   * @param entries a list of entries
-   * @return a list of files
-   */
-  protected List<String> getFilesFromEntries(DateTime nominalDT, List<CatalogEntry> entries) {
-    Map<String, CatalogEntry> entryMap = new HashMap<String, CatalogEntry>();
-    GregorianCalendar nominalTimeCalendar = createCalendar(nominalDT);
-    List<String> result = new ArrayList<String>();
-    
-    for (CatalogEntry entry: entries) {
-      String src = entry.getSource();
-      if (sources.contains(src)) {
-        if (!entryMap.containsKey(src)) {
-          entryMap.put(src, entry);
-        } else {
-          GregorianCalendar entryCalendar = createCalendar(entry.getDateTime());
-          CatalogEntry mapEntry = entryMap.get(src);
-          GregorianCalendar mapEntryCalendar = createCalendar(mapEntry.getDateTime());
-        
-          // If the entrys time is closer to the nominal time than the existing one, replace it
-          if (Math.abs(entryCalendar.compareTo(nominalTimeCalendar)) < Math.abs(mapEntryCalendar.compareTo(nominalTimeCalendar))) {
-            entryMap.put(src, entry);
-          }
-        }
-      }
-    }
-    
-    for (CatalogEntry entry : entryMap.values()) {
-      result.add(entry.getPath());
-    }
-
-    return result;
-  }
-  
-  /**
-   * Creates a gregorian calendar with the specified date/time
-   * @param date the date
-   * @param time the time
-   * @return a gregorian calendar
-   */
-  protected GregorianCalendar createCalendar(DateTime dt) {
-    GregorianCalendar c = new GregorianCalendar();
-    Date date = dt.date();
-    Time time = dt.time();
-    c.set(date.year(), date.month()-1, date.day(), time.hour(), time.minute(), time.second());
-    return c;
-  }
-  /**
    * Creates a message if all nessecary entries are there
    * @param date the date
    * @param time the time
@@ -362,13 +458,15 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a message if criterias are fullfilled, otherwise null
    */
   protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
+    logger.debug("createMessage(DateTime, List<CatalogEntry>)");
+
     BltGenerateMessage result = new BltGenerateMessage();
     Date date = nominalDT.date();
     Time time = nominalDT.time();
     
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
 
-    result.setFiles(getFilesFromEntries(nominalDT, entries).toArray(new String[0]));
+    result.setFiles(ruleUtil.getFilesFromEntries(nominalDT, sources, entries).toArray(new String[0]));
 
     String[] args = new String[3];
     args[0] = "--area="+area;
@@ -376,7 +474,9 @@ public class CompositingRule implements IRule, ITimeoutRule {
     args[2] = "--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString();
     
     result.setArguments(args);
-    
+
+    logger.debug("createMessage: Returning algorithm " + result.getAlgorithm());
+
     return result;
   }
   
@@ -387,6 +487,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a list of entries
    */
   protected List<CatalogEntry> fetchEntries(DateTime nominalTime) {
+    logger.debug("fetchEntries(DateTime)");
     TimeIntervalFilter filter = createFilter(nominalTime);
     List<CatalogEntry> entries = catalog.fetch(filter);
     return entries;
@@ -399,41 +500,20 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @returns a TimeIntervalFilter for polar volumes  
    */
   protected TimeIntervalFilter createFilter(DateTime nominalDT) {
+    logger.debug("createFilter(DateTime)");
     TimeIntervalFilter filter = new TimeIntervalFilter();
     filter.setObject("PVOL");
-    DateTime stopDT = getStop(nominalDT);
+    DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
     filter.setStartDateTime(nominalDT);
     filter.setStopDateTime(stopDT);
     return filter;
   }
 
   /**
-   * Returns the nominal time for the specified time, i.e.
-   * the start time period
-   * @param d the date
-   * @param t the time
-   * @return a nominal time
+   * @see eu.baltrad.beast.rules.IRuleRecipientAware#setRecipients(java.util.List)
    */
-  protected DateTime getNominalTime(Date d, Time t) {
-    int period = t.minute() / interval;
-    return new DateTime(d, new Time(t.hour(), period*interval, 0));
-  }
-  
-  /**
-   * Returns the stop time
-   * @param dt the date/time to determine stop dt from
-   * @return the stop date/time
-   */
-  protected DateTime getStop(DateTime dt) {
-    Date d = dt.date();
-    Time t = dt.time();
-    GregorianCalendar cal = new GregorianCalendar();
-    cal.set(d.year(), d.month() - 1, d.day(), t.hour(), t.minute(), t.second());
-    int period = t.minute() / interval;
-    int minute = (period + 1) * interval;
-    cal.set(Calendar.MINUTE, minute);
-    Date nd = new Date(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
-    Time nt = new Time(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
-    return new DateTime(nd, nt);
+  @Override
+  public void setRecipients(List<String> recipients) {
+    this.recipients = recipients;
   }
 }

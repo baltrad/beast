@@ -293,7 +293,7 @@ public class VolumeRuleManagerTest extends TestCase {
     
     rsControl.verify();
     methodControl.verify();
-    assertEquals(10, result.getRuleid());
+    assertEquals(10, result.getRuleId());
     assertEquals(6, result.getInterval());
     assertEquals(15, result.getTimeout());
     assertEquals(false, result.isAscending());

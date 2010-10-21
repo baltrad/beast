@@ -127,10 +127,12 @@ public class CompositingRuleManagerTest extends TestCase {
     rule.setArea("seang");
     rule.setInterval(12);
     rule.setSources(sources);
+    rule.setTimeout(20);
+    rule.setScanBased(true);
     
     jdbc.update(
-        "insert into beast_composite_rules (rule_id, area, interval)"+
-        " values (?,?,?)", new Object[]{13, "seang", 12});
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan)"+
+        " values (?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     
@@ -150,7 +152,7 @@ public class CompositingRuleManagerTest extends TestCase {
     
     verify();
     methodsControl.verify();
-    assertEquals(13, rule.getRuleid());
+    assertEquals(13, rule.getRuleId());
   }
   
   public void testUpdate() throws Exception {
@@ -162,9 +164,11 @@ public class CompositingRuleManagerTest extends TestCase {
     rule.setArea("seang");
     rule.setInterval(12);
     rule.setSources(sources);
-
-    jdbc.update("update beast_composite_rules set area=?, interval=? where rule_id=?",
-        new Object[]{"seang", 12, 13});
+    rule.setTimeout(20);
+    rule.setScanBased(true);
+    
+    jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=? where rule_id=?",
+        new Object[]{"seang", 12, 20, true, 13});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     
@@ -184,7 +188,7 @@ public class CompositingRuleManagerTest extends TestCase {
     
     verify();
     methodsControl.verify();
-    assertEquals(13, rule.getRuleid());
+    assertEquals(13, rule.getRuleId());
   }
   
   public void testStoreSources() throws Exception {
@@ -270,6 +274,10 @@ public class CompositingRuleManagerTest extends TestCase {
     rsControl.setReturnValue("abc");
     rs.getInt("interval");
     rsControl.setReturnValue(15);
+    rs.getInt("timeout");
+    rsControl.setReturnValue(20);
+    rs.getBoolean("byscan");
+    rsControl.setReturnValue(true);
     method.getSources(10);
     methodControl.setReturnValue(sources);
     
@@ -291,6 +299,8 @@ public class CompositingRuleManagerTest extends TestCase {
     assertEquals("abc", result.getArea());
     assertEquals(15, result.getInterval());
     assertSame(sources, result.getSources());
-    assertEquals(10, result.getRuleid());
+    assertEquals(10, result.getRuleId());
+    assertEquals(20, result.getTimeout());
+    assertEquals(true, result.isScanBased());
   }  
 }

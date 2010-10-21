@@ -18,6 +18,10 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.composite;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.fc.DateTime;
 
 /**
@@ -36,6 +40,16 @@ public class CompositeTimerData {
   private int ruleid = -1;
   
   /**
+   * If composite should be generated from scans or volumes.
+   */
+  private boolean scanBased = false;
+  
+  /**
+   * Contains the previous time periods angles.
+   */
+  private List<CatalogEntry> prevAngles = new ArrayList<CatalogEntry>();
+  
+  /**
    * Constructor
    * @param dt the date time
    * @throws IllegalArgumentException if dt == null
@@ -49,7 +63,19 @@ public class CompositeTimerData {
   }
   
   /**
+   * Constructor
+   * @param ruleid the rule id
+   * @param dt the date time
+   * @param scanBased if scan based composite or not
+   */
+  public CompositeTimerData(int ruleid, DateTime dt, boolean scanBased) {
+    this(ruleid, dt);
+    this.scanBased = scanBased;
+  }
+  
+  /**
    * @see Object#equals(Object)
+   * Compares equality on date/time/ruleid and class
    */
   public boolean equals(Object data) {
     boolean result = false;
@@ -82,5 +108,36 @@ public class CompositeTimerData {
    */
   public int getRuleId() {
     return this.ruleid;
+  }
+
+  /**
+   * @param scanBased the scanBased to set
+   */
+  public void setScanBased(boolean scanBased) {
+    this.scanBased = scanBased;
+  }
+
+  /**
+   * @return the scanBased
+   */
+  public boolean isScanBased() {
+    return scanBased;
+  }
+
+  /**
+   * @param prevAngles the prevAngles to set
+   */
+  public void setPreviousAngles(List<CatalogEntry> prevAngles) {
+    if (prevAngles == null) {
+      throw new NullPointerException("angles must not be null");
+    }
+    this.prevAngles = prevAngles;
+  }
+
+  /**
+   * @return the prevAngles
+   */
+  public List<CatalogEntry> getPreviousAngles() {
+    return prevAngles;
   }
 }

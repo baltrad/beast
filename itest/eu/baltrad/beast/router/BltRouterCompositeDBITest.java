@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.router.impl.BltRouter;
+import eu.baltrad.beast.rules.composite.CompositingRule;
 import junit.framework.TestCase;
 
 /**
@@ -52,5 +53,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals("admin", def.getName());
     assertEquals("Karl", def.getAuthor());
     assertEquals("blt_composite", def.getRuleType());
+    assertEquals(20, ((CompositingRule)def.getRule()).getTimeout());
+    assertEquals(true, ((CompositingRule)def.getRule()).isScanBased());
   }
 }

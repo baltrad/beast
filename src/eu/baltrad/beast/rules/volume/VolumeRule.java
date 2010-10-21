@@ -32,6 +32,7 @@ import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
@@ -105,6 +106,12 @@ public class VolumeRule implements IRule, ITimeoutRule {
   private List<String> sources = new ArrayList<String>();
   
   /**
+   * The recipients that are affected by this rule. Used
+   * for generating timeout message
+   */
+  private List<String> recipients = new ArrayList<String>();
+
+  /**
    * @param catalog the catalog to set
    */
   protected void setCatalog(Catalog catalog) {
@@ -119,17 +126,16 @@ public class VolumeRule implements IRule, ITimeoutRule {
   }
   
   /**
-   * Should only be called by this package.
    * @param ruleid the ruleid to set
    */
-  void setRuleid(int ruleid) {
+  public void setRuleId(int ruleid) {
     this.ruleid = ruleid;
   }
 
   /**
    * @return the ruleid
    */
-  public int getRuleid() {
+  public int getRuleId() {
     return ruleid;
   }
 
@@ -276,14 +282,17 @@ public class VolumeRule implements IRule, ITimeoutRule {
    */
   @Override
   public IBltMessage timeout(long id, int why, Object data) {
-    IBltMessage result = null;
     initialize();
     VolumeTimerData vtd = (VolumeTimerData)data;
     if (vtd != null) {
       List<CatalogEntry> entries = fetchAllCurrentEntries(vtd.getDateTime(), vtd.getSource());
-      result = createMessage(vtd.getDateTime(), entries);
+      IBltMessage msgtosend = createMessage(vtd.getDateTime(), entries);
+      BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
+      mrmsg.setDestinations(recipients);
+      mrmsg.setMessage(msgtosend);
+      return mrmsg;
     }
-    return result;
+    return null;
   }
 
   /**
@@ -510,5 +519,13 @@ public class VolumeRule implements IRule, ITimeoutRule {
     if (catalog == null || timeoutManager == null) {
       throw new RuntimeException();
     }
+  }
+
+  /**
+   * @see eu.baltrad.beast.rules.IRuleRecipientAware#setRecipients(java.util.List)
+   */
+  @Override
+  public void setRecipients(List<String> recipients) {
+    this.recipients = recipients;
   }
 }

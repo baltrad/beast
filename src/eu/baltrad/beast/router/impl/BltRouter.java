@@ -40,7 +40,9 @@ import eu.baltrad.beast.router.IRouter;
 import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.IRuleIdAware;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.IRuleRecipientAware;
 import eu.baltrad.beast.rules.RuleException;
 
 /**
@@ -338,6 +340,12 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
           "select rule_id from beast_router_rules where name=?",
           new Object[]{def.getName()});
       manager.store(ruleid, rule);
+      if (rule instanceof IRuleIdAware) {
+        ((IRuleIdAware)rule).setRuleId(ruleid);
+      }
+      if (rule instanceof IRuleRecipientAware) {
+        ((IRuleRecipientAware)rule).setRecipients(def.getRecipients());
+      }
       storeRecipients(ruleid, def.getRecipients());
     } catch (Throwable t) {
       throw new RuleException("Failed to add router rule definition: " + t.getMessage(), t);
@@ -362,6 +370,13 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
       template.update("update beast_router_rules set type=?, author=?, description=?, active=? where rule_id=?", 
           new Object[]{type, def.getAuthor(), def.getDescription(), def.isActive(), rule_id});
       manager.delete(rule_id);
+      
+      if (rule instanceof IRuleIdAware) {
+        ((IRuleIdAware)rule).setRuleId(rule_id);
+      }
+      if (rule instanceof IRuleRecipientAware) {
+        ((IRuleRecipientAware)rule).setRecipients(def.getRecipients());
+      }
       
       // store the new rule
       ruleManagers.get(def.getRule().getType()).store(rule_id, rule);
@@ -436,15 +451,22 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
         rd.setAuthor(author);
         rd.setDescription(descr);
         rd.setActive(active);
+        List<String> recipients = getRecipients(rule_id);
         try {
           IRuleManager manager = ruleManagers.get(type);
           if (manager != null) {
             rd.setRule(manager.load(rule_id));
+            if (rd.getRule() instanceof IRuleIdAware) {
+              ((IRuleIdAware)rd.getRule()).setRuleId(rule_id);
+            }
+            if (rd.getRule() instanceof IRuleRecipientAware) {
+              ((IRuleRecipientAware)rd.getRule()).setRecipients(recipients);
+            }
           }
         } catch (RuleException re) {
           re.printStackTrace();
         }
-        rd.setRecipients(getRecipients(rule_id));
+        rd.setRecipients(recipients);
         return rd;
       }
     };

@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.timer;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import eu.baltrad.beast.ManagerContext;
@@ -145,6 +147,10 @@ public class TimeoutManagerITest extends TestCase {
         ManagerContext.getTimeoutManager().cancel(ruleid);
       }
       return null;
+    }
+    
+    @Override
+    public void setRecipients(List<String> recipients) {
     }
   };
   

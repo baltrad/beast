@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.timer;
 
+import java.util.List;
+
 import eu.baltrad.beast.message.IBltMessage;
 import junit.framework.TestCase;
 
@@ -40,6 +42,7 @@ public class TimeoutTaskFactoryTest extends TestCase {
   public void testCreate_noListener() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
+      public void setRecipients(List<String> recipients) {}
     };
     try {
       classUnderTest.create(rule, 1, null, null);
@@ -52,6 +55,7 @@ public class TimeoutTaskFactoryTest extends TestCase {
   public void testCreate_2() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
+      public void setRecipients(List<String> recipients) {}
     };
     ITimeoutTaskListener listener = new ITimeoutTaskListener() {
       public void timeoutNotification(long id, ITimeoutRule rule, Object data) {}

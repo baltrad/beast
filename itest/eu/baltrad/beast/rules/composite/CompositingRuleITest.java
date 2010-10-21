@@ -26,11 +26,14 @@ import junit.framework.TestCase;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
+import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.oh5.File;
 
 /**
@@ -43,6 +46,7 @@ public class CompositingRuleITest extends TestCase {
   private CompositingRule classUnderTest = null;
   private BeastDBTestHelper helper = null;
   private TimeoutManager timeoutManager = null;
+  private IRuleUtilities ruleutil = null;
   
   private static String[] FIXTURES = {
     "fixtures/pvol_seang_20090501T110100Z.h5",
@@ -52,10 +56,42 @@ public class CompositingRuleITest extends TestCase {
     "fixtures/pvol_sease_20090501T111600Z.h5",
     "fixtures/pvol_sehud_20090501T110100Z.h5"};
   
+  private static String[] SCAN_DATA_0 = {
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_seang_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_searl_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_sease_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_sehud_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_sekir_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_sekkr_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_selek_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_selul_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_seosu_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_seovi_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_sevar_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080000_sevil_000000.h5"
+  };
+
+  private static String[] SCAN_DATA_1 = {
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_seang_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_searl_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_sease_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_sehud_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_sekir_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_sekkr_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_selek_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_selul_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_seosu_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_seovi_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_sevar_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_sevil_000000.h5"
+  };
+  
+  
   public CompositingRuleITest(String name) {
     super(name);
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");
+    ruleutil = (IRuleUtilities)context.getBean("ruleutil");
     timeoutManager = (TimeoutManager)context.getBean("timeoutmanager");
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.createBaltradDbPath();
@@ -66,8 +102,13 @@ public class CompositingRuleITest extends TestCase {
 
     classUnderTest = new CompositingRule();
     classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(ruleutil);
     classUnderTest.setTimeoutManager(timeoutManager);
     classUnderTest.setTimeout(0); // no timeouts
+    
+    for (String s: SCAN_DATA_0) {
+      catalog.getCatalog().catalog(getFilePath(s));
+    }
   }
   
   public void tearDown() throws Exception {
@@ -88,7 +129,7 @@ public class CompositingRuleITest extends TestCase {
     return false;
   }
   
-  public void testHandle() throws Exception {
+  public void testHandleVolume() throws Exception {
     List<String> sources = new ArrayList<String>();
     sources.add("seang");
     sources.add("searl");
@@ -121,6 +162,48 @@ public class CompositingRuleITest extends TestCase {
     assertTrue(arrayContains(files, helper.getBaltradDbPth() + "/Z_PVOL_C_ESWI_20090501110100_searl_000000.h5"));
     assertTrue(arrayContains(files, helper.getBaltradDbPth() + "/Z_PVOL_C_ESWI_20090501110100_sehud_000000.h5"));
     assertTrue(arrayContains(files, helper.getBaltradDbPth() + "/Z_PVOL_C_ESWI_20090501110100_seang_000000.h5"));
+  }
+  
+  public void testHandleScans() throws Exception {
+    File f = null;
+    IBltMessage result = null;
+    List<String> sources = new ArrayList<String>();
+    sources.add("seang");
+    sources.add("searl");
+    sources.add("sease");
+    
+    classUnderTest.setArea("baltrad_composite");
+    classUnderTest.setInterval(5);
+    classUnderTest.setSources(sources);
+    classUnderTest.setTimeout(10000);
+    classUnderTest.setScanBased(true);
+    
+    f = catalog.getCatalog().catalog(getFilePath(SCAN_DATA_1[0]));
+    result = classUnderTest.handle(createDataMessage(f));
+    assertNull(result);
+    
+    f = catalog.getCatalog().catalog(getFilePath(SCAN_DATA_1[1]));
+    result = classUnderTest.handle(createDataMessage(f));
+    assertNull(result);
+    
+    f = catalog.getCatalog().catalog(getFilePath(SCAN_DATA_1[2]));
+    result = classUnderTest.handle(createDataMessage(f));
+    assertNotNull(result);
+    
+    BltGenerateMessage msg = (BltGenerateMessage)result;
+    assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
+  }
+  
+  public void XtestLowest() {
+    DateTime start = new DateTime(2010,10,16,8,0,0);
+    DateTime stop = new DateTime(2010,10,16,8,5,0);
+    List<String> sources = new ArrayList<String>();
+    sources.add("seang");
+    sources.add("searl");
+    sources.add("sease");
+    
+    List<CatalogEntry> entries = ruleutil.fetchLowestSourceElevationAngle(start, stop, sources);
+    System.out.println("ENTRIES: " + entries.size());
   }
   
   protected BltDataMessage createDataMessage(File f) {

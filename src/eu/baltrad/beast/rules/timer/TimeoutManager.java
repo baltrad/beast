@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 
 import eu.baltrad.beast.manager.IBltMessageManager;
@@ -57,6 +59,11 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    */
   protected Map<Long, TimeoutTask> tasks = null;
   
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(TimeoutManager.class);
+
   /**
    * Default constructor
    */
@@ -94,6 +101,7 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @return true if found otherwise false
    */
   public synchronized boolean isRegistered(Object data) {
+    logger.debug("isRegistered(Object)");
     if (data != null) {
       for (TimeoutTask t : tasks.values()) {
         Object o = t.getData();
@@ -111,6 +119,7 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @return the object if found otherwise null
    */
   public synchronized TimeoutTask getRegisteredTask(Object data) {
+    logger.debug("getRegisteredTask(Object)");
     if (data != null) {
       for (TimeoutTask t : tasks.values()) {
         Object o = t.getData();
@@ -130,10 +139,12 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @return a unique id
    */
   public synchronized long register(ITimeoutRule rule, long delay, Object data) {
+    logger.debug("register(ITimeoutRule, long, Object)");
     long id = newID();
     TimeoutTask task = factory.create(rule, id, data, this);
     tasks.put(id, task);
     timer.schedule(task, delay);
+    logger.debug("registered id: " + id);
     return id;
   }
   
@@ -142,6 +153,8 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @param id the id
    */
   public synchronized void cancel(long id) {
+    logger.debug("cancel(" + id + ")");
+
     TimeoutTask task = tasks.get(id);
     if (task != null) {
       task.cancel();
@@ -153,6 +166,7 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @param id the id
    */
   public synchronized void unregister(long id) {
+    logger.debug("unregister(" + id + ")");
     TimeoutTask task = tasks.get(id);
     if (task != null) {
       task.stop();
@@ -181,9 +195,11 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    */
   @Override
   public synchronized void cancelNotification(long id, ITimeoutRule rule, Object data) {
+    logger.debug("cancelNotification(" + id + ")");
     tasks.remove(id);
     IBltMessage message = rule.timeout(id, ITimeoutRule.CANCELLED, data);
     if (message != null) {
+      logger.debug("messageManager.manage(message)");
       messageManager.manage(message);
     }
   }
@@ -193,6 +209,7 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    */
   @Override
   public synchronized void timeoutNotification(long id, ITimeoutRule rule, Object data) {
+    logger.debug("timeoutNotification(" + id + ")");
     tasks.remove(id);
     IBltMessage message = rule.timeout(id, ITimeoutRule.TIMEOUT, data);
     if (message != null) {
@@ -205,6 +222,7 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    */
   @Override
   public void destroy() throws Exception {
+    logger.debug("destroy()");
     if (this.timer != null) {
       this.timer.cancel();
     }

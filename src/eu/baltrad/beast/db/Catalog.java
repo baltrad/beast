@@ -68,7 +68,7 @@ public class Catalog implements InitializingBean {
   }
   
   /**
-   * Returns a list of entries by applying the provided filter
+   * Returns a list of entries by applying the provided filter.
    * @param filter
    * @return
    */
@@ -82,12 +82,6 @@ public class Catalog implements InitializingBean {
     q.fetch(xpr.attribute("what/date"));
     q.fetch(xpr.attribute("what/time"));
     q.fetch(xpr.attribute("what/object"));
-    
-    if (attributes != null) {
-      for (String a : attributes) {
-        q.fetch(xpr.attribute(a));
-      }
-    }
     
     filter.apply(q);
     

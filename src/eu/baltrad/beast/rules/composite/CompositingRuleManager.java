@@ -22,6 +22,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -37,6 +39,11 @@ public class CompositingRuleManager implements IRuleManager {
    * The jdbc template
    */
   private SimpleJdbcOperations template = null;
+
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(CompositingRuleManager.class);
   
   /**
    * @param template the jdbc template to set
@@ -50,6 +57,7 @@ public class CompositingRuleManager implements IRuleManager {
    */
   @Override
   public void delete(int ruleId) {
+    logger.debug("delete("+ruleId+")");
     storeSources(ruleId, null);
     template.update("delete from beast_composite_rules where rule_id=?",
         new Object[]{ruleId});
@@ -60,6 +68,7 @@ public class CompositingRuleManager implements IRuleManager {
    */
   @Override
   public IRule load(int ruleId) {
+    logger.debug("load("+ruleId+")");
     return template.queryForObject(
         "select * from beast_composite_rules where rule_id=?",
         getCompsiteRuleMapper(),
@@ -71,15 +80,19 @@ public class CompositingRuleManager implements IRuleManager {
    */
   @Override
   public void store(int ruleId, IRule rule) {
+    logger.debug("store("+ruleId+", IRule)");
+
     CompositingRule crule = (CompositingRule)rule;
     String area = crule.getArea();
     int interval = crule.getInterval();
+    int timeout = crule.getTimeout();
+    boolean byscan = crule.isScanBased();
     
     template.update(
-        "insert into beast_composite_rules (rule_id, area, interval)"+
-        " values (?,?,?)", new Object[]{ruleId, area, interval});
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan)"+
+        " values (?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout,byscan});
     storeSources(ruleId, crule.getSources());
-    crule.setRuleid(ruleId);
+    crule.setRuleId(ruleId);
   }
 
   /**
@@ -87,12 +100,14 @@ public class CompositingRuleManager implements IRuleManager {
    */
   @Override
   public void update(int ruleId, IRule rule) {
+    logger.debug("update("+ruleId+", IRule)");
+
     CompositingRule crule = (CompositingRule)rule;
     template.update(
-        "update beast_composite_rules set area=?, interval=? where rule_id=?",
-        new Object[]{crule.getArea(), crule.getInterval(), ruleId});
+        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=? where rule_id=?",
+        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), ruleId});
     storeSources(ruleId, crule.getSources());
-    crule.setRuleid(ruleId);
+    crule.setRuleId(ruleId);
   }
   
   /**
@@ -102,6 +117,7 @@ public class CompositingRuleManager implements IRuleManager {
    * @param sources
    */
   protected void storeSources(int rule_id, List<String> sources) {
+    logger.debug("storeSources("+rule_id+", List<String>)");
     template.update("delete from beast_composite_sources where rule_id=?",
         new Object[]{rule_id});
     if (sources != null) {
@@ -118,6 +134,7 @@ public class CompositingRuleManager implements IRuleManager {
    * @return a list of sources
    */
   protected List<String> getSources(int rule_id) {
+    logger.debug("getSources("+rule_id+")");
     return template.query(
         "select source from beast_composite_sources where rule_id=?",
         getSourceMapper(),
@@ -128,15 +145,18 @@ public class CompositingRuleManager implements IRuleManager {
    * @return the CompositingRule mapper
    */
   protected ParameterizedRowMapper<CompositingRule> getCompsiteRuleMapper() {
+    logger.debug("getCompsiteRuleMapper()");
     return new ParameterizedRowMapper<CompositingRule>() {
       @Override
       public CompositingRule mapRow(ResultSet rs, int rnum)
           throws SQLException {
         CompositingRule result = new CompositingRule();
         int rule_id = rs.getInt("rule_id");
-        result.setRuleid(rule_id);
+        result.setRuleId(rule_id);
         result.setArea(rs.getString("area"));
         result.setInterval(rs.getInt("interval"));
+        result.setTimeout(rs.getInt("timeout"));
+        result.setScanBased(rs.getBoolean("byscan"));
         result.setSources(getSources(rule_id));
         return result;
       }
@@ -147,6 +167,7 @@ public class CompositingRuleManager implements IRuleManager {
    * @return the source mapper
    */
   protected  ParameterizedRowMapper<String> getSourceMapper() { 
+    logger.debug("getSourceMapper()");
     return new ParameterizedRowMapper<String>() {
       public String mapRow(ResultSet rs, int rowNum) throws SQLException {
         return rs.getString("source");

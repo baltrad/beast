@@ -32,7 +32,9 @@ create table beast_groovy_rules (
 create table beast_composite_rules (
   rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
   area text NOT NULL,
-  interval integer NOT NULL
+  interval integer NOT NULL,
+  timeout integer NOT NULL,
+  byscan boolean NOT NULL
 );
 
 create table beast_composite_sources (

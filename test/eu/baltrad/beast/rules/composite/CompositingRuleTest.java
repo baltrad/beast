@@ -33,9 +33,10 @@ import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
-import eu.baltrad.beast.rules.timer.TimeoutTask;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
@@ -47,6 +48,8 @@ import eu.baltrad.fc.oh5.File;
 public class CompositingRuleTest extends TestCase {
   private MockControl catalogControl = null;
   private Catalog catalog = null;
+  private MockControl ruleUtilControl = null;
+  private IRuleUtilities ruleUtil = null;
   private CompositingRule classUnderTest = null;
   private MockControl timeoutControl = null;
   private TimeoutManager timeoutManager = null;
@@ -57,7 +60,6 @@ public class CompositingRuleTest extends TestCase {
     public TimeIntervalFilter createFilter(DateTime nominalTime);
     public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
     public boolean areCriteriasMet(List<CatalogEntry> entries);
-    public DateTime getNominalTime(Date d, Time t);
     public void initialize();
   };
   
@@ -66,9 +68,12 @@ public class CompositingRuleTest extends TestCase {
     catalog = (Catalog)catalogControl.getMock();
     timeoutControl = MockClassControl.createControl(TimeoutManager.class);
     timeoutManager = (TimeoutManager)timeoutControl.getMock();
+    ruleUtilControl = MockClassControl.createControl(IRuleUtilities.class);
+    ruleUtil = (IRuleUtilities)ruleUtilControl.getMock();
     classUnderTest = new CompositingRule();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setRuleUtilities(ruleUtil);
   }
   
   protected void tearDown() throws Exception {
@@ -80,16 +85,18 @@ public class CompositingRuleTest extends TestCase {
   protected void replay() {
     catalogControl.replay();
     timeoutControl.replay();
+    ruleUtilControl.replay();
   }
   
   protected void verify() {
     catalogControl.verify();
     timeoutControl.verify();
+    ruleUtilControl.verify();
   }
   
   public void testSetGetRuleId() throws Exception {
-    classUnderTest.setRuleid(103);
-    assertEquals(103, classUnderTest.getRuleid());
+    classUnderTest.setRuleId(103);
+    assertEquals(103, classUnderTest.getRuleId());
   }
   
   public void testSetInterval() throws Exception {
@@ -114,170 +121,6 @@ public class CompositingRuleTest extends TestCase {
   public void testGetType() {
     assertEquals("blt_composite", classUnderTest.getType());
   }
-  
-  public void testHandle() throws Exception {
-    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
-    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
-
-    IBltMessage message = new IBltMessage() {
-    };
-    IBltMessage resultMessage = new IBltMessage() {
-    };
-    DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
-    CompositeTimerData ctd = new CompositeTimerData(15, dt);
-    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    TimeoutTask tt = new TimeoutTask();
-    tt.setId(10);
-    methods.initialize();
-    methods.createTimerData(message);
-    methodsControl.setReturnValue(ctd);
-    methods.fetchEntries(dt);
-    methodsControl.setReturnValue(entries);
-    timeoutManager.getRegisteredTask(ctd);
-    timeoutControl.setReturnValue(tt);
-    methods.areCriteriasMet(entries);
-    methodsControl.setReturnValue(true);
-    methods.createMessage(dt, entries);
-    methodsControl.setReturnValue(resultMessage);
-    timeoutManager.unregister(10);
-    
-    classUnderTest = new CompositingRule() {
-      protected void initialize() {
-        methods.initialize();
-      }
-      protected CompositeTimerData createTimerData(IBltMessage m) {
-        return methods.createTimerData(m);
-      }
-      protected List<CatalogEntry> fetchEntries(DateTime nt) {
-        return methods.fetchEntries(nt);
-      }
-      protected boolean areCriteriasMet(List<CatalogEntry> e) {
-        return methods.areCriteriasMet(e);
-      }
-      protected IBltMessage createMessage(DateTime dt, List<CatalogEntry> e) {
-        return methods.createMessage(dt, e);
-      }
-    };
-    classUnderTest.setCatalog(catalog);
-    classUnderTest.setTimeoutManager(timeoutManager);
-    
-    replay();
-    methodsControl.replay();
-    
-    IBltMessage result = classUnderTest.handle(message);
-    
-    verify();
-    methodsControl.verify();
-    assertSame(resultMessage, result);
-  }
-
-  public void testHandle_CriteriasNotFulfilled() throws Exception {
-    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
-    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
-
-    IBltMessage message = new IBltMessage() {
-    };
-    DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
-    CompositeTimerData ctd = new CompositeTimerData(15, dt);
-    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    TimeoutTask tt = new TimeoutTask();
-    tt.setId(10);
-    methods.initialize();
-    methods.createTimerData(message);
-    methodsControl.setReturnValue(ctd);
-    methods.fetchEntries(dt);
-    methodsControl.setReturnValue(entries);
-    timeoutManager.getRegisteredTask(ctd);
-    timeoutControl.setReturnValue(tt);
-    methods.areCriteriasMet(entries);
-    methodsControl.setReturnValue(false);
-    
-    classUnderTest = new CompositingRule() {
-      protected void initialize() {
-        methods.initialize();
-      }
-      protected CompositeTimerData createTimerData(IBltMessage m) {
-        return methods.createTimerData(m);
-      }
-      protected List<CatalogEntry> fetchEntries(DateTime nt) {
-        return methods.fetchEntries(nt);
-      }
-      protected boolean areCriteriasMet(List<CatalogEntry> e) {
-        return methods.areCriteriasMet(e);
-      }
-      protected IBltMessage createMessage(DateTime dt, List<CatalogEntry> e) {
-        return methods.createMessage(dt, e);
-      }
-    };
-    classUnderTest.setCatalog(catalog);
-    classUnderTest.setTimeoutManager(timeoutManager);
-    
-    replay();
-    methodsControl.replay();
-    
-    IBltMessage result = classUnderTest.handle(message);
-    
-    verify();
-    methodsControl.verify();
-    assertEquals(null, result);
-  }
-
-  public void testHandle_CriteriasNotMetAndNoRegisteredTimeout() throws Exception {
-    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
-    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
-
-    IBltMessage message = new IBltMessage() {
-    };
-    DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
-    CompositeTimerData ctd = new CompositeTimerData(15, dt);
-    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    TimeoutTask tt = new TimeoutTask();
-    tt.setId(10);
-    methods.initialize();
-    methods.createTimerData(message);
-    methodsControl.setReturnValue(ctd);
-    methods.fetchEntries(dt);
-    methodsControl.setReturnValue(entries);
-    timeoutManager.getRegisteredTask(ctd);
-    timeoutControl.setReturnValue(null);
-    methods.areCriteriasMet(entries);
-    methodsControl.setReturnValue(false);
-    // continuing with mocking after classUnderTest declaration
-    
-    classUnderTest = new CompositingRule() {
-      protected void initialize() {
-        methods.initialize();
-      }
-      protected CompositeTimerData createTimerData(IBltMessage m) {
-        return methods.createTimerData(m);
-      }
-      protected List<CatalogEntry> fetchEntries(DateTime nt) {
-        return methods.fetchEntries(nt);
-      }
-      protected boolean areCriteriasMet(List<CatalogEntry> e) {
-        return methods.areCriteriasMet(e);
-      }
-      protected IBltMessage createMessage(DateTime dt, List<CatalogEntry> e) {
-        return methods.createMessage(dt, e);
-      }
-    };
-    classUnderTest.setCatalog(catalog);
-    classUnderTest.setTimeoutManager(timeoutManager);
-    classUnderTest.setTimeout(10*60);
-    
-    // continue with mocking...
-    timeoutManager.register(classUnderTest, (long)1000*10*60, ctd);
-    timeoutControl.setReturnValue((long)10);
-    
-    replay();
-    methodsControl.replay();
-    
-    IBltMessage result = classUnderTest.handle(message);
-    
-    verify();
-    methodsControl.verify();
-    assertEquals(null, result);
-  }
    
   public void testTimeout() throws Exception {
     MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
@@ -287,6 +130,7 @@ public class CompositingRuleTest extends TestCase {
     IBltMessage resultMessage = new IBltMessage() {
     };
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    List<String> recipients = new ArrayList<String>();
     
     methods.initialize();
     methods.fetchEntries(dt);
@@ -306,7 +150,7 @@ public class CompositingRuleTest extends TestCase {
         return methods.createMessage(nominalTime, entries);
       }
     };
-    
+    classUnderTest.setRecipients(recipients);
     replay();
     methodsControl.replay();
     
@@ -314,18 +158,23 @@ public class CompositingRuleTest extends TestCase {
     
     verify();
     methodsControl.verify();
-    assertSame(resultMessage, result);
+    assertSame(resultMessage, ((IMultiRoutedMessage)result).getMessage());
+    assertSame(recipients, ((IMultiRoutedMessage)result).getDestinations());
   }
   
   public void testInitialize() throws Exception {
     new ManagerContext().setCatalog(catalog);
     new ManagerContext().setTimeoutManager(timeoutManager);
+    new ManagerContext().setUtilities(ruleUtil);
     CompositingRule classUnderTest = new CompositingRule();
     assertEquals(null, classUnderTest.catalog);
     assertEquals(null, classUnderTest.timeoutManager);
+    assertEquals(null, classUnderTest.getRuleUtilities());
+    
     classUnderTest.initialize();
     assertSame(catalog, classUnderTest.catalog);
     assertSame(timeoutManager, classUnderTest.timeoutManager);
+    assertSame(ruleUtil, classUnderTest.getRuleUtilities());
   }
   
   public void testCreateTimerData() throws Exception {
@@ -335,8 +184,6 @@ public class CompositingRuleTest extends TestCase {
 
     MockControl fileControl = MockClassControl.createControl(File.class);
     File file = (File)fileControl.getMock();
-    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
-    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
 
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFile(file);
@@ -348,25 +195,19 @@ public class CompositingRuleTest extends TestCase {
     fileControl.setReturnValue(date);
     file.what_time();
     fileControl.setReturnValue(time);
-    methods.getNominalTime(date, time);
-    methodsControl.setReturnValue(nominalTime);
+    ruleUtil.createNominalTime(date, time, 10);
+    ruleUtilControl.setReturnValue(nominalTime);
     
-    classUnderTest = new CompositingRule() {
-      public DateTime getNominalTime(Date d, Time t) {
-        return methods.getNominalTime(d, t);
-      }
-    };
-    classUnderTest.setRuleid(25);
-
+    classUnderTest.setRuleId(25);
+    classUnderTest.setInterval(10);
+    
     replay();
     fileControl.replay();
-    methodsControl.replay();
     
     CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
     fileControl.verify();
-    methodsControl.verify();
     assertSame(nominalTime, result.getDateTime());
     assertEquals(25, result.getRuleId());
   }
@@ -374,77 +215,59 @@ public class CompositingRuleTest extends TestCase {
   public void testCreateTimerData_notVolume() throws Exception {
     MockControl fileControl = MockClassControl.createControl(File.class);
     File file = (File)fileControl.getMock();
-    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
-    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
-
+    Date d = new Date(2010, 1, 1);
+    Time t = new Time(10, 1, 15);
+    DateTime dt = new DateTime();
+    
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFile(file);
 
     
     file.what_object();
     fileControl.setReturnValue("IMAGE");
+    file.what_date();
+    fileControl.setReturnValue(d);
+    file.what_time();
+    fileControl.setReturnValue(t);
+    ruleUtil.createNominalTime(d, t, 10);
+    ruleUtilControl.setReturnValue(dt);
     
-    classUnderTest = new CompositingRule() {
-      public DateTime getNominalTime(Date d, Time t) {
-        return methods.getNominalTime(d, t);
-      }
-    };
-    classUnderTest.setRuleid(25);
-
+    classUnderTest.setRuleId(25);
+    classUnderTest.setInterval(10);
+    
     replay();
     fileControl.replay();
-    methodsControl.replay();
     
     CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
     fileControl.verify();
-    methodsControl.verify();
     assertEquals(null, result);
   }
 
   public void testCreateTimerData_notBltDataMessage() throws Exception {
-    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
-    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
-
-    IBltMessage dataMessage = new IBltMessage() {
-    };
+    IBltMessage dataMessage = new IBltMessage() {};
     
-    classUnderTest = new CompositingRule() {
-      public DateTime getNominalTime(Date d, Time t) {
-        return methods.getNominalTime(d, t);
-      }
-    };
-    classUnderTest.setRuleid(25);
-
+    classUnderTest.setRuleId(25);
+    classUnderTest.setInterval(10);
+    
     replay();
-    methodsControl.replay();
     
     CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
-    methodsControl.verify();
     assertEquals(null, result);
   }
 
   public void testCreateTimerData_nullMessage() throws Exception {
-    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
-    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
-
-    classUnderTest = new CompositingRule() {
-      public DateTime getNominalTime(Date d, Time t) {
-        return methods.getNominalTime(d, t);
-      }
-    };
-    classUnderTest.setRuleid(25);
-
+    classUnderTest.setRuleId(25);
+    classUnderTest.setInterval(10);
+    
     replay();
-    methodsControl.replay();
     
     CompositeTimerData result = classUnderTest.createTimerData(null);
     
     verify();
-    methodsControl.verify();
     assertEquals(null, result);
   }
 
@@ -466,10 +289,19 @@ public class CompositingRuleTest extends TestCase {
     entries.add(createCatalogEntry("seosu",null));
     entries.add(createCatalogEntry("selul",null));
     entries.add(createCatalogEntry("searl",null));
+    List<String> entrySources = new ArrayList<String>();
+    entrySources.add("sekkr");
+    entrySources.add("seosu");
+    entrySources.add("selul");
+    entrySources.add("searl");
     
     classUnderTest.setSources(sources);
+    ruleUtil.getSourcesFromEntries(entries);
+    ruleUtilControl.setReturnValue(entrySources);
     
+    replay();
     boolean result = classUnderTest.areCriteriasMet(entries);
+    verify();
     
     assertEquals(true, result);
   }
@@ -483,11 +315,18 @@ public class CompositingRuleTest extends TestCase {
     entries.add(createCatalogEntry("sekkr",null));
     entries.add(createCatalogEntry("selul",null));
     entries.add(createCatalogEntry("searl",null));
+    List<String> entrySources = new ArrayList<String>();
+    entrySources.add("sekkr");
+    entrySources.add("selul");
+    entrySources.add("searl");
+    
+    ruleUtil.getSourcesFromEntries(entries);
+    ruleUtilControl.setReturnValue(entrySources);
     
     classUnderTest.setSources(sources);
-    
+    replay();
     boolean result = classUnderTest.areCriteriasMet(entries);
-    
+    verify();
     assertEquals(false, result);
   }
   
@@ -510,6 +349,11 @@ public class CompositingRuleTest extends TestCase {
     entries.add(createCatalogEntry("selul","/tmp/selul.h5"));
     entries.add(createCatalogEntry("searl","/tmp/searl.h5"));
     
+    List<String> fileEntries = new ArrayList<String>();
+    fileEntries.add("/tmp/sekkr.h5");
+    fileEntries.add("/tmp/selul.h5");
+    fileEntries.add("/tmp/searl.h5");
+    
     classUnderTest.setArea("blt_composite");
     
     List<String> sources = new ArrayList<String>();
@@ -518,7 +362,13 @@ public class CompositingRuleTest extends TestCase {
     sources.add("searl");
     classUnderTest.setSources(sources);
     
+    ruleUtil.getFilesFromEntries(nominalTime, sources, entries);
+    ruleUtilControl.setReturnValue(fileEntries);
+
+    replay();
     IBltMessage result = classUnderTest.createMessage(nominalTime, entries);
+    verify();
+    
     assertTrue(result instanceof BltGenerateMessage);
     BltGenerateMessage msg = (BltGenerateMessage)result;
     assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
@@ -570,14 +420,15 @@ public class CompositingRuleTest extends TestCase {
     Time stopTime = new Time(1,3,0);
     final DateTime startDT = new DateTime(startDate, startTime);
     final DateTime stopDT = new DateTime(stopDate, stopTime);
+
+    ruleUtil.createNextNominalTime(startDT, 10);
+    ruleUtilControl.setReturnValue(stopDT);
     
-    classUnderTest = new CompositingRule() {
-      protected DateTime getStop(DateTime dt) {
-        return stopDT;
-      };
-    };
-    
+    replay();
+    classUnderTest.setInterval(10);
     TimeIntervalFilter result = classUnderTest.createFilter(startDT);
+    
+    verify();
     assertNotNull(result);
     assertSame(startDT, result.getStartDateTime());
     assertSame(stopDT, result.getStopDateTime());
@@ -592,69 +443,185 @@ public class CompositingRuleTest extends TestCase {
             o1.time().minute() == o2.time().minute() &&
             o1.time().second() == o2.time().second());
   }
-  
-  public void testGetNominalTime() throws Exception {
-    classUnderTest.setInterval(10);
 
-    DateTime[][] TIME_TABLE=new DateTime[][] {
-        {new DateTime(2010,1,1,1,9,0), new DateTime(2010,1,1,1,0,0)},
-        {new DateTime(2010,1,1,1,11,0), new DateTime(2010,1,1,1,10,0)},
-        {new DateTime(2010,1,1,1,20,0), new DateTime(2010,1,1,1,20,0)},
-        {new DateTime(2010,1,1,1,39,0), new DateTime(2010,1,1,1,30,0)},
-        {new DateTime(2010,1,1,1,59,0), new DateTime(2010,1,1,1,50,0)},
-    };
+  public void testCreateCompositeScanMessage() throws Exception {
+    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
+    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
+    BltGenerateMessage createdMessage = new BltGenerateMessage();
     
-    for (int i = 0; i < TIME_TABLE.length; i++) {
-      DateTime dtResult = classUnderTest.getNominalTime(TIME_TABLE[i][0].date(), TIME_TABLE[i][0].time());
-      assertTrue("TT["+i+"] not as expected", compareDT(dtResult, TIME_TABLE[i][1]));
-    }
-  }
-
-  public void testGetStopTime() throws Exception {
-    classUnderTest.setInterval(10);
-
-    DateTime[][] TIME_TABLE=new DateTime[][] {
-        {new DateTime(2010,1,1,1,9,0), new DateTime(2010,1,1,1,10,0)},
-        {new DateTime(2010,1,1,1,11,0), new DateTime(2010,1,1,1,20,0)},
-        {new DateTime(2010,1,1,1,20,0), new DateTime(2010,1,1,1,30,0)},
-        {new DateTime(2010,1,1,1,39,0), new DateTime(2010,1,1,1,40,0)},
-        {new DateTime(2010,1,1,1,59,0), new DateTime(2010,1,1,2,0,0)},
-        {new DateTime(2010,1,1,23,59,0), new DateTime(2010,1,2,0,0,0)},
-        {new DateTime(2010,1,1,12,0,0), new DateTime(2010,1,1,12,10,0)},
-    };
-
-    for (int i = 0; i < TIME_TABLE.length; i++) {
-      DateTime dtResult = classUnderTest.getStop(TIME_TABLE[i][0]);
-      assertTrue("TT["+i+"] not as expected", compareDT(dtResult, TIME_TABLE[i][1]));
-    }
-  }
-  
-  public void testGetFilesFromEntries() throws Exception {
-    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new Date(2010,1,1), new Time(10,1,1)));
-    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new Date(2010,1,1), new Time(10,1,2)));
-    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new Date(2010,1,1), new Time(10,1,1)));
-    entries.add(createCatalogEntry("seosu", "/tmp/4.h5", new Date(2010,1,1), new Time(10,1,2)));
-    entries.add(createCatalogEntry("sevan", "/tmp/5.h5", new Date(2010,1,1), new Time(10,1,2)));
+    DateTime pdt = new DateTime();
+    DateTime dt = new DateTime();
+    DateTime ndt = new DateTime();
     
+    List<CatalogEntry> prevAngles = new ArrayList<CatalogEntry>();
+    List<CatalogEntry> currAngles = new ArrayList<CatalogEntry>();
     List<String> sources = new ArrayList<String>();
-    sources.add("seang");
-    sources.add("sehud");
-    sources.add("seosu");
-    classUnderTest.setSources(sources);
+    sources.add("sekkr");
+    sources.add("searl");
     
-    List<String> result = classUnderTest.getFilesFromEntries(new DateTime(2010,1,1,10,1,1), entries);
-    assertEquals(3, result.size());
-    assertTrue(result.contains("/tmp/1.h5"));
-    assertTrue(result.contains("/tmp/3.h5"));
-    assertTrue(result.contains("/tmp/4.h5"));
+    CatalogEntry pe1 = createCatalogEntry("sekkr", "/tmp/a.h5", pdt, 0.1);
+    CatalogEntry pe2 = createCatalogEntry("searl", "/tmp/b.h5", pdt, 0.5); 
+    prevAngles.add(pe1);
+    prevAngles.add(pe2);
+
+    CatalogEntry e1 = createCatalogEntry("sekkr", "/tmp/ab.h5", pdt, 0.1); 
+    CatalogEntry e2 = createCatalogEntry("searl", "/tmp/bb.h5", pdt, 0.5); 
+    currAngles.add(e1);
+    currAngles.add(e2);
+    
+    CompositeTimerData data = new CompositeTimerData(1, dt);
+    data.setPreviousAngles(prevAngles);
+    ruleUtil.createNextNominalTime(dt, 10);
+    ruleUtilControl.setReturnValue(ndt);
+    ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources);
+    ruleUtilControl.setReturnValue(currAngles);
+    ruleUtil.getEntryBySource("sekkr", prevAngles);
+    ruleUtilControl.setReturnValue(pe1);
+    ruleUtil.getEntryBySource("sekkr", currAngles);
+    ruleUtilControl.setReturnValue(e1);
+    
+    ruleUtil.getEntryBySource("searl", prevAngles);
+    ruleUtilControl.setReturnValue(pe2);
+    ruleUtil.getEntryBySource("searl", currAngles);
+    ruleUtilControl.setReturnValue(e2);
+    methods.createMessage(dt, currAngles);
+    methodsControl.setReturnValue(createdMessage);
+    
+    replay();
+    methodsControl.replay();
+    
+    classUnderTest = new CompositingRule() {
+      protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
+        return methods.createMessage(nominalDT, entries);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setSources(sources);
+    classUnderTest.setInterval(10);
+    
+    BltGenerateMessage msg = (BltGenerateMessage)classUnderTest.createCompositeScanMessage(data);
+    
+    verify();
+    methodsControl.verify();
+    assertSame(createdMessage, msg);
+  }
+
+  public void testCreateCompositeScanMessage_missingSources() throws Exception {
+    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
+    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
+    
+    DateTime pdt = new DateTime();
+    DateTime dt = new DateTime();
+    DateTime ndt = new DateTime();
+    List<CatalogEntry> prevAngles = new ArrayList<CatalogEntry>();
+    List<CatalogEntry> currAngles = new ArrayList<CatalogEntry>();
+    List<String> sources = new ArrayList<String>();
+    sources.add("sekkr");
+    sources.add("searl");
+    
+    CatalogEntry pe1 = createCatalogEntry("sekkr", "/tmp/a.h5", pdt, 0.1);
+    CatalogEntry pe2 = createCatalogEntry("searl", "/tmp/b.h5", pdt, 0.5); 
+    prevAngles.add(pe1);
+    prevAngles.add(pe2);
+
+    CatalogEntry e1 = createCatalogEntry("sekkr", "/tmp/ab.h5", pdt, 0.1); 
+    currAngles.add(e1);
+    
+    CompositeTimerData data = new CompositeTimerData(1, dt);
+    data.setPreviousAngles(prevAngles);
+    ruleUtil.createNextNominalTime(dt, 10);
+    ruleUtilControl.setReturnValue(ndt);
+    ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources);
+    ruleUtilControl.setReturnValue(currAngles);
+    ruleUtil.getEntryBySource("sekkr", prevAngles);
+    ruleUtilControl.setReturnValue(pe1);
+    ruleUtil.getEntryBySource("sekkr", currAngles);
+    ruleUtilControl.setReturnValue(e1);
+    
+    ruleUtil.getEntryBySource("searl", prevAngles);
+    ruleUtilControl.setReturnValue(pe2);
+    ruleUtil.getEntryBySource("searl", currAngles);
+    ruleUtilControl.setReturnValue(null);
+    
+    replay();
+    methodsControl.replay();
+    
+    classUnderTest = new CompositingRule() {
+      protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
+        return methods.createMessage(nominalDT, entries);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setSources(sources);
+    classUnderTest.setInterval(10);
+    
+    BltGenerateMessage msg = (BltGenerateMessage)classUnderTest.createCompositeScanMessage(data);
+    
+    verify();
+    methodsControl.verify();
+    assertNull(msg);
+  }
+
+  public void testCreateCompositeScanMessage_toHighElevation() throws Exception {
+    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
+    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
+    
+    DateTime pdt = new DateTime();
+    DateTime dt = new DateTime();
+    DateTime ndt = new DateTime();
+    List<CatalogEntry> prevAngles = new ArrayList<CatalogEntry>();
+    List<CatalogEntry> currAngles = new ArrayList<CatalogEntry>();
+    List<String> sources = new ArrayList<String>();
+    sources.add("sekkr");
+    
+    CatalogEntry pe1 = createCatalogEntry("sekkr", "/tmp/a.h5", pdt, 0.1);
+    prevAngles.add(pe1);
+
+    CatalogEntry e1 = createCatalogEntry("sekkr", "/tmp/ab.h5", pdt, 0.2); 
+    currAngles.add(e1);
+    
+    CompositeTimerData data = new CompositeTimerData(1, dt);
+    data.setPreviousAngles(prevAngles);
+    ruleUtil.createNextNominalTime(dt, 10);
+    ruleUtilControl.setReturnValue(ndt);
+    ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources);
+    ruleUtilControl.setReturnValue(currAngles);
+    ruleUtil.getEntryBySource("sekkr", prevAngles);
+    ruleUtilControl.setReturnValue(pe1);
+    ruleUtil.getEntryBySource("sekkr", currAngles);
+    ruleUtilControl.setReturnValue(e1);
+    
+    replay();
+    methodsControl.replay();
+    
+    classUnderTest = new CompositingRule() {
+      protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
+        return methods.createMessage(nominalDT, entries);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setSources(sources);
+    classUnderTest.setInterval(10);
+    
+    BltGenerateMessage msg = (BltGenerateMessage)classUnderTest.createCompositeScanMessage(data);
+    
+    verify();
+    methodsControl.verify();
+    assertNull(msg);
   }
   
-  private CatalogEntry createCatalogEntry(String src, String file, Date date, Time time) {
+  private CatalogEntry createCatalogEntry(String src, String file, DateTime dt, double elangle) {
     CatalogEntry result = new CatalogEntry();
     result.setSource(src);
     result.setPath(file);
-    result.setDateTime(new DateTime(date, time));
+    result.setDateTime(dt);
+    result.addAttribute("where/elangle", elangle);
     return result;
   }
 }

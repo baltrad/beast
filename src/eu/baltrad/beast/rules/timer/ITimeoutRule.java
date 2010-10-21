@@ -19,13 +19,14 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.timer;
 
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.rules.IRuleRecipientAware;
 
 /**
  * Any rule implementing this interface can subscribe for
  * a timeout notification.
  * @author Anders Henja
  */
-public interface ITimeoutRule {
+public interface ITimeoutRule extends IRuleRecipientAware {
   /**
    * Timeout was triggered due to timeout.
    */

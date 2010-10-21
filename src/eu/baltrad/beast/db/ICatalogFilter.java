@@ -26,7 +26,16 @@ import eu.baltrad.fc.Query;
  */
 public interface ICatalogFilter {
   /**
-   * Applies this filters rules to the query.
+   * Applies this filters rules to the query. If you need to fetch specific attributes
+   * do that in here as well, but remember that the order of the fetches must be
+   * visible when running getExtraAttributes.
+   * 
+   * That means that if apply adds:
+   *   query.fetch("something");
+   *   query.fetch("else");
+   * then getExtraAttributes must return:
+   *   "something", "else" in this specific order.
+   * 
    * @param query the query to apply the filtering rules to
    */
   void apply(Query query);

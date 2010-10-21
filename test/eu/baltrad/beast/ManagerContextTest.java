@@ -24,6 +24,7 @@ import org.springframework.beans.factory.BeanCreationException;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.util.RuleUtilities;
 
 /**
  * @author Anders Henja
@@ -33,6 +34,13 @@ public class ManagerContextTest extends TestCase {
   public void setUp() throws Exception {
     new ManagerContext().setTimeoutManager(null);
     new ManagerContext().setCatalog(null);
+    new ManagerContext().setUtilities(null);
+  }
+
+  public void tearDown() throws Exception {
+    new ManagerContext().setTimeoutManager(null);
+    new ManagerContext().setCatalog(null);
+    new ManagerContext().setUtilities(null);
   }
   
   public void testTimeoutManager() {
@@ -46,20 +54,31 @@ public class ManagerContextTest extends TestCase {
     new ManagerContext().setCatalog(c);
     assertSame(c, ManagerContext.getCatalog());
   }
-  
+
+  public void testUtilities() {
+    RuleUtilities c = new RuleUtilities();
+    new ManagerContext().setUtilities(c);
+    assertSame(c, ManagerContext.getUtilities());
+  }
+
   public void testAfterPropertiesSet() throws Exception {
     TimeoutManager manager = new TimeoutManager();
     Catalog c = new Catalog();
+    RuleUtilities utils = new RuleUtilities();
     ManagerContext context = new ManagerContext();
     context.setTimeoutManager(manager);
     context.setCatalog(c);
+    context.setUtilities(utils);
+    
     context.afterPropertiesSet();
   }
   
   public void testAfterPropertiesSet_noTimeoutManager() throws Exception {
     ManagerContext context = new ManagerContext();
     Catalog c = new Catalog();
+    RuleUtilities utils = new RuleUtilities();
     context.setCatalog(c);
+    context.setUtilities(utils);
     try {
       context.afterPropertiesSet();
       fail("Expected BeanCreationException");
@@ -71,7 +90,9 @@ public class ManagerContextTest extends TestCase {
   public void testAfterPropertiesSet_noCatalog() throws Exception {
     ManagerContext context = new ManagerContext();
     TimeoutManager m = new TimeoutManager();
+    RuleUtilities utils = new RuleUtilities();
     context.setTimeoutManager(m);
+    context.setUtilities(utils);
     try {
       context.afterPropertiesSet();
       fail("Expected BeanCreationException");
@@ -79,5 +100,20 @@ public class ManagerContextTest extends TestCase {
       //pass
     }
   }
-  
+
+  public void testAfterPropertiesSet_noUtilities() throws Exception {
+    TimeoutManager manager = new TimeoutManager();
+    Catalog c = new Catalog();
+    
+    ManagerContext context = new ManagerContext();
+    context.setTimeoutManager(manager);
+    context.setCatalog(c);
+    try {
+      context.afterPropertiesSet();
+      fail("Expected BeanCreationException");
+    } catch (BeanCreationException e) {
+      //pass
+    }
+  }
+
 }

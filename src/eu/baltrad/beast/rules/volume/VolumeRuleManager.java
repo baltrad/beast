@@ -153,7 +153,7 @@ public class VolumeRuleManager implements IRuleManager {
         double mine = rs.getDouble("minelev");
         double maxe = rs.getDouble("maxelev");
         List<String> sources = getSources(rule_id);
-        result.setRuleid(rule_id);
+        result.setRuleId(rule_id);
         result.setInterval(interval);
         result.setTimeout(timeout);
         result.setAscending(ascending);
