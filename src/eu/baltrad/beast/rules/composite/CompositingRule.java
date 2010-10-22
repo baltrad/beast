@@ -44,8 +44,13 @@ import eu.baltrad.fc.Time;
 import eu.baltrad.fc.oh5.File;
 
 /**
+ * Compositing rule for beeing able to generate composites both from
+ * scans and volumes. However, it is not possible to mix composites and scans
+ * yet.
+ * The composite by scan will always work on lowest elevation and composite
+ * by volume is dependant on the receiving end. 
+ * 
  * @author Anders Henja
- *
  */
 public class CompositingRule implements IRule, ITimeoutRule {
   /**
