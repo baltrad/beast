@@ -124,6 +124,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   	  <fileset dir="${etc.dir}">
   	  	<include name="drop_db.sql" />
   	  	<include name="create_db.sql" />
+  	  	<include name="upgrade_db.sql" />
   	  </fileset>
   	</copy>
   	<copy todir="${prefix}/beast/libs" flatten="true">
