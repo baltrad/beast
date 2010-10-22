@@ -36,3 +36,6 @@ $$ LANGUAGE plpgsql
 ;
 
 select upgrade_beast_composite_rules();
+
+drop function make_plpgsql();
+drop function upgrade_beast_composite_rules();
