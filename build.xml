@@ -35,6 +35,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="source.dir" value="${basedir}/src" />
   <property name="lib.dir" value="${basedir}/lib" />	
   <property name="etc.dir" value="${basedir}/etc" />
+  <property name="examples.dir" value="${basedir}/examples" />
   <property name="compile.debug" value="true" />
   <property name="compile.optimize" value="true" />
   <property name="compile.includeAntRuntime" value="no" />
@@ -120,6 +121,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   	<mkdir dir="${prefix}/beast/etc" />
   	<mkdir dir="${prefix}/beast/libs" />
   	<mkdir dir="${prefix}/beast/plugins" />
+  	<mkdir dir="${prefix}/beast/examples" />
   	<copy todir="${prefix}/beast/sql">
   	  <fileset dir="${etc.dir}">
   	  	<include name="drop_db.sql" />
@@ -147,6 +149,12 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<include name="xmlrpcserver.properties" />
       </fileset>
   	</copy>
+  	<copy todir="${prefix}/beast/examples">
+	  <fileset dir="${examples.dir}">
+	    <include name="*.groovy" />
+	    <include name="*.xml" />
+	  </fileset>
+	</copy>
   	<!-- remove old beast.jar that contained version information -->
   	<delete file="${prefix}/beast/bin/${app.name}-0.1-dev.jar" failonerror="false"/>
   	<copy file="${dist.dir}/${app.name}.jar" todir="${prefix}/beast/bin" />

@@ -108,4 +108,15 @@ The code that contains the plugin, should be bundled in a .jar file that resides
 plugin directory (<prefix>/plugins). The bean should implement the interface
 eu.baltrad.beast.pgfwk.IGeneratorPlugin.
 
+\section groovysupport "Groovy"
+Beast comes delievered with support for creating scriptable rules by using the
+groovy language. Groovy is very similar to java so most of the things you can do
+in java you will be able to do in groovy as well. There are a few caveats to this
+as usual. One of them is that it is not possible to create arrays by writing
+new String[]{"a", "b"} which might cause some problems when creating the
+\ref eu.baltrad.beast.message.mo.BltGenerateMessage. Instead, write ["a", "b"] as String[].
+
+You will find some examples on how rules written in groovy might look like in the
+directory <beast install prefix>/examples.
+
 */
