@@ -25,9 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.LowestAngleFilter;
+import eu.baltrad.beast.rules.composite.CompositingRule;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
@@ -68,6 +72,11 @@ public class RuleUtilities implements IRuleUtilities {
    */
   private List<IdDateMapping> registeredTriggers = new ArrayList<IdDateMapping>();
   
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(RuleUtilities.class);
+
   /**
    * @param catalog the catalog to set
    */
@@ -243,14 +252,17 @@ public class RuleUtilities implements IRuleUtilities {
    */
   @Override
   public synchronized void trigger(int ruleid, DateTime now) {
+    logger.debug("trigger("+ruleid+", DateTime)");
     IdDateMapping m = new IdDateMapping(ruleid, now);
     
     if (!registeredTriggers.contains(m)) {
+      logger.debug("trigger("+ruleid+", DateTime): Adding mapping");
       registeredTriggers.add(m);
     }
     
     // Keep a backlog of 100 entries until there is need for more clever solution
     if (registeredTriggers.size() > 100) {
+      logger.debug("trigger("+ruleid+", DateTime): Removing first item");
       registeredTriggers.remove(0);
     }
   }
@@ -261,6 +273,10 @@ public class RuleUtilities implements IRuleUtilities {
   @Override
   public synchronized boolean isTriggered(int ruleid, DateTime now) {
     IdDateMapping m = new IdDateMapping(ruleid, now);
+    Date d = now.date();
+    Time t = now.time();
+    boolean result = registeredTriggers.contains(m);
+    logger.debug("isTriggered("+ruleid+", DateTime("+d.year()+"-"+d.month()+"-"+d.day()+" "+t.hour()+":" + t.minute() + ":" + t.second()+")), result=" + result);
     return registeredTriggers.contains(m);
   }
 }
