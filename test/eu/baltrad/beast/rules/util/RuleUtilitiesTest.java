@@ -180,6 +180,51 @@ public class RuleUtilitiesTest extends TestCase {
     }
   }
 
+  public void testTrigger() throws Exception {
+    DateTime d1 = new DateTime(2010,1,1,1,1,1);
+    DateTime d2 = new DateTime(2010,1,1,1,1,1);
+    
+    assertEquals(false, classUnderTest.isTriggered(21, d2));
+    classUnderTest.trigger(21, d1);
+    assertEquals(true, classUnderTest.isTriggered(21, d2));
+  }
+  
+  public void testTrigger_differentTime() throws Exception {
+    DateTime d1 = new DateTime(2010,1,1,1,1,1);
+    DateTime d2 = new DateTime(2010,1,1,1,2,1);
+    
+    classUnderTest.trigger(21, d1);
+    assertEquals(false, classUnderTest.isTriggered(21, d2));
+  }
+  
+  public void testTrigger_severalFromSameRuleid() throws Exception {
+    DateTime d1 = new DateTime(2010,1,1,1,1,1);
+    DateTime d2 = new DateTime(2010,1,1,1,2,1);
+    DateTime d3 = new DateTime(2010,1,1,1,3,1);
+    
+    classUnderTest.trigger(21, d1);
+    classUnderTest.trigger(21, d2);
+    classUnderTest.trigger(21, d3);
+    assertEquals(true, classUnderTest.isTriggered(21, d1));
+    assertEquals(true, classUnderTest.isTriggered(21, d2));
+    assertEquals(true, classUnderTest.isTriggered(21, d3));
+  }
+
+  public void testTrigger_backlog() throws Exception {
+    DateTime d1 = new DateTime(2010,1,1,1,1,1);
+    
+    DateTime d2 = new DateTime(2010,1,1,1,2,1);
+    
+    classUnderTest.trigger(21, d1);
+    
+    for (int i = 0; i < 99; i++) {
+      classUnderTest.trigger(22 + i, d2);
+    }
+    assertEquals(true, classUnderTest.isTriggered(21, d1));
+    classUnderTest.trigger(122, d2);
+    assertEquals(false, classUnderTest.isTriggered(21, d1));
+  }
+
   
   private CatalogEntry createCatalogEntry(String src, String file, DateTime dt) {
     CatalogEntry result = new CatalogEntry();

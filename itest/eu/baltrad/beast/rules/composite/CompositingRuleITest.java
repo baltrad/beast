@@ -193,22 +193,48 @@ public class CompositingRuleITest extends TestCase {
     BltGenerateMessage msg = (BltGenerateMessage)result;
     assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
   }
-  
-  public void XtestLowest() {
-    DateTime start = new DateTime(2010,10,16,8,0,0);
-    DateTime stop = new DateTime(2010,10,16,8,5,0);
+
+  public void testHandle_alreadyHandled() throws Exception {
+    File f = null;
+    IBltMessage result = null;
     List<String> sources = new ArrayList<String>();
     sources.add("seang");
     sources.add("searl");
     sources.add("sease");
-    
-    List<CatalogEntry> entries = ruleutil.fetchLowestSourceElevationAngle(start, stop, sources);
-    System.out.println("ENTRIES: " + entries.size());
+
+    classUnderTest.setArea("baltrad_composite");
+    classUnderTest.setInterval(5);
+    classUnderTest.setSources(sources);
+    classUnderTest.setTimeout(10000);
+    classUnderTest.setScanBased(true);
+
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181000_seang_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181000_searl_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181000_sease_000000.h5")));
+
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181500_seang_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181500_searl_000000.h5")));
+    // We have data in previous time period so a composite should be generated
+    assertNotNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181500_sease_000000.h5")));
+
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181600_seang_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181600_searl_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181600_sease_000000.h5")));
+
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023182000_seang_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023182000_searl_000000.h5")));
+    // Next 5 minute interval is here, create a composite for this time period
+    assertNotNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023182000_sease_000000.h5")));
   }
   
   protected BltDataMessage createDataMessage(File f) {
     BltDataMessage result = new BltDataMessage();
     result.setFile(f);
     return result;
+  }
+  
+  protected IBltMessage catalogAndHandle(CompositingRule rule, String path) throws Exception {
+    File f = catalog.getCatalog().catalog(path);
+    return rule.handle(createDataMessage(f));
   }
 }

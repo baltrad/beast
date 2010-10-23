@@ -121,4 +121,24 @@ public interface IRuleUtilities {
    * @return previous nominal time
    */
   public DateTime createPrevNominalTime(DateTime now, int interval);
+  
+  /**
+   * This is a way of indicating if a rule has been triggered or not
+   * for a specific time period. This can be quite useful if you know
+   * that a rule will be triggered more than once and only want to
+   * generate it more than once. Note, that old entries will automatically
+   * be removed. 
+   * @param ruleid the rule id
+   * @param now the time period for this rule
+   */
+  public void trigger(int ruleid, DateTime now);
+  
+  /**
+   * Returns if the rule has been triggered for the specified date time.
+   * @param ruleid the rule id
+   * @param now the time period to check
+   * @return true if the rule has been triggered, false otherwise
+   */
+  public boolean isTriggered(int ruleid, DateTime now);
+  
 }

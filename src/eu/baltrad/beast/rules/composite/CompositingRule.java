@@ -293,6 +293,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
     
       result = createCompositeScanMessage(data);
       if (result != null) {
+        ruleUtil.trigger(ruleid, data.getDateTime());
         if (tt != null) {
           timeoutManager.unregister(tt.getId());
         }
@@ -352,6 +353,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
       if (areCriteriasMet(entries)) {
         result = createMessage(data.getDateTime(), entries);
+        ruleUtil.trigger(ruleid, data.getDateTime());
         if (tt != null) {
           timeoutManager.unregister(tt.getId());
         }
@@ -383,11 +385,14 @@ public class CompositingRule implements IRule, ITimeoutRule {
       } else {
         entries = fetchEntries(ctd.getDateTime());
       }
-      IBltMessage msgtosend = createMessage(ctd.getDateTime(), entries);
-      BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
-      mrmsg.setDestinations(recipients);
-      mrmsg.setMessage(msgtosend);
-      return mrmsg;
+      if (!ruleUtil.isTriggered(ruleid, ctd.getDateTime())) {
+        IBltMessage msgtosend = createMessage(ctd.getDateTime(), entries);
+        BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
+        mrmsg.setDestinations(recipients);
+        mrmsg.setMessage(msgtosend);
+        ruleUtil.trigger(ruleid, ctd.getDateTime());
+        return mrmsg;
+      }
     }
     return null;
   }
@@ -428,10 +433,12 @@ public class CompositingRule implements IRule, ITimeoutRule {
       Time t = file.what_time();
       Date d = file.what_date();
       DateTime nominalTime = ruleUtil.createNominalTime(d, t, interval);
-      if (!isScanBased() && object.equals("PVOL")) {
-        result = new CompositeTimerData(ruleid, nominalTime);
-      } else if (isScanBased() && object.equals("SCAN")) {
-        result = new CompositeTimerData(ruleid, nominalTime, true);
+      if (!ruleUtil.isTriggered(ruleid, nominalTime)) {
+        if (!isScanBased() && object.equals("PVOL")) {
+          result = new CompositeTimerData(ruleid, nominalTime);
+        } else if (isScanBased() && object.equals("SCAN")) {
+          result = new CompositeTimerData(ruleid, nominalTime, true);
+        }
       }
     }
     

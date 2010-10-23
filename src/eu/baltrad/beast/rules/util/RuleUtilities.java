@@ -41,6 +41,33 @@ public class RuleUtilities implements IRuleUtilities {
    */
   private Catalog catalog = null;
 
+  private static class IdDateMapping {
+    private int ruleid = 0;
+    private DateTime dt = null;
+    public IdDateMapping(int ruleid, DateTime dt) {
+      if (dt == null) {
+        throw new NullPointerException();
+      }
+      this.ruleid = ruleid;
+      this.dt = dt;
+    }
+    public boolean equals(Object o) {
+      if (o != null && o.getClass() == IdDateMapping.class) {
+        IdDateMapping o2 = (IdDateMapping)o;
+        if (o2.ruleid == this.ruleid &&
+            o2.dt.equals(this.dt)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+  
+  /**
+   * The list of registered triggers.
+   */
+  private List<IdDateMapping> registeredTriggers = new ArrayList<IdDateMapping>();
+  
   /**
    * @param catalog the catalog to set
    */
@@ -208,5 +235,32 @@ public class RuleUtilities implements IRuleUtilities {
     Date nd = new Date(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
     Time nt = new Time(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
     return new DateTime(nd, nt);
+  }
+  
+  /**
+   * This function will keep a backlog of 100 entries.
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#trigger(int, eu.baltrad.fc.DateTime)
+   */
+  @Override
+  public synchronized void trigger(int ruleid, DateTime now) {
+    IdDateMapping m = new IdDateMapping(ruleid, now);
+    
+    if (!registeredTriggers.contains(m)) {
+      registeredTriggers.add(m);
+    }
+    
+    // Keep a backlog of 100 entries until there is need for more clever solution
+    if (registeredTriggers.size() > 100) {
+      registeredTriggers.remove(0);
+    }
+  }
+  
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#isTriggered(int, eu.baltrad.fc.DateTime)
+   */
+  @Override
+  public synchronized boolean isTriggered(int ruleid, DateTime now) {
+    IdDateMapping m = new IdDateMapping(ruleid, now);
+    return registeredTriggers.contains(m);
   }
 }

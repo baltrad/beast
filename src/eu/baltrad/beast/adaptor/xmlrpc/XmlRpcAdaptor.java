@@ -20,6 +20,8 @@ package eu.baltrad.beast.adaptor.xmlrpc;
 
 import java.net.URL;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.xmlrpc.client.TimingOutCallback;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
@@ -65,6 +67,11 @@ public class XmlRpcAdaptor implements IAdaptor {
    */
   private IAdaptorCallback callback = null;
   
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(XmlRpcAdaptor.class);
+
   /**
    * Default constructor
    */
@@ -178,25 +185,31 @@ public class XmlRpcAdaptor implements IAdaptor {
    */
   @Override
   public void handle(IBltMessage message, IAdaptorCallback cb) {
+    logger.debug("handle(IBltMessage, IAdaptorCallback)");
     try {
       XmlRpcCommand command = generator.generate(message);
       TimingOutCallback tcb = createTimeout(timeout);
+      logger.debug("handle: executeAsync("+command.getMethod()+" to " + this.url);
       client.executeAsync(command.getMethod(), command.getObjects(), tcb);
       try {
         Object result = tcb.waitForResponse();
         if (cb != null) {
+          logger.debug("executeAsync SUCCESS");
           cb.success(message, result);
         }
       } catch (TimingOutCallback.TimeoutException e) {
         if (cb != null) {
+          logger.debug("executeAsync TIMEOUT");
           cb.timeout(message);
         }
       } catch (Throwable t) {
         if (cb != null) {
+          logger.debug("executeAsync ERROR");
           cb.error(message, t);
         }
       }
     } catch (Throwable t) {
+      logger.debug("executeAsync Failed to execute command: ", t);
       throw new AdaptorException("Failed to execute command", t);
     }
   }

@@ -121,7 +121,7 @@ public class CompositingRuleTest extends TestCase {
   public void testGetType() {
     assertEquals("blt_composite", classUnderTest.getType());
   }
-   
+  
   public void testTimeout() throws Exception {
     MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
     final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
@@ -135,8 +135,12 @@ public class CompositingRuleTest extends TestCase {
     methods.initialize();
     methods.fetchEntries(dt);
     methodsControl.setReturnValue(entries);
+    ruleUtil.isTriggered(25, dt);
+    ruleUtilControl.setReturnValue(false);
     methods.createMessage(dt, entries);
     methodsControl.setReturnValue(resultMessage);
+    ruleUtil.trigger(25, dt);
+    
     // continuing with mocking after classUnderTest declaration
     
     classUnderTest = new CompositingRule() {
@@ -151,6 +155,9 @@ public class CompositingRuleTest extends TestCase {
       }
     };
     classUnderTest.setRecipients(recipients);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setRuleId(25);
+    
     replay();
     methodsControl.replay();
     
@@ -160,6 +167,47 @@ public class CompositingRuleTest extends TestCase {
     methodsControl.verify();
     assertSame(resultMessage, ((IMultiRoutedMessage)result).getMessage());
     assertSame(recipients, ((IMultiRoutedMessage)result).getDestinations());
+  }
+  
+  public void testTimeout_alreadyTriggered() throws Exception {
+    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
+    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
+    DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
+    CompositeTimerData ctd = new CompositeTimerData(15, dt);
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    List<String> recipients = new ArrayList<String>();
+    
+    methods.initialize();
+    methods.fetchEntries(dt);
+    methodsControl.setReturnValue(entries);
+    ruleUtil.isTriggered(25, dt);
+    ruleUtilControl.setReturnValue(true);
+    
+    // continuing with mocking after classUnderTest declaration
+    
+    classUnderTest = new CompositingRule() {
+      protected void initialize() {
+        methods.initialize();
+      }
+      protected List<CatalogEntry> fetchEntries(DateTime nominalTime) {
+        return methods.fetchEntries(nominalTime);
+      }
+      protected IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries) {
+        return methods.createMessage(nominalTime, entries);
+      }
+    };
+    classUnderTest.setRecipients(recipients);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setRuleId(25);
+    
+    replay();
+    methodsControl.replay();
+    
+    IBltMessage result = classUnderTest.timeout(15, ITimeoutRule.TIMEOUT, ctd);
+    
+    verify();
+    methodsControl.verify();
+    assertNull(result);
   }
   
   public void testInitialize() throws Exception {
@@ -197,6 +245,8 @@ public class CompositingRuleTest extends TestCase {
     fileControl.setReturnValue(time);
     ruleUtil.createNominalTime(date, time, 10);
     ruleUtilControl.setReturnValue(nominalTime);
+    ruleUtil.isTriggered(25, nominalTime);
+    ruleUtilControl.setReturnValue(false);
     
     classUnderTest.setRuleId(25);
     classUnderTest.setInterval(10);
@@ -210,6 +260,42 @@ public class CompositingRuleTest extends TestCase {
     fileControl.verify();
     assertSame(nominalTime, result.getDateTime());
     assertEquals(25, result.getRuleId());
+  }
+
+  public void testCreateTimerData_alreadyTriggered() throws Exception {
+    Date date = new Date(2010, 1, 1);
+    Time time = new Time(10, 0, 0);
+    DateTime nominalTime = new DateTime(date, time);
+
+    MockControl fileControl = MockClassControl.createControl(File.class);
+    File file = (File)fileControl.getMock();
+
+    BltDataMessage dataMessage = new BltDataMessage();
+    dataMessage.setFile(file);
+
+    
+    file.what_object();
+    fileControl.setReturnValue("PVOL");
+    file.what_date();
+    fileControl.setReturnValue(date);
+    file.what_time();
+    fileControl.setReturnValue(time);
+    ruleUtil.createNominalTime(date, time, 10);
+    ruleUtilControl.setReturnValue(nominalTime);
+    ruleUtil.isTriggered(25, nominalTime);
+    ruleUtilControl.setReturnValue(true);
+    
+    classUnderTest.setRuleId(25);
+    classUnderTest.setInterval(10);
+    
+    replay();
+    fileControl.replay();
+    
+    CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
+    
+    verify();
+    fileControl.verify();
+    assertNull(result);
   }
 
   public void testCreateTimerData_notVolume() throws Exception {
@@ -231,7 +317,8 @@ public class CompositingRuleTest extends TestCase {
     fileControl.setReturnValue(t);
     ruleUtil.createNominalTime(d, t, 10);
     ruleUtilControl.setReturnValue(dt);
-    
+    ruleUtil.isTriggered(25, dt);
+    ruleUtilControl.setReturnValue(false);
     classUnderTest.setRuleId(25);
     classUnderTest.setInterval(10);
     
