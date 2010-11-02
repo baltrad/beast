@@ -40,7 +40,7 @@ import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.db.FileEntry;
 
 /**
  * @author Anders Henja
@@ -230,11 +230,11 @@ public class CompositingRuleTest extends TestCase {
     Time time = new Time(10, 0, 0);
     DateTime nominalTime = new DateTime(date, time);
 
-    MockControl fileControl = MockClassControl.createControl(File.class);
-    File file = (File)fileControl.getMock();
+    MockControl fileControl = MockClassControl.createControl(FileEntry.class);
+    FileEntry file = (FileEntry)fileControl.getMock();
 
     BltDataMessage dataMessage = new BltDataMessage();
-    dataMessage.setFile(file);
+    dataMessage.setFileEntry(file);
 
     
     file.what_object();
@@ -267,11 +267,11 @@ public class CompositingRuleTest extends TestCase {
     Time time = new Time(10, 0, 0);
     DateTime nominalTime = new DateTime(date, time);
 
-    MockControl fileControl = MockClassControl.createControl(File.class);
-    File file = (File)fileControl.getMock();
+    MockControl fileControl = MockClassControl.createControl(FileEntry.class);
+    FileEntry file = (FileEntry)fileControl.getMock();
 
     BltDataMessage dataMessage = new BltDataMessage();
-    dataMessage.setFile(file);
+    dataMessage.setFileEntry(file);
 
     
     file.what_object();
@@ -299,14 +299,14 @@ public class CompositingRuleTest extends TestCase {
   }
 
   public void testCreateTimerData_notVolume() throws Exception {
-    MockControl fileControl = MockClassControl.createControl(File.class);
-    File file = (File)fileControl.getMock();
+    MockControl fileControl = MockClassControl.createControl(FileEntry.class);
+    FileEntry file = (FileEntry)fileControl.getMock();
     Date d = new Date(2010, 1, 1);
     Time t = new Time(10, 1, 15);
     DateTime dt = new DateTime();
     
     BltDataMessage dataMessage = new BltDataMessage();
-    dataMessage.setFile(file);
+    dataMessage.setFileEntry(file);
 
     
     file.what_object();

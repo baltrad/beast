@@ -20,7 +20,7 @@ package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Query;
+import eu.baltrad.fc.db.AttributeQuery;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -43,10 +43,10 @@ public class LowestAngleFilter implements ICatalogFilter {
   private String source = null;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.Query)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.AttributeQuery)
    */
   @Override
-  public void apply(Query query) {
+  public void apply(AttributeQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
 
     if (source == null) {
@@ -66,7 +66,7 @@ public class LowestAngleFilter implements ICatalogFilter {
       query.filter(xpr.lt(xpr.attribute("what/time"), xpr.time(this.stopDT)));
     }
     
-    query.order_by(xpr.attribute("where/elangle"), Query.SortDirection.ASCENDING);
+    query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.ASC);
     query.limit(1);
     
     query.fetch(xpr.attribute("where/elangle"));

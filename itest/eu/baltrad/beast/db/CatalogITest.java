@@ -74,11 +74,11 @@ public class CatalogITest extends TestCase {
     helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
     for (String n : FIXTURES) {
-      File result = catalog.catalog(getFilePath(n));
+      File result = catalog.store(getFilePath(n));
       assertNotNull(result);
     }
     for (String n : SCAN_FIXTURES) {
-      File result = catalog.catalog(getFilePath(n));
+      File result = catalog.store(getFilePath(n));
       assertNotNull(result);
     }
     System.out.println("Catalogued " + (FIXTURES.length+SCAN_FIXTURES.length) + " files in " + (System.currentTimeMillis() - startTime) + "ms");
@@ -118,7 +118,7 @@ public class CatalogITest extends TestCase {
   
   public void testFetch_TimeIntervalFilter_previous() throws Exception {
     // First we need to add one entry from the current time period
-    catalog.catalog(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    catalog.store(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
     
     // and now execute test, we shouldn't get the scan from specified time
     TimeIntervalFilter filter = new TimeIntervalFilter();
@@ -138,7 +138,7 @@ public class CatalogITest extends TestCase {
   }
   
   public void testFetch_PolarScanAngleFilter_ascending() throws Exception {
-    catalog.catalog(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    catalog.store(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
 
     PolarScanAngleFilter filter = new PolarScanAngleFilter();
     filter.setSource("sevil");
@@ -152,7 +152,7 @@ public class CatalogITest extends TestCase {
   }
 
   public void testFetch_PolarScanAngleFilter_descending() throws Exception {
-    catalog.catalog(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    catalog.store(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
     
     PolarScanAngleFilter filter = new PolarScanAngleFilter();
     filter.setSource("sevil");
@@ -166,7 +166,7 @@ public class CatalogITest extends TestCase {
   }
 
   public void testFetch_PolarScanAngleFilter_minMaxElevation() throws Exception {
-    catalog.catalog(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    catalog.store(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
     
     PolarScanAngleFilter filter = new PolarScanAngleFilter();
     filter.setSource("sevil");

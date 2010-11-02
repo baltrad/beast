@@ -65,7 +65,7 @@ public class RuleUtilitiesITest extends TestCase {
     classUnderTest.setCatalog(catalog);
     
     for (String s: FIXTURES) {
-      catalog.getCatalog().catalog(getFilePath(s));
+      catalog.getCatalog().store(getFilePath(s));
     }
   }
   

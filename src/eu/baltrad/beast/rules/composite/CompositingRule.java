@@ -41,7 +41,7 @@ import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.db.FileEntry;
 
 /**
  * Compositing rule for beeing able to generate composites both from
@@ -259,7 +259,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
     initialize();
     
     if (message instanceof BltDataMessage) {
-      File file = ((BltDataMessage)message).getFile();
+      FileEntry file = ((BltDataMessage)message).getFileEntry();
       String object = file.what_object();
       if (object != null && object.equals("SCAN") && isScanBased()) {
         return handleCompositeFromScans(message);
@@ -428,7 +428,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
     logger.debug("createTimerData(IBltMessage)");
     CompositeTimerData result = null;
     if (message instanceof BltDataMessage) {
-      File file = ((BltDataMessage)message).getFile();
+      FileEntry file = ((BltDataMessage)message).getFileEntry();
       String object = file.what_object();
       Time t = file.what_time();
       Date d = file.what_date();

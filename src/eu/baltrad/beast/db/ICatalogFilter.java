@@ -18,7 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
-import eu.baltrad.fc.Query;
+import eu.baltrad.fc.db.AttributeQuery;
 
 /**
  * @author Anders Henja
@@ -38,7 +38,7 @@ public interface ICatalogFilter {
    * 
    * @param query the query to apply the filtering rules to
    */
-  void apply(Query query);
+  void apply(AttributeQuery query);
   
   /**
    * These attributes will be accessible within the CatalogEntry

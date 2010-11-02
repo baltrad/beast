@@ -34,7 +34,7 @@ import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.db.FileEntry;
 
 /**
  * @author Anders Henja
@@ -107,7 +107,7 @@ public class CompositingRuleITest extends TestCase {
     classUnderTest.setTimeout(0); // no timeouts
     
     for (String s: SCAN_DATA_0) {
-      catalog.getCatalog().catalog(getFilePath(s));
+      catalog.getCatalog().store(getFilePath(s));
     }
   }
   
@@ -139,19 +139,22 @@ public class CompositingRuleITest extends TestCase {
     classUnderTest.setInterval(10);
     classUnderTest.setSources(sources);
     
-    File f = catalog.getCatalog().catalog(getFilePath(FIXTURES[0]));
+    FileEntry f = catalog.getCatalog().store(getFilePath(FIXTURES[0]));
+    String seang_path = catalog.getCatalog().storage().store(f);
     IBltMessage result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
-    f = catalog.getCatalog().catalog(getFilePath(FIXTURES[2]));
+    f = catalog.getCatalog().store(getFilePath(FIXTURES[2]));
+    String searl_path = catalog.getCatalog().storage().store(f);
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
 
-    f = catalog.getCatalog().catalog(getFilePath(FIXTURES[3]));
+    f = catalog.getCatalog().store(getFilePath(FIXTURES[3]));
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
 
-    f = catalog.getCatalog().catalog(getFilePath(FIXTURES[5]));
+    f = catalog.getCatalog().store(getFilePath(FIXTURES[5]));
+    String sehud_path = catalog.getCatalog().storage().store(f);
     result = classUnderTest.handle(createDataMessage(f));
     assertNotNull(result);
     
@@ -159,13 +162,13 @@ public class CompositingRuleITest extends TestCase {
     assertEquals("eu.baltrad.beast.GenerateComposite", genmsg.getAlgorithm());
     String[] files = genmsg.getFiles();
     assertEquals(3, files.length);
-    assertTrue(arrayContains(files, helper.getBaltradDbPth() + "/Z_PVOL_C_ESWI_20090501110100_searl_000000.h5"));
-    assertTrue(arrayContains(files, helper.getBaltradDbPth() + "/Z_PVOL_C_ESWI_20090501110100_sehud_000000.h5"));
-    assertTrue(arrayContains(files, helper.getBaltradDbPth() + "/Z_PVOL_C_ESWI_20090501110100_seang_000000.h5"));
+    assertTrue(arrayContains(files, searl_path));
+    assertTrue(arrayContains(files, sehud_path));
+    assertTrue(arrayContains(files, seang_path));
   }
   
   public void testHandleScans() throws Exception {
-    File f = null;
+    FileEntry f = null;
     IBltMessage result = null;
     List<String> sources = new ArrayList<String>();
     sources.add("seang");
@@ -178,15 +181,15 @@ public class CompositingRuleITest extends TestCase {
     classUnderTest.setTimeout(10000);
     classUnderTest.setScanBased(true);
     
-    f = catalog.getCatalog().catalog(getFilePath(SCAN_DATA_1[0]));
+    f = catalog.getCatalog().store(getFilePath(SCAN_DATA_1[0]));
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
-    f = catalog.getCatalog().catalog(getFilePath(SCAN_DATA_1[1]));
+    f = catalog.getCatalog().store(getFilePath(SCAN_DATA_1[1]));
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
-    f = catalog.getCatalog().catalog(getFilePath(SCAN_DATA_1[2]));
+    f = catalog.getCatalog().store(getFilePath(SCAN_DATA_1[2]));
     result = classUnderTest.handle(createDataMessage(f));
     assertNotNull(result);
     
@@ -195,7 +198,7 @@ public class CompositingRuleITest extends TestCase {
   }
 
   public void testHandle_alreadyHandled() throws Exception {
-    File f = null;
+    FileEntry f = null;
     IBltMessage result = null;
     List<String> sources = new ArrayList<String>();
     sources.add("seang");
@@ -227,14 +230,14 @@ public class CompositingRuleITest extends TestCase {
     assertNotNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023182000_sease_000000.h5")));
   }
   
-  protected BltDataMessage createDataMessage(File f) {
+  protected BltDataMessage createDataMessage(FileEntry f) {
     BltDataMessage result = new BltDataMessage();
-    result.setFile(f);
+    result.setFileEntry(f);
     return result;
   }
   
   protected IBltMessage catalogAndHandle(CompositingRule rule, String path) throws Exception {
-    File f = catalog.getCatalog().catalog(path);
+    FileEntry f = catalog.getCatalog().store(path);
     return rule.handle(createDataMessage(f));
   }
 }

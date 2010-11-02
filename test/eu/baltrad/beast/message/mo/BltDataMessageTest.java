@@ -19,7 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.message.mo;
 
 import junit.framework.TestCase;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.db.FileEntry;
 
 /**
  * @author Anders Henja
@@ -27,10 +27,10 @@ import eu.baltrad.fc.oh5.File;
  */
 public class BltDataMessageTest extends TestCase {
   public void testSetFile() {
-    File o = new File(0,false);
+    FileEntry o = new FileEntry(0,false);
     BltDataMessage classUnderTest = new BltDataMessage();
-    assertEquals(null, classUnderTest.getFile());
-    classUnderTest.setFile(o);
-    assertSame(o, classUnderTest.getFile());
+    assertEquals(null, classUnderTest.getFileEntry());
+    classUnderTest.setFileEntry(o);
+    assertSame(o, classUnderTest.getFileEntry());
   }
 }

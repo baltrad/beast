@@ -24,11 +24,11 @@ import java.util.List;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.Query;
-import eu.baltrad.fc.ResultSet;
-import eu.baltrad.fc.Variant;
 import eu.baltrad.fc.DateTime;
+import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.fc.Variant;
+import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.AttributeResult;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -75,9 +75,9 @@ public class Catalog implements InitializingBean {
   public List<CatalogEntry> fetch(ICatalogFilter filter) {
     List<CatalogEntry> result = new ArrayList<CatalogEntry>();
     String[] attributes = filter.getExtraAttributes();
-    Query q = fc.query();
+    AttributeQuery q = fc.query_attribute();
     
-    q.fetch(xpr.attribute("file:path"));
+    q.fetch(xpr.attribute("file:uuid"));
     q.fetch(xpr.attribute("what/source:node"));
     q.fetch(xpr.attribute("what/date"));
     q.fetch(xpr.attribute("what/time"));
@@ -85,11 +85,13 @@ public class Catalog implements InitializingBean {
     
     filter.apply(q);
     
-    ResultSet set = q.execute();
+    AttributeResult set = q.execute();
     try {
       while (set.next()) {
         CatalogEntry entry = new CatalogEntry();
-        entry.setPath(set.string(0));
+        String uuid = set.string(0);
+	String path = fc.storage().store(fc.database().entry_by_uuid(uuid));
+	entry.setPath(path);
         entry.setSource(set.string(1));
         entry.setDateTime(new DateTime(set.date(2), set.time(3)));
         entry.setObject(set.string(4));

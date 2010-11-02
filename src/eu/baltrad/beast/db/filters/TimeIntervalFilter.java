@@ -20,7 +20,7 @@ package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Query;
+import eu.baltrad.fc.db.AttributeQuery;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -68,10 +68,10 @@ public class TimeIntervalFilter implements ICatalogFilter {
   private int limit = 0;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.Query)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.AttributeQuery)
    */
   @Override
-  public void apply(Query query) {
+  public void apply(AttributeQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
 
     if (object == null) {
@@ -93,8 +93,8 @@ public class TimeIntervalFilter implements ICatalogFilter {
     }
     
     if (this.limit > 0) {
-      query.order_by(xpr.attribute("what/date"), Query.SortDirection.DESCENDING);
-      query.order_by(xpr.attribute("what/time"), Query.SortDirection.DESCENDING);
+      query.order_by(xpr.attribute("what/date"), AttributeQuery.SortDir.DESC);
+      query.order_by(xpr.attribute("what/time"), AttributeQuery.SortDir.DESC);
       query.limit(this.limit);
     }
   }

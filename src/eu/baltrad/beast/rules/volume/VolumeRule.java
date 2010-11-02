@@ -40,7 +40,7 @@ import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.db.FileEntry;
 
 /**
  * @author Anders Henja
@@ -326,11 +326,11 @@ public class VolumeRule implements IRule, ITimeoutRule {
   protected VolumeTimerData createTimerData(IBltMessage message) {
     VolumeTimerData result = null;
     if (message instanceof BltDataMessage) {
-      File file = ((BltDataMessage)message).getFile();
+      FileEntry file = ((BltDataMessage)message).getFileEntry();
       if (file.what_object().equals("SCAN")) {
         Time t = file.what_time();
         Date d = file.what_date();
-        String s = file.source().node_id();
+        String s = file.source().get("name");
         double rscale = file.group("/dataset1/where").attribute("rscale").value().double_();
         long nbins = file.group("/dataset1/where").attribute("nbins").value().int64_();
         

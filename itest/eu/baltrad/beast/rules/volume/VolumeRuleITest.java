@@ -26,7 +26,7 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.db.FileEntry;
 import junit.framework.TestCase;
 
 /**
@@ -80,9 +80,9 @@ public class VolumeRuleITest extends TestCase {
     return f.getAbsolutePath();
   }
   
-  protected BltDataMessage createDataMessage(File f) {
+  protected BltDataMessage createDataMessage(FileEntry f) {
     BltDataMessage result = new BltDataMessage();
-    result.setFile(f);
+    result.setFileEntry(f);
     return result;
   }
   
@@ -90,23 +90,27 @@ public class VolumeRuleITest extends TestCase {
     classUnderTest.setElevationMin(0);
     classUnderTest.setElevationMax(24.0);
     
-    File f = catalog.getCatalog().catalog(getFilePath(FIXTURES[0]));
+    FileEntry f = catalog.getCatalog().store(getFilePath(FIXTURES[0]));
+    String fixture0_path = catalog.getCatalog().storage().store(f);
     IBltMessage result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
-    f = catalog.getCatalog().catalog(getFilePath(FIXTURES[1]));
+    f = catalog.getCatalog().store(getFilePath(FIXTURES[1]));
+    String fixture1_path = catalog.getCatalog().storage().store(f);
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
 
-    f = catalog.getCatalog().catalog(getFilePath(FIXTURES[2]));
+    f = catalog.getCatalog().store(getFilePath(FIXTURES[2]));
+    String fixture2_path = catalog.getCatalog().storage().store(f);
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
-    f = catalog.getCatalog().catalog(getFilePath(FIXTURES[3]));
+    f = catalog.getCatalog().store(getFilePath(FIXTURES[3]));
+    String fixture3_path = catalog.getCatalog().storage().store(f);
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
 
-    f = catalog.getCatalog().catalog(getFilePath(FIXTURES[9]));
+    f = catalog.getCatalog().store(getFilePath(FIXTURES[9]));
     result = classUnderTest.handle(createDataMessage(f));
     assertNotNull(result);
     assertTrue(result instanceof BltGenerateMessage);
@@ -115,10 +119,10 @@ public class VolumeRuleITest extends TestCase {
     assertEquals("eu.baltrad.beast.GenerateVolume", gmsg.getAlgorithm());
     String[] files = gmsg.getFiles();
     assertEquals(4, files.length);
-    assertEquals(bdbPath + "/Z_SCAN_C_ESWI_20090501120000_seang_000000.h5", files[0]);
-    assertEquals(bdbPath + "/Z_SCAN_C_ESWI_20090501120000_seang_000001.h5", files[1]);
-    assertEquals(bdbPath + "/Z_SCAN_C_ESWI_20090501120000_seang_000002.h5", files[2]);
-    assertEquals(bdbPath + "/Z_SCAN_C_ESWI_20090501120000_seang_000003.h5", files[3]);
+    assertEquals(fixture0_path, files[0]);
+    assertEquals(fixture1_path, files[1]);
+    assertEquals(fixture2_path, files[2]);
+    assertEquals(fixture3_path, files[3]);
     
     String[] args = gmsg.getArguments();
     assertEquals("--source=seang", args[0]);

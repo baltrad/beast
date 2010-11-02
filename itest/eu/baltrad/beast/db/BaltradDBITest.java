@@ -18,7 +18,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -28,11 +30,11 @@ import org.springframework.context.ApplicationContext;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.FileSystemError;
-import eu.baltrad.fc.Query;
-import eu.baltrad.fc.ResultSet;
+import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.AttributeResult;
+import eu.baltrad.fc.db.FileEntry;
 import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
-import eu.baltrad.fc.oh5.File;
 
 /**
  * @author Anders Henja
@@ -42,6 +44,7 @@ public class BaltradDBITest extends TestCase {
   private BeastDBTestHelper helper = null;
   private FileCatalog catalogue = null;
   private String baltradDbPath = null;
+  private Map<String, String> uuidMap = null;
   
   private static String[] FIXTURES = {
     "fixtures/pvol_seang_20090501T120000Z.h5",
@@ -64,6 +67,7 @@ public class BaltradDBITest extends TestCase {
     helper = (BeastDBTestHelper)context.getBean("helper");
     baltradDbPath = helper.getBaltradDbPth();
     catalogue = new FileCatalog(helper.getBaltradDbUri(), baltradDbPath);
+    uuidMap = new HashMap<String, String>();
   }
   
   private String getFilePath(String resource) throws Exception {
@@ -75,8 +79,9 @@ public class BaltradDBITest extends TestCase {
     helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
     for (String n : FIXTURES) {
-      File result = catalogue.catalog(getFilePath(n));
+      FileEntry result = catalogue.store(getFilePath(n));
       assertNotNull(result);
+      uuidMap.put(n, result.uuid());
     }
     System.out.println("Catalogued " + FIXTURES.length + " files in " + (System.currentTimeMillis() - startTime) + "ms");
   }
@@ -95,26 +100,27 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void test_find_seang() throws Exception {
-    Query q = catalogue.query();
+    AttributeQuery q = catalogue.query_attribute();
     ExpressionFactory xpr = new ExpressionFactory();
-    q.fetch(xpr.attribute("file:path"));
+    q.fetch(xpr.attribute("file:uuid"));
     q.filter(xpr.attribute("what/source:node").eq(xpr.string("seang")));
-    ResultSet rs = q.execute();
+    AttributeResult rs = q.execute();
     assertEquals(1, rs.size());
     rs.next();
     String result = rs.string(0);
     rs.delete();
-    assertEquals(baltradDbPath+"/Z_PVOL_C_ESWI_20090501120000_seang_000000.h5", result);
+    String seang_uuid = (String)uuidMap.get("fixtures/pvol_seang_20090501T120000Z.h5");
+    assertEquals(seang_uuid, result);
   }
 
   public void test_find_all() throws Exception {
-    Query q = catalogue.query();
+    AttributeQuery q = catalogue.query_attribute();
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
     q.fetch(xpr.attribute("what/source:node"));
 
-    ResultSet rs = q.execute();
+    AttributeResult rs = q.execute();
     assertEquals(12, rs.size());
     while (rs.next()) {
       result.add(rs.string(0));
@@ -135,14 +141,14 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void test_find_sekir_or_selul() throws Exception {
-    Query q = catalogue.query();
+    AttributeQuery q = catalogue.query_attribute();
     ExpressionFactory xpr = new ExpressionFactory();
     
     q.fetch(xpr.attribute("what/source:node"));
     Expression e1 = xpr.attribute("what/source:node").eq(xpr.string("sekir"));
     Expression e2 = xpr.attribute("what/source:node").eq(xpr.string("selul"));
     q.filter(xpr.or_(e1, e2));
-    ResultSet rs = q.execute();
+    AttributeResult rs = q.execute();
     assertEquals(2, rs.size());
     rs.next();
     String result1 = rs.string(0);
@@ -159,13 +165,13 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void test_find_all_but_sekir() throws Exception {
-    Query q = catalogue.query();
+    AttributeQuery q = catalogue.query_attribute();
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
     q.fetch(xpr.attribute("what/source:node"));
     q.filter(xpr.attribute("what/source:node").ne(xpr.string("sekir")));
-    ResultSet rs = q.execute();
+    AttributeResult rs = q.execute();
     assertEquals(11, rs.size());
     while (rs.next()) {
       result.add(rs.string(0));
@@ -185,7 +191,7 @@ public class BaltradDBITest extends TestCase {
   }
 
   public void test_find_elangles_searl() throws Exception {
-    Query q = catalogue.query();
+    AttributeQuery q = catalogue.query_attribute();
     ExpressionFactory xpr = new ExpressionFactory();
     Set<Double> result = new HashSet<Double>();
     
@@ -194,7 +200,7 @@ public class BaltradDBITest extends TestCase {
     q.filter(xpr.attribute("what/source:node").eq(xpr.string("searl")));
     q.filter(xpr.attribute("where/elangle").between(xpr.double_(-1.0), xpr.double_(5.0)));
     
-    ResultSet rs = q.execute();
+    AttributeResult rs = q.execute();
     assertEquals(6, rs.size());
     while (rs.next()) {
       assertEquals("searl", rs.string(0));

@@ -19,7 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.message.mo;
 
 import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.db.FileEntry;
 
 /**
  * The data message that is distributed within the framework.
@@ -27,21 +27,21 @@ import eu.baltrad.fc.oh5.File;
  */
 public class BltDataMessage implements IBltMessage {
   /**
-   * The file representation of the ODIM H5 file.
+   * The database representation of the ODIM H5 file.
    */
-  private File file = null;
+  private FileEntry entry = null;
 
   /**
-   * @param file the file object to set
+   * @param file the file entry in database to set
    */
-  public void setFile(File file) {
-    this.file = file;
+  public void setFileEntry(FileEntry entry) {
+    this.entry = entry;
   }
 
   /**
    * @return the file
    */
-  public File getFile() {
-    return file;
+  public FileEntry getFileEntry() {
+    return entry;
   }
 }

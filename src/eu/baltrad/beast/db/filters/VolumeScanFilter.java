@@ -20,8 +20,8 @@ package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.Date;
-import eu.baltrad.fc.Query;
 import eu.baltrad.fc.Time;
+import eu.baltrad.fc.db.AttributeQuery;
 import eu.baltrad.fc.expr.ExpressionFactory;
 import eu.baltrad.fc.expr.Literal;
 
@@ -38,10 +38,10 @@ public class VolumeScanFilter implements ICatalogFilter {
   private Time stopTime = null;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.Query)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.AttributeQuery)
    */
   @Override
-  public void apply(Query query) {
+  public void apply(AttributeQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
     Literal xprStartDate = xpr.date(startDate.year(), startDate.month(), startDate.day());
     Literal xprStartTime = xpr.time(startTime.hour(), startTime.minute(), startTime.second());

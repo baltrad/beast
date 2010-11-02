@@ -20,7 +20,7 @@ package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Query;
+import eu.baltrad.fc.db.AttributeQuery;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -63,10 +63,10 @@ public class PolarScanAngleFilter implements ICatalogFilter {
   private double maxElevation = 90.0;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.Query)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.AttributeQuery)
    */
   @Override
-  public void apply(Query query) {
+  public void apply(AttributeQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
 
     if (dt == null || source == null) {
@@ -83,9 +83,9 @@ public class PolarScanAngleFilter implements ICatalogFilter {
     query.filter(xpr.attribute("where/elangle").le(xpr.double_(maxElevation)));
     
     if (this.order == ASCENDING) {
-      query.order_by(xpr.attribute("where/elangle"), Query.SortDirection.ASCENDING);
+      query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.ASC);
     } else {
-      query.order_by(xpr.attribute("where/elangle"), Query.SortDirection.DESCENDING);
+      query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.DESC);
     }
     
     query.fetch(xpr.attribute("where/elangle"));
