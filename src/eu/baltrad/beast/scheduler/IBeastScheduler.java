@@ -28,7 +28,7 @@ public interface IBeastScheduler {
    * Registers a job
    * @param cron - the cron expression
    * @param jobName - the name of the job to be executed
-   * @returns the id for this scheduled job
+   * @return the id for this scheduled job
    */
   public int register(String cron, String jobName);
   

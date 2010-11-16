@@ -167,11 +167,18 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="-install-doc-files">
   	<mkdir dir="${prefix}/beast" />
   	<mkdir dir="${prefix}/beast/doc" />
-  	<copy todir="${prefix}/beast/doc">
+	<mkdir dir="${prefix}/beast/doc/doxygen" />
+  	<mkdir dir="${prefix}/beast/doc/javadoc" />
+  	<copy todir="${prefix}/beast/doc/doxygen">
       <fileset dir="${dist.dir}/doxygen/html">
         <include name="**/*.*" />
       </fileset>
   	</copy>
+    <copy todir="${prefix}/beast/doc/javadoc">
+      <fileset dir="${dist.dir}/javadoc">
+        <include name="**/*.*" />
+      </fileset>
+    </copy>
   </target>
 	
   <target name="install" depends="distribution, -install-files" />
@@ -429,7 +436,29 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="doc" description="Generates doxygen">
     <taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask" classpathref="doxygen.classpath" />
   	<mkdir dir="${dist.dir}/doxygen" />
+  	<mkdir dir="${dist.dir}/javadoc" />
     <doxygen configFilename="doxygen/beast_doxygen.cfg"/>
+	<javadoc packagenames="eu.baltrad.*"
+	         sourcepath="src"
+	         excludepackagenames="com.dummy.test.doc-files.*"
+	         defaultexcludes="yes"
+	         destdir="${dist.dir}/javadoc"
+	         author="true"
+	         version="true"
+	         use="true"
+	         windowtitle="Beast API">
+        <classpath refid="lib.path"/>
+        <doctitle><![CDATA[<h1>Beast API</h1>]]></doctitle>
+        <bottom><![CDATA[<i>Copyright 2010 Swedish Meteorological and Hydrological Institute.</i>]]></bottom>
+        <tag name="todo" scope="all" description="To do:"/>
+        <group title="Adaptors" packages="eu.baltrad.beast.adaptor*"/>
+        <group title="DB" packages="eu.baltrad.beast.db*"/>
+        <group title="Messages" packages="eu.baltrad.beast.manager*:eu.baltrad.beast.message*"/>
+        <group title="PgFwk" packages="eu.baltrad.beast.pgfwk*"/>
+        <group title="Rules" packages="eu.baltrad.beast.router*:eu.baltrad.beast.rules*"/>
+        <group title="Scheduler" packages="eu.baltrad.beast.scheduler*"/>
+        <link href="http://download.oracle.com/javase/6/docs/api/"/>
+      </javadoc>
   </target>
 </project>
 

@@ -62,7 +62,7 @@ public class GroovyRule implements IRule {
    * To be able to set a precompiled groovy rule
    * @param rule the rule to set
    */
-  protected void setScriptableRule(IScriptableRule rule) {
+  public void setScriptableRule(IScriptableRule rule) {
     this.rule = rule;
   }
   
@@ -80,6 +80,8 @@ public class GroovyRule implements IRule {
   }
 
   /**
+   * Creates an instance of the groovy script. Must be implementing
+   * the @ref {@link IScriptableRule}. Will compile and validate the script.
    * @param script the script to set
    * @throws RuleException if the script could not be set
    */

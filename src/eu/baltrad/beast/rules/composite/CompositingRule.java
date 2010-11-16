@@ -272,7 +272,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
 
   /**
    * Handles generation of a composite from a number of scans
-   * @param data the composite timer data
+   * @param message the @ref eu.baltrad.beast.message.mo.BltDataMessage containing a file scan 
    * @return a message or null if criterias not have been met.
    */
   protected IBltMessage handleCompositeFromScans(IBltMessage message) {
@@ -340,7 +340,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
   /**
    * Determines if a composite should be generated from a number
    * of volumes or not.
-   * @param data the composite timer data
+   * @param message the @ref eu.baltrad.beast.message.mo.BltDataMessage containing a file volume
    * @return the message or null if criterias not have been met.
    */
   protected IBltMessage handleCompositeFromVolume(IBltMessage message) {
@@ -464,8 +464,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
   
   /**
    * Creates a message if all nessecary entries are there
-   * @param date the date
-   * @param time the time
+   * @param nominalDT the nominal time
    * @param entries the list of entries
    * @return a message if criterias are fullfilled, otherwise null
    */
@@ -507,9 +506,8 @@ public class CompositingRule implements IRule, ITimeoutRule {
   
   /**
    * Returns a filter
-   * @param date the date
-   * @param time the time
-   * @returns a TimeIntervalFilter for polar volumes  
+   * @param nominalDT the nominal time
+   * @return a TimeIntervalFilter for polar volumes  
    */
   protected TimeIntervalFilter createFilter(DateTime nominalDT) {
     logger.debug("createFilter(DateTime)");

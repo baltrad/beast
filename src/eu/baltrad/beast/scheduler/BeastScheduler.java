@@ -86,7 +86,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
   
   /**
    * Sets the scheduler factory bean
-   * @param sfb
+   * @param sf the factory bean
    */
   public void setSchedulerFactoryBean(SchedulerFactoryBean sf) {
     this.sf = sf;
@@ -149,7 +149,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
   }
 
   /**
-   * @see eu.baltrad.beast.scheduler.IBeastScheduler#reregister(int, java.lang.String)
+   * @see eu.baltrad.beast.scheduler.IBeastScheduler#reregister(int, java.lang.String, java.lang.String)
    */
   @Override
   @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
@@ -168,7 +168,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
   }
 
   /**
-   * @see eu.baltrad.beast.scheduler.IBeastScheduler#unregister(java.lang.String)
+   * @see eu.baltrad.beast.scheduler.IBeastScheduler#unregister(int)
    */
   @Override
   @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
@@ -262,8 +262,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
   
   /**
    * Creates the cron trigger
-   * @param id the id
-   * @param expression the cron expression
+   * @param entry the entry to create a cron trigger from
    * @return a cron trigger
    */
   protected CronTriggerBean createTrigger(CronEntry entry) {
@@ -317,10 +316,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
   
   /**
    * Creates a job detail
-   * @param id the id for this job
    * @param jobName the beast job name
-   * @param job the job that should be triggered
-   * @return
    * @throws SchedulerException 
    */
   protected void registerJob(String jobName) throws org.quartz.SchedulerException {

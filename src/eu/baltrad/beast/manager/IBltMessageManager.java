@@ -21,11 +21,13 @@ package eu.baltrad.beast.manager;
 import eu.baltrad.beast.message.IBltMessage;
 
 /**
+ * The main entry point for messages passed on to the beast framework.
  * @author Anders Henja
  */
 public interface IBltMessageManager {
   /**
-   * Manages the message.
+   * Manages the message. Will use the router and adaptors in order to
+   * get the message safely transmitted to the configured recipients.
    * @param message the message to handle
    */
   public void manage(IBltMessage message); 

@@ -84,7 +84,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   
   /**
    * Sets the available types
-   * @param typeRegistry the type registry
+   * @param managers a list of adaptor types that are supported by this manager
    */
   public void setTypes(List<IAdaptorConfigurationManager> managers) {
     this.typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();
@@ -110,7 +110,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   }
   
   /**
-   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#store(java.lang.String, java.lang.String, eu.baltrad.beast.adaptor.IAdaptor)
+   * @see eu.baltrad.beast.adaptor.IBltAdaptorManager#register(IAdaptorConfiguration)
    */
   @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
   @Override

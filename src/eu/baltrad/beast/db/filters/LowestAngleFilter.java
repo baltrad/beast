@@ -109,7 +109,7 @@ public class LowestAngleFilter implements ICatalogFilter {
   }
   
   /**
-   * @param sources the sources to set
+   * @param source the source to set
    */
   public void setSource(String source) {
     this.source = source;

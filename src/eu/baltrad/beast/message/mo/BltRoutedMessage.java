@@ -58,7 +58,7 @@ public class BltRoutedMessage implements IBltMessage, IRoutedMessage {
   }
 
   /**
-   * @param destinations the destinations to set
+   * @param destination the destination of this message
    */
   public void setDestination(String destination) {
     this.destination = destination;

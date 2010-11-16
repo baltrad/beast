@@ -80,14 +80,14 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean, 
   }
 
   /**
-   * @param adaptor the adaptor to set
+   * @param manager the adaptor manager to set
    */
   public void setManager(IBltAdaptorManager manager) {
     this.manager = manager;
   }
 
   /**
-   * @param service the executor service to set
+   * @param executor the executor service to set
    */
   public synchronized void setExecutor(ExecutorService executor) {
     this.executor = executor;

@@ -110,7 +110,7 @@ public class HttpConnector implements IHttpConnector {
    * Generates a multipart entity for usage when sending messages to
    * the dex.
    * @param message
-   * @return
+   * @return the http entity
    */
   protected HttpEntity generateHttpEntity(BltDataFrameMessage message) {
     MultipartEntity entity = new MultipartEntity();

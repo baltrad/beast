@@ -61,7 +61,7 @@ public class ManagerContext implements InitializingBean {
   }
 
   /**
-   * @param catalog the catalog to set
+   * @param c the catalog to set
    */
   public void setCatalog(Catalog c) {
     catalog = c;
@@ -75,14 +75,14 @@ public class ManagerContext implements InitializingBean {
   }
 
   /**
-   * @param catalog the catalog to set
+   * @param utils the utilities to set to set
    */
   public void setUtilities(IRuleUtilities utils) {
     utilities = utils;
   }
   
   /**
-   * @return the catalog
+   * @return the utilities
    */
   public static IRuleUtilities getUtilities() {
     return utilities;

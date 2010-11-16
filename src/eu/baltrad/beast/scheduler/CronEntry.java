@@ -36,9 +36,8 @@ public class CronEntry {
   
   /**
    * Constructor
-   * @param id the unique id 
    * @param expression
-   * @param name
+   * @param name the name of the job to be executed
    */
   public CronEntry(String expression, String name) {
     setExpression(expression);

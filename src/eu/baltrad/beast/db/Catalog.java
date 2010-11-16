@@ -69,8 +69,8 @@ public class Catalog implements InitializingBean {
   
   /**
    * Returns a list of entries by applying the provided filter.
-   * @param filter
-   * @return
+   * @param filter the filter to use
+   * @return a list of entries
    */
   public List<CatalogEntry> fetch(ICatalogFilter filter) {
     List<CatalogEntry> result = new ArrayList<CatalogEntry>();

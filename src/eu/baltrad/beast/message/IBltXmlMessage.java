@@ -24,13 +24,13 @@ import org.dom4j.Document;
 /**
  * Any object supporting the BltXmlMessage should implement this
  * interface.
- * @todo: Probably going to be changed to annotation driven instead.
+ * @todo Probably going to be changed to annotation driven instead.
  * @author Anders Henja
  */
 public interface IBltXmlMessage extends IBltMessage {
   /**
    * Sets the object with data from the xml code
-   * @param xml the xml string
+   * @param dom the document to populate from
    */
   public void fromDocument(Document dom);
   

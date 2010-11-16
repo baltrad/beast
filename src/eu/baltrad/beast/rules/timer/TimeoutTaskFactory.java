@@ -31,7 +31,7 @@ public class TimeoutTaskFactory implements ITimeoutTaskFactory {
   private static Logger logger = LogManager.getLogger(TimeoutTaskFactory.class);
 
   /**
-   * @see eu.baltrad.beast.rules.timer.ITimeoutTaskFactory#create(eu.baltrad.beast.rules.timer.ITimeoutRule, long, eu.baltrad.beast.rules.timer.ITimeoutTaskListener)
+   * @see eu.baltrad.beast.rules.timer.ITimeoutTaskFactory#create(eu.baltrad.beast.rules.timer.ITimeoutRule, long, java.lang.Object, eu.baltrad.beast.rules.timer.ITimeoutTaskListener)
    */
   @Override
   public TimeoutTask create(ITimeoutRule rule, long id, Object data, ITimeoutTaskListener listener) {

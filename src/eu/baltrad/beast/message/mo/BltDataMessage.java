@@ -32,7 +32,7 @@ public class BltDataMessage implements IBltMessage {
   private FileEntry entry = null;
 
   /**
-   * @param file the file entry in database to set
+   * @param entry the file entry in database to set
    */
   public void setFileEntry(FileEntry entry) {
     this.entry = entry;

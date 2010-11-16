@@ -109,8 +109,7 @@ public class TimeIntervalFilter implements ICatalogFilter {
   
   /**
    * Sets the start date time
-   * @param date the date to set
-   * @param time the time to set
+   * @param dt the date time to set
    */
   public void setStartDateTime(DateTime dt) {
     this.startDT = dt;
@@ -118,8 +117,7 @@ public class TimeIntervalFilter implements ICatalogFilter {
   
   /**
    * Sets the stop date time
-   * @param date the date to set
-   * @param time the time to set
+   * @param dt the date time to set
    */
   public void setStopDateTime(DateTime dt) {
     this.stopDT = dt;

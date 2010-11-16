@@ -126,7 +126,7 @@ public class DateTime {
   
   /**
    * Compares equality between this instance and the dt
-   * @param dt the date time to compare with
+   * @param odt the date time to compare with
    * @return true if equality
    */
   public boolean equals(Object odt) {

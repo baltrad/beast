@@ -85,8 +85,8 @@ public class VolumeScanFilter implements ICatalogFilter {
   }
   
   /**
-   * Sets the object to search for
-   * @param object the object to set
+   * Sets the source
+   * @param source the source
    */
   public void setSource(String source) {
     this.source = source;

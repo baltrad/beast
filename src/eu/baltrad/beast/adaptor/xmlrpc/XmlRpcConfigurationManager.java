@@ -66,7 +66,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
   }
   
   /**
-   * @see eu.baltrad.beast.adaptor.IAdaptorConfigurationManager#createConfiguration()
+   * @see eu.baltrad.beast.adaptor.IAdaptorConfigurationManager#createConfiguration(java.lang.String)
    */
   @Override
   public IAdaptorConfiguration createConfiguration(String name) {

@@ -78,7 +78,7 @@ public class BltDexDataMessage implements IBltXmlMessage {
   
   /**
    * Returns the file name
-   * @return
+   * @return the file name
    */
   public String getFilename() {
     return filename;

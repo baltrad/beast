@@ -184,7 +184,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
   
   /**
    * returns the min elevation angle in degrees
-   * @return
+   * @return the min elevation
    */
   public double getElevationMin() {
     return this.eMin;
@@ -199,7 +199,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
   
   /**
    * returns the min elevation angle in degrees
-   * @return
+   * @return the max elevation
    */
   public double getElevationMax() {
     return this.eMax;
@@ -346,8 +346,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
 
   /**
    * Creates a message if all nessecary entries are there
-   * @param date the date
-   * @param time the time
+   * @param nominalTime the nominal time
    * @param entries the list of entries
    * @return a message if criterias are fullfilled, otherwise null
    */
@@ -433,7 +432,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
   
   /**
    * Returns the elevation angles for the previous time period
-   * @param nominalTime the time we are currently working with
+   * @param time the time we are currently working with
    * @param source the source
    * @return a list of elevation angles in degrees or a zero length list
    */
@@ -472,9 +471,9 @@ public class VolumeRule implements IRule, ITimeoutRule {
   
   /**
    * Returns a filter that should be used to fetch the previous date time period
-   * @param date the date
-   * @param time the time
-   * @returns a TimeIntervalFilter for scans  
+   * @param nominalTime the nominal time
+   * @param source the source node id
+   * @return a TimeIntervalFilter for scans  
    */
   protected TimeIntervalFilter createPreviousTimeFilter(DateTime nominalTime, String source) {
     TimeIntervalFilter filter = new TimeIntervalFilter();

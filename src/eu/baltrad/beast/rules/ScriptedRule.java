@@ -59,9 +59,8 @@ public class ScriptedRule implements IRule {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.IRule#getDefinition()
+   * @return the definition for this rule
    */
-  //@Override
   public String getDefinition() {
     return this.definition;
   }

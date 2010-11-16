@@ -283,7 +283,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   }
 
   /**
-   * @see eu.baltrad.beast.router.IRouterManager#create(String,String,boolean,String,IRule)
+   * @see eu.baltrad.beast.router.IRouterManager#create(String,String,boolean,String,List,IRule)
    */
   @Override
   public RouteDefinition create(String name, String author, boolean active, String description, List<String> recipients, IRule rule) {
@@ -406,7 +406,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   
   /**
    * Stores the recipients
-   * @param name - the route definition name
+   * @param rule_id - the rule id
    * @param recipients a list of recipients
    */
   protected void storeRecipients(int rule_id, List<String> recipients) {
@@ -422,7 +422,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   
   /**
    * Returns the recipients for the routing definition with specified name
-   * @param name the name of the routing defintion.
+   * @param rule_id the rule id.
    * @return a list of recipients.
    */
   protected synchronized List<String> getRecipients(int rule_id) {

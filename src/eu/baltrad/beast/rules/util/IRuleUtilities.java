@@ -72,8 +72,7 @@ public interface IRuleUtilities {
   
   /**
    * Creates a gregorian calendar with the specified date/time
-   * @param date the date
-   * @param time the time
+   * @param dt the date time
    * @return a gregorian calendar
    */
   public GregorianCalendar createCalendar(DateTime dt);

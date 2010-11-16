@@ -128,7 +128,7 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getFilesFromEntries(eu.baltrad.fc.DateTime, java.util.List)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getFilesFromEntries(eu.baltrad.fc.DateTime, java.util.List, java.util.List)
    */
   @Override
   public List<String> getFilesFromEntries(DateTime nominalDT, List<String> sources, List<CatalogEntry> entries) {
@@ -211,7 +211,7 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createEndNominalTime(eu.baltrad.fc.DateTime, int)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createNextNominalTime(eu.baltrad.fc.DateTime, int)
    */
   @Override
   public DateTime createNextNominalTime(DateTime now, int interval) {
