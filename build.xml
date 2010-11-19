@@ -70,7 +70,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <exclude name="ant/*.jar" />
       <exclude name="junit/*.jar"/>
       <exclude name="easymock/*.jar"/>
-      <exclude name="cobertura/*.jar"/>
+      <exclude name="emma/*.jar"/>
       <exclude name="cglib/*.jar"/>
     </fileset>
   	<fileset dir="${baltraddb.path}/java">
@@ -93,15 +93,12 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     </fileset>
   </path>
 
-  <!-- This loads cobertura, code coverage -->
-  <property name="cobertura.dir" value="${lib.dir}/cobertura" />
-  <path id="cobertura.classpath">
-    <fileset dir="${cobertura.dir}">
-      <include name="*.jar" />
-    </fileset>
+  <path id="emma.classpath" >
+    <pathelement location="${lib.dir}/emma/emma.jar" />
+    <pathelement location="${lib.dir}/emma/emma_ant.jar" />
   </path>
-	
-  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+  <taskdef resource="emma_ant.properties" classpathref="emma.classpath" />
 
   <!-- Generates the deliverables -->
   <target name="build" depends="clean,compile">
@@ -135,7 +132,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
         <exclude name="ant/*.jar" />
         <exclude name="junit/*.jar"/>
         <exclude name="easymock/*.jar"/>
-        <exclude name="cobertura/*.jar"/>
+        <exclude name="emma/*.jar"/>
       	<exclude name="poi/*.jar"/>
       	<exclude name="dbunit/*.jar"/>
       	<exclude name="spring/spring-test.jar"/>
@@ -332,57 +329,56 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <!-- CODE COVERAGE -->
   <target name="instrument.coverage">
     <delete dir="${build.instrument.dir}" />
-    <delete file="${build.coverage.dir}/cobertura.ser" />
+    <delete file="${build.coverage.dir}/coverage.ec" />
+    <delete file="${build.coverage.dir}/metadata.emma" />
     <mkdir dir="${build.instrument.dir}" />
     <mkdir dir="${build.coverage.dir}" />
-  	
-    <cobertura-instrument todir="${build.instrument.dir}" datafile="${build.coverage.dir}/cobertura.ser">
-      <includeClasses regex=".*" />
-    	<fileset dir="${build.classes.dir}">
-    		<include name="**/*.class" />
-    	</fileset>
-    </cobertura-instrument>   
+
+  	<emma enabled="true">
+      <instr instrpath="${build.classes.dir}/"
+             destdir="${build.instrument.dir}/"	
+             metadatafile="${build.coverage.dir}/metadata.emma"
+             merge="true"/>
+    </emma>
   </target>
   
   <target name="unittest.coverage" depends="instrument.coverage">
     <mkdir dir="${dist.dir}/coverage-reports" />
     <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
       <jvmarg line="-d64 -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
-      <sysproperty key="net.sourceforge.cobertura.datafile"  file="${build.coverage.dir}/cobertura.ser" /> <!-- For instrumentation -->
+      <sysproperty key="emma.coverage.out.file" file="${build.coverage.dir}/coverage.ec" /> <!-- So I know where ec file is placed -->
       <formatter type="xml"/> 
       <classpath location="${build.instrument.dir}" /> <!-- For instrumentation -->
       <classpath refid="test.lib.path"/>
       <classpath location="${build.classes.dir}"/>
       <classpath refid="lib.path"/>
       <classpath location="${build.test.dir}" />
-      <classpath refid="cobertura.classpath" />
+      <classpath refid="emma.classpath" />
+    	
       <batchtest fork="yes" todir="${dist.dir}/junit-reports">
         <fileset dir="${build.test.dir}" includes="**/*Test.class"/>
       </batchtest>
     </junit>
-		
-    <cobertura-report format="xml" destdir="${dist.dir}/coverage-reports" datafile="${build.coverage.dir}/cobertura.ser">
-      <fileset dir="${source.dir}">
-        <include name="**/*.java" />
-        <exclude name="**/*Stub.java" />
-      </fileset>
-    </cobertura-report>		
+
+  	<emma enabled="true">
+      <report sourcepath="${source.dir}" >
+        <fileset dir="${build.coverage.dir}" >
+          <include name="*.emma" />
+          <include name="*.ec" />
+        </fileset>
+      	<xml outfile="${dist.dir}/coverage-reports/coverage.xml" depth="method"/>
+      </report>
+    </emma>
   </target>
 
   <!-- performs coverage from running all tests (unit tests, integration tests-->
   <target name="test.coverage" depends="prepare.test,prepare.itest,instrument.coverage">
     <mkdir dir="${dist.dir}/junit-reports" />
     <mkdir dir="${dist.dir}/coverage-reports" />
-  	<!-- for test purpose, do not deliver with these settings
-  	<copy todir="${build.classes.dir}">
-      <fileset dir="${app.root.dir}/etc">
-        <include name="log4j.properties"/>
-      </fileset>
-    </copy>
-    -->
-    <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
+
+	<junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
       <jvmarg line="-d64 -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
-      <sysproperty key="net.sourceforge.cobertura.datafile"  file="${build.coverage.dir}/cobertura.ser" /> <!-- For instrumentation -->
+      <sysproperty key="emma.coverage.out.file" file="${build.coverage.dir}/coverage.ec" /> <!-- So I know where ec file is placed -->
       <formatter type="xml"/> 
       <classpath location="${build.instrument.dir}" /> <!-- For instrumentation -->
       <classpath refid="test.lib.path"/>
@@ -390,18 +386,23 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <classpath refid="lib.path"/>
       <classpath location="${build.test.dir}" />
       <classpath location="${build.itest.dir}" />
-      <classpath refid="cobertura.classpath" />
+      <classpath refid="emma.classpath" />
+    	
       <batchtest fork="true" todir="${dist.dir}/junit-reports">
         <fileset dir="${build.test.dir}" includes="**/*Test.class"/>
         <fileset dir="${build.itest.dir}" includes="**/*Test.class"/>
       </batchtest>
     </junit>
-    <cobertura-report format="xml" destdir="${dist.dir}/coverage-reports" datafile="${build.coverage.dir}/cobertura.ser">
-      <fileset dir="${source.dir}">
-        <include name="**/*.java" />
-        <exclude name="**/*Stub.java" />
-      </fileset>
-    </cobertura-report>		
+
+  	<emma enabled="true">
+      <report sourcepath="${source.dir}" >
+        <fileset dir="${build.coverage.dir}" >
+          <include name="*.emma" />
+          <include name="*.ec" />
+        </fileset>
+      	<xml outfile="${dist.dir}/coverage-reports/coverage.xml" depth="method"/>
+      </report>
+    </emma>
   </target>
 	
   <!-- clean directories for building -->
