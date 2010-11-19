@@ -28,6 +28,7 @@ import java.util.List;
 import org.quartz.CronTrigger;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -56,7 +57,7 @@ import eu.baltrad.beast.manager.IBltMessageManager;
  * 
  * @author Anders Henja
  */
-public class BeastScheduler implements IBeastScheduler, InitializingBean {
+public class BeastScheduler implements IBeastScheduler, InitializingBean, DisposableBean {
   /**
    * The group to use for all scheduled jobs
    */
@@ -78,6 +79,12 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
   private SimpleJdbcOperations template = null;
   
   /**
+   * If the scheduler factory bean has been created internally or comes from
+   * outside
+   */
+  private volatile boolean internalSfb = false;
+  
+  /**
    * Constructor
    */
   public BeastScheduler() {
@@ -88,8 +95,9 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
    * Sets the scheduler factory bean
    * @param sf the factory bean
    */
-  public void setSchedulerFactoryBean(SchedulerFactoryBean sf) {
+  public synchronized void setSchedulerFactoryBean(SchedulerFactoryBean sf) {
     this.sf = sf;
+    internalSfb = false;
   }
 
   /**
@@ -110,10 +118,11 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
    * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
    */
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public synchronized void afterPropertiesSet() throws Exception {
     if (sf == null) {
-      sf = new SchedulerFactoryBean();
+      sf = createScheduleFactory();
       sf.afterPropertiesSet();
+      internalSfb = true;
     }
     List<CronEntry> entries = template.query("select id, expression, name from beast_scheduled_jobs order by id",
         getScheduleMapper(),
@@ -124,6 +133,24 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean {
     }
   }
 
+  /**
+   * Creates a SchedulerFactoryBean. Remember to call
+   * afterPropertiesSet on it.
+   * @return the scheduler factory bean
+   */
+  protected SchedulerFactoryBean createScheduleFactory() {
+    return new SchedulerFactoryBean();
+  }
+
+  /**
+   * @see org.springframework.beans.factory.DisposableBean#destroy()
+   */
+  @Override
+  public synchronized void destroy() throws Exception {
+    if (internalSfb == true && sf != null) {
+      sf.destroy();
+    }
+  }
   /**
    * @see eu.baltrad.beast.scheduler.IBeastScheduler#register(java.lang.String, java.lang.String)
    */
