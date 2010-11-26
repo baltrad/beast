@@ -90,8 +90,8 @@ public class Catalog implements InitializingBean {
       while (set.next()) {
         CatalogEntry entry = new CatalogEntry();
         String uuid = set.string(0);
-	String path = fc.storage().store(fc.database().entry_by_uuid(uuid));
-	entry.setPath(path);
+	      String path = fc.storage().store(fc.database().entry_by_uuid(uuid));
+	      entry.setPath(path);
         entry.setSource(set.string(1));
         entry.setDateTime(new DateTime(set.date(2), set.time(3)));
         entry.setObject(set.string(4));

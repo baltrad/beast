@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.util;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -25,13 +27,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.LowestAngleFilter;
-import eu.baltrad.beast.rules.composite.CompositingRule;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
@@ -45,6 +50,11 @@ public class RuleUtilities implements IRuleUtilities {
    */
   private Catalog catalog = null;
 
+  /**
+   * The jdbc template
+   */
+  private JdbcTemplate template = null;
+  
   private static class IdDateMapping {
     private int ruleid = 0;
     private DateTime dt = null;
@@ -91,6 +101,13 @@ public class RuleUtilities implements IRuleUtilities {
     return catalog;
   }
 
+  /**
+   * @param ds the datasource from which to create a template
+   */
+  public void setDataSource(DataSource ds) {
+    template = new JdbcTemplate(ds);
+  }
+  
   /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#fetchLowestSourceElevationAngle(eu.baltrad.fc.DateTime, eu.baltrad.fc.DateTime, java.util.List)
    */
@@ -278,5 +295,27 @@ public class RuleUtilities implements IRuleUtilities {
     boolean result = registeredTriggers.contains(m);
     logger.debug("isTriggered("+ruleid+", DateTime("+d.year()+"-"+d.month()+"-"+d.day()+" "+t.hour()+":" + t.minute() + ":" + t.second()+")), result=" + result);
     return registeredTriggers.contains(m);
+  }
+  
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getRadarSources()
+   */
+  @SuppressWarnings("unchecked")
+  public synchronized List<String> getRadarSources() {
+    ParameterizedRowMapper<String> mapper = createSourceMapper();
+    return template.query("select bs.name from bdb_sources as bs, bdb_source_kvs as bskv where bs.id=bskv.source_id and bskv.key='RAD'", mapper); 
+  }
+
+  /**
+   * Creates a radar source mapper
+   * @return the source mapper
+   */
+  protected ParameterizedRowMapper<String> createSourceMapper() {
+    return new ParameterizedRowMapper<String>() {
+      @Override
+      public String mapRow(ResultSet rs, int rn) throws SQLException {
+        return rs.getString("name");
+      }
+    };
   }
 }

@@ -140,4 +140,10 @@ public interface IRuleUtilities {
    */
   public boolean isTriggered(int ruleid, DateTime now);
   
+  /**
+   * Returns a list of all available radar source names, like
+   * searl,...
+   * @return the list of radar names
+   */
+  public List<String> getRadarSources();
 }
