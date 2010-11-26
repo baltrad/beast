@@ -130,6 +130,16 @@ public class Catalog implements InitializingBean {
   }
 
   /**
+   * Returns the location of the file associated with the
+   * uuid.
+   * @param uuid the uuid
+   * @return the file location
+   */
+  public String getFileCatalogPath(String uuid) {
+    return fc.local_path_for_uuid(uuid);
+  }
+  
+  /**
    * Requires that a file catalog instance has been set, otherwise a BeanInitializationException
    * will be thrown.
    * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()

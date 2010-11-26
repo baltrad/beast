@@ -43,11 +43,29 @@ public class CatalogTest extends TestCase {
   public void testAfterPropertiesSet() throws Exception {
     MockControl fcControl = MockClassControl.createControl(FileCatalog.class);
     FileCatalog fc = (FileCatalog)fcControl.getMock();
-    
     classUnderTest.setCatalog(fc);
+    
+    fcControl.replay();
+    
     classUnderTest.afterPropertiesSet();
+    
+    fcControl.verify();
   }
 
+  public void testGetFileCatalogPath() throws Exception {
+    MockControl fcControl = MockClassControl.createControl(FileCatalog.class);
+    FileCatalog fc = (FileCatalog)fcControl.getMock();
+    classUnderTest.setCatalog(fc);
+
+    fc.local_path_for_uuid("xyz");
+    fcControl.setReturnValue("/some/path");
+    
+    fcControl.replay();
+    String result = classUnderTest.getFileCatalogPath("xyz");
+    fcControl.verify();
+    assertEquals("/some/path", result);
+  }
+  
   public void testAfterPropertiesSet_noFc() throws Exception {
     try {
       classUnderTest.afterPropertiesSet();
