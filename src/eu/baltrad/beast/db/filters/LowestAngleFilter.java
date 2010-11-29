@@ -54,7 +54,7 @@ public class LowestAngleFilter implements ICatalogFilter {
     }
 
     query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
-    query.filter(xpr.eq(xpr.attribute("what/source:node"), xpr.string(source)));
+    query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
     
     if (startDT != null) {
       query.filter(xpr.ge(xpr.attribute("what/date"), xpr.date(this.startDT)));

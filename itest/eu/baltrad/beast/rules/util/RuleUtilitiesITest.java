@@ -21,8 +21,6 @@ package eu.baltrad.beast.rules.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import junit.framework.TestCase;
 
 import org.springframework.context.ApplicationContext;
@@ -63,10 +61,8 @@ public class RuleUtilitiesITest extends TestCase {
 
   public void setUp() throws Exception {
     helper.purgeBaltradDB();
-    DataSource dataSource = (DataSource)context.getBean("dataSource");
     classUnderTest = new RuleUtilities();
     classUnderTest.setCatalog(catalog);
-    classUnderTest.setDataSource(dataSource);
     
     for (String s: FIXTURES) {
       catalog.getCatalog().store(getFilePath(s));

@@ -330,7 +330,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
       if (file.what_object().equals("SCAN")) {
         Time t = file.what_time();
         Date d = file.what_date();
-        String s = file.source().get("name");
+        String s = file.source().get("_name");
         double rscale = file.group("/dataset1/where").attribute("rscale").value().double_();
         long nbins = file.group("/dataset1/where").attribute("nbins").value().int64_();
         

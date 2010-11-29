@@ -74,7 +74,7 @@ public class PolarScanAngleFilter implements ICatalogFilter {
     }
 
     query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
-    query.filter(xpr.eq(xpr.attribute("what/source:node"), xpr.string(source)));
+    query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
 
     query.filter(xpr.eq(xpr.attribute("what/date"), xpr.date(dt)));
     query.filter(xpr.eq(xpr.attribute("what/time"), xpr.time(dt)));

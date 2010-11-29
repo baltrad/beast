@@ -103,7 +103,7 @@ public class BaltradDBITest extends TestCase {
     AttributeQuery q = catalogue.query_attribute();
     ExpressionFactory xpr = new ExpressionFactory();
     q.fetch(xpr.attribute("file:uuid"));
-    q.filter(xpr.attribute("what/source:node").eq(xpr.string("seang")));
+    q.filter(xpr.attribute("what/source:_name").eq(xpr.string("seang")));
     AttributeResult rs = q.execute();
     assertEquals(1, rs.size());
     rs.next();
@@ -118,7 +118,7 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
-    q.fetch(xpr.attribute("what/source:node"));
+    q.fetch(xpr.attribute("what/source:_name"));
 
     AttributeResult rs = q.execute();
     assertEquals(12, rs.size());
@@ -144,9 +144,9 @@ public class BaltradDBITest extends TestCase {
     AttributeQuery q = catalogue.query_attribute();
     ExpressionFactory xpr = new ExpressionFactory();
     
-    q.fetch(xpr.attribute("what/source:node"));
-    Expression e1 = xpr.attribute("what/source:node").eq(xpr.string("sekir"));
-    Expression e2 = xpr.attribute("what/source:node").eq(xpr.string("selul"));
+    q.fetch(xpr.attribute("what/source:_name"));
+    Expression e1 = xpr.attribute("what/source:_name").eq(xpr.string("sekir"));
+    Expression e2 = xpr.attribute("what/source:_name").eq(xpr.string("selul"));
     q.filter(xpr.or_(e1, e2));
     AttributeResult rs = q.execute();
     assertEquals(2, rs.size());
@@ -169,8 +169,8 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
-    q.fetch(xpr.attribute("what/source:node"));
-    q.filter(xpr.attribute("what/source:node").ne(xpr.string("sekir")));
+    q.fetch(xpr.attribute("what/source:_name"));
+    q.filter(xpr.attribute("what/source:_name").ne(xpr.string("sekir")));
     AttributeResult rs = q.execute();
     assertEquals(11, rs.size());
     while (rs.next()) {
@@ -195,9 +195,9 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<Double> result = new HashSet<Double>();
     
-    q.fetch(xpr.attribute("what/source:node"));
+    q.fetch(xpr.attribute("what/source:_name"));
     q.fetch(xpr.attribute("where/elangle"));
-    q.filter(xpr.attribute("what/source:node").eq(xpr.string("searl")));
+    q.filter(xpr.attribute("what/source:_name").eq(xpr.string("searl")));
     q.filter(xpr.attribute("where/elangle").between(xpr.double_(-1.0), xpr.double_(5.0)));
     
     AttributeResult rs = q.execute();
