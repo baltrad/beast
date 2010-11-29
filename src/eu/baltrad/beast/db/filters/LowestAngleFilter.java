@@ -21,6 +21,7 @@ package eu.baltrad.beast.db.filters;
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -48,6 +49,7 @@ public class LowestAngleFilter implements ICatalogFilter {
   @Override
   public void apply(AttributeQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
+    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
 
     if (source == null) {
       throw new IllegalArgumentException("datetime and at source required");
@@ -57,13 +59,11 @@ public class LowestAngleFilter implements ICatalogFilter {
     query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
     
     if (startDT != null) {
-      query.filter(xpr.ge(xpr.attribute("what/date"), xpr.date(this.startDT)));
-      query.filter(xpr.ge(xpr.attribute("what/time"), xpr.time(this.startDT)));
+      query.filter(xpr.ge(dtAttr, xpr.datetime(this.startDT)));
     }
     
     if (stopDT != null) {
-      query.filter(xpr.le(xpr.attribute("what/date"), xpr.date(this.stopDT)));
-      query.filter(xpr.lt(xpr.attribute("what/time"), xpr.time(this.stopDT)));
+      query.filter(xpr.lt(dtAttr, xpr.datetime(this.stopDT)));
     }
     
     query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.ASC);

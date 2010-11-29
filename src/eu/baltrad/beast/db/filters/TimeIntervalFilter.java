@@ -21,6 +21,7 @@ package eu.baltrad.beast.db.filters;
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -73,6 +74,7 @@ public class TimeIntervalFilter implements ICatalogFilter {
   @Override
   public void apply(AttributeQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
+    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
 
     if (object == null) {
       throw new IllegalArgumentException("Must specify object type");
@@ -84,17 +86,14 @@ public class TimeIntervalFilter implements ICatalogFilter {
     }
 
     if (startDT != null) {
-      query.filter(xpr.ge(xpr.attribute("what/date"), xpr.date(this.startDT)));
-      query.filter(xpr.ge(xpr.attribute("what/time"), xpr.time(this.startDT)));
+      query.filter(xpr.ge(dtAttr, xpr.datetime(this.startDT)));
     }
     if (stopDT != null) {
-      query.filter(xpr.le(xpr.attribute("what/date"), xpr.date(this.stopDT)));
-      query.filter(xpr.lt(xpr.attribute("what/time"), xpr.time(this.stopDT)));
+      query.filter(xpr.lt(dtAttr, xpr.datetime(this.stopDT)));
     }
     
     if (this.limit > 0) {
-      query.order_by(xpr.attribute("what/date"), AttributeQuery.SortDir.DESC);
-      query.order_by(xpr.attribute("what/time"), AttributeQuery.SortDir.DESC);
+      query.order_by(dtAttr, AttributeQuery.SortDir.DESC);
       query.limit(this.limit);
     }
   }

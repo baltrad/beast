@@ -20,10 +20,11 @@ package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.Date;
+import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
 import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
-import eu.baltrad.fc.expr.Literal;
 
 /**
  * Filter to be used when searching for a number of scans that
@@ -43,17 +44,14 @@ public class VolumeScanFilter implements ICatalogFilter {
   @Override
   public void apply(AttributeQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
-    Literal xprStartDate = xpr.date(startDate.year(), startDate.month(), startDate.day());
-    Literal xprStartTime = xpr.time(startTime.hour(), startTime.minute(), startTime.second());
-    Literal xprStopDate = xpr.date(stopDate.year(), stopDate.month(), stopDate.day());
-    Literal xprStopTime = xpr.time(stopTime.hour(), stopTime.minute(), stopTime.second());
+    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
+    DateTime startDT = new DateTime(startDate, startTime);
+    DateTime stopDT = new DateTime(stopDate, stopTime);
 
     query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
     query.filter(xpr.eq(xpr.attribute("what/source"), xpr.string(source)));
-    query.filter(xpr.ge(xpr.attribute("what/date"), xprStartDate));
-    query.filter(xpr.ge(xpr.attribute("what/time"), xprStartTime));
-    query.filter(xpr.le(xpr.attribute("what/date"), xprStopDate));
-    query.filter(xpr.lt(xpr.attribute("what/time"), xprStopTime));    
+    query.filter(xpr.ge(dtAttr, xpr.datetime(startDT)));
+    query.filter(xpr.lt(dtAttr, xpr.datetime(stopDT)));
   }
   
   /**
