@@ -49,12 +49,12 @@ public class CompositingRuleITest extends TestCase {
   private IRuleUtilities ruleutil = null;
   
   private static String[] FIXTURES = {
-    "fixtures/pvol_seang_20090501T110100Z.h5",
-    "fixtures/pvol_seang_20090501T111600Z.h5",
-    "fixtures/pvol_searl_20090501T110100Z.h5",
-    "fixtures/pvol_sease_20090501T110200Z.h5",
-    "fixtures/pvol_sease_20090501T111600Z.h5",
-    "fixtures/pvol_sehud_20090501T110100Z.h5"};
+    "fixtures/Z_PVOL_C_ESWI_20101023180100_seang.h5",
+    "fixtures/Z_PVOL_C_ESWI_20101023181600_seang.h5",
+    "fixtures/Z_PVOL_C_ESWI_20101023180100_searl.h5",
+    "fixtures/Z_PVOL_C_ESWI_20101023180200_sease.h5",
+    "fixtures/Z_PVOL_C_ESWI_20101023181600_sease.h5",
+    "fixtures/Z_PVOL_C_ESWI_20101023180100_sehud.h5"};
   
   private static String[] SCAN_DATA_0 = {
     "fixtures/Z_SCAN_C_ESWI_20101016080000_seang_000000.h5",

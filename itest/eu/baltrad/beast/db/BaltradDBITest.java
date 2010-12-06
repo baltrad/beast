@@ -47,18 +47,18 @@ public class BaltradDBITest extends TestCase {
   private Map<String, String> uuidMap = null;
   
   private static String[] FIXTURES = {
-    "fixtures/pvol_seang_20090501T120000Z.h5",
-    "fixtures/pvol_searl_20090501T120000Z.h5",
-    "fixtures/pvol_sease_20090501T120000Z.h5",
-    "fixtures/pvol_sehud_20090501T120000Z.h5",
-    "fixtures/pvol_sekir_20090501T120000Z.h5",
-    "fixtures/pvol_sekkr_20090501T120000Z.h5",
-    "fixtures/pvol_selek_20090501T120000Z.h5",
-    "fixtures/pvol_selul_20090501T120000Z.h5",
-    "fixtures/pvol_seosu_20090501T120000Z.h5",
-    "fixtures/pvol_seovi_20090501T120000Z.h5",
-    "fixtures/pvol_sevar_20090501T120000Z.h5",
-    "fixtures/pvol_sevil_20090501T120000Z.h5"
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_seang_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_searl_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_sease_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_sehud_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_sekir_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_sekkr_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_selek_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_selul_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_seosu_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_seovi_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_sevar_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101023180000_sevil_000000.h5"    
   };
   
   public BaltradDBITest(String name) {
@@ -109,7 +109,7 @@ public class BaltradDBITest extends TestCase {
     rs.next();
     String result = rs.string(0);
     rs.delete();
-    String seang_uuid = (String)uuidMap.get("fixtures/pvol_seang_20090501T120000Z.h5");
+    String seang_uuid = (String)uuidMap.get("fixtures/Z_SCAN_C_ESWI_20101023180000_seang_000000.h5");
     assertEquals(seang_uuid, result);
   }
 
@@ -189,29 +189,4 @@ public class BaltradDBITest extends TestCase {
     assertTrue(result.contains("seang"));
     assertTrue(result.contains("sekkr"));
   }
-
-  public void test_find_elangles_searl() throws Exception {
-    AttributeQuery q = catalogue.query_attribute();
-    ExpressionFactory xpr = new ExpressionFactory();
-    Set<Double> result = new HashSet<Double>();
-    
-    q.fetch(xpr.attribute("what/source:_name"));
-    q.fetch(xpr.attribute("where/elangle"));
-    q.filter(xpr.attribute("what/source:_name").eq(xpr.string("searl")));
-    q.filter(xpr.attribute("where/elangle").between(xpr.double_(-1.0), xpr.double_(5.0)));
-    
-    AttributeResult rs = q.execute();
-    assertEquals(6, rs.size());
-    while (rs.next()) {
-      assertEquals("searl", rs.string(0));
-      result.add(rs.double_(1));
-    }
-    rs.delete();
-    assertTrue(result.contains(0.5));
-    assertTrue(result.contains(1.0));
-    assertTrue(result.contains(1.5));
-    assertTrue(result.contains(2.0));
-    assertTrue(result.contains(2.5));
-    assertTrue(result.contains(4.0));
-  }  
 }

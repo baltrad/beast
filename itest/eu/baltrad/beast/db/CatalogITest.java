@@ -42,10 +42,10 @@ public class CatalogITest extends TestCase {
   private Catalog classUnderTest = null;
   
   private static String[] FIXTURES = {
-    "fixtures/pvol_seang_20090501T120000Z.h5",
-    "fixtures/pvol_searl_20090501T120000Z.h5",
-    "fixtures/pvol_sease_20090501T120000Z.h5",
-    "fixtures/pvol_sehud_20090501T120000Z.h5"};
+    "fixtures/Z_PVOL_C_ESWI_20101023180100_seang.h5",
+    "fixtures/Z_PVOL_C_ESWI_20101023180100_searl.h5",
+    "fixtures/Z_PVOL_C_ESWI_20101023180100_sease.h5",
+    "fixtures/Z_PVOL_C_ESWI_20101023180100_sehud.h5"};
 
   private static String[] SCAN_FIXTURES = {
     "fixtures/scan_sevil_20090501123100Z_1.0.h5",
@@ -92,8 +92,8 @@ public class CatalogITest extends TestCase {
     TimeIntervalFilter filter = new TimeIntervalFilter();
     
     filter.setObject("PVOL");
-    filter.setStartDateTime(new DateTime(2009,5,1,12, 0, 0));
-    filter.setStopDateTime(new DateTime(2009,5,1,12, 15, 0));
+    filter.setStartDateTime(new DateTime(2010,10,23, 18, 0, 0));
+    filter.setStopDateTime(new DateTime(2010,10,23, 18, 2, 0));
     
     List<CatalogEntry> result = classUnderTest.fetch(filter);
     
