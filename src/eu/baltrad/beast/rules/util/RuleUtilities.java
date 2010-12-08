@@ -256,13 +256,11 @@ public class RuleUtilities implements IRuleUtilities {
     IdDateMapping m = new IdDateMapping(ruleid, now);
     
     if (!registeredTriggers.contains(m)) {
-      logger.debug("trigger("+ruleid+", DateTime): Adding mapping");
       registeredTriggers.add(m);
     }
     
     // Keep a backlog of 100 entries until there is need for more clever solution
     if (registeredTriggers.size() > 100) {
-      logger.debug("trigger("+ruleid+", DateTime): Removing first item");
       registeredTriggers.remove(0);
     }
   }
@@ -273,10 +271,6 @@ public class RuleUtilities implements IRuleUtilities {
   @Override
   public synchronized boolean isTriggered(int ruleid, DateTime now) {
     IdDateMapping m = new IdDateMapping(ruleid, now);
-    Date d = now.date();
-    Time t = now.time();
-    boolean result = registeredTriggers.contains(m);
-    logger.debug("isTriggered("+ruleid+", DateTime("+d.year()+"-"+d.month()+"-"+d.day()+" "+t.hour()+":" + t.minute() + ":" + t.second()+")), result=" + result);
     return registeredTriggers.contains(m);
   }
   

@@ -185,7 +185,6 @@ public class XmlRpcAdaptor implements IAdaptor {
    */
   @Override
   public void handle(IBltMessage message, IAdaptorCallback cb) {
-    logger.debug("handle(IBltMessage, IAdaptorCallback)");
     try {
       XmlRpcCommand command = generator.generate(message);
       TimingOutCallback tcb = createTimeout(timeout);
@@ -193,18 +192,18 @@ public class XmlRpcAdaptor implements IAdaptor {
       client.executeAsync(command.getMethod(), command.getObjects(), tcb);
       try {
         Object result = tcb.waitForResponse();
+        logger.debug("executeAsync SUCCESS");
         if (cb != null) {
-          logger.debug("executeAsync SUCCESS");
           cb.success(message, result);
         }
       } catch (TimingOutCallback.TimeoutException e) {
+        logger.debug("executeAsync TIMEOUT");
         if (cb != null) {
-          logger.debug("executeAsync TIMEOUT");
           cb.timeout(message);
         }
       } catch (Throwable t) {
+        logger.debug("executeAsync ERROR");
         if (cb != null) {
-          logger.debug("executeAsync ERROR");
           cb.error(message, t);
         }
       }

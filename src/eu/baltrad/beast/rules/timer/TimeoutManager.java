@@ -101,7 +101,6 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @return true if found otherwise false
    */
   public synchronized boolean isRegistered(Object data) {
-    logger.debug("isRegistered(Object)");
     if (data != null) {
       for (TimeoutTask t : tasks.values()) {
         Object o = t.getData();
@@ -119,7 +118,6 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @return the object if found otherwise null
    */
   public synchronized TimeoutTask getRegisteredTask(Object data) {
-    logger.debug("getRegisteredTask(Object)");
     if (data != null) {
       for (TimeoutTask t : tasks.values()) {
         Object o = t.getData();
@@ -139,7 +137,6 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @return a unique id
    */
   public synchronized long register(ITimeoutRule rule, long delay, Object data) {
-    logger.debug("register(ITimeoutRule, long, Object)");
     long id = newID();
     TimeoutTask task = factory.create(rule, id, data, this);
     tasks.put(id, task);
@@ -222,7 +219,6 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    */
   @Override
   public void destroy() throws Exception {
-    logger.debug("destroy()");
     if (this.timer != null) {
       this.timer.cancel();
     }

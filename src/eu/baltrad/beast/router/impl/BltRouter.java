@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -65,6 +67,11 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    */
   private Map<String, IRuleManager> ruleManagers = null;
   
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(BltRouter.class);
+
   /**
    * Constructor
    */
@@ -150,8 +157,14 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	        result.add(rms);
 	      } else {
 	        BltMultiRoutedMessage rms = new BltMultiRoutedMessage();
+	        List<String> recipients = def.getRecipients();
 	        rms.setMessage(nmsg);
-	        rms.setDestinations(def.getRecipients());
+	        rms.setDestinations(recipients);
+	        if (recipients != null && recipients.size() > 0) {
+	          logger.debug("Added " + recipients.get(0) + " + " + (recipients.size()-1) + " more to recipient list");
+	        } else {
+	          logger.debug("Added no recipients");
+	        }
 	        result.add(rms);
 	      }
 	    }

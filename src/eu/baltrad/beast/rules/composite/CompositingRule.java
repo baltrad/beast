@@ -255,19 +255,22 @@ public class CompositingRule implements IRule, ITimeoutRule {
    */
   @Override
   public synchronized IBltMessage handle(IBltMessage message) {
-    logger.debug("handle(IBltMessage)");
+    logger.debug("ENTER: handle(IBltMessage)");
     initialize();
-    
-    if (message instanceof BltDataMessage) {
-      FileEntry file = ((BltDataMessage)message).getFileEntry();
-      String object = file.what_object();
-      if (object != null && object.equals("SCAN") && isScanBased()) {
-        return handleCompositeFromScans(message);
-      } else if (object != null && object.equals("PVOL") && !isScanBased()) {
-        return handleCompositeFromVolume(message);
+    try {
+      if (message instanceof BltDataMessage) {
+        FileEntry file = ((BltDataMessage)message).getFileEntry();
+        String object = file.what_object();
+        if (object != null && object.equals("SCAN") && isScanBased()) {
+          return handleCompositeFromScans(message);
+        } else if (object != null && object.equals("PVOL") && !isScanBased()) {
+          return handleCompositeFromVolume(message);
+        }
       }
+      return null;
+    } finally {
+      logger.debug("EXIT: handle(IBltMessage)");
     }
-    return null;
   }
 
   /**
@@ -276,7 +279,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a message or null if criterias not have been met.
    */
   protected IBltMessage handleCompositeFromScans(IBltMessage message) {
-    logger.debug("handleCompositeFromScans(IBltMessage)");
+    logger.debug("ENTER: handleCompositeFromScans(IBltMessage)");
 
     IBltMessage result = null;
     List<CatalogEntry> prevAngles = null;
@@ -303,7 +306,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
         }
       }
     }
-    
+    logger.debug("EXIT: handleCompositeFromScans(IBltMessage)");
     return result;
   }
 
@@ -314,27 +317,29 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a message if criterias are met, otherwise null
    */
   protected IBltMessage createCompositeScanMessage(CompositeTimerData data) {
-    logger.debug("createCompositeScanMessage(CompositeTimerData)");
-
-    DateTime nextTime = ruleUtil.createNextNominalTime(data.getDateTime(), interval);
-    List<CatalogEntry> currAngles = ruleUtil.fetchLowestSourceElevationAngle(data.getDateTime(), nextTime, sources);
-    List<CatalogEntry> prevAngles = data.getPreviousAngles();
+    logger.debug("ENTER: createCompositeScanMessage(CompositeTimerData)");
+    try {
+      DateTime nextTime = ruleUtil.createNextNominalTime(data.getDateTime(), interval);
+      List<CatalogEntry> currAngles = ruleUtil.fetchLowestSourceElevationAngle(data.getDateTime(), nextTime, sources);
+      List<CatalogEntry> prevAngles = data.getPreviousAngles();
     
-    for (String src : sources) {
-      CatalogEntry pentry = ruleUtil.getEntryBySource(src, prevAngles);
-      CatalogEntry entry = ruleUtil.getEntryBySource(src, currAngles);
-      if (pentry != null && entry != null) {
-        double pelangle = (Double)pentry.getAttribute("where/elangle");
-        double elangle = (Double)entry.getAttribute("where/elangle");
-        if (pelangle < elangle) {
+      for (String src : sources) {
+        CatalogEntry pentry = ruleUtil.getEntryBySource(src, prevAngles);
+        CatalogEntry entry = ruleUtil.getEntryBySource(src, currAngles);
+        if (pentry != null && entry != null) {
+          double pelangle = (Double)pentry.getAttribute("where/elangle");
+          double elangle = (Double)entry.getAttribute("where/elangle");
+          if (pelangle < elangle) {
+            return null;
+          }
+        } else {
           return null;
         }
-      } else {
-        return null;
       }
+      return createMessage(data.getDateTime(), currAngles);
+    } finally {
+      logger.debug("EXIT: createCompositeScanMessage(CompositeTimerData)");
     }
-
-    return createMessage(data.getDateTime(), currAngles);
   }
 
   /**
@@ -344,7 +349,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return the message or null if criterias not have been met.
    */
   protected IBltMessage handleCompositeFromVolume(IBltMessage message) {
-    logger.debug("handleCompositeFromVolume(IBltMessage)");
+    logger.debug("ENTER: handleCompositeFromVolume(IBltMessage)");
 
     IBltMessage result = null;
     CompositeTimerData data = createTimerData(message);
@@ -365,6 +370,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
         }
       }
     }
+    logger.debug("EXIT: handleCompositeFromVolume(IBltMessage)");
     return result;
   }
   
@@ -373,7 +379,8 @@ public class CompositingRule implements IRule, ITimeoutRule {
    */
   @Override
   public synchronized IBltMessage timeout(long id, int why, Object data) {
-    logger.debug("timeout("+id+","+why+"," + data + ")");
+    logger.debug("ENTER: timeout("+id+","+why+"," + data + ")");
+    IBltMessage result = null;
     initialize();
     CompositeTimerData ctd = (CompositeTimerData)data;
     if (ctd != null) {
@@ -391,10 +398,11 @@ public class CompositingRule implements IRule, ITimeoutRule {
         mrmsg.setDestinations(recipients);
         mrmsg.setMessage(msgtosend);
         ruleUtil.trigger(ruleid, ctd.getDateTime());
-        return mrmsg;
+        result = mrmsg;
       }
     }
-    return null;
+    logger.debug("EXIT: timeout("+id+","+why+"," + data + ")");
+    return result;
   }
   
   /**
@@ -403,8 +411,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @throws RuntimeException if the nessecary components not could be aquired
    */
   protected synchronized void initialize() {
-    logger.debug("initialize()");
-    
     if (catalog == null) {
       catalog = ManagerContext.getCatalog();
     }
@@ -425,7 +431,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a compositing timer data or null if not possible
    */
   protected CompositeTimerData createTimerData(IBltMessage message) {
-    logger.debug("createTimerData(IBltMessage)");
     CompositeTimerData result = null;
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
@@ -452,7 +457,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return true if the criterias has been met.
    */
   protected boolean areCriteriasMet(List<CatalogEntry> entries) {
-    logger.debug("areCriteriasMet(List<CatalogEntry>)");
     List<String> es = ruleUtil.getSourcesFromEntries(entries);
     for (String s : sources) {
       if (!es.contains(s)) {
@@ -469,8 +473,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a message if criterias are fullfilled, otherwise null
    */
   protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
-    logger.debug("createMessage(DateTime, List<CatalogEntry>)");
-
     BltGenerateMessage result = new BltGenerateMessage();
     Date date = nominalDT.date();
     Time time = nominalDT.time();
@@ -498,7 +500,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a list of entries
    */
   protected List<CatalogEntry> fetchEntries(DateTime nominalTime) {
-    logger.debug("fetchEntries(DateTime)");
     TimeIntervalFilter filter = createFilter(nominalTime);
     List<CatalogEntry> entries = catalog.fetch(filter);
     return entries;
@@ -510,7 +511,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
    * @return a TimeIntervalFilter for polar volumes  
    */
   protected TimeIntervalFilter createFilter(DateTime nominalDT) {
-    logger.debug("createFilter(DateTime)");
     TimeIntervalFilter filter = new TimeIntervalFilter();
     filter.setObject("PVOL");
     DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);

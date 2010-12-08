@@ -24,6 +24,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -58,6 +60,11 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean, 
    */
   private int poolSize = 10;
   
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(BltMessageManager.class);
+
   /**
    * Default constructor
    */
@@ -118,6 +125,7 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean, 
    * @return a runnable
    */
   protected Runnable createRunnable(final IBltMessage message) {
+    logger.debug("createRunnable("+message.getClass().getName()+")");
     return new Runnable() {
       @Override
       public void run() {

@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -57,6 +59,11 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    */
   private Map<String, IAdaptor> adaptors = null;
   
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(BltAdaptorManager.class);
+
   /**
    * Default constructor
    */
@@ -289,6 +296,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    */
   @Override
   public void handle(IMultiRoutedMessage message) {
+    logger.debug("handle(IMultiRoutedMessage)");
     Iterator<String> i = message.getDestinations().iterator();
     IBltMessage msg = message.getMessage();
     
@@ -297,6 +305,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
       try {
         IAdaptor adaptor = adaptors.get(key);
         if (adaptor != null) {
+          logger.debug("handle(IMultiRoutedMessage): Forwarding to " + key);
           adaptor.handle(msg);
         }
       } catch (Throwable t) {
@@ -308,6 +317,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   @Override
   public void handle(IRoutedMessage message) {
     String destination = message.getDestination();
+    logger.debug("handle(IRoutedMessage) Forwarding to " + destination);
     IAdaptor adaptor = adaptors.get(destination);
     if (adaptor == null) {
       throw new AdaptorException("No adaptor able to handle the route");
@@ -321,6 +331,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   @Override
   public void handle(IRoutedMessage message, IAdaptorCallback callback) {
     String destination = message.getDestination();
+    logger.debug("handle(IRoutedMessage,IAdaptorCallback) Forwarding to " + destination);
     IAdaptor adaptor = adaptors.get(destination);
     if (adaptor == null) {
       throw new AdaptorException("No adaptor able to handle the route");
