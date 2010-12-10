@@ -191,9 +191,11 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @see eu.baltrad.beast.rules.timer.ITimeoutTaskListener#cancelNotification(long, ITimeoutRule, java.lang.Object)
    */
   @Override
-  public synchronized void cancelNotification(long id, ITimeoutRule rule, Object data) {
+  public void cancelNotification(long id, ITimeoutRule rule, Object data) {
     logger.debug("cancelNotification(" + id + ")");
-    tasks.remove(id);
+    synchronized (this) {
+      tasks.remove(id);
+    }
     IBltMessage message = rule.timeout(id, ITimeoutRule.CANCELLED, data);
     if (message != null) {
       logger.debug("messageManager.manage(message)");
@@ -205,9 +207,11 @@ public class TimeoutManager implements ITimeoutTaskListener, DisposableBean {
    * @see eu.baltrad.beast.rules.timer.ITimeoutTaskListener#timeoutNotification(long, eu.baltrad.beast.rules.timer.ITimeoutRule, java.lang.Object)
    */
   @Override
-  public synchronized void timeoutNotification(long id, ITimeoutRule rule, Object data) {
+  public void timeoutNotification(long id, ITimeoutRule rule, Object data) {
     logger.debug("timeoutNotification(" + id + ")");
-    tasks.remove(id);
+    synchronized (this) {
+      tasks.remove(id);
+    }
     IBltMessage message = rule.timeout(id, ITimeoutRule.TIMEOUT, data);
     if (message != null) {
       messageManager.manage(message);

@@ -26,6 +26,7 @@ import org.easymock.classextension.MockClassControl;
 
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.rules.IRule;
 import junit.framework.TestCase;
 
 
@@ -308,4 +309,120 @@ public class TimeoutManagerTest extends TestCase {
     assertEquals(null, classUnderTest.tasks.get((long)1));
   }
   
+  public static class SimpleRule implements IRule, ITimeoutRule {
+    private TimeoutManager mgr = null;
+    private Object timerdata = new Object();
+    private long id = -1;
+    private boolean registered = false;
+    private long timeoutId = -1;
+    private Object timeoutData = null;
+    private int why = -1;
+    
+    @Override
+    public String getType() {
+      return null;
+    }
+    @Override
+    public synchronized IBltMessage handle(IBltMessage message) {
+      id = mgr.register(this, 500, timerdata);
+      try {
+        Thread.sleep(2000);
+      } catch (Throwable t) {
+      }
+      registered = mgr.isRegistered(timerdata);
+      return null;
+    }
+
+    @Override
+    public synchronized IBltMessage timeout(long id, int why, Object data) {
+      this.why = why;
+      this.timeoutId = id;
+      this.timeoutData = data;
+      return null;
+    }
+
+    @Override
+    public void setRecipients(List<String> recipients) {
+    }
+    
+    public void setTimeoutManager(TimeoutManager mgr) {
+      this.mgr = mgr;
+    }
+    
+    public boolean isRegistered() {
+      return registered;
+    }
+    public long getId() {
+      return id;
+    }
+    public Object getTimerdata() {
+      return timerdata;
+    }
+    public long getTimeoutId() {
+      return timeoutId;
+    }
+    public Object getTimeoutData() {
+      return timeoutData;
+    }
+    public int getWhy() {
+      return why;
+    }
+  };
+  
+  public static class DeadlockRuleRunner extends Thread {
+    private Object lock = new Object();
+    private SimpleRule rule = null;
+    private volatile boolean finished = false;
+    
+    public DeadlockRuleRunner(SimpleRule rule) {
+      this.rule = rule;
+    }
+    public void run() {
+      rule.handle(null);
+      finished = true;
+      try {
+        Thread.sleep(500);
+      } catch (Throwable t) {
+      }
+      synchronized (lock) {
+        lock.notify();
+      }
+    }
+
+    public boolean waitForLock(long timeout) {
+      long now = System.currentTimeMillis();
+      long endtime = now + timeout;
+      synchronized (lock) {
+        try {
+          while(!finished && now < endtime) {
+            lock.wait((endtime-now));
+            now = System.currentTimeMillis();
+          }
+        } catch (Throwable t) {
+          t.printStackTrace();
+        }
+      }
+      return finished;
+    }
+  }
+  
+  public void testDeadlock() throws Exception {
+    // Setup
+    TimeoutManager mgr = new TimeoutManager();
+    TimeoutTaskFactory factory = new TimeoutTaskFactory();
+    mgr.setFactory(factory);
+    SimpleRule rule = new SimpleRule();
+    rule.setTimeoutManager(mgr);
+    
+    DeadlockRuleRunner runner = new DeadlockRuleRunner(rule);
+    runner.start();
+    // Execute test
+    boolean finished = runner.waitForLock(3000);
+
+    // Verify
+    assertEquals(true, finished);
+    assertSame(rule.getTimerdata(), rule.getTimeoutData());
+    assertEquals(rule.getId(), rule.getTimeoutId());
+    assertFalse(rule.isRegistered());
+  }
 }
