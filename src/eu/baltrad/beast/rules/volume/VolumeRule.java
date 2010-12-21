@@ -43,6 +43,7 @@ import eu.baltrad.fc.Time;
 import eu.baltrad.fc.db.AttributeQuery;
 import eu.baltrad.fc.db.AttributeResult;
 import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -424,11 +425,21 @@ public class VolumeRule implements IRule, ITimeoutRule {
    * @return the previous time or null if none found
    */
   protected DateTime getPreviousDateTime(DateTime now, String source) {
-    TimeIntervalFilter filter = createPreviousTimeFilter(now, source);
-    List<CatalogEntry> entries = catalog.fetch(filter);
+    ExpressionFactory xpr = new ExpressionFactory();
+    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
+    AttributeQuery query = catalog.getCatalog().query_attribute();
+    query.fetch(xpr.attribute("what/date"));
+    query.fetch(xpr.attribute("what/time"));
+    query.limit(1);
+    query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
+    query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
+    query.filter(xpr.lt(dtAttr, xpr.datetime(now)));
+    query.order_by(dtAttr, AttributeQuery.SortDir.DESC);
+    AttributeResult rset = query.execute();
+
     DateTime result = null;
-    if (entries.size() > 0) {
-      result = entries.get(0).getDateTime();
+    if (rset.next()) {
+      result = new DateTime(rset.date(0), rset.time(1));
     }
     return result;
   }
