@@ -20,6 +20,7 @@ package eu.baltrad.beast.rules.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -86,14 +87,11 @@ public class RuleUtilitiesITest extends TestCase {
     sources.add("selul");
     sources.add("sevar");
     
-    List<CatalogEntry> result = classUnderTest.fetchLowestSourceElevationAngle(start, stop, sources);
+    Map<String, Double> result = classUnderTest.fetchLowestSourceElevationAngle(start, stop, sources);
     assertEquals(3, result.size());
-    assertEquals(0.5, (Double)result.get(0).getAttribute("where/elangle"));
-    assertEquals("searl", result.get(0).getSource());
-    assertEquals(0.5, (Double)result.get(1).getAttribute("where/elangle"));
-    assertEquals("selul", result.get(1).getSource());
-    assertEquals(0.5, (Double)result.get(2).getAttribute("where/elangle"));
-    assertEquals("sevar", result.get(2).getSource());
+    assertEquals(0.5, result.get("searl"));
+    assertEquals(0.5, result.get("selul"));
+    assertEquals(0.5, result.get("sevar"));
   }
 
   public void testFetchLowestSourceElevationAngle_otherInterval() throws Exception {
@@ -104,14 +102,11 @@ public class RuleUtilitiesITest extends TestCase {
     sources.add("selul");
     sources.add("sevar");
     
-    List<CatalogEntry> result = classUnderTest.fetchLowestSourceElevationAngle(start, stop, sources);
+    Map<String, Double> result = classUnderTest.fetchLowestSourceElevationAngle(start, stop, sources);
     assertEquals(3, result.size());
-    assertEquals(0.5, (Double)result.get(0).getAttribute("where/elangle"));
-    assertEquals("searl", result.get(0).getSource());
-    assertEquals(0.5, (Double)result.get(1).getAttribute("where/elangle"));
-    assertEquals("selul", result.get(1).getSource());
-    assertEquals(0.5, (Double)result.get(2).getAttribute("where/elangle"));
-    assertEquals("sevar", result.get(2).getSource());
+    assertEquals(0.5, result.get("searl"));
+    assertEquals(0.5, result.get("selul"));
+    assertEquals(0.5, result.get("sevar"));
   }
   
   public void testFetchLowestSourceElevationAngle_missingSources() throws Exception {
@@ -123,14 +118,11 @@ public class RuleUtilitiesITest extends TestCase {
     sources.add("sevar");
     sources.add("sease");
     
-    List<CatalogEntry> result = classUnderTest.fetchLowestSourceElevationAngle(start, stop, sources);
+    Map<String, Double> result = classUnderTest.fetchLowestSourceElevationAngle(start, stop, sources);
     assertEquals(3, result.size());
-    assertEquals(0.5, (Double)result.get(0).getAttribute("where/elangle"));
-    assertEquals("searl", result.get(0).getSource());
-    assertEquals(0.5, (Double)result.get(1).getAttribute("where/elangle"));
-    assertEquals("selul", result.get(1).getSource());
-    assertEquals(0.5, (Double)result.get(2).getAttribute("where/elangle"));
-    assertEquals("sevar", result.get(2).getSource());
+    assertEquals(0.5, result.get("searl"));
+    assertEquals(0.5, result.get("selul"));
+    assertEquals(0.5, result.get("sevar"));
   }
   
   public void testGetRadarSources() throws Exception {

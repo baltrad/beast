@@ -18,8 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.composite;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.fc.DateTime;
@@ -47,7 +47,7 @@ public class CompositeTimerData {
   /**
    * Contains the previous time periods angles.
    */
-  private List<CatalogEntry> prevAngles = new ArrayList<CatalogEntry>();
+  private Map<String, Double> prevAngles = new HashMap<String, Double>();
   
   /**
    * Constructor
@@ -127,7 +127,7 @@ public class CompositeTimerData {
   /**
    * @param prevAngles the prevAngles to set
    */
-  public void setPreviousAngles(List<CatalogEntry> prevAngles) {
+  public void setPreviousAngles(Map<String, Double> prevAngles) {
     if (prevAngles == null) {
       throw new NullPointerException("angles must not be null");
     }
@@ -137,7 +137,7 @@ public class CompositeTimerData {
   /**
    * @return the prevAngles
    */
-  public List<CatalogEntry> getPreviousAngles() {
+  public Map<String, Double> getPreviousAngles() {
     return prevAngles;
   }
 }

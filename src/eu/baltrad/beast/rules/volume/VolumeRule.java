@@ -40,7 +40,10 @@ import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
+import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.AttributeResult;
 import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
  * @author Anders Henja
@@ -432,22 +435,31 @@ public class VolumeRule implements IRule, ITimeoutRule {
   
   /**
    * Returns the elevation angles for the previous time period
-   * @param time the time we are currently working with
+   * @param dt the time we are currently working with
    * @param source the source
    * @return a list of elevation angles in degrees or a zero length list
    */
-  protected List<Double> getPreviousElevationAngles(DateTime time, String source) {
+  protected List<Double> getPreviousElevationAngles(DateTime dt, String source) {
     List<Double> result = new ArrayList<Double>();
-    if (time != null) {
-      PolarScanAngleFilter psafilter = new PolarScanAngleFilter();
-      psafilter.setDateTime(time);
-      psafilter.setSource(source);
-      psafilter.setMinElevation(eMin);
-      psafilter.setMaxElevation(eMax);
-      psafilter.setSortOrder(PolarScanAngleFilter.ASCENDING);
-      List<CatalogEntry> entries = catalog.fetch(psafilter);
-      for (CatalogEntry ce : entries) {
-        result.add((Double)ce.getAttribute("where/elangle"));
+    if (dt != null) {
+      ExpressionFactory xpr = new ExpressionFactory();
+      AttributeQuery query = catalog.getCatalog().query_attribute();
+      query.fetch(xpr.attribute("where/elangle"));
+
+      query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
+      query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
+
+      query.filter(xpr.eq(xpr.attribute("what/date"), xpr.date(dt.date())));
+      query.filter(xpr.eq(xpr.attribute("what/time"), xpr.time(dt.time())));
+
+      query.filter(xpr.attribute("where/elangle").ge(xpr.double_(eMin)));
+      query.filter(xpr.attribute("where/elangle").le(xpr.double_(eMax)));
+    
+      query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.ASC);
+
+      AttributeResult rset = query.execute();
+      while (rset.next()) {
+        result.add(new Double(rset.double_(0)));
       }
     }
     

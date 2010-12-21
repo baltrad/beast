@@ -20,7 +20,9 @@ package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -29,6 +31,7 @@ import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
+import eu.baltrad.beast.db.filters.LowestAngleFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -282,7 +285,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
     logger.debug("ENTER: handleCompositeFromScans(IBltMessage)");
 
     IBltMessage result = null;
-    List<CatalogEntry> prevAngles = null;
+    Map<String, Double> prevAngles = null;
     CompositeTimerData data = createTimerData(message);
     if (data != null) {
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
@@ -320,23 +323,22 @@ public class CompositingRule implements IRule, ITimeoutRule {
     logger.debug("ENTER: createCompositeScanMessage(CompositeTimerData)");
     try {
       DateTime nextTime = ruleUtil.createNextNominalTime(data.getDateTime(), interval);
-      List<CatalogEntry> currAngles = ruleUtil.fetchLowestSourceElevationAngle(data.getDateTime(), nextTime, sources);
-      List<CatalogEntry> prevAngles = data.getPreviousAngles();
+      Map<String, Double> currAngles = ruleUtil.fetchLowestSourceElevationAngle(data.getDateTime(), nextTime, sources);
+      Map<String, Double> prevAngles = data.getPreviousAngles();
     
       for (String src : sources) {
-        CatalogEntry pentry = ruleUtil.getEntryBySource(src, prevAngles);
-        CatalogEntry entry = ruleUtil.getEntryBySource(src, currAngles);
-        if (pentry != null && entry != null) {
-          double pelangle = (Double)pentry.getAttribute("where/elangle");
-          double elangle = (Double)entry.getAttribute("where/elangle");
-          if (pelangle < elangle) {
+        Double pelangle = prevAngles.get(src);
+        Double elangle = currAngles.get(src);
+        if (pelangle != null && elangle != null) {
+          if (pelangle.compareTo(elangle) < 0) {
             return null;
           }
         } else {
           return null;
         }
       }
-      return createMessage(data.getDateTime(), currAngles);
+      List<CatalogEntry> entries = fetchScanEntries(data.getDateTime());
+      return createMessage(data.getDateTime(), entries);
     } finally {
       logger.debug("EXIT: createCompositeScanMessage(CompositeTimerData)");
     }
@@ -387,8 +389,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
       List<CatalogEntry> entries = null;
       
       if (ctd.isScanBased()) {
-        DateTime nextTime = ruleUtil.createNextNominalTime(ctd.getDateTime(), interval);
-        entries = ruleUtil.fetchLowestSourceElevationAngle(ctd.getDateTime(), nextTime, sources);
+        entries = fetchScanEntries(ctd.getDateTime());
       } else {
         entries = fetchEntries(ctd.getDateTime());
       }
@@ -504,7 +505,7 @@ public class CompositingRule implements IRule, ITimeoutRule {
     List<CatalogEntry> entries = catalog.fetch(filter);
     return entries;
   }
-  
+
   /**
    * Returns a filter
    * @param nominalDT the nominal time
@@ -516,6 +517,31 @@ public class CompositingRule implements IRule, ITimeoutRule {
     DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
     filter.setStartDateTime(nominalDT);
     filter.setStopDateTime(stopDT);
+    return filter;
+  }
+  
+  /**
+   * Fetches lowest sweep scan for sources between nomialDT and
+   * nominalDT + interval
+   * @param nominalDT the nominal time
+   * @return list of entries
+   */
+  protected List<CatalogEntry> fetchScanEntries(DateTime nominalDT) {
+    List<CatalogEntry> result = new ArrayList<CatalogEntry>();
+    LowestAngleFilter filter = createScanFilter(nominalDT);
+    for (String src : sources) {
+      filter.setSource(src);
+      List<CatalogEntry> entries = catalog.fetch(filter);
+      result.addAll(entries);
+    }
+    return result;
+  }
+
+  protected LowestAngleFilter createScanFilter(DateTime nominalDT) {
+    LowestAngleFilter filter = new LowestAngleFilter();
+    filter.setStart(nominalDT);
+    DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
+    filter.setStop(stopDT);
     return filter;
   }
 

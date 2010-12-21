@@ -19,7 +19,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -30,6 +32,7 @@ import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
+import eu.baltrad.beast.db.filters.LowestAngleFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -58,6 +61,8 @@ public class CompositingRuleTest extends TestCase {
     public CompositeTimerData createTimerData(IBltMessage message);
     public List<CatalogEntry> fetchEntries(DateTime nominalTime);
     public TimeIntervalFilter createFilter(DateTime nominalTime);
+    public List<CatalogEntry> fetchScanEntries(DateTime nominalTime);
+    public LowestAngleFilter createScanFilter(DateTime nominalTime);
     public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
     public boolean areCriteriasMet(List<CatalogEntry> entries);
     public void initialize();
@@ -540,21 +545,24 @@ public class CompositingRuleTest extends TestCase {
     DateTime dt = new DateTime();
     DateTime ndt = new DateTime();
     
-    List<CatalogEntry> prevAngles = new ArrayList<CatalogEntry>();
-    List<CatalogEntry> currAngles = new ArrayList<CatalogEntry>();
+    Map<String, Double> prevAngles = new HashMap<String, Double>();
+    Map<String, Double> currAngles = new HashMap<String, Double>();
     List<String> sources = new ArrayList<String>();
+    List<CatalogEntry> currEntries = new ArrayList<CatalogEntry>();
+
+    CatalogEntry e1 = createCatalogEntry("sekkr", "/tmp/ab.h5", pdt, 0.1);
+    currEntries.add(e1);
+    CatalogEntry e2 = createCatalogEntry("searl", "/tmp/bb.h5", pdt, 0.5);
+    currEntries.add(e2);
+
     sources.add("sekkr");
     sources.add("searl");
     
-    CatalogEntry pe1 = createCatalogEntry("sekkr", "/tmp/a.h5", pdt, 0.1);
-    CatalogEntry pe2 = createCatalogEntry("searl", "/tmp/b.h5", pdt, 0.5); 
-    prevAngles.add(pe1);
-    prevAngles.add(pe2);
+    prevAngles.put("sekkr", 0.1);
+    prevAngles.put("searl", 0.5);
 
-    CatalogEntry e1 = createCatalogEntry("sekkr", "/tmp/ab.h5", pdt, 0.1); 
-    CatalogEntry e2 = createCatalogEntry("searl", "/tmp/bb.h5", pdt, 0.5); 
-    currAngles.add(e1);
-    currAngles.add(e2);
+    currAngles.put("sekkr", 0.1);
+    currAngles.put("searl", 0.5);
     
     CompositeTimerData data = new CompositeTimerData(1, dt);
     data.setPreviousAngles(prevAngles);
@@ -562,24 +570,22 @@ public class CompositingRuleTest extends TestCase {
     ruleUtilControl.setReturnValue(ndt);
     ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources);
     ruleUtilControl.setReturnValue(currAngles);
-    ruleUtil.getEntryBySource("sekkr", prevAngles);
-    ruleUtilControl.setReturnValue(pe1);
-    ruleUtil.getEntryBySource("sekkr", currAngles);
-    ruleUtilControl.setReturnValue(e1);
-    
-    ruleUtil.getEntryBySource("searl", prevAngles);
-    ruleUtilControl.setReturnValue(pe2);
-    ruleUtil.getEntryBySource("searl", currAngles);
-    ruleUtilControl.setReturnValue(e2);
-    methods.createMessage(dt, currAngles);
+
+    methods.createMessage(dt, currEntries);
     methodsControl.setReturnValue(createdMessage);
-    
+    methods.fetchScanEntries(dt);
+    methodsControl.setReturnValue(currEntries);
+
     replay();
     methodsControl.replay();
     
     classUnderTest = new CompositingRule() {
       protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
         return methods.createMessage(nominalDT, entries);
+      }
+
+      protected List<CatalogEntry> fetchScanEntries(DateTime nominalTime) {
+        return methods.fetchScanEntries(nominalTime);
       }
     };
     classUnderTest.setCatalog(catalog);
@@ -602,19 +608,16 @@ public class CompositingRuleTest extends TestCase {
     DateTime pdt = new DateTime();
     DateTime dt = new DateTime();
     DateTime ndt = new DateTime();
-    List<CatalogEntry> prevAngles = new ArrayList<CatalogEntry>();
-    List<CatalogEntry> currAngles = new ArrayList<CatalogEntry>();
+    Map<String, Double> prevAngles = new HashMap<String, Double>();
+    Map<String, Double> currAngles = new HashMap<String, Double>();
     List<String> sources = new ArrayList<String>();
     sources.add("sekkr");
     sources.add("searl");
     
-    CatalogEntry pe1 = createCatalogEntry("sekkr", "/tmp/a.h5", pdt, 0.1);
-    CatalogEntry pe2 = createCatalogEntry("searl", "/tmp/b.h5", pdt, 0.5); 
-    prevAngles.add(pe1);
-    prevAngles.add(pe2);
+    prevAngles.put("sekkr", 0.1);
+    prevAngles.put("searl", 0.5);
 
-    CatalogEntry e1 = createCatalogEntry("sekkr", "/tmp/ab.h5", pdt, 0.1); 
-    currAngles.add(e1);
+    currAngles.put("sekkr", 0.1);
     
     CompositeTimerData data = new CompositeTimerData(1, dt);
     data.setPreviousAngles(prevAngles);
@@ -622,15 +625,6 @@ public class CompositingRuleTest extends TestCase {
     ruleUtilControl.setReturnValue(ndt);
     ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources);
     ruleUtilControl.setReturnValue(currAngles);
-    ruleUtil.getEntryBySource("sekkr", prevAngles);
-    ruleUtilControl.setReturnValue(pe1);
-    ruleUtil.getEntryBySource("sekkr", currAngles);
-    ruleUtilControl.setReturnValue(e1);
-    
-    ruleUtil.getEntryBySource("searl", prevAngles);
-    ruleUtilControl.setReturnValue(pe2);
-    ruleUtil.getEntryBySource("searl", currAngles);
-    ruleUtilControl.setReturnValue(null);
     
     replay();
     methodsControl.replay();
@@ -660,16 +654,14 @@ public class CompositingRuleTest extends TestCase {
     DateTime pdt = new DateTime();
     DateTime dt = new DateTime();
     DateTime ndt = new DateTime();
-    List<CatalogEntry> prevAngles = new ArrayList<CatalogEntry>();
-    List<CatalogEntry> currAngles = new ArrayList<CatalogEntry>();
+    Map<String, Double> prevAngles = new HashMap<String, Double>();
+    Map<String, Double> currAngles = new HashMap<String, Double>();
     List<String> sources = new ArrayList<String>();
     sources.add("sekkr");
     
-    CatalogEntry pe1 = createCatalogEntry("sekkr", "/tmp/a.h5", pdt, 0.1);
-    prevAngles.add(pe1);
+    prevAngles.put("sekkr", 0.1);
 
-    CatalogEntry e1 = createCatalogEntry("sekkr", "/tmp/ab.h5", pdt, 0.2); 
-    currAngles.add(e1);
+    currAngles.put("sekkr", 0.2);
     
     CompositeTimerData data = new CompositeTimerData(1, dt);
     data.setPreviousAngles(prevAngles);
@@ -677,10 +669,6 @@ public class CompositingRuleTest extends TestCase {
     ruleUtilControl.setReturnValue(ndt);
     ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources);
     ruleUtilControl.setReturnValue(currAngles);
-    ruleUtil.getEntryBySource("sekkr", prevAngles);
-    ruleUtilControl.setReturnValue(pe1);
-    ruleUtil.getEntryBySource("sekkr", currAngles);
-    ruleUtilControl.setReturnValue(e1);
     
     replay();
     methodsControl.replay();
@@ -701,6 +689,75 @@ public class CompositingRuleTest extends TestCase {
     verify();
     methodsControl.verify();
     assertNull(msg);
+  }
+
+  public void testFetchScanEntries() throws Exception {
+    MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
+    final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
+    MockControl filterControl = MockClassControl.createControl(LowestAngleFilter.class);
+    LowestAngleFilter filter = (LowestAngleFilter)filterControl.getMock();
+    DateTime dt = new DateTime(2010,1,1,10,0,0);
+    CatalogEntry e1 = new CatalogEntry();
+    CatalogEntry e2 = new CatalogEntry();
+    List<CatalogEntry> entries1 = new ArrayList<CatalogEntry>();
+    List<CatalogEntry> entries2 = new ArrayList<CatalogEntry>();
+    List<String> sources = new ArrayList<String>();
+
+    entries1.add(e1);
+    entries2.add(e2);
+    sources.add("seang");
+    sources.add("sekkr");
+
+    methods.createScanFilter(dt);
+    methodsControl.setReturnValue(filter);
+    filter.setSource("seang");
+    catalog.fetch(filter);
+    catalogControl.setReturnValue(entries1);
+    filter.setSource("sekkr");
+    catalog.fetch(filter);
+    catalogControl.setReturnValue(entries2);
+
+    classUnderTest = new CompositingRule() {
+      protected LowestAngleFilter createScanFilter(DateTime nt) {
+        return methods.createScanFilter(nt);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setSources(sources);
+
+    replay();
+    methodsControl.replay();
+    filterControl.replay();
+
+    List<CatalogEntry> result = classUnderTest.fetchScanEntries(dt);
+
+    verify();
+    methodsControl.verify();
+    filterControl.verify();
+    
+    assertTrue(result.contains(e1));
+    assertTrue(result.contains(e2));
+  }
+
+  public void testCreateScanFilter() throws Exception {
+    Date startDate = new Date(2010,1,1);
+    Time startTime = new Time(1,2,0);
+    Date stopDate = new Date(2010,1,1);
+    Time stopTime = new Time(1,3,0);
+    final DateTime startDT = new DateTime(startDate, startTime);
+    final DateTime stopDT = new DateTime(stopDate, stopTime);
+
+    ruleUtil.createNextNominalTime(startDT, 10);
+    ruleUtilControl.setReturnValue(stopDT);
+    
+    replay();
+    classUnderTest.setInterval(10);
+    LowestAngleFilter result = classUnderTest.createScanFilter(startDT);
+    
+    verify();
+    assertNotNull(result);
+    assertSame(startDT, result.getStart());
+    assertSame(stopDT, result.getStop());
   }
   
   private CatalogEntry createCatalogEntry(String src, String file, DateTime dt, double elangle) {

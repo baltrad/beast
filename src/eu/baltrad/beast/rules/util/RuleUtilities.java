@@ -30,7 +30,10 @@ import org.apache.log4j.Logger;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.filters.LowestAngleFilter;
+import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.expr.Expression;
+import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.AttributeResult;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
@@ -95,19 +98,27 @@ public class RuleUtilities implements IRuleUtilities {
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#fetchLowestSourceElevationAngle(eu.baltrad.fc.DateTime, eu.baltrad.fc.DateTime, java.util.List)
    */
   @Override
-  public List<CatalogEntry> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources) {
+  public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources) {
     // What I really want to achieve is to fetch each source's lowest angle for the specified
     // datetime but since the db-api is somewhat limited I will have to fetch lowest angle
     // for each source.
-    List<CatalogEntry> result = new ArrayList<CatalogEntry>();
-    LowestAngleFilter filter = new LowestAngleFilter();
-    filter.setStart(startDT);
-    filter.setStop(stopDT);
+    Map<String, Double> result = new HashMap<String, Double>();
+    ExpressionFactory xpr = new ExpressionFactory();
+
+    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
+    Expression filter = xpr.attribute("what/object").eq(xpr.string("SCAN"))
+                         .and_(dtAttr.ge(xpr.datetime(startDT)))
+                         .and_(dtAttr.lt(xpr.datetime(stopDT)));
 
     for (String src: sources) {
-      filter.setSource(src);
-      List<CatalogEntry> entries = catalog.fetch(filter);
-      result.addAll(entries);
+      AttributeQuery qry = catalog.getCatalog().query_attribute();
+      qry.fetch(xpr.min(xpr.attribute("where/elangle")));
+      qry.filter(filter.and_(xpr.attribute("what/source:_name").eq(xpr.string(src))));
+      AttributeResult rset = qry.execute();
+      if (rset.next() && !rset.value_at(0).is_null()) {
+        result.put(src, rset.double_(0));
+      }
+      rset.delete();
     }
     
     return result;

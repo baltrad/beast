@@ -20,6 +20,7 @@ package eu.baltrad.beast.rules.util;
 
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.fc.Date;
@@ -38,9 +39,9 @@ public interface IRuleUtilities {
    * @param startDT the start time of the interval to search in
    * @param stopDT the stop time of the interval to search in
    * @param sources the node id of the sources
-   * @return a list of found entries.
+   * @return a map of source : elevation angle
    */
-  public List<CatalogEntry> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources);
+  public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources);
 
   /**
    * Returns an entry with the specified name. Note, it will always be the first match so
