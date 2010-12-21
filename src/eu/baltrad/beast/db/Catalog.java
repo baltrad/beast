@@ -24,12 +24,10 @@ import java.util.List;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.Variant;
-import eu.baltrad.fc.db.AttributeQuery;
-import eu.baltrad.fc.db.AttributeResult;
-import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.db.FileQuery;
+import eu.baltrad.fc.db.FileResult;
 
 /**
  * Helper API for simplifying certain tasks related to the FileCatalog
@@ -41,18 +39,6 @@ public class Catalog implements InitializingBean {
    */
   private FileCatalog fc = null;
 
-  /**
-   * The expression factory
-   */
-  private ExpressionFactory xpr = null;
-  
-  /**
-   * Default constructor
-   */
-  public Catalog() {
-    xpr = new ExpressionFactory();
-  }
-  
   /**
    * @param fc the catalog to set
    */
@@ -74,50 +60,19 @@ public class Catalog implements InitializingBean {
    */
   public List<CatalogEntry> fetch(ICatalogFilter filter) {
     List<CatalogEntry> result = new ArrayList<CatalogEntry>();
-    String[] attributes = filter.getExtraAttributes();
-    AttributeQuery q = fc.query_attribute();
-    
-    q.fetch(xpr.attribute("file:uuid"));
-    q.fetch(xpr.attribute("what/source:_name"));
-    q.fetch(xpr.attribute("what/date"));
-    q.fetch(xpr.attribute("what/time"));
-    q.fetch(xpr.attribute("what/object"));
+    FileQuery q = fc.query_file();
     
     filter.apply(q);
     
-    AttributeResult set = q.execute();
+    FileResult set = q.execute();
     try {
       while (set.next()) {
-        CatalogEntry entry = new CatalogEntry();
-        String uuid = set.string(0);
-	      String path = fc.storage().store(fc.database().entry_by_uuid(uuid));
-	      entry.setPath(path);
-        entry.setSource(set.string(1));
-        entry.setDateTime(new DateTime(set.date(2), set.time(3)));
-        entry.setObject(set.string(4));
-        if (attributes != null) {
-          int alen = 5 + attributes.length;
-          int idx = 0;
-          for (int ctr = 5; ctr < alen; ctr++, idx++) {
-            Object obj = null;
-            Variant v = set.value_at(ctr);
-            if (v.is_bool()) {
-              obj = new Boolean(v.to_bool());
-            } else if (v.is_date()) {
-              obj = v.to_date();
-            } else if (v.is_double()) {
-              obj = new Double(v.to_double());
-            } else if (v.is_int64()) {
-              obj = new Long(v.to_int64());
-            } else if (v.is_string()) {
-              obj = v.to_string();
-            } else if (v.is_time()) {
-              obj = v.to_time();
-            }
-            entry.addAttribute(attributes[idx], obj);
-          }
-        }
-        result.add(entry);
+        FileEntry fEntry = set.entry();
+        CatalogEntry cEntry = new CatalogEntry();
+        String path = fc.storage().store(fEntry);
+        cEntry.setFileEntry(fEntry);
+        cEntry.setPath(path);
+        result.add(cEntry);
       }
     } catch (Throwable t) {
       t.printStackTrace();

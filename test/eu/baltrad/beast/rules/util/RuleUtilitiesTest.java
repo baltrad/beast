@@ -22,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+
+import org.easymock.MockControl;
+import org.easymock.classextension.MockClassControl;
+
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.fc.DateTime;
 
@@ -227,10 +231,15 @@ public class RuleUtilitiesTest extends TestCase {
 
   
   private CatalogEntry createCatalogEntry(String src, String file, DateTime dt) {
-    CatalogEntry result = new CatalogEntry();
-    result.setSource(src);
-    result.setPath(file);
-    result.setDateTime(dt);
-    return result;
+    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    entry.getSource();
+    entryControl.setReturnValue(src, MockControl.ZERO_OR_MORE);
+    entry.getPath();
+    entryControl.setReturnValue(file, MockControl.ZERO_OR_MORE);
+    entry.getDateTime();
+    entryControl.setReturnValue(dt, MockControl.ZERO_OR_MORE);
+    entryControl.replay();
+    return entry;
   }
 }

@@ -22,7 +22,7 @@ import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
@@ -39,10 +39,10 @@ public class VolumeScanFilter implements ICatalogFilter {
   private Time stopTime = null;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.AttributeQuery)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.FileQuery)
    */
   @Override
-  public void apply(AttributeQuery query) {
+  public void apply(FileQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
     Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
     DateTime startDT = new DateTime(startDate, startTime);
@@ -52,14 +52,6 @@ public class VolumeScanFilter implements ICatalogFilter {
     query.filter(xpr.eq(xpr.attribute("what/source"), xpr.string(source)));
     query.filter(xpr.ge(dtAttr, xpr.datetime(startDT)));
     query.filter(xpr.lt(dtAttr, xpr.datetime(stopDT)));
-  }
-  
-  /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#getExtraAttributes()
-   */
-  @Override
-  public String[] getExtraAttributes() {
-    return null;
   }
   
   /**

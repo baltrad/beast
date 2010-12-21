@@ -22,36 +22,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 import eu.baltrad.fc.DateTime;
+import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.oh5.Attribute;
+import eu.baltrad.fc.oh5.Scalar;
 
 /**
  * @author Anders Henja
  */
 public class CatalogEntry {
-  private String object = null;
+  private FileEntry entry = null;
   private String path = null;
   private String src = null;
-  private DateTime dt = null;
-  private Map<String, Object> attributes = null;
   
   /**
-   * Default constructor
+   * @param entry the file entry to set
    */
-  public CatalogEntry() {
-    attributes = new HashMap<String, Object>();
+  public void setFileEntry(FileEntry entry) {
+    this.entry = entry;
   }
   
   /**
-   * @param object the object to set
+   * @return the associated file entry
    */
-  public void setObject(String object) {
-    this.object = object;
+  public FileEntry getFileEntry() {
+    return this.entry;
   }
   
   /**
    * @return the object
    */
   public String getObject() {
-    return object;
+    if (entry != null)
+      return entry.what_object();
+    else
+      return null;
   }
   
   /**
@@ -67,49 +71,42 @@ public class CatalogEntry {
   public String getPath() {
     return path;
   }
-  
-  /**
-   * @param src the source to set
-   */
-  public void setSource(String src) {
-    this.src = src;
-  }
-  
+
   /**
    * @return the node
    */
   public String getSource() {
-    return src;
-  }
-  
-  /**
-   * @param dt the date time to set
-   */
-  public void setDateTime(DateTime dt) {
-    this.dt = dt;
+    if (entry != null)
+      return entry.source().get("_name");
+    else
+      return null;
   }
   
   /**
    * @return the date time
    */
   public DateTime getDateTime() {
-    return this.dt;
+    if (entry != null)
+      return new DateTime(entry.what_date(), entry.what_time());
+    else
+      return null;
   }
   
-  /**
-   * Adds a attribute to the result
-   * @param name the name
-   * @param value the value
-   */
-  public void addAttribute(String name, Object value) {
-    attributes.put(name, value);
-  }
-  
-  /**
-   * @param name the attributes name
-   * @return the value
-   */
   public Object getAttribute(String name) {
-    return attributes.get(name);
+    if (entry == null)
+      return null;
+    Attribute attr = entry.root().attribute(name);
+    if (attr == null)
+      return null;
+    Scalar value = attr.value();
+    if (value.type() == Scalar.Type.STRING) {
+      return value.string();
+    } else if (value.type() == Scalar.Type.INT64) {
+      return new Long(value.int64_());
+    } else if (value.type() == Scalar.Type.DOUBLE) {
+      return new Double(value.double_());
+    } else {
+      throw new RuntimeException("unhandled oh5.Scalar type: " + value.type().toString());
+    }
   }
 }

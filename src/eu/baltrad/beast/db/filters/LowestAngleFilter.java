@@ -20,7 +20,7 @@ package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
@@ -44,10 +44,10 @@ public class LowestAngleFilter implements ICatalogFilter {
   private String source = null;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.AttributeQuery)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.FileQuery)
    */
   @Override
-  public void apply(AttributeQuery query) {
+  public void apply(FileQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
     Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
 
@@ -66,18 +66,8 @@ public class LowestAngleFilter implements ICatalogFilter {
       query.filter(xpr.lt(dtAttr, xpr.datetime(this.stopDT)));
     }
     
-    query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.ASC);
+    query.order_by(xpr.attribute("where/elangle"), FileQuery.SortDir.ASC);
     query.limit(1);
-    
-    query.fetch(xpr.attribute("where/elangle"));
-  }
-
-  /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#getExtraAttributes()
-   */
-  @Override
-  public String[] getExtraAttributes() {
-    return new String[]{"where/elangle"};
   }
 
   /**

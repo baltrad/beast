@@ -96,15 +96,9 @@ public class VolumeRuleTest extends TestCase {
     String source = "seang";
     List<Double> noAnglesList = new ArrayList<Double>();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    CatalogEntry e1 = new CatalogEntry();
-    e1.addAttribute("where/elangle", new Double(1.0));
-    CatalogEntry e2 = new CatalogEntry();
-    e2.addAttribute("where/elangle", new Double(5.0));
-    CatalogEntry e3 = new CatalogEntry();
-    e3.addAttribute("where/elangle", new Double(10.0));
-    entries.add(e1);
-    entries.add(e2);
-    entries.add(e3);
+    entries.add(createCatalogEntry(new Double(1.0)));
+    entries.add(createCatalogEntry(new Double(5.0)));
+    entries.add(createCatalogEntry(new Double(10.0)));
     
     classUnderTest = new VolumeRule() {
       protected DateTime getPreviousDateTime(DateTime now, String source) {
@@ -137,16 +131,10 @@ public class VolumeRuleTest extends TestCase {
     String source = "seang";
     List<Double> noAnglesList = new ArrayList<Double>();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    CatalogEntry e1 = new CatalogEntry();
-    e1.addAttribute("where/elangle", new Double(1.0));
-    CatalogEntry e2 = new CatalogEntry();
-    e2.addAttribute("where/elangle", new Double(5.0));
-    CatalogEntry e3 = new CatalogEntry();
-    e3.addAttribute("where/elangle", new Double(11.0));
-    entries.add(e1);
-    entries.add(e2);
-    entries.add(e3);
-    
+    entries.add(createCatalogEntry(new Double(1.0)));
+    entries.add(createCatalogEntry(new Double(5.0)));
+    entries.add(createCatalogEntry(new Double(11.0)));
+
     classUnderTest = new VolumeRule() {
       protected DateTime getPreviousDateTime(DateTime now, String source) {
         return methods.getPreviousDateTime(now, source);
@@ -183,15 +171,9 @@ public class VolumeRuleTest extends TestCase {
     anglesList.add(new Double(10.0));
     
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    CatalogEntry e1 = new CatalogEntry();
-    e1.addAttribute("where/elangle", new Double(1.0));
-    CatalogEntry e2 = new CatalogEntry();
-    e2.addAttribute("where/elangle", new Double(5.0));
-    CatalogEntry e3 = new CatalogEntry();
-    e3.addAttribute("where/elangle", new Double(10.0));
-    entries.add(e1);
-    entries.add(e2);
-    entries.add(e3);
+    entries.add(createCatalogEntry(new Double(1.0)));
+    entries.add(createCatalogEntry(new Double(5.0)));
+    entries.add(createCatalogEntry(new Double(10.0)));
     
     classUnderTest = new VolumeRule() {
       protected DateTime getPreviousDateTime(DateTime now, String source) {
@@ -276,11 +258,24 @@ public class VolumeRuleTest extends TestCase {
     assertEquals(null, result.getStartDateTime());
     assertEquals(nt, result.getStopDateTime());
   }
+
+  protected CatalogEntry createCatalogEntry(Double elangle) {
+    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    entry.getAttribute("/dataset1/where/elangle");
+    entryControl.setReturnValue(elangle, MockControl.ZERO_OR_MORE);
+    entryControl.replay();
+    return entry;
+  }
   
   protected CatalogEntry createCatalogEntry(String source, String path) {
-    CatalogEntry result = new CatalogEntry();
-    result.setSource(source);
-    result.setPath(path);
-    return result;
+    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    entry.getSource();
+    entryControl.setReturnValue(source, MockControl.ZERO_OR_MORE);
+    entry.getPath();
+    entryControl.setReturnValue(path, MockControl.ZERO_OR_MORE);
+    entryControl.replay();
+    return entry;
   }
 }

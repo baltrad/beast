@@ -18,7 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
-import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.FileQuery;
 
 /**
  * @author Anders Henja
@@ -26,23 +26,8 @@ import eu.baltrad.fc.db.AttributeQuery;
  */
 public interface ICatalogFilter {
   /**
-   * Applies this filters rules to the query. If you need to fetch specific attributes
-   * do that in here as well, but remember that the order of the fetches must be
-   * visible when running getExtraAttributes.
-   * 
-   * That means that if apply adds:
-   *   query.fetch("something");
-   *   query.fetch("else");
-   * then getExtraAttributes must return:
-   *   "something", "else" in this specific order.
-   * 
+   * Applies this filters rules to the query.  
    * @param query the query to apply the filtering rules to
    */
-  void apply(AttributeQuery query);
-  
-  /**
-   * These attributes will be accessible within the CatalogEntry
-   * @return the extra attributes to fetch (may be NULL or empty)
-   */
-  String[] getExtraAttributes();
+  void apply(FileQuery query);
 }

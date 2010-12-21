@@ -273,7 +273,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
   protected void removeEntriesOutsideElevationRange(List<CatalogEntry> entries) {
     int index = entries.size() - 1;
     while (index >= 0) {
-      Double elangle = (Double)entries.get(index).getAttribute("where/elangle");
+      Double elangle = (Double)entries.get(index).getAttribute("/dataset1/where/elangle");
       if (elangle < eMin || elangle > eMax) {
         entries.remove(index);
       }
@@ -310,7 +310,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
     List<Double> elevations = getPreviousElevationAngles(previousDateTime, source);
     
     for (CatalogEntry ce : entries) {
-      Double elangle = (Double)ce.getAttribute("where/elangle");
+      Double elangle = (Double)ce.getAttribute("/dataset1/where/elangle");
       if (previousDateTime == null && 
           ((ascending == true && elangle >= eMax) ||
            (ascending == false && elangle <= eMin))) {

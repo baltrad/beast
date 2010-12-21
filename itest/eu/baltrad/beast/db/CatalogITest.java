@@ -146,9 +146,9 @@ public class CatalogITest extends TestCase {
     filter.setSortOrder(PolarScanAngleFilter.ASCENDING);
     List<CatalogEntry> result = classUnderTest.fetch(filter);
     assertEquals(3, result.size());
-    assertEquals(1.0, result.get(0).getAttribute("where/elangle"));
-    assertEquals(1.5, result.get(1).getAttribute("where/elangle"));
-    assertEquals(2.0, result.get(2).getAttribute("where/elangle"));
+    assertEquals(1.0, result.get(0).getAttribute("/dataset1/where/elangle"));
+    assertEquals(1.5, result.get(1).getAttribute("/dataset1/where/elangle"));
+    assertEquals(2.0, result.get(2).getAttribute("/dataset1/where/elangle"));
   }
 
   public void testFetch_PolarScanAngleFilter_descending() throws Exception {
@@ -160,9 +160,9 @@ public class CatalogITest extends TestCase {
     filter.setSortOrder(PolarScanAngleFilter.DESCENDING);
     List<CatalogEntry> result = classUnderTest.fetch(filter);
     assertEquals(3, result.size());
-    assertEquals(2.0, result.get(0).getAttribute("where/elangle"));
-    assertEquals(1.5, result.get(1).getAttribute("where/elangle"));
-    assertEquals(1.0, result.get(2).getAttribute("where/elangle"));
+    assertEquals(2.0, result.get(0).getAttribute("/dataset1/where/elangle"));
+    assertEquals(1.5, result.get(1).getAttribute("/dataset1/where/elangle"));
+    assertEquals(1.0, result.get(2).getAttribute("/dataset1/where/elangle"));
   }
 
   public void testFetch_PolarScanAngleFilter_minMaxElevation() throws Exception {
@@ -177,8 +177,8 @@ public class CatalogITest extends TestCase {
     
     List<CatalogEntry> result = classUnderTest.fetch(filter);
     assertEquals(2, result.size());
-    assertEquals(1.0, result.get(0).getAttribute("where/elangle"));
-    assertEquals(1.5, result.get(1).getAttribute("where/elangle"));
+    assertEquals(1.0, result.get(0).getAttribute("/dataset1/where/elangle"));
+    assertEquals(1.5, result.get(1).getAttribute("/dataset1/where/elangle"));
   }  
   
   protected CatalogEntry getEntryBySource(List<CatalogEntry> entries, String source) {

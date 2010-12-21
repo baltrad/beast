@@ -20,7 +20,7 @@ package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
@@ -63,10 +63,10 @@ public class PolarScanAngleFilter implements ICatalogFilter {
   private double maxElevation = 90.0;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.AttributeQuery)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.FileQuery)
    */
   @Override
-  public void apply(AttributeQuery query) {
+  public void apply(FileQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
 
     if (dt == null || source == null) {
@@ -83,21 +83,10 @@ public class PolarScanAngleFilter implements ICatalogFilter {
     query.filter(xpr.attribute("where/elangle").le(xpr.double_(maxElevation)));
     
     if (this.order == ASCENDING) {
-      query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.ASC);
+      query.order_by(xpr.attribute("where/elangle"), FileQuery.SortDir.ASC);
     } else {
-      query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.DESC);
+      query.order_by(xpr.attribute("where/elangle"), FileQuery.SortDir.DESC);
     }
-    
-    query.fetch(xpr.attribute("where/elangle"));
-  }
-
-  /**
-   * Will add 'where/elangle' to the CatalogEntry
-   * @see eu.baltrad.beast.db.ICatalogFilter#getExtraAttributes()
-   */
-  @Override
-  public String[] getExtraAttributes() {
-    return new String[]{"where/elangle"};
   }
 
   /**

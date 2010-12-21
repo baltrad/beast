@@ -365,10 +365,14 @@ public class CompositingRuleTest extends TestCase {
 
   
   protected CatalogEntry createCatalogEntry(String source, String file) {
-    CatalogEntry result = new CatalogEntry();
-    result.setSource(source);
-    result.setPath(file);
-    return result;
+    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    entry.getSource();
+    entryControl.setReturnValue(source, MockControl.ZERO_OR_MORE);
+    entry.getPath();
+    entryControl.setReturnValue(file, MockControl.ZERO_OR_MORE);
+    entryControl.replay();
+    return entry;
   }
   
   public void testAreCriteriasMet() {
@@ -761,11 +765,17 @@ public class CompositingRuleTest extends TestCase {
   }
   
   private CatalogEntry createCatalogEntry(String src, String file, DateTime dt, double elangle) {
-    CatalogEntry result = new CatalogEntry();
-    result.setSource(src);
-    result.setPath(file);
-    result.setDateTime(dt);
-    result.addAttribute("where/elangle", elangle);
-    return result;
+    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    entry.getSource();
+    entryControl.setReturnValue(src, MockControl.ZERO_OR_MORE);
+    entry.getPath();
+    entryControl.setReturnValue(file, MockControl.ZERO_OR_MORE);
+    entry.getDateTime();
+    entryControl.setReturnValue(dt, MockControl.ZERO_OR_MORE);
+    entry.getAttribute("/dataset1/where/elangle");
+    entryControl.setReturnValue(new Double(elangle), MockControl.ZERO_OR_MORE);
+    entryControl.replay();
+    return entry;
   }
 }
