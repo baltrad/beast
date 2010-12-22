@@ -441,6 +441,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
     if (rset.next()) {
       result = new DateTime(rset.date(0), rset.time(1));
     }
+    rset.delete();
     return result;
   }
   
