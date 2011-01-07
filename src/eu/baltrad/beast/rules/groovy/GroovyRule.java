@@ -85,7 +85,7 @@ public class GroovyRule implements IRule {
    * @param script the script to set
    * @throws RuleException if the script could not be set
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"rawtypes" })
   public void setScript(String script) {
     GroovyClassLoader gcl = new GroovyClassLoader();
     try {

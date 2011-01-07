@@ -60,6 +60,8 @@ public class VolumeRuleTest extends TestCase {
     public boolean areCriteriasMet(List<CatalogEntry> entries);
     public DateTime getNominalTime(Date d, Time t);
     public void initialize();
+    public boolean replaceScanElevation(List<CatalogEntry> entries, CatalogEntry entry, Time nominalTime);
+    public List<CatalogEntry> createCatalogEntryList();
   };
 
   public void setUp() throws Exception {
@@ -257,6 +259,220 @@ public class VolumeRuleTest extends TestCase {
     assertEquals("searl", result.getSource());
     assertEquals(null, result.getStartDateTime());
     assertEquals(nt, result.getStopDateTime());
+  }
+
+  public void testReplaceScanElevation() throws Exception {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    MockControl e1Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e1 = (CatalogEntry)e1Control.getMock();
+    
+    MockControl e2Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e2 = (CatalogEntry)e2Control.getMock();
+    
+    MockControl e3Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e3 = (CatalogEntry)e3Control.getMock();
+    
+    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    
+    Time nominalTime = new Time(10, 0, 0);
+    
+    entries.add(e1);
+    entries.add(e2);
+    entries.add(e3);
+    
+    entry.getAttribute("/dataset1/what/starttime");
+    entryControl.setReturnValue("100005");
+    entry.getAttribute("/dataset1/where/elangle");
+    entryControl.setReturnValue(new Double(0.5));
+    
+    e1.getAttribute("/dataset1/where/elangle");
+    e1Control.setReturnValue(new Double(1.0));
+    e2.getAttribute("/dataset1/where/elangle");
+    e2Control.setReturnValue(new Double(0.5));
+    e2.getAttribute("/dataset1/what/starttime");
+    e2Control.setReturnValue("100006");
+    
+    e1Control.replay();
+    e2Control.replay();
+    e3Control.replay();
+    entryControl.replay();
+    
+    boolean result = classUnderTest.replaceScanElevation(entries, entry, nominalTime);
+    
+    e1Control.verify();
+    e2Control.verify();
+    e3Control.verify();
+    entryControl.verify();
+
+    assertEquals(true, result);
+    assertSame(entry, entries.get(1));
+  }
+
+  public void testReplaceScanElevation_noReplacement() throws Exception {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    MockControl e1Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e1 = (CatalogEntry)e1Control.getMock();
+    
+    MockControl e2Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e2 = (CatalogEntry)e2Control.getMock();
+    
+    MockControl e3Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e3 = (CatalogEntry)e3Control.getMock();
+    
+    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    
+    Time nominalTime = new Time(10, 0, 0);
+    
+    entries.add(e1);
+    entries.add(e2);
+    entries.add(e3);
+    
+    entry.getAttribute("/dataset1/what/starttime");
+    entryControl.setReturnValue("100005");
+    entry.getAttribute("/dataset1/where/elangle");
+    entryControl.setReturnValue(new Double(0.5));
+    
+    e1.getAttribute("/dataset1/where/elangle");
+    e1Control.setReturnValue(new Double(1.0));
+    e2.getAttribute("/dataset1/where/elangle");
+    e2Control.setReturnValue(new Double(0.5));
+    e2.getAttribute("/dataset1/what/starttime");
+    e2Control.setReturnValue("100004");
+    
+    e1Control.replay();
+    e2Control.replay();
+    e3Control.replay();
+    entryControl.replay();
+    
+    boolean result = classUnderTest.replaceScanElevation(entries, entry, nominalTime);
+    
+    e1Control.verify();
+    e2Control.verify();
+    e3Control.verify();
+    entryControl.verify();
+
+    assertEquals(true, result);
+    assertSame(e2, entries.get(1));
+  }
+
+  public void testReplaceScanElevation_noMatchingElevation() throws Exception {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    MockControl e1Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e1 = (CatalogEntry)e1Control.getMock();
+    
+    MockControl e2Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e2 = (CatalogEntry)e2Control.getMock();
+    
+    MockControl e3Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e3 = (CatalogEntry)e3Control.getMock();
+    
+    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    
+    Time nominalTime = new Time(10, 0, 0);
+    
+    entries.add(e1);
+    entries.add(e2);
+    entries.add(e3);
+    
+    entry.getAttribute("/dataset1/what/starttime");
+    entryControl.setReturnValue("100005");
+    entry.getAttribute("/dataset1/where/elangle");
+    entryControl.setReturnValue(new Double(0.5));
+    
+    e1.getAttribute("/dataset1/where/elangle");
+    e1Control.setReturnValue(new Double(1.0));
+    e2.getAttribute("/dataset1/where/elangle");
+    e2Control.setReturnValue(new Double(1.5));
+    e3.getAttribute("/dataset1/where/elangle");
+    e3Control.setReturnValue(new Double(2.5));
+    
+    e1Control.replay();
+    e2Control.replay();
+    e3Control.replay();
+    entryControl.replay();
+    
+    boolean result = classUnderTest.replaceScanElevation(entries, entry, nominalTime);
+    
+    e1Control.verify();
+    e2Control.verify();
+    e3Control.verify();
+    entryControl.verify();
+
+    assertEquals(false, result);
+    
+    assertSame(e1, entries.get(0));
+    assertSame(e2, entries.get(1));
+    assertSame(e3, entries.get(2));
+  }
+  
+  public void testFilterEntries() throws Exception {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    List<CatalogEntry> filtered = new ArrayList<CatalogEntry>();
+    MockControl e1Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e1 = (CatalogEntry)e1Control.getMock();
+    
+    MockControl e2Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e2 = (CatalogEntry)e2Control.getMock();
+    
+    MockControl e3Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e3 = (CatalogEntry)e3Control.getMock();
+
+    MockControl e4Control = MockClassControl.createControl(CatalogEntry.class);
+    CatalogEntry e4 = (CatalogEntry)e4Control.getMock();
+
+    MockControl methodsControl = MockControl.createControl(VolumeRuleMethods.class);
+    final VolumeRuleMethods methods = (VolumeRuleMethods)methodsControl.getMock();
+
+    Time nominalTime = new Time(10,0,0);
+    entries.add(e1);
+    entries.add(e2);
+    entries.add(e3);
+    entries.add(e4);
+
+    methods.createCatalogEntryList();
+    methodsControl.setReturnValue(filtered);
+    e1.getAttribute("/dataset1/where/elangle");
+    e1Control.setReturnValue(new Double(0.5));
+    e2.getAttribute("/dataset1/where/elangle");
+    e2Control.setReturnValue(new Double(1.0));
+    methods.replaceScanElevation(filtered, e2, nominalTime);
+    methodsControl.setReturnValue(false);
+    e3.getAttribute("/dataset1/where/elangle");
+    e3Control.setReturnValue(new Double(2.0));
+    e4.getAttribute("/dataset1/where/elangle");
+    e4Control.setReturnValue(new Double(1.0));
+    methods.replaceScanElevation(filtered, e4, nominalTime);
+    methodsControl.setReturnValue(true);
+    
+    e1Control.replay();
+    e2Control.replay();
+    e3Control.replay();
+    e4Control.replay();
+    methodsControl.replay();
+    
+    classUnderTest = new VolumeRule() {
+      protected boolean replaceScanElevation(List<CatalogEntry> entries, CatalogEntry entry, Time nominalTime) {
+        return methods.replaceScanElevation(entries, entry, nominalTime);
+      }
+      protected List<CatalogEntry> createCatalogEntryList() {
+        return methods.createCatalogEntryList();
+      }
+    };
+    classUnderTest.setElevationMin(0.7);
+    classUnderTest.setElevationMax(1.5);
+    
+    List<CatalogEntry> result = classUnderTest.filterEntries(entries, nominalTime);
+
+    e1Control.verify();
+    e2Control.verify();
+    e3Control.verify();
+    e4Control.verify();
+    methodsControl.verify();
+    assertSame(filtered, result);
+    assertEquals(1, result.size());
   }
 
   protected CatalogEntry createCatalogEntry(Double elangle) {

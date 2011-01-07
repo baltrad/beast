@@ -36,7 +36,6 @@ import junit.framework.TestCase;
 public class VolumeRuleITest extends TestCase {
   private VolumeRule classUnderTest = null;
   private Catalog catalog = null;
-  private String bdbPath = null;
   
   private static String[] FIXTURES = {
     "fixtures/ODIM_H5_scan_seang_20090501T120000Z_1.h5", // elangle 0.5
@@ -60,7 +59,6 @@ public class VolumeRuleITest extends TestCase {
     BeastDBTestHelper helper = (BeastDBTestHelper)context.getBean("helper");
     helper.tearDown();
     helper.purgeBaltradDB();
-    bdbPath = helper.getBaltradDbPth();
     
     catalog = (Catalog)context.getBean("catalog");
     TimeoutManager timeoutManager = (TimeoutManager)context.getBean("timeoutmanager");

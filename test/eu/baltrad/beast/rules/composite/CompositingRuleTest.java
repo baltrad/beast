@@ -609,7 +609,6 @@ public class CompositingRuleTest extends TestCase {
     MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
     final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
     
-    DateTime pdt = new DateTime();
     DateTime dt = new DateTime();
     DateTime ndt = new DateTime();
     Map<String, Double> prevAngles = new HashMap<String, Double>();
@@ -655,7 +654,6 @@ public class CompositingRuleTest extends TestCase {
     MockControl methodsControl = MockControl.createControl(ICompositingMethods.class);
     final ICompositingMethods methods = (ICompositingMethods)methodsControl.getMock();
     
-    DateTime pdt = new DateTime();
     DateTime dt = new DateTime();
     DateTime ndt = new DateTime();
     Map<String, Double> prevAngles = new HashMap<String, Double>();

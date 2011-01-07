@@ -171,7 +171,7 @@ public class BeastSchedulerTest extends TestCase {
     verify();
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void testRegister() throws Exception {
     MockControl nptControl = MockClassControl.createControl(NamedParameterJdbcTemplate.class);
     NamedParameterJdbcTemplate namedParameterTemplate = (NamedParameterJdbcTemplate)nptControl.getMock();
@@ -205,7 +205,7 @@ public class BeastSchedulerTest extends TestCase {
     nptControl.verify();
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void testRegister_updateThrowsException() throws Exception {
     MockControl nptControl = MockClassControl.createControl(NamedParameterJdbcTemplate.class);
     NamedParameterJdbcTemplate namedParameterTemplate = (NamedParameterJdbcTemplate)nptControl.getMock();
@@ -242,7 +242,7 @@ public class BeastSchedulerTest extends TestCase {
     nptControl.verify();
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void testRegister_scheduleJobThrowsException() throws Exception {
     MockControl nptControl = MockClassControl.createControl(NamedParameterJdbcTemplate.class);
     NamedParameterJdbcTemplate namedParameterTemplate = (NamedParameterJdbcTemplate)nptControl.getMock();

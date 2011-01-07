@@ -72,7 +72,7 @@ public class BltManagerTest extends TestCase {
    * @param clz the class
    * @return the name
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"rawtypes" })
   private static String getClassName(Class clz) {
     String nm = clz.getName();
     int li = nm.lastIndexOf(".");

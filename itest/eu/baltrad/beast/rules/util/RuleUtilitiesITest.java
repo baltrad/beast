@@ -27,7 +27,6 @@ import junit.framework.TestCase;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.db.Catalog;
-import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.fc.DateTime;
 

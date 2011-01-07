@@ -122,7 +122,7 @@ public class BeastDBTestHelper {
    * @param clz the class
    * @return the name
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"rawtypes" })
   public static String getClassName(Class clz) {
     String nm = clz.getName();
     int li = nm.lastIndexOf(".");

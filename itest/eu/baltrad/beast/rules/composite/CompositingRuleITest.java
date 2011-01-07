@@ -26,14 +26,12 @@ import junit.framework.TestCase;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.db.Catalog;
-import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.db.FileEntry;
 
 /**
@@ -198,8 +196,6 @@ public class CompositingRuleITest extends TestCase {
   }
 
   public void testHandle_alreadyHandled() throws Exception {
-    FileEntry f = null;
-    IBltMessage result = null;
     List<String> sources = new ArrayList<String>();
     sources.add("seang");
     sources.add("searl");

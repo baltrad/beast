@@ -282,6 +282,71 @@ public class VolumeRule implements IRule, ITimeoutRule {
   }
 
   /**
+   * If entries contains a scan with same elevation angle as provided entry, then the
+   * entry in entries will be replaced with provided one if it is closer to the nominal time.
+   * 
+   * @param entries a list of entries
+   * @param entry the entry that eventually should replace an existing one
+   * @param nominalTime the nominal time
+   * @return if any entry is found with same elevation angle as provided one.
+   */
+  protected boolean replaceScanElevation(List<CatalogEntry> entries, CatalogEntry entry, Time nominalTime) {
+    boolean duplicate = false;
+    int sz = entries.size();
+    try {
+      Time t = Time.from_iso_string((String)entry.getAttribute("/dataset1/what/starttime"));
+      long diffTime = Math.abs(nominalTime.cumulative_msecs() - t.cumulative_msecs());
+      Double elangle = (Double)entry.getAttribute("/dataset1/where/elangle");
+      for (int i = 0; i < sz; i++) {
+        Double relangle = (Double)entries.get(i).getAttribute("/dataset1/where/elangle");
+        if (relangle.equals(elangle)) {
+          duplicate = true;
+          Time rt = Time.from_iso_string((String)entries.get(i).getAttribute("/dataset1/what/starttime"));
+          long rsDiffTime = Math.abs(nominalTime.cumulative_msecs() - rt.cumulative_msecs());
+          if (diffTime < rsDiffTime) {
+            entries.remove(i);
+            entries.add(i, entry);
+          }
+          break;
+        }
+      }
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+    
+    return duplicate;
+  }
+  
+  /**
+   * Removes all unwanted catalog entries.
+   * @param entries the entries to be filtered
+   * @param nominalTime the expected nominal time
+   * @return a list of filtered entries
+   */
+  protected List<CatalogEntry> filterEntries(List<CatalogEntry> entries, Time nominalTime) {
+    List<CatalogEntry> result = createCatalogEntryList();
+
+    for (CatalogEntry entry : entries) {
+      Double elangle = (Double)entry.getAttribute("/dataset1/where/elangle");
+      if (elangle >= eMin && elangle <= eMax) {
+        if (!replaceScanElevation(result, entry, nominalTime)) {
+          result.add(entry);
+        }
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Creates an array list for catalog entries
+   * @return a list for catalog entries
+   */
+  protected List<CatalogEntry> createCatalogEntryList() {
+    return new ArrayList<CatalogEntry>();
+  }
+  
+  /**
    * @see eu.baltrad.beast.rules.timer.ITimeoutRule#timeout(long, int, java.lang.Object)
    */
   @Override

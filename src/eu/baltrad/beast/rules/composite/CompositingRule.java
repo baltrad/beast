@@ -20,7 +20,6 @@ package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +29,8 @@ import org.apache.log4j.Logger;
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.db.filters.LowestAngleFilter;
+import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;

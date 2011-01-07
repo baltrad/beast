@@ -21,7 +21,6 @@ package eu.baltrad.beast.rules.composite;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.fc.DateTime;
 
 /**

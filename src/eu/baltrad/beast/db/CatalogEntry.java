@@ -18,9 +18,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.db.FileEntry;
 import eu.baltrad.fc.oh5.Attribute;
@@ -32,7 +29,6 @@ import eu.baltrad.fc.oh5.Scalar;
 public class CatalogEntry {
   private FileEntry entry = null;
   private String path = null;
-  private String src = null;
   
   /**
    * @param entry the file entry to set
