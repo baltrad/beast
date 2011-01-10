@@ -174,6 +174,7 @@ public class BdbTrimCountRuleTest extends TestCase {
     catalogControl.setReturnValue(true);
     result.next();
     resultControl.setReturnValue(false);
+    result.delete();
     replay();
   
     classUnderTest.execute();
@@ -216,6 +217,7 @@ public class BdbTrimCountRuleTest extends TestCase {
     queryControl.setReturnValue(result);
     result.size();
     resultControl.setReturnValue(10);
+    result.delete();
     replay();
 
     int result = classUnderTest.getFileCount();
