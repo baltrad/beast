@@ -42,6 +42,13 @@ create table beast_composite_sources (
   source text
 );
 
+create table beast_rule_properties (
+  rule_id integer NOT NULL REFERENCES beast_router_rules(rule_id),
+  key text NOT NULL,
+  value text NOT NULL,
+  PRIMARY KEY(rule_id, key)
+);
+
 create table beast_volume_rules (
   rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
   interval integer NOT NULL,

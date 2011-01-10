@@ -35,7 +35,24 @@ END;
 $$ LANGUAGE plpgsql
 ;
 
+CREATE OR REPLACE FUNCTION create_beast_rule_properties() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_rule_properties';
+  IF NOT FOUND THEN
+    CREATE TABLE beast_rule_properties (
+      rule_id INTEGER NOT NULL REFERENCES beast_router_rules(rule_id),
+      key text NOT NULL,
+      value text NOT NULL,
+      PRIMARY KEY(rule_id, key)
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_rule_properties already exists';
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 select upgrade_beast_composite_rules();
+select create_beast_rule_properties();
 
 drop function make_plpgsql();
 drop function upgrade_beast_composite_rules();
