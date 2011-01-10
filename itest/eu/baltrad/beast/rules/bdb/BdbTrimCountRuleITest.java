@@ -79,8 +79,12 @@ public class BdbTrimCountRuleITest extends TestCase {
     String sease_uuid = fileUuidMap.get("fixtures/Z_SCAN_C_ESWI_20101016080000_sease_000000.h5");
     
     FileResult rset = catalog.query_file().execute();
-    assertTrue(rset.next());
-    assertEquals(sease_uuid, rset.entry().uuid());
-    assertFalse(rset.next());
+    try {
+      assertTrue(rset.next());
+      assertEquals(sease_uuid, rset.entry().uuid());
+      assertFalse(rset.next());
+    } finally {
+      rset.delete();
+    }
   }
 }

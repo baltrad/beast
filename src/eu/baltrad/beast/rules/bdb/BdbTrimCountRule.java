@@ -117,8 +117,12 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
     FileQuery qry = getExcessiveFileQuery();
     FileResult r = qry.execute();
 
-    while (r.next()) {
-      catalog.remove(r.entry());
+    try {
+      while (r.next()) {
+        catalog.remove(r.entry());
+      }
+    } finally {
+      r.delete();
     }
   }
   
@@ -128,7 +132,12 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
   protected int getFileCount() {
     // XXX: this should use catalog.file_count() once implemented in BDB
     FileQuery qry = catalog.query_file();
-    return qry.execute().size();
+    FileResult r = qry.execute();
+    try {
+      return r.size();
+    } finally {
+      r.delete();
+    }
   }
   
   /**
