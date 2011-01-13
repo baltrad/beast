@@ -105,9 +105,9 @@ public class BdbTrimAgeRuleITest extends TestCase {
     String uuid = fileUuidMap.get("fixtures/Z_SCAN_C_ESWI_20101016080500_seang_000000.h5");
     FileResult rset = catalog.query_file().execute();
     try {
+      assertEquals(1, rset.size());
       assertTrue(rset.next());
       assertEquals(uuid, rset.entry().uuid());
-      assertFalse(rset.next());
     } finally {
       rset.delete();
     }
