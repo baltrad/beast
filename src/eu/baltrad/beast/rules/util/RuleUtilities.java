@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.fc.expr.Attribute;
 import eu.baltrad.fc.expr.ExpressionFactory;
 import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.db.AttributeQuery;
@@ -99,28 +101,44 @@ public class RuleUtilities implements IRuleUtilities {
    */
   @Override
   public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources) {
-    // What I really want to achieve is to fetch each source's lowest angle for the specified
-    // datetime but since the db-api is somewhat limited I will have to fetch lowest angle
-    // for each source.
     Map<String, Double> result = new HashMap<String, Double>();
+    if (sources.isEmpty()) {
+      return result;
+    }
+
     ExpressionFactory xpr = new ExpressionFactory();
-
     Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
-    Expression filter = xpr.attribute("what/object").eq(xpr.string("SCAN"))
-                         .and_(dtAttr.ge(xpr.datetime(startDT)))
-                         .and_(dtAttr.lt(xpr.datetime(stopDT)));
+    Attribute srcAttr = xpr.attribute("what/source:_name");
 
-    for (String src: sources) {
-      AttributeQuery qry = catalog.getCatalog().query_attribute();
-      qry.fetch(xpr.min(xpr.attribute("where/elangle")));
-      qry.filter(filter.and_(xpr.attribute("what/source:_name").eq(xpr.string(src))));
-      AttributeResult rset = qry.execute();
-      if (rset.next() && !rset.value_at(0).is_null()) {
-        result.put(src, rset.double_(0));
+    Iterator<String> srcIter = sources.iterator();
+    Expression srcFilter = srcAttr.eq(xpr.string(srcIter.next()));
+    while (srcIter.hasNext()) {
+      srcFilter = xpr.or_(srcFilter, srcAttr.eq(xpr.string(srcIter.next())));
+    }
+    srcFilter = srcFilter.parentheses();
+
+    Expression filter = xpr.attribute("what/object").eq(xpr.string("SCAN"));
+    filter = xpr.and_(filter, dtAttr.ge(xpr.datetime(startDT)));
+    filter = xpr.and_(filter, dtAttr.lt(xpr.datetime(stopDT)));
+    filter = xpr.and_(filter, srcFilter);
+
+    AttributeQuery qry = catalog.getCatalog().query_attribute();
+    qry.fetch(srcAttr);
+    qry.fetch(xpr.min(xpr.attribute("where/elangle")));
+    qry.filter(filter);
+    qry.group(srcAttr);
+
+    AttributeResult rset = qry.execute();
+    try {
+      while (rset.next()) {
+        if (!rset.is_null(1)) {
+          result.put(rset.string(0), rset.double_(1));
+        }
       }
+    } finally {
       rset.delete();
     }
-    
+
     return result;
   }
 
