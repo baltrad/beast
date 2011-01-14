@@ -57,7 +57,9 @@ public class CronEntryFactoryTest extends TestCase {
         "60 * * * * ?",
         "1 1 24 * * ?",
         "* * * ? * 8",
-        "* * * ? * ?"};
+        "* * * ? * ?",
+        "0 * * W * ?"  /* Day of month W must follow day, e.g. 1W, 2W... or LW */
+        };
     for (String expr : expressions) {
       try {
         classUnderTest.create(expr, "A JOB");
@@ -67,13 +69,68 @@ public class CronEntryFactoryTest extends TestCase {
       }
     }
   }
+
+  public void testCreateSMHDMDJ() throws Exception {
+    CronEntry result = classUnderTest.create("49", "59", "12", "3", "1", "?", "MyJob");
+    assertEquals("49 59 12 3 1 ?", result.getExpression());
+    assertEquals("MyJob", result.getName());
+  }
+
+  public void testCreateSMHDMDJI() throws Exception {
+    CronEntry result = classUnderTest.create("49", "59", "12", "3", "1", "?", "MyJob", 10);
+    assertEquals("49 59 12 3 1 ?", result.getExpression());
+    assertEquals("MyJob", result.getName());
+    assertEquals(10, result.getId());
+  }
+
+  public void testCreateMHDMDJ() throws Exception {
+    CronEntry result = classUnderTest.create("59", "12", "3", "1", "?", "MyJob");
+    assertEquals("0 59 12 3 1 ?", result.getExpression());
+    assertEquals("MyJob", result.getName());
+  }
+
+  public void testCreateMHDMDJI() throws Exception {
+    CronEntry result = classUnderTest.create("59", "12", "3", "1", "?", "MyJob", 11);
+    assertEquals("0 59 12 3 1 ?", result.getExpression());
+    assertEquals("MyJob", result.getName());
+    assertEquals(11, result.getId());
+  }
+
   
-  public void testCreate() throws Exception {
-    //classUnderTest.create(CronEntry.EVERY_MINUTE, CronEntry.EVERY_SECOND_HOUR, CronEntry.EVERY_DAY, 
+  public void testCreateHDMDJ() throws Exception {
+    CronEntry result = classUnderTest.create("12", "3", "1", "?", "MyJob");
+    assertEquals("0 0 12 3 1 ?", result.getExpression());
+    assertEquals("MyJob", result.getName());
+  }
+
+  public void testCreateHDMDJI() throws Exception {
+    CronEntry result = classUnderTest.create("12", "3", "1", "?", "MyJob", 12);
+    assertEquals("0 0 12 3 1 ?", result.getExpression());
+    assertEquals("MyJob", result.getName());
+    assertEquals(12, result.getId());
   }
   
+  public void testCreateDMDJ() throws Exception {
+    CronEntry result = classUnderTest.create("3", "1", "?", "MyJob");
+    assertEquals("0 0 0 3 1 ?", result.getExpression());
+    assertEquals("MyJob", result.getName());
+  }
+  
+  public void testCreateDMDJI() throws Exception {
+    CronEntry result = classUnderTest.create("3", "1", "?", "MyJob", 13);
+    assertEquals("0 0 0 3 1 ?", result.getExpression());
+    assertEquals("MyJob", result.getName());
+    assertEquals(13, result.getId());
+  }  
+  
   /* Seconds:
-   * NA, there is no reason to specify a specific second.
+   * Every second:             * * * * * ?
+   * Every second second:      &#42;/2 * * * * ?
+   * Every fifth second:       &#42;/5 * * * * ?
+   * Every tenth second:       &#42;/10 * * * * ?
+   * Every fifteenth second:   &#42;/15 * * * * ?
+   * Every twentieth second:   &#42;/20 * * * * ?
+   * Every thirtieth second:   &#42;/30 * * * * ?
    * 
    * Minute:
    * Every minute:             0 * * * * ?

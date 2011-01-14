@@ -37,7 +37,7 @@ import org.quartz.CronExpression;
  * hour            0 - 23              , - &#42; /
  * day of month    0 - 31              , - &#42; ? / L W
  * month           1 - 12              , - &#42; /
- * day of week     1 - 7 or SUN-SAT    , - &#42; / L #
+ * day of week     1 - 7 or SUN-SAT    , - &#42; ? / L #
  * year (optional) empty, 1970-2199    , - &#42; /
  * 
  * If you want to specify all allowed values you can use asterisk (*) which
@@ -77,11 +77,6 @@ import org.quartz.CronExpression;
  */
 public class CronEntryFactory {
   /**
-   * All times in the allowed interval.
-   */
-  public static String ALL = "*";
-
-  /**
    * Creates an entry from a cron expression and a job name
    * @param expression the expression
    * @param jobName the job name
@@ -92,6 +87,29 @@ public class CronEntryFactory {
     return new CronEntry(expression, jobName);
   }
 
+  /**
+   * Creates an entry from a cron expression, a job name and an id
+   * @param expression the expression
+   * @param jobName the job name
+   * @param id the id
+   * @return the cron entry
+   */  
+  public CronEntry create(String expression, String jobName, int id) {
+    validateExpression(expression);
+    return new CronEntry(id, expression, jobName);
+  }
+  
+  /**
+   * Creates a cron entry.
+   * @param seconds - second pattern
+   * @param minute  - minute pattern
+   * @param hour    - hour pattern
+   * @param dayOfMonth - day of month pattern
+   * @param month   - month pattern
+   * @param dayOfWeek  - day of week pattern
+   * @param jobName the name of the job
+   * @return a cron entry
+   */
   public CronEntry create(String seconds, String minute, String hour, String dayOfMonth, String month, String dayOfWeek, String jobName) {
     StringBuffer buf = new StringBuffer();
     if (seconds != null && !seconds.equals("")) {
@@ -108,18 +126,120 @@ public class CronEntryFactory {
     return create(buf.toString(), jobName);
   }
 
+  /**
+   * Creates a cron entry.
+   * @param seconds - second pattern
+   * @param minute  - minute pattern
+   * @param hour    - hour pattern
+   * @param dayOfMonth - day of month pattern
+   * @param month   - month pattern
+   * @param dayOfWeek  - day of week pattern
+   * @param jobName - the name of the job
+   * @param id - the id
+   * @return a cron entry
+   */
+  public CronEntry create(String seconds, String minute, String hour, String dayOfMonth, String month, String dayOfWeek, String jobName, int id) {
+    StringBuffer buf = new StringBuffer();
+    if (seconds != null && !seconds.equals("")) {
+      buf.append(seconds);
+    } else {
+      buf.append("0");
+    }
+    buf.append(" ").append(minute);
+    buf.append(" ").append(hour);
+    buf.append(" ").append(dayOfMonth);
+    buf.append(" ").append(month);
+    buf.append(" ").append(dayOfWeek);
+    
+    return create(buf.toString(), jobName, id);
+  }  
+  
+  /**
+   * Creates a cron entry.
+   * @param minute  - minute pattern
+   * @param hour    - hour pattern
+   * @param dayOfMonth - day of month pattern
+   * @param month   - month pattern
+   * @param dayOfWeek  - day of week pattern
+   * @param jobName the name of the job
+   * @return a cron entry
+   */
   public CronEntry create(String minute, String hour, String dayOfMonth, String month, String dayOfWeek, String jobName) {
     return create("0", minute, hour, dayOfMonth, month, dayOfWeek, jobName);
   }
 
+  /**
+   * Creates a cron entry.
+   * @param minute  - minute pattern
+   * @param hour    - hour pattern
+   * @param dayOfMonth - day of month pattern
+   * @param month   - month pattern
+   * @param dayOfWeek  - day of week pattern
+   * @param jobName the name of the job
+   * @param id - the id
+   * @return a cron entry
+   */
+  public CronEntry create(String minute, String hour, String dayOfMonth, String month, String dayOfWeek, String jobName, int id) {
+    return create("0", minute, hour, dayOfMonth, month, dayOfWeek, jobName, id);
+  }
+  
+  /**
+   * Creates a cron entry.
+   * @param hour    - hour pattern
+   * @param dayOfMonth - day of month pattern
+   * @param month   - month pattern
+   * @param dayOfWeek  - day of week pattern
+   * @param jobName - the name of the job
+   * @return a cron entry
+   */
   public CronEntry create(String hour, String dayOfMonth, String month, String dayOfWeek, String jobName) {
     return create("0", hour, dayOfMonth, month, dayOfWeek, jobName);
   }
 
+  /**
+   * Creates a cron entry.
+   * @param hour    - hour pattern
+   * @param dayOfMonth - day of month pattern
+   * @param month   - month pattern
+   * @param dayOfWeek  - day of week pattern
+   * @param jobName - the name of the job
+   * @param id - the id
+   * @return a cron entry
+   */
+  public CronEntry create(String hour, String dayOfMonth, String month, String dayOfWeek, String jobName, int id) {
+    return create("0", hour, dayOfMonth, month, dayOfWeek, jobName, id);
+  }  
+  
+  /**
+   * Creates a cron entry.
+   * @param dayOfMonth - day of month pattern
+   * @param month   - month pattern
+   * @param dayOfWeek  - day of week pattern
+   * @param jobName the name of the job
+   * @return a cron entry
+   */
   public CronEntry create(String dayOfMonth, String month, String dayOfWeek, String jobName) {
     return create("0", dayOfMonth, month, dayOfWeek, jobName);
   }
+
+  /**
+   * Creates a cron entry.
+   * @param dayOfMonth - day of month pattern
+   * @param month   - month pattern
+   * @param dayOfWeek  - day of week pattern
+   * @param jobName - the name of the job
+   * @param id - the id
+   * @return a cron entry
+   */
+  public CronEntry create(String dayOfMonth, String month, String dayOfWeek, String jobName, int id) {
+    return create("0", dayOfMonth, month, dayOfWeek, jobName, id);
+  }
   
+  /**
+   * Validates that an expression is valid
+   * @param expression the expression to validate
+   * @throws SchedulerException if the expression isn't valid
+   */
   protected void validateExpression(String expression) {
     try {
       new CronExpression(expression);
