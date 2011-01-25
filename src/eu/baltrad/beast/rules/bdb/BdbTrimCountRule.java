@@ -115,6 +115,9 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
    */
   protected void execute() {
     FileQuery qry = getExcessiveFileQuery();
+    if (qry == null)
+      return;
+
     FileResult r = qry.execute();
 
     try {
@@ -142,13 +145,18 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
   
   /**
    * get the query for files that exceed fileCountLimit
+   * @return the query or null if no excessive files
    */
   protected FileQuery getExcessiveFileQuery() {
     ExpressionFactory xpr = new ExpressionFactory();
+  
+    int fileCount = getFileCount();
+    if (fileCount <= fileCountLimit)
+      return null;
 
     FileQuery qry = catalog.query_file();
     qry.order_by(xpr.attribute("file:stored_at"), FileQuery.SortDir.ASC);
-    qry.limit(getFileCount() - fileCountLimit);
+    qry.limit(fileCount - fileCountLimit);
     return qry;
   }
 }

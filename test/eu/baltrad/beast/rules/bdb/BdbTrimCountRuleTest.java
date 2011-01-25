@@ -181,6 +181,24 @@ public class BdbTrimCountRuleTest extends TestCase {
   
     verify();
   }
+
+  public void testExecuteNullQuery() {
+    classUnderTest = new BdbTrimCountRule() {
+      protected FileQuery getExcessiveFileQuery() {
+        return methods.getExcessiveFileQuery();
+      }
+    };
+    classUnderTest.setFileCatalog(catalog);
+    classUnderTest.setFileCountLimit(1);
+
+    methods.getExcessiveFileQuery();
+    methodsControl.setReturnValue(null);
+    replay();
+    
+    classUnderTest.execute();
+
+    verify();
+  }
   
   public void testGetExcessiveFileQuery() {
     classUnderTest = new BdbTrimCountRule() {
@@ -191,10 +209,10 @@ public class BdbTrimCountRuleTest extends TestCase {
     classUnderTest.setFileCountLimit(100);
     classUnderTest.setFileCatalog(catalog);
     
-    catalog.query_file();
-    catalogControl.setReturnValue(query);
     methods.getFileCount();
     methodsControl.setReturnValue(110);
+    catalog.query_file();
+    catalogControl.setReturnValue(query);
     // XXX: ignore argument
     query.order_by(null, FileQuery.SortDir.ASC);
     queryControl.setMatcher(MockControl.ALWAYS_MATCHER);
@@ -206,6 +224,24 @@ public class BdbTrimCountRuleTest extends TestCase {
     FileQuery q = classUnderTest.getExcessiveFileQuery();
     verify();
     assertEquals(q, query);
+  }
+
+  public void testGetExcessiveFileQueryLimitNotMet() {
+    classUnderTest = new BdbTrimCountRule() {
+      protected int getFileCount() {
+        return methods.getFileCount();
+      }
+    };
+    classUnderTest.setFileCountLimit(100);
+    classUnderTest.setFileCatalog(catalog);
+
+    methods.getFileCount();
+    methodsControl.setReturnValue(100);
+    replay();
+    
+    FileQuery q = classUnderTest.getExcessiveFileQuery();
+    verify();
+    assertNull(q);
   }
 
   public void testGetFileCount() {

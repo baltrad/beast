@@ -87,4 +87,16 @@ public class BdbTrimCountRuleITest extends TestCase {
       rset.delete();
     }
   }
+
+  public void testHandleLimitNotMet() throws Exception {
+    classUnderTest.setFileCountLimit(3);
+    classUnderTest.handle(new BltTriggerJobMessage());
+
+    FileResult rset = catalog.query_file().execute();
+    try {
+      assertEquals(3, rset.size());
+    } finally {
+      rset.delete();
+    }
+  }
 }
