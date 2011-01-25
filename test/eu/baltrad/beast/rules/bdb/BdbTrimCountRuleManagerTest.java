@@ -29,6 +29,7 @@ import org.easymock.classextension.MockClassControl;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.PropertyManager;
 
+import eu.baltrad.fc.FileCatalog;
 
 public class BdbTrimCountRuleManagerTest extends TestCase {
   private BdbTrimCountRuleManager classUnderTest = null;
@@ -37,6 +38,8 @@ public class BdbTrimCountRuleManagerTest extends TestCase {
   private MockControl managerControl = null;
   private PropertyManager manager = null;
   private MockControl ruleControl = null;
+  private FileCatalog fileCatalog = null;
+  private MockControl fileCatalogControl = null;
   private BdbTrimCountRule rule = null;
   private Map<String, String> props = null;
 
@@ -52,7 +55,10 @@ public class BdbTrimCountRuleManagerTest extends TestCase {
     manager = (PropertyManager)managerControl.getMock();
     ruleControl = MockClassControl.createControl(BdbTrimCountRule.class);
     rule = (BdbTrimCountRule)ruleControl.getMock();
+    fileCatalogControl = MockClassControl.createControl(FileCatalog.class);
+    fileCatalog = (FileCatalog)fileCatalogControl.getMock();
     classUnderTest.setPropertyManager(manager);
+    classUnderTest.setFileCatalog(fileCatalog);
     props = new HashMap<String, String>();
   }
 
@@ -64,12 +70,14 @@ public class BdbTrimCountRuleManagerTest extends TestCase {
     methodsControl.replay();
     managerControl.replay();
     ruleControl.replay();
+    fileCatalogControl.replay();
   }
 
   protected void verify() {
     methodsControl.verify();
     managerControl.verify();
     ruleControl.verify();
+    fileCatalogControl.verify();
   }
 
   public void testDelete() {
@@ -87,12 +95,14 @@ public class BdbTrimCountRuleManagerTest extends TestCase {
       }
     };
     classUnderTest.setPropertyManager(manager);
+    classUnderTest.setFileCatalog(fileCatalog);
 
     manager.loadProperties(1);
     managerControl.setReturnValue(props);
     methods.createRule();
     methodsControl.setReturnValue(rule);
     rule.setProperties(props);
+    rule.setFileCatalog(fileCatalog);
     replay();
 
     IRule result = classUnderTest.load(1);

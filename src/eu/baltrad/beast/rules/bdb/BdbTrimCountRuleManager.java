@@ -25,6 +25,8 @@ import eu.baltrad.beast.rules.IRuleManager;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 import eu.baltrad.beast.rules.PropertyManager;
 
+import eu.baltrad.fc.FileCatalog;
+
 /**
  */
 
@@ -35,10 +37,22 @@ public class BdbTrimCountRuleManager implements IRuleManager {
   private PropertyManager propManager = null;
 
   /**
+   * catalog to associate with created rules
+   */
+  private FileCatalog fileCatalog = null;
+
+  /**
    * @param manager the manager to set
    */
   public void setPropertyManager(PropertyManager manager) {
     propManager = manager;
+  }
+
+  /**
+   * @param catalog the catalog to set
+   */
+  public void setFileCatalog(FileCatalog catalog) {
+    fileCatalog = catalog;
   }
 
   /**
@@ -57,6 +71,7 @@ public class BdbTrimCountRuleManager implements IRuleManager {
     Map<String, String> props = propManager.loadProperties(ruleId);
     BdbTrimCountRule rule = createRule();
     rule.setProperties(props);
+    rule.setFileCatalog(fileCatalog);
     return rule;
   }
   
