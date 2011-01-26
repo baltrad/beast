@@ -51,14 +51,14 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
   /**
    * @return the file count limit, 0 if unlimited
    */
-  int getFileCountLimit() {
+  public int getFileCountLimit() {
     return fileCountLimit;
   }
   
   /**
    * @param limit file count limit, 0 if unlimited
    */
-  void setFileCountLimit(int limit) {
+  public void setFileCountLimit(int limit) {
     fileCountLimit = limit;
   }
   

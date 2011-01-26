@@ -56,14 +56,14 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
   /**
    * @return the file count limit, 0 if unlimited
    */
-  int getFileAgeLimit() {
+  public int getFileAgeLimit() {
     return fileAgeLimit;
   }
   
   /**
    * @param limit file count limit, 0 if unlimited
    */
-  void setFileAgeLimit(int limit) {
+  public void setFileAgeLimit(int limit) {
     fileAgeLimit = limit;
   }
   
