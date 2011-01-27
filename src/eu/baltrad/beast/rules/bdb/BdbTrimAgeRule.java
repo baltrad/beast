@@ -21,12 +21,13 @@ package eu.baltrad.beast.rules.bdb;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
-
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
-
 
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
@@ -45,6 +46,11 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
    * The typename of this rule
    */
   public final static String TYPE = "bdb_trim_age";
+  
+  /**
+   * number of files to remove between logging removal progress
+   */
+  final static int LOG_PROGRESS_FREQUENCY = 100;
 
   private FileCatalog catalog;
 
@@ -52,6 +58,11 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
    * limit on file age, in seconds
    */
   private int fileAgeLimit = 0;
+
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(BdbTrimAgeRule.class);
   
   /**
    * @return the file count limit, 0 if unlimited
@@ -122,8 +133,15 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
     FileQuery qry = getExcessiveFileQuery();
     FileResult rset = qry.execute();
     try {
+      int numFiles = rset.size();
+      int numRemoved = 0;
       while (rset.next()) {
+        if ((numRemoved % LOG_PROGRESS_FREQUENCY) == 0) {
+          logger.debug("removing files from " + numRemoved +
+                       " onwards of " + numFiles);
+        }
         catalog.remove(rset.entry());
+        numRemoved += 1;
       }
     } finally {
       rset.delete();
