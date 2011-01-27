@@ -36,16 +36,6 @@ public class VolumeTimerData {
   private String source = null;
   
   /**
-   * The number of bins for each ray
-   */
-  private long nbins = 0;
-  
-  /**
-   * The scale of each bin (in meters)
-   */
-  private double rscale = 0.0;
-  
-  /**
    * The unique rule id
    */
   private int ruleid = -1;
@@ -55,31 +45,27 @@ public class VolumeTimerData {
    * @param ruleid the unique id
    * @param dt the date time
    * @param source the source id
-   * @param nbins the number of bins for a ray
-   * @param rscale the length (in meters) of each bin
    * @throws IllegalArgumentException if dt == null
    */
-  public VolumeTimerData(int ruleid, DateTime dt, String source, long nbins, double rscale) {
-    if (dt == null || source == null || nbins <= 0 || rscale <= 0.0) {
+  public VolumeTimerData(int ruleid, DateTime dt, String source) {
+    if (dt == null || source == null) {
       throw new IllegalArgumentException();
     }
     this.ruleid = ruleid;
     this.dt = dt;
     this.source = source;
-    this.nbins = nbins;
-    this.rscale = rscale;
   }
   
   /**
-   * @see Object#equals(Object)
+   * @see IRememberedRuleData#equals(Object)
    */
+  @Override
   public boolean equals(Object data) {
     boolean result = false;
 
     if (data instanceof VolumeTimerData && data.getClass() == VolumeTimerData.class) {
       VolumeTimerData vtd = (VolumeTimerData)data;
-      result = this.dt.equals(vtd.getDateTime()) && vtd.getRuleId() == this.ruleid && 
-      vtd.getSource().equals(this.source) && this.nbins == vtd.getNBins() && this.rscale == vtd.getRScale();
+      result = this.dt.equals(vtd.getDateTime()) && vtd.getRuleId() == this.ruleid &&vtd.getSource().equals(this.source);
     }
     
     return result;
@@ -104,19 +90,5 @@ public class VolumeTimerData {
    */
   public String getSource() {
     return this.source;
-  }
-  
-  /**
-   * @return the number of bins
-   */
-  public long getNBins() {
-    return this.nbins;
-  }
-  
-  /**
-   * @return the length of each bin in meters.
-   */
-  public double getRScale() {
-    return this.rscale;
   }
 }

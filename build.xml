@@ -186,6 +186,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="hudson" depends="build,test.coverage" />
 
   <target name="hudson-install" depends="build,test.coverage,-install-files" />
+
+  <target name="itest" depends="build,execute.itest" />
 	
   <!-- Compile the code -->
   <target name="compile" depends="prepare">

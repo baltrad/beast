@@ -19,15 +19,14 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.volume;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Formatter;
-import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.filters.PolarScanAngleFilter;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
@@ -37,14 +36,11 @@ import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.db.AttributeQuery;
-import eu.baltrad.fc.db.AttributeResult;
 import eu.baltrad.fc.db.FileEntry;
-import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.expr.ExpressionFactory;
 
 /**
  * @author Anders Henja
@@ -59,12 +55,17 @@ public class VolumeRule implements IRule, ITimeoutRule {
   /**
    * The catalog for database access
    */
-  private Catalog catalog = null;
+  Catalog catalog = null;
 
   /**
    * The timeout manager
    */
-  private TimeoutManager timeoutManager = null;
+  TimeoutManager timeoutManager = null;
+  
+  /**
+   * The rule utilities
+   */
+  IRuleUtilities ruleUtilities = null;
   
   /**
    * The unique rule id separating this volume rule from the others.
@@ -116,6 +117,11 @@ public class VolumeRule implements IRule, ITimeoutRule {
   private List<String> recipients = new ArrayList<String>();
 
   /**
+   * A mapping of previously handled jobs for respective source
+   */
+  private Map<String,VolumeTimerData> handledData = new HashMap<String, VolumeTimerData>();
+  
+  /**
    * @param catalog the catalog to set
    */
   protected void setCatalog(Catalog catalog) {
@@ -129,6 +135,12 @@ public class VolumeRule implements IRule, ITimeoutRule {
     this.timeoutManager = mgr;
   }
   
+  /**
+   * @param utilities the rule utilities
+   */
+  protected void setRuleUtilities(IRuleUtilities utilities) {
+    this.ruleUtilities = utilities;
+  }
   /**
    * @param ruleid the ruleid to set
    */
@@ -241,10 +253,14 @@ public class VolumeRule implements IRule, ITimeoutRule {
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
   @Override
-  public IBltMessage handle(IBltMessage message) {
+  public synchronized IBltMessage handle(IBltMessage message) {
     IBltMessage result = null;
     initialize();
     VolumeTimerData data = createTimerData(message);
+    
+    if (isHandled(data)) {
+      return null;
+    }
     
     if (data != null) {
       List<CatalogEntry> entries = fetchAllCurrentEntries(data.getDateTime(), data.getSource());
@@ -263,6 +279,10 @@ public class VolumeRule implements IRule, ITimeoutRule {
           }
         }
       }
+    }
+    
+    if (result != null) {
+      setHandled(data);
     }
     return result;
   }
@@ -350,7 +370,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
    * @see eu.baltrad.beast.rules.timer.ITimeoutRule#timeout(long, int, java.lang.Object)
    */
   @Override
-  public IBltMessage timeout(long id, int why, Object data) {
+  public synchronized IBltMessage timeout(long id, int why, Object data) {
     initialize();
     VolumeTimerData vtd = (VolumeTimerData)data;
     if (vtd != null) {
@@ -359,6 +379,7 @@ public class VolumeRule implements IRule, ITimeoutRule {
       BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
       mrmsg.setDestinations(recipients);
       mrmsg.setMessage(msgtosend);
+      setHandled(vtd);
       return mrmsg;
     }
     return null;
@@ -371,20 +392,15 @@ public class VolumeRule implements IRule, ITimeoutRule {
    * @return true if the criterias has been met.
    */
   protected boolean areCriteriasMet(List<CatalogEntry> entries, DateTime dt, String source) {
-    DateTime previousDateTime = getPreviousDateTime(dt, source);
-    List<Double> elevations = getPreviousElevationAngles(previousDateTime, source);
-    
     for (CatalogEntry ce : entries) {
       Double elangle = (Double)ce.getAttribute("/dataset1/where/elangle");
-      if (previousDateTime == null && 
-          ((ascending == true && elangle >= eMax) ||
-           (ascending == false && elangle <= eMin))) {
+      if ((ascending == true && elangle >= eMax) ||
+          (ascending == false && elangle <= eMin)) {
         return true;
       }
-      elevations.remove(elangle);
     }
     
-    return ((previousDateTime!=null)&&(elevations.size() == 0)); 
+    return false; 
   }
   
   /**
@@ -400,12 +416,9 @@ public class VolumeRule implements IRule, ITimeoutRule {
         Time t = file.what_time();
         Date d = file.what_date();
         String s = file.source().get("_name");
-        double rscale = file.group("/dataset1/where").attribute("rscale").value().double_();
-        long nbins = file.group("/dataset1/where").attribute("nbins").value().int64_();
-        
-        DateTime nominalTime = getNominalTime(d, t);
+        DateTime nominalTime = ruleUtilities.createNominalTime(d, t, interval);
         if (sources.size() == 0 || sources.contains(s)) {
-          result = new VolumeTimerData(ruleid, nominalTime, s, nbins, rscale);
+          result = new VolumeTimerData(ruleid, nominalTime, s);
         }
       }
     }
@@ -478,69 +491,9 @@ public class VolumeRule implements IRule, ITimeoutRule {
    * @return a list of entries
    */
   protected List<CatalogEntry> fetchAllCurrentEntries(DateTime nominalTime, String source) {
-    PolarScanAngleFilter filter = createAngleFilter(nominalTime, source);
+    TimeIntervalFilter filter = createFilter(nominalTime, source);
     List<CatalogEntry> entries = catalog.fetch(filter);
     return entries;
-  }
-
-  /**
-   * Returns the previous datetime for the scans
-   * @param now the current time
-   * @param source the source node id
-   * @return the previous time or null if none found
-   */
-  protected DateTime getPreviousDateTime(DateTime now, String source) {
-    ExpressionFactory xpr = new ExpressionFactory();
-    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
-    AttributeQuery query = catalog.getCatalog().query_attribute();
-    query.fetch(xpr.attribute("what/date"));
-    query.fetch(xpr.attribute("what/time"));
-    query.limit(1);
-    query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
-    query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
-    query.filter(xpr.lt(dtAttr, xpr.datetime(now)));
-    query.order_by(dtAttr, AttributeQuery.SortDir.DESC);
-    AttributeResult rset = query.execute();
-
-    DateTime result = null;
-    if (rset.next()) {
-      result = new DateTime(rset.date(0), rset.time(1));
-    }
-    rset.delete();
-    return result;
-  }
-  
-  /**
-   * Returns the elevation angles for the previous time period
-   * @param dt the time we are currently working with
-   * @param source the source
-   * @return a list of elevation angles in degrees or a zero length list
-   */
-  protected List<Double> getPreviousElevationAngles(DateTime dt, String source) {
-    List<Double> result = new ArrayList<Double>();
-    if (dt != null) {
-      ExpressionFactory xpr = new ExpressionFactory();
-      AttributeQuery query = catalog.getCatalog().query_attribute();
-      query.fetch(xpr.attribute("where/elangle"));
-
-      query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
-      query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
-
-      query.filter(xpr.eq(xpr.attribute("what/date"), xpr.date(dt.date())));
-      query.filter(xpr.eq(xpr.attribute("what/time"), xpr.time(dt.time())));
-
-      query.filter(xpr.attribute("where/elangle").ge(xpr.double_(eMin)));
-      query.filter(xpr.attribute("where/elangle").le(xpr.double_(eMax)));
-    
-      query.order_by(xpr.attribute("where/elangle"), AttributeQuery.SortDir.ASC);
-
-      AttributeResult rset = query.execute();
-      while (rset.next()) {
-        result.add(new Double(rset.double_(0)));
-      }
-    }
-    
-    return result;    
   }
   
   /**
@@ -550,46 +503,14 @@ public class VolumeRule implements IRule, ITimeoutRule {
    * @param source the source node id
    * @return the filter
    */
-  protected PolarScanAngleFilter createAngleFilter(DateTime nominalTime, String source) {
-    PolarScanAngleFilter filter = new PolarScanAngleFilter();
-    filter.setDateTime(nominalTime);
-    filter.setSource(source);
-    filter.setSortOrder(PolarScanAngleFilter.ASCENDING);
-    return filter;
-  }
-  
-  /**
-   * Returns a filter that should be used to fetch the previous date time period
-   * @param nominalTime the nominal time
-   * @param source the source node id
-   * @return a TimeIntervalFilter for scans  
-   */
-  protected TimeIntervalFilter createPreviousTimeFilter(DateTime nominalTime, String source) {
+  protected TimeIntervalFilter createFilter(DateTime nominalTime, String source) {
+    DateTime nextNt = ruleUtilities.createNextNominalTime(nominalTime, interval);
     TimeIntervalFilter filter = new TimeIntervalFilter();
-    filter.setStopDateTime(nominalTime);
-    filter.setSource(source);
     filter.setObject("SCAN");
-    filter.setLimit(1);
+    filter.setSource(source);
+    filter.setStartDateTime(nominalTime);
+    filter.setStopDateTime(nextNt);
     return filter;
-  }
-  
-  /**
-   * Returns the stop time
-   * @param dt the date/time to determine stop dt from
-   * @return the stop date/time
-   */
-  protected DateTime getStop(DateTime dt) {
-    Date d = dt.date();
-    Time t = dt.time();
-    GregorianCalendar cal = new GregorianCalendar();
-    cal.set(d.year(), d.month() - 1, d.day(), t.hour(), t.minute(), t.second());
-    int period = t.minute() / interval;
-    int minute = (period + 1) * interval;
-    cal.set(Calendar.MINUTE, minute);
-    Date date = new Date(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
-    Time time = new Time(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
-    DateTime result = new DateTime(date, time);
-    return result;
   }
   
   /**
@@ -604,6 +525,9 @@ public class VolumeRule implements IRule, ITimeoutRule {
     if (timeoutManager == null) {
       timeoutManager = ManagerContext.getTimeoutManager();
     }
+    if (ruleUtilities == null) {
+      ruleUtilities = ManagerContext.getUtilities();
+    }
     if (catalog == null || timeoutManager == null) {
       throw new RuntimeException();
     }
@@ -615,5 +539,28 @@ public class VolumeRule implements IRule, ITimeoutRule {
   @Override
   public void setRecipients(List<String> recipients) {
     this.recipients = recipients;
+  }
+  
+  /**
+   * Returns if the given data already has been processed or not.
+   * 
+   * @param data the data to check
+   * @return true if it already has been processed
+   */
+  synchronized boolean isHandled(VolumeTimerData data) {
+    VolumeTimerData handled = handledData.get(data.getSource());
+    if (handled != null) {
+      return data.equals(handled);
+    }
+    return false;
+  }
+  
+  /**
+   * Sets the data to have been handled. Will replace
+   * previous handled job for the provided source.
+   * @param data
+   */
+  synchronized void setHandled(VolumeTimerData data) {
+    handledData.put(data.getSource(), data);
   }
 }

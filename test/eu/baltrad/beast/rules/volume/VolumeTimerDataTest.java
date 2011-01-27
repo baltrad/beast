@@ -27,16 +27,14 @@ import junit.framework.TestCase;
 public class VolumeTimerDataTest extends TestCase {
   public void testConstructor() {
     DateTime dt = new DateTime(2010,1,1,1,10,10);
-    VolumeTimerData o = new VolumeTimerData(1,dt,"seang", 21, 2000.0);
+    VolumeTimerData o = new VolumeTimerData(1,dt,"seang");
     assertEquals(dt, o.getDateTime());
     assertEquals("seang", o.getSource());
-    assertEquals(21, o.getNBins());
-    assertEquals(2000.0, o.getRScale());
   }
 
   public void testConstructor_null() {
     try {
-      new VolumeTimerData(1, null, "seang", 21, 2000.0);
+      new VolumeTimerData(1, null, "seang");
       fail("Expected IllegalArgumentException");
     } catch (IllegalArgumentException e) {
       // pass
@@ -45,46 +43,16 @@ public class VolumeTimerDataTest extends TestCase {
 
   public void testConstructor_nullSource() {
     try {
-      new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10),null, 21, 2000.0);
+      new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10),null);
       fail("Expected IllegalArgumentException");
     } catch (IllegalArgumentException e) {
       // pass
     }
   }
-
-  public void testConstructor_zeroOrNegativeBins() {
-    try {
-      new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10),"seang", 0, 2000.0);
-      fail("Expected IllegalArgumentException");
-    } catch (IllegalArgumentException e) {
-      // pass
-    }
-    try {
-      new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10),"seang", -1, 2000.0);
-      fail("Expected IllegalArgumentException");
-    } catch (IllegalArgumentException e) {
-      // pass
-    }    
-  }  
-
-  public void testConstructor_zeroOrNegativeRange() {
-    try {
-      new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10),"seang", 21, 0.0);
-      fail("Expected IllegalArgumentException");
-    } catch (IllegalArgumentException e) {
-      // pass
-    }
-    try {
-      new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10),"seang", 21, -2000.0);
-      fail("Expected IllegalArgumentException");
-    } catch (IllegalArgumentException e) {
-      // pass
-    }
-  }  
   
   public void testEquals() throws Exception {
-    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang", 21, 2000.0);
-    VolumeTimerData o2 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang", 21, 2000.0);
+    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
+    VolumeTimerData o2 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
     assertTrue(o1.equals(o2));
     assertTrue(o2.equals(o1));
     assertTrue(o1.equals(o1));
@@ -92,27 +60,27 @@ public class VolumeTimerDataTest extends TestCase {
   }
 
   public void testEquals_differentRuleId() throws Exception {
-    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang", 21, 2000.0);
-    VolumeTimerData o2 = new VolumeTimerData(2, new DateTime(2010,1,1,1,10,10), "seang", 21, 2000.0);
+    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
+    VolumeTimerData o2 = new VolumeTimerData(2, new DateTime(2010,1,1,1,10,10), "seang");
     assertFalse(o1.equals(o2));
     assertFalse(o2.equals(o1));
   }
 
   public void testEquals_differentDateId() throws Exception {
-    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang", 21, 2000.0);
-    VolumeTimerData o2 = new VolumeTimerData(1, new DateTime(2010,2,1,1,10,10), "seang", 21, 2000.0);
+    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
+    VolumeTimerData o2 = new VolumeTimerData(1, new DateTime(2010,2,1,1,10,10), "seang");
     assertFalse(o1.equals(o2));
     assertFalse(o2.equals(o1));
   }
   
   public void testEquals_notSameClass() throws Exception {
-    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang", 21, 2000.0);
+    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
     Object o2 = new Object();
     assertFalse(o1.equals(o2));
   }
 
   public void testEquals_null() throws Exception {
-    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang", 21, 2000.0);
+    VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
     assertFalse(o1.equals(null));
   }
 }

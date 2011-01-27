@@ -26,13 +26,13 @@ import junit.framework.TestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
+import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.filters.PolarScanAngleFilter;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
-import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
@@ -48,18 +48,12 @@ public class VolumeRuleTest extends TestCase {
   private MockControl catalogControl = null;
   private Catalog catalog = null;
   private MockControl timeoutControl = null;
-  private TimeoutManager timeoutManager = null;  
+  private TimeoutManager timeoutManager = null;
+  private MockControl utilitiesControl = null;
+  private IRuleUtilities utilities = null;
   
   private static interface VolumeRuleMethods {
-    public VolumeTimerData createTimerData(IBltMessage message);
-    public List<CatalogEntry> fetchEntries(DateTime nominalTime);
-    public TimeIntervalFilter createFilter(DateTime nominalTime);
-    public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
-    public DateTime getPreviousDateTime(DateTime now, String source);
-    public List<Double> getPreviousElevationAngles(DateTime previousDateTime, String source);
-    public boolean areCriteriasMet(List<CatalogEntry> entries);
-    public DateTime getNominalTime(Date d, Time t);
-    public void initialize();
+    public TimeIntervalFilter createFilter(DateTime nominalTime, String source);
     public boolean replaceScanElevation(List<CatalogEntry> entries, CatalogEntry entry, Time nominalTime);
     public List<CatalogEntry> createCatalogEntryList();
   };
@@ -71,9 +65,12 @@ public class VolumeRuleTest extends TestCase {
     catalog = (Catalog)catalogControl.getMock();
     timeoutControl = MockClassControl.createControl(TimeoutManager.class);
     timeoutManager = (TimeoutManager)timeoutControl.getMock();
+    utilitiesControl = MockControl.createControl(IRuleUtilities.class);
+    utilities = (IRuleUtilities)utilitiesControl.getMock();
     classUnderTest = new VolumeRule();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setRuleUtilities(utilities);
     classUnderTest.setTimeout(0); // No timeout initially
   }
 
@@ -85,41 +82,26 @@ public class VolumeRuleTest extends TestCase {
     methodsControl.replay();
     catalogControl.replay();
     timeoutControl.replay();
+    utilitiesControl.replay();
   }
 
   protected void verify() {
     methodsControl.verify();
     catalogControl.verify();
     timeoutControl.verify();
+    utilitiesControl.verify();
   }
   
-  public void testAreCriteriasMet_noPreviousScan_noHit() throws Exception {
+  public void testAreCriteriasMet_noHit() throws Exception {
     DateTime now = new DateTime();
-    String source = "seang";
-    List<Double> noAnglesList = new ArrayList<Double>();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     entries.add(createCatalogEntry(new Double(1.0)));
     entries.add(createCatalogEntry(new Double(5.0)));
     entries.add(createCatalogEntry(new Double(10.0)));
     
-    classUnderTest = new VolumeRule() {
-      protected DateTime getPreviousDateTime(DateTime now, String source) {
-        return methods.getPreviousDateTime(now, source);
-      }
-      protected List<Double> getPreviousElevationAngles(DateTime time, String source) {
-        return methods.getPreviousElevationAngles(time, source);
-      }
-    };
-    classUnderTest.setCatalog(catalog);
-    classUnderTest.setTimeoutManager(timeoutManager);
     classUnderTest.setElevationMax(11.0);
     classUnderTest.setAscending(true);
     
-    methods.getPreviousDateTime(now, source);
-    methodsControl.setReturnValue(null);
-    methods.getPreviousElevationAngles(null, source);
-    methodsControl.setReturnValue(noAnglesList);
-
     replay();
     
     boolean result = classUnderTest.areCriteriasMet(entries, now, "seang");
@@ -128,33 +110,16 @@ public class VolumeRuleTest extends TestCase {
     assertEquals(false, result);
   }
 
-  public void testAreCriteriasMet_noPreviousScan_hit() throws Exception {
+  public void testAreCriteriasMet_hit() throws Exception {
     DateTime now = new DateTime();
-    String source = "seang";
-    List<Double> noAnglesList = new ArrayList<Double>();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     entries.add(createCatalogEntry(new Double(1.0)));
     entries.add(createCatalogEntry(new Double(5.0)));
     entries.add(createCatalogEntry(new Double(11.0)));
 
-    classUnderTest = new VolumeRule() {
-      protected DateTime getPreviousDateTime(DateTime now, String source) {
-        return methods.getPreviousDateTime(now, source);
-      }
-      protected List<Double> getPreviousElevationAngles(DateTime time, String source) {
-        return methods.getPreviousElevationAngles(time, source);
-      }
-    };
-    classUnderTest.setCatalog(catalog);
-    classUnderTest.setTimeoutManager(timeoutManager);
     classUnderTest.setElevationMax(11.0);
     classUnderTest.setAscending(true);
     
-    methods.getPreviousDateTime(now, source);
-    methodsControl.setReturnValue(null);
-    methods.getPreviousElevationAngles(null, source);
-    methodsControl.setReturnValue(noAnglesList);
-
     replay();
     
     boolean result = classUnderTest.areCriteriasMet(entries, now, "seang");
@@ -163,46 +128,6 @@ public class VolumeRuleTest extends TestCase {
     assertEquals(true, result);
   }
 
-  public void testAreCriteriasMet_previousScan() throws Exception {
-    DateTime now = new DateTime();
-    DateTime previousTime = new DateTime(2010,1,1,12,0,0);
-    String source = "seang";
-    List<Double> anglesList = new ArrayList<Double>();
-    anglesList.add(new Double(1.0));
-    anglesList.add(new Double(5.0));
-    anglesList.add(new Double(10.0));
-    
-    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry(new Double(1.0)));
-    entries.add(createCatalogEntry(new Double(5.0)));
-    entries.add(createCatalogEntry(new Double(10.0)));
-    
-    classUnderTest = new VolumeRule() {
-      protected DateTime getPreviousDateTime(DateTime now, String source) {
-        return methods.getPreviousDateTime(now, source);
-      }
-      protected List<Double> getPreviousElevationAngles(DateTime time, String source) {
-        return methods.getPreviousElevationAngles(time, source);
-      }
-    };
-    classUnderTest.setCatalog(catalog);
-    classUnderTest.setTimeoutManager(timeoutManager);
-    classUnderTest.setElevationMax(11.0);
-    classUnderTest.setAscending(true);
-    
-    methods.getPreviousDateTime(now, source);
-    methodsControl.setReturnValue(previousTime);
-    methods.getPreviousElevationAngles(previousTime, source);
-    methodsControl.setReturnValue(anglesList);
-
-    replay();
-    
-    boolean result = classUnderTest.areCriteriasMet(entries, now, "seang");
-    
-    verify();
-    assertEquals(true, result);
-  }
-  
   public void testCreateMessage() throws Exception {
     Date date = new Date(2010, 2, 1);
     Time time = new Time(1, 0, 0);
@@ -240,25 +165,52 @@ public class VolumeRuleTest extends TestCase {
     assertEquals(null, result);
   }
   
-  public void testCreateAngleFilter() {
+  public void testFetchAllCurrentEntries() throws Exception {
+    DateTime nominalTime = new DateTime(2010,1,1,0,0,0);
+    TimeIntervalFilter filter = new TimeIntervalFilter();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    
+    methods.createFilter(nominalTime, "seang");
+    methodsControl.setReturnValue(filter);
+    catalog.fetch(filter);
+    catalogControl.setReturnValue(entries);
+    
+    classUnderTest = new VolumeRule() {
+      protected TimeIntervalFilter createFilter(DateTime nominalTime, String source) {
+        return methods.createFilter(nominalTime, source);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    
+    replay();
+    
+    List<CatalogEntry> result = classUnderTest.fetchAllCurrentEntries(nominalTime, "seang");
+    
+    verify();
+    assertSame(entries, result);
+  }
+  
+  public void testCreateFilter() {
     DateTime nt = new DateTime(2010,1,1,12,0,0);
+    DateTime nextNt = new DateTime(2010,1,1,12,15,0);
+    
     classUnderTest.setElevationMax(10.0);
     classUnderTest.setElevationMin(2.0);
-    PolarScanAngleFilter result = classUnderTest.createAngleFilter(nt, "searl");
-    assertEquals("searl", result.getSource());
-    assertEquals(nt, result.getDateTime());
-    assertEquals(PolarScanAngleFilter.ASCENDING, result.getSortOrder());
-  }
+    classUnderTest.setInterval(15*60);
 
-  public void testCreatePreviousTimeFilter() {
-    DateTime nt = new DateTime(2010,1,1,12,0,0);
-    TimeIntervalFilter result = classUnderTest.createPreviousTimeFilter(nt, "searl");
+    utilities.createNextNominalTime(nt, 15*60);
+    utilitiesControl.setReturnValue(nextNt);
     
-    assertEquals(1, result.getLimit());
-    assertEquals("SCAN", result.getObject());
+    replay();
+    
+    TimeIntervalFilter result = classUnderTest.createFilter(nt, "searl");
+    
+    verify();
+    
     assertEquals("searl", result.getSource());
-    assertEquals(null, result.getStartDateTime());
-    assertEquals(nt, result.getStopDateTime());
+    assertEquals(nt, result.getStartDateTime());
+    assertEquals(nextNt, result.getStopDateTime());
+    assertEquals("SCAN", result.getObject());
   }
 
   public void testReplaceScanElevation() throws Exception {
@@ -424,7 +376,7 @@ public class VolumeRuleTest extends TestCase {
     CatalogEntry e4 = (CatalogEntry)e4Control.getMock();
 
     MockControl methodsControl = MockControl.createControl(VolumeRuleMethods.class);
-    final VolumeRuleMethods methods = (VolumeRuleMethods)methodsControl.getMock();
+    methods = (VolumeRuleMethods)methodsControl.getMock();
 
     Time nominalTime = new Time(10,0,0);
     entries.add(e1);
@@ -475,6 +427,21 @@ public class VolumeRuleTest extends TestCase {
     assertEquals(1, result.size());
   }
 
+  public void testInitialize() throws Exception {
+    new ManagerContext().setCatalog(catalog);
+    new ManagerContext().setTimeoutManager(timeoutManager);
+    new ManagerContext().setUtilities(utilities);
+    VolumeRule classUnderTest = new VolumeRule();
+    assertEquals(null, classUnderTest.catalog);
+    assertEquals(null, classUnderTest.timeoutManager);
+    assertEquals(null, classUnderTest.ruleUtilities);
+    
+    classUnderTest.initialize();
+    assertSame(catalog, classUnderTest.catalog);
+    assertSame(timeoutManager, classUnderTest.timeoutManager);
+    assertSame(utilities, classUnderTest.ruleUtilities);
+  }
+  
   protected CatalogEntry createCatalogEntry(Double elangle) {
     MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
     CatalogEntry entry = (CatalogEntry)entryControl.getMock();
