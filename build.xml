@@ -50,11 +50,11 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <available file="${baltraddb.path}" type="dir" property="baltraddb.available"/>
   <fail unless="baltraddb.available" message="Can not build the beast library without baltrad-db!" />
 
-  <available file="${baltraddb.path}/java/jbrfc.jar" property="jbrfc.jar.available"/>
+  <available file="${baltraddb.path}/share/baltrad-db/java/jbrfc.jar" property="jbrfc.jar.available"/>
   <available file="${baltraddb.path}/lib/libbrfc_java.so" property="libjbrfc_java.so.available"/>
   <available file="${baltraddb.path}/lib/libbrfc.so" property="libbrfc.so.available"/>
-  <available file="${baltraddb.path}/sql/postgresql/create.sql" property="create.sql.available"/>
-  <available file="${baltraddb.path}/sql/postgresql/drop.sql" property="drop.sql.available"/>
+  <available file="${baltraddb.path}/share/baltrad-db/sql/postgresql/create.sql" property="create.sql.available"/>
+  <available file="${baltraddb.path}/share/baltrad-db/sql/postgresql/drop.sql" property="drop.sql.available"/>
 
   <fail unless="jbrfc.jar.available" message="Can not find baltrad-db / jbrfc.jar!" />
   <fail unless="libjbrfc_java.so.available" message="Can not find baltrad-db / libjbrfc_java.so!" />
@@ -73,7 +73,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <exclude name="emma/*.jar"/>
       <exclude name="cglib/*.jar"/>
     </fileset>
-  	<fileset dir="${baltraddb.path}/java">
+  	<fileset dir="${baltraddb.path}/share/baltrad-db/java">
   	  <include name="jbrfc.jar"/>
   	</fileset>
   </path>
@@ -294,8 +294,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	     url="${db.url}"
 	     userid="${db.user}" 
 	     password="${db.pwd}">
-	  <transaction src="${baltraddb.path}/sql/postgresql/drop.sql"/>
-      <transaction src="${baltraddb.path}/sql/postgresql/create.sql"/>
+	  <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/drop.sql"/>
+      <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/create.sql"/>
 	</sql>
   </target>
 
