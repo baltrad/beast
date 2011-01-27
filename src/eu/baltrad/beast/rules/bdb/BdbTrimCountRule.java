@@ -21,9 +21,11 @@ package eu.baltrad.beast.rules.bdb;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
-
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 
@@ -41,24 +43,34 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
    */
   public final static String TYPE = "bdb_trim_count";
 
+  /**
+   * number of files to remove between logging removal progress
+   */
+  final static int LOG_PROGRESS_FREQUENCY = 100;
+
   private FileCatalog catalog;
 
   /**
    * limit on the number of files in the database
    */
   private int fileCountLimit = 0;
-  
+
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(BdbTrimCountRule.class);
+
   /**
    * @return the file count limit, 0 if unlimited
    */
-  int getFileCountLimit() {
+  public int getFileCountLimit() {
     return fileCountLimit;
   }
   
   /**
    * @param limit file count limit, 0 if unlimited
    */
-  void setFileCountLimit(int limit) {
+  public void setFileCountLimit(int limit) {
     fileCountLimit = limit;
   }
   
@@ -115,11 +127,21 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
    */
   protected void execute() {
     FileQuery qry = getExcessiveFileQuery();
+    if (qry == null)
+      return;
+
     FileResult r = qry.execute();
 
     try {
+      int numFiles = r.size();
+      int numRemoved = 0;
       while (r.next()) {
+        if ((numRemoved % LOG_PROGRESS_FREQUENCY) == 0) {
+          logger.debug("removing files from " + numRemoved +
+                       " onwards of " + numFiles);
+        }
         catalog.remove(r.entry());
+        numRemoved += 1;
       }
     } finally {
       r.delete();
@@ -142,13 +164,18 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
   
   /**
    * get the query for files that exceed fileCountLimit
+   * @return the query or null if no excessive files
    */
   protected FileQuery getExcessiveFileQuery() {
     ExpressionFactory xpr = new ExpressionFactory();
+  
+    int fileCount = getFileCount();
+    if (fileCount <= fileCountLimit)
+      return null;
 
     FileQuery qry = catalog.query_file();
     qry.order_by(xpr.attribute("file:stored_at"), FileQuery.SortDir.ASC);
-    qry.limit(getFileCount() - fileCountLimit);
+    qry.limit(fileCount - fileCountLimit);
     return qry;
   }
 }

@@ -166,6 +166,8 @@ public class BdbTrimAgeRuleTest extends TestCase {
     methodsControl.setReturnValue(query);
     query.execute();
     queryControl.setReturnValue(result);
+    result.size();
+    resultControl.setReturnValue(1);
     result.next();
     resultControl.setReturnValue(true);
     result.entry();
