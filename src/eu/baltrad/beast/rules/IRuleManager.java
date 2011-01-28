@@ -50,4 +50,9 @@ public interface IRuleManager {
    * @param rule_id the id of the rule to delete
    */
   public void delete(int rule_id);
+  
+  /**
+   * @return a rule associated with this manager
+   */
+  public IRule createRule();
 }

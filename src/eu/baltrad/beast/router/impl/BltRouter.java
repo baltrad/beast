@@ -449,6 +449,10 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
         rule_id);
   }
   
+  /**
+   * Returns the definition mapper
+   * @return the definition mapper
+   */
   protected ParameterizedRowMapper<RouteDefinition> getRouteDefinitionMapper() {
     return new ParameterizedRowMapper<RouteDefinition>() {
       public RouteDefinition mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -483,5 +487,14 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
         return rd;
       }
     };
+  }
+  
+  /**
+   * @see IRouterManager#createRule(String)
+   */
+  @Override
+  public IRule createRule(String type) {
+    IRuleManager manager = ruleManagers.get(type);
+    return manager.createRule();
   }
 }

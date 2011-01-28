@@ -78,8 +78,12 @@ public class BdbTrimCountRuleManager implements IRuleManager {
   /**
    * create new BdbTrimCountRule instance
    */
-  protected BdbTrimCountRule createRule() {
-    return new BdbTrimCountRule();
+  @Override
+  public BdbTrimCountRule createRule() {
+    BdbTrimCountRule result = new BdbTrimCountRule();
+    result.setFileCatalog(fileCatalog);
+    result.afterPropertiesSet();
+    return result;
   }
 
   /**

@@ -323,7 +323,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <classpath refid="lib.path"/>
       <classpath location="${build.itest.dir}" />
       <batchtest fork="yes" todir="${dist.dir}/junit-reports">
-        <fileset dir="${build.itest.dir}" includes="**/*Test.class"/>
+        <fileset dir="${build.itest.dir}" includes="**/BeastSchedulerITest.class"/>
       </batchtest>
     </junit>
   </target>	

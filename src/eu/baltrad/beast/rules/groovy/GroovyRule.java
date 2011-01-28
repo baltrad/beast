@@ -45,9 +45,9 @@ public class GroovyRule implements IRule {
   private IScriptableRule rule = null;
   
   /**
-   * Default constructor
+   * Default constructor, however use manager for creation
    */
-  public GroovyRule() {
+  protected GroovyRule() {
   }
   
   /**
@@ -85,7 +85,7 @@ public class GroovyRule implements IRule {
    * @param script the script to set
    * @throws RuleException if the script could not be set
    */
-  @SuppressWarnings({"rawtypes" })
+  @SuppressWarnings({"unchecked" })
   public void setScript(String script) {
     GroovyClassLoader gcl = new GroovyClassLoader();
     try {

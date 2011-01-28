@@ -25,8 +25,11 @@ import java.util.List;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
  * @author Anders Henja
@@ -39,10 +42,46 @@ public class CompositingRuleManager implements IRuleManager {
   private SimpleJdbcOperations template = null;
   
   /**
+   * The rule utilities
+   */
+  private IRuleUtilities ruleUtilities = null;
+  
+  /**
+   * The catalog
+   */
+  private Catalog catalog = null;
+  
+  /**
+   * The timeout manager
+   */
+  private TimeoutManager timeoutManager = null;
+  
+  /**
    * @param template the jdbc template to set
    */
   public void setJdbcTemplate(SimpleJdbcOperations template) {
     this.template = template;
+  }
+  
+  /**
+   * @param catalog the catalog to set
+   */
+  public void setCatalog(Catalog catalog) {
+    this.catalog = catalog;
+  }
+  
+  /**
+   * @param utilities the rule utilities to set
+   */
+  public void setRuleUtilities(IRuleUtilities utilities) {
+    this.ruleUtilities = utilities;
+  }
+  
+  /**
+   * @param manager the timeout manager to set
+   */
+  public void setTimeoutManager(TimeoutManager manager) {
+    this.timeoutManager = manager;
   }
   
   /**
@@ -134,7 +173,7 @@ public class CompositingRuleManager implements IRuleManager {
       @Override
       public CompositingRule mapRow(ResultSet rs, int rnum)
           throws SQLException {
-        CompositingRule result = new CompositingRule();
+        CompositingRule result = createRule();
         int rule_id = rs.getInt("rule_id");
         result.setRuleId(rule_id);
         result.setArea(rs.getString("area"));
@@ -156,5 +195,18 @@ public class CompositingRuleManager implements IRuleManager {
         return rs.getString("source");
       }
     };
+  }
+
+  /**
+   * @see eu.baltrad.beast.rules.IRuleManager#createRule()
+   */
+  @Override
+  public CompositingRule createRule() {
+    CompositingRule result = new CompositingRule();
+    result.setCatalog(catalog);
+    result.setRuleUtilities(ruleUtilities);
+    result.setTimeoutManager(timeoutManager);
+    result.afterPropertiesSet();
+    return result;
   }
 }

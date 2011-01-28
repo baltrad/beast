@@ -26,8 +26,13 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+
+import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.util.RuleUtilities;
 
 /**
  * @author Anders Henja
@@ -300,5 +305,38 @@ public class VolumeRuleManagerTest extends TestCase {
     assertEquals(2.0, result.getElevationMin());
     assertEquals(10.0, result.getElevationMax());
     assertSame(sources, result.getSources());
+  }
+  
+  public void testCreateRule() throws Exception {
+    Catalog catalog = new Catalog();
+    RuleUtilities utilities = new RuleUtilities();
+    TimeoutManager manager = new TimeoutManager();
+    
+    classUnderTest = new VolumeRuleManager();
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setTimeoutManager(manager);
+    
+    VolumeRule result = classUnderTest.createRule();
+    
+    assertSame(result.getCatalog(), catalog);
+    assertSame(result.getRuleUtilities(), utilities);
+    assertSame(result.getTimeoutManager(), manager);
+  }
+  
+  public void testCreateRule_missingCatalog() throws Exception {
+    RuleUtilities utilities = new RuleUtilities();
+    TimeoutManager manager = new TimeoutManager();
+    
+    classUnderTest = new VolumeRuleManager();
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setTimeoutManager(manager);
+
+    try {
+      classUnderTest.createRule();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
   }
 }

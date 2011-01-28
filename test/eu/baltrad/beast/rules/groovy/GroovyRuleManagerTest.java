@@ -136,4 +136,9 @@ public class GroovyRuleManagerTest extends TestCase {
     
     verify();
   }
+  
+  public void testCreateRule() throws Exception {
+    GroovyRule result = (GroovyRule)classUnderTest.createRule();
+    assertNotNull(result);
+  }
 }

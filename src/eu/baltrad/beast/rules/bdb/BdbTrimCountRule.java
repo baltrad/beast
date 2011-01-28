@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
@@ -37,7 +39,7 @@ import eu.baltrad.fc.expr.ExpressionFactory;
 /**
  * Rule to keep the number of files in BDB below a limit.
  */
-public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
+public class BdbTrimCountRule implements IRule, IRulePropertyAccess, InitializingBean {
   /**
    * The typename of this rule
    */
@@ -61,6 +63,12 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
   private static Logger logger = LogManager.getLogger(BdbTrimCountRule.class);
 
   /**
+   * Default constructor, however, use manager for creation
+   */
+  protected BdbTrimCountRule() {
+  }
+  
+  /**
    * @return the file count limit, 0 if unlimited
    */
   public int getFileCountLimit() {
@@ -79,6 +87,13 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
    */
   protected void setFileCatalog(FileCatalog catalog) {
     this.catalog = catalog;
+  }
+  
+  /**
+   * @return the catalog
+   */
+  protected FileCatalog getFileCatalog() {
+    return this.catalog;
   }
   
   /**
@@ -177,5 +192,15 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess {
     qry.order_by(xpr.attribute("file:stored_at"), FileQuery.SortDir.ASC);
     qry.limit(fileCount - fileCountLimit);
     return qry;
+  }
+
+  /**
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() {
+    if (catalog == null) {
+      throw new BeanInitializationException("catalog missing");
+    }
   }
 }

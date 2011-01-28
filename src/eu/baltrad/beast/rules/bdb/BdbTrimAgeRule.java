@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
@@ -41,7 +43,7 @@ import eu.baltrad.fc.expr.ExpressionFactory;
  *
  * @note the nominal datetime (what/date + what/time) is used for file "age"
  */
-public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
+public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingBean {
   /**
    * The typename of this rule
    */
@@ -65,6 +67,12 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
   private static Logger logger = LogManager.getLogger(BdbTrimAgeRule.class);
   
   /**
+   * Default constructor, however, use manager for creation
+   */
+  protected BdbTrimAgeRule() {
+  }
+  
+  /**
    * @return the file count limit, 0 if unlimited
    */
   public int getFileAgeLimit() {
@@ -83,6 +91,13 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
    */
   protected void setFileCatalog(FileCatalog catalog) {
     this.catalog = catalog;
+  }
+  
+  /**
+   * @return the catalog
+   */
+  protected FileCatalog getFileCatalog() {
+    return this.catalog;
   }
   
   /**
@@ -120,7 +135,9 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
    */
   @Override
   public IBltMessage handle(IBltMessage message) {
+    logger.debug("handle(IBltMessage)");
     if (message instanceof BltTriggerJobMessage && fileAgeLimit > 0) {
+      logger.debug("handle(IBltMessage): EXECUTING");
       execute();
     }
     return null;
@@ -172,5 +189,15 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess {
    */
   protected DateTime getCurrentDateTime() {
     return DateTime.utc_now();
+  }
+
+  /**
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() {
+    if (catalog == null) {
+      throw new BeanInitializationException("catalog missing");
+    }
   }
 }

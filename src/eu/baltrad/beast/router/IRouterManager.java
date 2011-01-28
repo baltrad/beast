@@ -80,4 +80,11 @@ public interface IRouterManager {
    * @return a routing definition
    */
   public RouteDefinition create(String name, String author, boolean active, String description, List<String> recipients, IRule rule);
+  
+  /**
+   * Creates a rule of the specified type
+   * @param type the type associated with the manager
+   * @return the created rule
+   */
+  public IRule createRule(String type);
 }

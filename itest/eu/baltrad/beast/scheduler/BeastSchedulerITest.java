@@ -61,6 +61,7 @@ public class BeastSchedulerITest extends TestCase {
   }
   
   public void tearDown() throws Exception {
+    classUnderTest.destroy();
     classUnderTest = null;
   }
   
@@ -106,7 +107,46 @@ public class BeastSchedulerITest extends TestCase {
     assertEquals("0 * * * * ?", entry.getExpression());
     verifyDatabaseTables("register");
   }
-  
+
+  private static class DummyManager implements IBltMessageManager {
+    private volatile boolean triggered = false;
+    @Override
+    public synchronized void manage(IBltMessage message) {
+      triggered = true;
+      notifyAll();
+    }
+    @Override
+    public void shutdown() {
+    }
+    
+    public synchronized boolean waitForManage(long timeout) {
+      long now = System.currentTimeMillis();
+      long then = now + timeout;
+      while (then > now && triggered == false) {
+        try {
+          wait(then - now);
+        } catch (Throwable t) {
+          // pass
+        }
+        now = System.currentTimeMillis();
+      }
+      return triggered;
+    }
+  }
+
+  public void testRegister_verifyScheduleStart() throws Exception {
+    DummyManager mgr = new DummyManager();
+    
+    classUnderTest = new BeastScheduler();
+    classUnderTest.setJdbcTemplate((SimpleJdbcOperations)context.getBean("jdbcTemplate"));
+    classUnderTest.setMessageManager(mgr);
+    classUnderTest.afterPropertiesSet();
+    
+    classUnderTest.register("* * * * * ?", "nisse");
+    boolean triggered = mgr.waitForManage(3000);
+    assertEquals(true, triggered);
+  }
+
   public void testReregister() throws Exception {
     classUnderTest.reregister(2, "2 * * * * ?", "pelle");
     

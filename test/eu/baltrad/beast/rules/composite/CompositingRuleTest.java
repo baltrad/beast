@@ -27,12 +27,12 @@ import junit.framework.TestCase;
 
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.springframework.beans.factory.BeanInitializationException;
 
-import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.db.filters.LowestAngleFilter;
+import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -65,7 +65,6 @@ public class CompositingRuleTest extends TestCase {
     public LowestAngleFilter createScanFilter(DateTime nominalTime);
     public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
     public boolean areCriteriasMet(List<CatalogEntry> entries);
-    public void initialize();
   };
   
   protected void setUp() throws Exception {
@@ -137,7 +136,6 @@ public class CompositingRuleTest extends TestCase {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     List<String> recipients = new ArrayList<String>();
     
-    methods.initialize();
     methods.fetchEntries(dt);
     methodsControl.setReturnValue(entries);
     ruleUtil.isTriggered(25, dt);
@@ -149,9 +147,6 @@ public class CompositingRuleTest extends TestCase {
     // continuing with mocking after classUnderTest declaration
     
     classUnderTest = new CompositingRule() {
-      protected void initialize() {
-        methods.initialize();
-      }
       protected List<CatalogEntry> fetchEntries(DateTime nominalTime) {
         return methods.fetchEntries(nominalTime);
       }
@@ -182,7 +177,6 @@ public class CompositingRuleTest extends TestCase {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     List<String> recipients = new ArrayList<String>();
     
-    methods.initialize();
     methods.fetchEntries(dt);
     methodsControl.setReturnValue(entries);
     ruleUtil.isTriggered(25, dt);
@@ -191,9 +185,6 @@ public class CompositingRuleTest extends TestCase {
     // continuing with mocking after classUnderTest declaration
     
     classUnderTest = new CompositingRule() {
-      protected void initialize() {
-        methods.initialize();
-      }
       protected List<CatalogEntry> fetchEntries(DateTime nominalTime) {
         return methods.fetchEntries(nominalTime);
       }
@@ -215,21 +206,54 @@ public class CompositingRuleTest extends TestCase {
     assertNull(result);
   }
   
-  public void testInitialize() throws Exception {
-    new ManagerContext().setCatalog(catalog);
-    new ManagerContext().setTimeoutManager(timeoutManager);
-    new ManagerContext().setUtilities(ruleUtil);
+  public void testAfterPropertiesSet() throws Exception {
     CompositingRule classUnderTest = new CompositingRule();
-    assertEquals(null, classUnderTest.catalog);
-    assertEquals(null, classUnderTest.timeoutManager);
-    assertEquals(null, classUnderTest.getRuleUtilities());
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setTimeoutManager(timeoutManager);
     
-    classUnderTest.initialize();
-    assertSame(catalog, classUnderTest.catalog);
-    assertSame(timeoutManager, classUnderTest.timeoutManager);
-    assertSame(ruleUtil, classUnderTest.getRuleUtilities());
+    classUnderTest.afterPropertiesSet();
   }
-  
+
+  public void testAfterPropertiesSet_missingCatalog() throws Exception {
+    CompositingRule classUnderTest = new CompositingRule();
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setTimeoutManager(timeoutManager);
+    
+    try {
+      classUnderTest.afterPropertiesSet();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
+  }
+
+  public void testAfterPropertiesSet_missingRuleUtilities() throws Exception {
+    CompositingRule classUnderTest = new CompositingRule();
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setTimeoutManager(timeoutManager);
+    
+    try {
+      classUnderTest.afterPropertiesSet();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
+  }
+
+  public void testAfterPropertiesSet_missingTimeoutManager() throws Exception {
+    CompositingRule classUnderTest = new CompositingRule();
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    
+    try {
+      classUnderTest.afterPropertiesSet();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
+  }
+
   public void testCreateTimerData() throws Exception {
     Date date = new Date(2010, 1, 1);
     Time time = new Time(10, 0, 0);

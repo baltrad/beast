@@ -18,8 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.bdb;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -29,7 +29,6 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.db.FileEntry;
-import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.db.FileResult;
 
 public class BdbTrimCountRuleITest extends TestCase {

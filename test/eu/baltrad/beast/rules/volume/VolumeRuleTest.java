@@ -25,8 +25,8 @@ import junit.framework.TestCase;
 
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.springframework.beans.factory.BeanInitializationException;
 
-import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
@@ -427,20 +427,54 @@ public class VolumeRuleTest extends TestCase {
     assertEquals(1, result.size());
   }
 
-  public void testInitialize() throws Exception {
-    new ManagerContext().setCatalog(catalog);
-    new ManagerContext().setTimeoutManager(timeoutManager);
-    new ManagerContext().setUtilities(utilities);
+  public void testAfterPropertiesSet() throws Exception {
     VolumeRule classUnderTest = new VolumeRule();
-    assertEquals(null, classUnderTest.catalog);
-    assertEquals(null, classUnderTest.timeoutManager);
-    assertEquals(null, classUnderTest.ruleUtilities);
-    
-    classUnderTest.initialize();
-    assertSame(catalog, classUnderTest.catalog);
-    assertSame(timeoutManager, classUnderTest.timeoutManager);
-    assertSame(utilities, classUnderTest.ruleUtilities);
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setTimeoutManager(timeoutManager);
+
+    classUnderTest.afterPropertiesSet();
   }
+
+  public void testAfterPropertiesSet_missingCatalog() throws Exception {
+    VolumeRule classUnderTest = new VolumeRule();
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setTimeoutManager(timeoutManager);
+
+    try {
+      classUnderTest.afterPropertiesSet();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
+  }
+  
+  public void testAfterPropertiesSet_missingRuleUtilities() throws Exception {
+    VolumeRule classUnderTest = new VolumeRule();
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setTimeoutManager(timeoutManager);
+
+    try {
+      classUnderTest.afterPropertiesSet();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
+  }
+
+  public void testAfterPropertiesSet_missingTimeoutManager() throws Exception {
+    VolumeRule classUnderTest = new VolumeRule();
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(utilities);
+
+    try {
+      classUnderTest.afterPropertiesSet();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
+  }
+  
   
   protected CatalogEntry createCatalogEntry(Double elangle) {
     MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);

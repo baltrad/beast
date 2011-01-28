@@ -24,7 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import eu.baltrad.beast.ManagerContext;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
@@ -46,7 +48,7 @@ import eu.baltrad.fc.db.FileEntry;
  * @author Anders Henja
  *
  */
-public class VolumeRule implements IRule, ITimeoutRule {
+public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   /**
    * The name of this static composite type
    */
@@ -55,17 +57,17 @@ public class VolumeRule implements IRule, ITimeoutRule {
   /**
    * The catalog for database access
    */
-  Catalog catalog = null;
+  private Catalog catalog = null;
 
   /**
    * The timeout manager
    */
-  TimeoutManager timeoutManager = null;
+  private TimeoutManager timeoutManager = null;
   
   /**
    * The rule utilities
    */
-  IRuleUtilities ruleUtilities = null;
+  private IRuleUtilities ruleUtilities = null;
   
   /**
    * The unique rule id separating this volume rule from the others.
@@ -120,6 +122,12 @@ public class VolumeRule implements IRule, ITimeoutRule {
    * A mapping of previously handled jobs for respective source
    */
   private Map<String,VolumeTimerData> handledData = new HashMap<String, VolumeTimerData>();
+
+  /**
+   * Default constructor, however use manager for creation.
+   */
+  protected VolumeRule() {
+  }
   
   /**
    * @param catalog the catalog to set
@@ -129,10 +137,24 @@ public class VolumeRule implements IRule, ITimeoutRule {
   }
 
   /**
+   * @return the catalog
+   */
+  protected Catalog getCatalog() {
+    return this.catalog;
+  }
+  
+  /**
    * @param mgr the timeout manager to set
    */
   protected void setTimeoutManager(TimeoutManager mgr) {
     this.timeoutManager = mgr;
+  }
+  
+  /**
+   * @return the timeout manager
+   */
+  protected TimeoutManager getTimeoutManager() {
+    return this.timeoutManager;
   }
   
   /**
@@ -141,10 +163,18 @@ public class VolumeRule implements IRule, ITimeoutRule {
   protected void setRuleUtilities(IRuleUtilities utilities) {
     this.ruleUtilities = utilities;
   }
+  
+  /**
+   * @return the rule utilities
+   */
+  protected IRuleUtilities getRuleUtilities() {
+    return this.ruleUtilities;
+  }
+  
   /**
    * @param ruleid the ruleid to set
    */
-  public void setRuleId(int ruleid) {
+  protected void setRuleId(int ruleid) {
     this.ruleid = ruleid;
   }
 
@@ -255,7 +285,6 @@ public class VolumeRule implements IRule, ITimeoutRule {
   @Override
   public synchronized IBltMessage handle(IBltMessage message) {
     IBltMessage result = null;
-    initialize();
     VolumeTimerData data = createTimerData(message);
     
     if (isHandled(data)) {
@@ -371,7 +400,6 @@ public class VolumeRule implements IRule, ITimeoutRule {
    */
   @Override
   public synchronized IBltMessage timeout(long id, int why, Object data) {
-    initialize();
     VolumeTimerData vtd = (VolumeTimerData)data;
     if (vtd != null) {
       List<CatalogEntry> entries = fetchAllCurrentEntries(vtd.getDateTime(), vtd.getSource());
@@ -512,26 +540,6 @@ public class VolumeRule implements IRule, ITimeoutRule {
     filter.setStopDateTime(nextNt);
     return filter;
   }
-  
-  /**
-   * Initializes the nessecary components like catalog and
-   * timeout manager.
-   * @throws RuntimeException if the nessecary components not could be aquired
-   */
-  protected synchronized void initialize() {
-    if (catalog == null) {
-      catalog = ManagerContext.getCatalog();
-    }
-    if (timeoutManager == null) {
-      timeoutManager = ManagerContext.getTimeoutManager();
-    }
-    if (ruleUtilities == null) {
-      ruleUtilities = ManagerContext.getUtilities();
-    }
-    if (catalog == null || timeoutManager == null) {
-      throw new RuntimeException();
-    }
-  }
 
   /**
    * @see eu.baltrad.beast.rules.IRuleRecipientAware#setRecipients(java.util.List)
@@ -562,5 +570,17 @@ public class VolumeRule implements IRule, ITimeoutRule {
    */
   synchronized void setHandled(VolumeTimerData data) {
     handledData.put(data.getSource(), data);
+  }
+
+  /**
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() {
+    if (catalog == null ||
+        timeoutManager == null ||
+        ruleUtilities == null) {
+      throw new BeanInitializationException("catalog, timeoutManager or ruleUtilities missing");
+    }
   }
 }

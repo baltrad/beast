@@ -90,4 +90,12 @@ public class GroovyRuleManager implements IRuleManager {
     rule.setScript(script);
     return rule;
   }
+
+  /**
+   * @see eu.baltrad.beast.rules.IRuleManager#createRule()
+   */
+  @Override
+  public GroovyRule createRule() {
+    return new GroovyRule();
+  }
 }

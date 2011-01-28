@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.scheduler;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -31,6 +33,8 @@ import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
  * @author Anders Henja
  */
 public class BeastJobInvoker implements Job {
+  private static Logger logger = LogManager.getLogger(BeastJobInvoker.class);
+  
   /**
    * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
    */
@@ -40,6 +44,7 @@ public class BeastJobInvoker implements Job {
     IBltMessageManager mgr = (IBltMessageManager)detail.getJobDataMap().get("messageManager");
     String id = ctx.getTrigger().getName();
     String name = detail.getName();
+    logger.debug("Running triggered job message with id="+id+" and name="+name);
     BltTriggerJobMessage msg = createMessage(id, name);
     mgr.manage(msg);
   }

@@ -25,8 +25,9 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 
-import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.LowestAngleFilter;
@@ -54,7 +55,7 @@ import eu.baltrad.fc.db.FileEntry;
  * 
  * @author Anders Henja
  */
-public class CompositingRule implements IRule, ITimeoutRule {
+public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   /**
    * The name of this static composite type
    */
@@ -63,12 +64,12 @@ public class CompositingRule implements IRule, ITimeoutRule {
   /**
    * The catalog for database access
    */
-  Catalog catalog = null;
+  private Catalog catalog = null;
 
   /**
    * The timeout manager
    */
-  TimeoutManager timeoutManager = null;
+  private TimeoutManager timeoutManager = null;
   
   /**
    * Utilities that simplifies database access
@@ -125,6 +126,12 @@ public class CompositingRule implements IRule, ITimeoutRule {
   private static Logger logger = LogManager.getLogger(CompositingRule.class);
 
   /**
+   * Default constructor,however, use manager for creation
+   */
+  protected CompositingRule() {
+  }
+  
+  /**
    * @param catalog the catalog to set
    */
   protected void setCatalog(Catalog catalog) {
@@ -132,10 +139,38 @@ public class CompositingRule implements IRule, ITimeoutRule {
   }
 
   /**
+   * @return the catalog
+   */
+  protected Catalog getCatalog() {
+    return this.catalog;
+  }
+  
+  /**
    * @param mgr the timeout manager to set
    */
   protected void setTimeoutManager(TimeoutManager mgr) {
     this.timeoutManager = mgr;
+  }
+  
+  /**
+   * @return the timeout manager
+   */
+  protected TimeoutManager getTimeoutManager() {
+    return this.timeoutManager;
+  }
+
+  /**
+   * @param ruleUtil the ruleUtil to set
+   */
+  protected void setRuleUtilities(IRuleUtilities ruleUtil) {
+    this.ruleUtil = ruleUtil;
+  }
+
+  /**
+   * @return the ruleUtil
+   */
+  protected IRuleUtilities getRuleUtilities() {
+    return ruleUtil;
   }
   
   /**
@@ -240,25 +275,11 @@ public class CompositingRule implements IRule, ITimeoutRule {
   }
 
   /**
-   * @param ruleUtil the ruleUtil to set
-   */
-  public void setRuleUtilities(IRuleUtilities ruleUtil) {
-    this.ruleUtil = ruleUtil;
-  }
-
-  /**
-   * @return the ruleUtil
-   */
-  public IRuleUtilities getRuleUtilities() {
-    return ruleUtil;
-  }
-  /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
   @Override
   public synchronized IBltMessage handle(IBltMessage message) {
     logger.debug("ENTER: handle(IBltMessage)");
-    initialize();
     try {
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
@@ -382,7 +403,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
   public synchronized IBltMessage timeout(long id, int why, Object data) {
     logger.debug("ENTER: timeout("+id+","+why+"," + data + ")");
     IBltMessage result = null;
-    initialize();
     CompositeTimerData ctd = (CompositeTimerData)data;
     if (ctd != null) {
       List<CatalogEntry> entries = null;
@@ -403,26 +423,6 @@ public class CompositingRule implements IRule, ITimeoutRule {
     }
     logger.debug("EXIT: timeout("+id+","+why+"," + data + ")");
     return result;
-  }
-  
-  /**
-   * Initializes the nessecary components like catalog and
-   * timeout manager.
-   * @throws RuntimeException if the nessecary components not could be aquired
-   */
-  protected synchronized void initialize() {
-    if (catalog == null) {
-      catalog = ManagerContext.getCatalog();
-    }
-    if (timeoutManager == null) {
-      timeoutManager = ManagerContext.getTimeoutManager();
-    }
-    if (ruleUtil == null) {
-      ruleUtil = ManagerContext.getUtilities();
-    }
-    if (catalog == null || timeoutManager == null || ruleUtil == null) {
-      throw new RuntimeException();
-    }
   }
   
   /**
@@ -550,5 +550,17 @@ public class CompositingRule implements IRule, ITimeoutRule {
   @Override
   public void setRecipients(List<String> recipients) {
     this.recipients = recipients;
+  }
+
+  /**
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() {
+    if (catalog == null ||
+        timeoutManager == null ||
+        ruleUtil == null) {
+      throw new BeanInitializationException("catalog, timeoutManager or ruleUtilities missing");
+    }
   }
 }

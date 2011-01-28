@@ -38,6 +38,7 @@ import eu.baltrad.beast.pgfwk.BaltradXmlRpcServer;
 import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.groovy.GroovyRule;
+import eu.baltrad.beast.rules.groovy.GroovyRuleManager;
 
 /**
  * More of a overall system view test, performs all steps to verify
@@ -67,12 +68,14 @@ public class BltManagerTest extends TestCase {
    */
   private BeastDBTestHelper helper = null;
   
+  private GroovyRuleManager groovymgr = null;
+  
   /**
    * Extracts only the class name (no package included).
    * @param clz the class
    * @return the name
    */
-  @SuppressWarnings({"rawtypes" })
+  @SuppressWarnings({"unchecked" })
   private static String getClassName(Class clz) {
     String nm = clz.getName();
     int li = nm.lastIndexOf(".");
@@ -104,6 +107,7 @@ public class BltManagerTest extends TestCase {
     classUnderTest = (BltMessageManager)server.getContext().getBean("manager");
     generator = (TimingGeneratorPlugin)server.getContext().getBean("a.TimingGenerator");
     generator.reset();
+    groovymgr = (GroovyRuleManager)server.getContext().getBean("groovymgr");
   }
 
   public void tearDown() throws Exception {
@@ -216,7 +220,7 @@ public class BltManagerTest extends TestCase {
     buf.append("    }\n");
     buf.append("  }\n");
     buf.append("}\n");
-    GroovyRule rule = new GroovyRule();
+    GroovyRule rule = groovymgr.createRule();
     rule.setScript(buf.toString());
     return rule;
   }
@@ -251,7 +255,7 @@ public class BltManagerTest extends TestCase {
     buf.append("    return result;\n");
     buf.append("  }\n");
     buf.append("}\n");
-    GroovyRule rule = new GroovyRule();
+    GroovyRule rule = groovymgr.createRule();
     rule.setScript(buf.toString());
     return rule;
   }

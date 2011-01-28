@@ -25,13 +25,11 @@ import junit.framework.TestCase;
 
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
-
-import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.TimeDelta;
 import eu.baltrad.fc.db.FileEntry;
 import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.db.FileResult;
@@ -262,5 +260,21 @@ public class BdbTrimCountRuleTest extends TestCase {
     verify();
 
     assertEquals(10, result);
+  }
+  
+  public void testAfterPropertiesSet() {
+    classUnderTest = new BdbTrimCountRule();
+    classUnderTest.setFileCatalog(catalog);
+    classUnderTest.afterPropertiesSet();
+  }
+  
+  public void testAfterPropertiesSet_missingCatalog() {
+    classUnderTest = new BdbTrimCountRule();
+    try {
+      classUnderTest.afterPropertiesSet();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
   }
 }

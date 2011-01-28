@@ -45,7 +45,7 @@ public class BaltradXmlRpcServerITest extends TestCase {
    * @param clz the class
    * @return the name
    */
-  @SuppressWarnings({"rawtypes" })
+  @SuppressWarnings({"unchecked" })
   private static String getClassName(Class clz) {
     String nm = clz.getName();
     int li = nm.lastIndexOf(".");

@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.PropertyManager;
@@ -90,7 +91,7 @@ public class BdbTrimCountRuleManagerTest extends TestCase {
 
   public void testLoad() {
     classUnderTest = new BdbTrimCountRuleManager() {
-      protected BdbTrimCountRule createRule() {
+      public BdbTrimCountRule createRule() {
         return methods.createRule();
       }
     };
@@ -128,5 +129,20 @@ public class BdbTrimCountRuleManagerTest extends TestCase {
 
     classUnderTest.update(1, rule);
     verify();
+  }
+  
+  public void testCreateRule() {
+    BdbTrimCountRule result = classUnderTest.createRule();
+    assertSame(result.getFileCatalog(), fileCatalog);
+  }
+  
+  public void testCreateRule_noCatalog() {
+    classUnderTest = new BdbTrimCountRuleManager();
+    try {
+      classUnderTest.createRule();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
   }
 }

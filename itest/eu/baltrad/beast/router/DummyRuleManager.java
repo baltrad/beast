@@ -96,4 +96,13 @@ public class DummyRuleManager implements IRuleManager {
   public void setStoreException(RuntimeException e) {
     this.storeException = e;
   }
+
+  /**
+   * @see eu.baltrad.beast.rules.IRuleManager#createRule()
+   */
+  @Override
+  public IRule createRule() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

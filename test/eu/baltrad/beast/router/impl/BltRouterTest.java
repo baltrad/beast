@@ -19,7 +19,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.router.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -33,6 +35,7 @@ import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.IRuleManager;
 
 
 /**
@@ -648,5 +651,33 @@ public class BltRouterTest extends TestCase {
     assertEquals(description, result.getDescription());
     assertSame(recipients, result.getRecipients());
     assertSame(rule, result.getRule());
+  }
+  
+  public void testCreateRule() {
+    MockControl r1Control = MockControl.createControl(IRuleManager.class);
+    IRuleManager r1 = (IRuleManager)r1Control.getMock();
+    Map<String, IRuleManager> managers = new HashMap<String, IRuleManager>();
+    managers.put("R1", r1);
+    IRule arule = new IRule() {
+      public IBltMessage handle(IBltMessage message) {
+        return null;
+      }
+      public String getType() {
+        return null;
+      }
+    };
+
+    r1.createRule();
+    r1Control.setReturnValue(arule);
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setRuleManagers(managers);
+    
+    r1Control.replay();
+    
+    IRule result = classUnderTest.createRule("R1");
+    
+    r1Control.verify();
+    assertSame(arule, result);
   }
 }

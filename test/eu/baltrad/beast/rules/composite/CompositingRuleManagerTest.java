@@ -29,6 +29,10 @@ import org.easymock.MockControl;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.util.RuleUtilities;
+
 /**
  * @author Anders Henja
  *
@@ -267,6 +271,10 @@ public class CompositingRuleManagerTest extends TestCase {
     List<String> sources = new ArrayList<String>();
     MockControl methodControl = MockControl.createControl(ManagerMethods.class);
     final ManagerMethods method = (ManagerMethods)methodControl.getMock();
+    CompositingRule arule = new CompositingRule();
+    
+    method.createRule();
+    methodControl.setReturnValue(arule);
     
     rs.getInt("rule_id");
     rsControl.setReturnValue(10);
@@ -284,6 +292,9 @@ public class CompositingRuleManagerTest extends TestCase {
     classUnderTest = new CompositingRuleManager() {
       protected List<String> getSources(int rule_id) {
         return method.getSources(rule_id);
+      }
+      public CompositingRule createRule() {
+        return method.createRule();
       }
     };
     
@@ -303,4 +314,21 @@ public class CompositingRuleManagerTest extends TestCase {
     assertEquals(20, result.getTimeout());
     assertEquals(true, result.isScanBased());
   }  
+  
+  public void testCreateRule() throws Exception {
+    Catalog catalog = new Catalog();
+    RuleUtilities utilities = new RuleUtilities();
+    TimeoutManager manager = new TimeoutManager();
+    
+    classUnderTest = new CompositingRuleManager();
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setTimeoutManager(manager);
+    
+    CompositingRule result = classUnderTest.createRule();
+    
+    assertSame(result.getCatalog(), catalog);
+    assertSame(result.getRuleUtilities(), utilities);
+    assertSame(result.getTimeoutManager(), manager);
+  }
 }
