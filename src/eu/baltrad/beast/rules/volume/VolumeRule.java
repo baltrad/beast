@@ -287,11 +287,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     IBltMessage result = null;
     VolumeTimerData data = createTimerData(message);
     
-    if (isHandled(data)) {
-      return null;
-    }
-    
-    if (data != null) {
+    if (data != null && !isHandled(data)) {
       List<CatalogEntry> entries = fetchAllCurrentEntries(data.getDateTime(), data.getSource());
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
       
