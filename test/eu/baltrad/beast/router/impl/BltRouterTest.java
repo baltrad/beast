@@ -218,6 +218,30 @@ public class BltRouterTest extends TestCase {
     assertSame(msg2, result.get(0).getMessage());
     assertSame(r, result.get(0).getDestinations());
   }
+
+  public void testGetMultiRoutedMessagesFromDefinition_handleThrowsException() throws Exception {
+    RouteDefinition d = new RouteDefinition();
+    List<String> r = new ArrayList<String>();
+    r.add("A");
+    r.add("B");
+    d.setRule(rule);
+    d.setRecipients(r);
+    
+    IBltMessage msg = new IBltMessage() {};
+    rule.handle(msg);
+    ruleControl.setThrowable(new RuntimeException());
+    
+    replay();
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(definitions);
+    
+    List<IMultiRoutedMessage> result = classUnderTest.getMultiRoutedMessages(msg, d);
+    
+    verify();
+    assertEquals(0, result.size());
+  }
+
   
   private static class MRM implements IBltMessage, IMultiRoutedMessage {
     private IBltMessage msg = null;
@@ -575,6 +599,57 @@ public class BltRouterTest extends TestCase {
     assertEquals("Adaptor3", result.get(1).getDestination());
   }
   
+  public void testGetRoutedMessages_withDefinition() throws Exception {
+    RouteDefinition d = new RouteDefinition();
+    List<String> r = new ArrayList<String>();
+    r.add("A");
+    r.add("B");
+    d.setRule(rule);
+    d.setRecipients(r);
+    
+    IBltMessage msg = new IBltMessage() {};
+    IBltMessage msg2 = new IBltMessage() {};
+    rule.handle(msg);
+    ruleControl.setReturnValue(msg2);
+    
+    replay();
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(definitions);
+    
+    List<IRoutedMessage> result = classUnderTest.getRoutedMessages(msg, d);
+    
+    verify();
+    assertEquals(2, result.size());
+    assertSame(msg2, result.get(0).getMessage());
+    assertEquals("A", result.get(0).getDestination());
+    assertSame(msg2, result.get(1).getMessage());
+    assertEquals("B", result.get(1).getDestination());
+  }
+
+  public void testGetRoutedMessages_withDefinition_throwsException() throws Exception {
+    RouteDefinition d = new RouteDefinition();
+    List<String> r = new ArrayList<String>();
+    r.add("A");
+    r.add("B");
+    d.setRule(rule);
+    d.setRecipients(r);
+    
+    IBltMessage msg = new IBltMessage() {};
+    rule.handle(msg);
+    ruleControl.setThrowable(new RuntimeException());
+    
+    replay();
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(definitions);
+    
+    List<IRoutedMessage> result = classUnderTest.getRoutedMessages(msg, d);
+    
+    verify();
+    assertEquals(0, result.size());
+  }
+
   public void testGetNames() throws Exception {
     List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
     RouteDefinition d1 = new RouteDefinition();
