@@ -54,6 +54,8 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
    */
   final static int LOG_PROGRESS_FREQUENCY = 100;
 
+  final static int SECONDS_IN_DAY = 86400;
+
   private FileCatalog catalog;
 
   /**
@@ -180,7 +182,8 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
    */
   protected DateTime getAgeLimitDateTime() {
     TimeDelta dt = new TimeDelta();
-    dt.add_seconds(-fileAgeLimit);
+    dt.add_days(-(fileAgeLimit / SECONDS_IN_DAY));
+    dt.add_seconds(-(fileAgeLimit % SECONDS_IN_DAY));
     return getCurrentDateTime().add(dt);
   }
   

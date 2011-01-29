@@ -225,6 +225,25 @@ public class BdbTrimAgeRuleTest extends TestCase {
     verify();
     assertTrue(result.equals(expected));
   }
+
+  public void testGetAgeLimitDateTimeLargeLimit() {
+    classUnderTest = new BdbTrimAgeRule() {
+      protected DateTime getCurrentDateTime() {
+        return methods.getCurrentDateTime();
+      }
+    };
+    classUnderTest.setFileAgeLimit(86400 * 45);
+    DateTime now = new DateTime(2011, 1, 7, 11);
+    DateTime expected = new DateTime(2010, 11, 23, 11);
+
+    methods.getCurrentDateTime();
+    methodsControl.setReturnValue(now);
+    replay();
+
+    DateTime result = classUnderTest.getAgeLimitDateTime();
+    verify();
+    assertTrue(result.equals(expected));
+  }
   
   public void testAfterPropertiesSet() {
     classUnderTest = new BdbTrimAgeRule();
