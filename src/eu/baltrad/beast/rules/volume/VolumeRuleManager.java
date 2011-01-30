@@ -184,7 +184,7 @@ public class VolumeRuleManager implements IRuleManager {
     return new ParameterizedRowMapper<VolumeRule>() {
       @Override
       public VolumeRule mapRow(ResultSet rs, int rnum) throws SQLException {
-        VolumeRule result = new VolumeRule();
+        VolumeRule result = createRule();
         int rule_id = rs.getInt("rule_id");
         int interval = rs.getInt("interval");
         int timeout = rs.getInt("timeout");

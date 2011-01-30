@@ -28,7 +28,13 @@ import org.dbunit.dataset.ITable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
+import eu.baltrad.beast.message.mo.BltDataMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.rules.timer.TimeoutManager;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
+import eu.baltrad.fc.db.FileEntry;
 
 /**
  * @author Anders Henja
@@ -36,18 +42,36 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
  */
 public class VolumeRuleManagerITest extends TestCase {
   private ApplicationContext dbcontext = null;
+  private ApplicationContext context = null;
+  
   private BeastDBTestHelper helper = null;
   private VolumeRuleManager classUnderTest = null;
   private SimpleJdbcOperations template = null;
+  private Catalog catalog = null;
+  private TimeoutManager timeoutManager = null;
+  private IRuleUtilities utilities = null;
+  
+  private static String FIXTURE = "fixtures/scan_sehud_0.5_20110126T184500Z.h5";
   
   public void setUp() throws Exception {
     dbcontext = BeastDBTestHelper.loadDbContext(this);
     helper = (BeastDBTestHelper)dbcontext.getBean("helper");
+    helper.tearDown();
+    helper.purgeBaltradDB();
     
     helper.cleanInsert(this);
     template = (SimpleJdbcOperations)dbcontext.getBean("jdbcTemplate");
+    
+    context = BeastDBTestHelper.loadContext(this);
+    catalog = (Catalog)context.getBean("catalog");
+    timeoutManager = (TimeoutManager)context.getBean("timeoutmanager");
+    utilities = (IRuleUtilities)context.getBean("ruleutil");
+    
     classUnderTest = new VolumeRuleManager();
     classUnderTest.setJdbcTemplate(template);
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setTimeoutManager(timeoutManager);
   }
   
   public void tearDown() throws Exception {
@@ -55,6 +79,9 @@ public class VolumeRuleManagerITest extends TestCase {
     dbcontext = null;
     helper = null;
     template = null;
+    catalog = null;
+    utilities = null;
+    timeoutManager = null;
   }
  
   protected void verifyDatabaseTables(String extras) throws Exception {
@@ -65,6 +92,32 @@ public class VolumeRuleManagerITest extends TestCase {
     expected = helper.getXlsTable(this, extras, "beast_volume_sources");
     actual = helper.getDatabaseTable("beast_volume_sources");
     Assertion.assertEquals(expected, actual);
+  }
+  
+  private String getFilePath(String resource) throws Exception {
+    java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
+    return f.getAbsolutePath();
+  }
+  
+  protected BltDataMessage createDataMessage(FileEntry f) {
+    BltDataMessage result = new BltDataMessage();
+    result.setFileEntry(f);
+    return result;
+  }
+  
+  public void testLoadAndHandle() throws Exception {
+    VolumeRule rule = (VolumeRule)classUnderTest.load(1);
+  
+    assertNotNull(rule.getRuleUtilities());
+    assertNotNull(rule.getCatalog());
+    assertNotNull(rule.getTimeoutManager());
+    
+    FileEntry f = catalog.getCatalog().store(getFilePath(FIXTURE));
+    catalog.getCatalog().storage().store(f);
+
+    BltGenerateMessage msg = (BltGenerateMessage)rule.handle(createDataMessage(f));
+
+    assertNull(msg);
   }
   
   public void testLoad_1() throws Exception  {

@@ -42,6 +42,7 @@ public class VolumeRuleManagerTest extends TestCase {
   private static interface ManagerMethods {
     public void storeSources(int rule_id, List<String> sources);
     public List<String> getSources(int rule_id);    
+    public VolumeRule createRule();
   };
   
   private VolumeRuleManager classUnderTest = null;
@@ -267,7 +268,10 @@ public class VolumeRuleManagerTest extends TestCase {
     List<String> sources = new ArrayList<String>();
     MockControl methodControl = MockControl.createControl(ManagerMethods.class);
     final ManagerMethods method = (ManagerMethods)methodControl.getMock();
+    VolumeRule volumeRule = new VolumeRule();
     
+    method.createRule();
+    methodControl.setReturnValue(volumeRule);
     rs.getInt("rule_id");
     rsControl.setReturnValue(10);
     rs.getInt("interval");
@@ -286,6 +290,9 @@ public class VolumeRuleManagerTest extends TestCase {
     classUnderTest = new VolumeRuleManager() {
       protected List<String> getSources(int rule_id) {
         return method.getSources(rule_id);
+      }
+      public VolumeRule createRule() {
+        return method.createRule();
       }
     };
     
