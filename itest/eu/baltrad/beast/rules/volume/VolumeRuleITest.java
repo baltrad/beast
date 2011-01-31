@@ -136,6 +136,7 @@ public class VolumeRuleITest extends TestCase {
   public void tearDown() throws Exception {
     catalog = null;
     classUnderTest = null;
+    ruleUtilities = null;    
   }
   
   private String getFilePath(String resource) throws Exception {

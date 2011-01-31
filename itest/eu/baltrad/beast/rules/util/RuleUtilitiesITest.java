@@ -53,13 +53,13 @@ public class RuleUtilitiesITest extends TestCase {
   
   public RuleUtilitiesITest(String name) {
     super(name);
+  }
+
+  public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.createBaltradDbPath();
-  }
-
-  public void setUp() throws Exception {
     helper.purgeBaltradDB();
     classUnderTest = new RuleUtilities();
     classUnderTest.setCatalog(catalog);
@@ -75,6 +75,9 @@ public class RuleUtilitiesITest extends TestCase {
   }
   
   public void tearDown() throws Exception {
+    context = null;
+    catalog = null;
+    helper = null;
     classUnderTest = null;
   }
   

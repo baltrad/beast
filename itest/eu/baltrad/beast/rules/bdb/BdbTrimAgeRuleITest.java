@@ -57,13 +57,14 @@ public class BdbTrimAgeRuleITest extends TestCase {
 
   public BdbTrimAgeRuleITest(String name) {
     super(name);
+  }
+
+  public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
     catalog = (FileCatalog)context.getBean("fc");
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.createBaltradDbPath();
-  }
 
-  public void setUp() throws Exception {
     helper.purgeBaltradDB();
 
     classUnderTest = new BdbTrimAgeRule();
@@ -80,6 +81,16 @@ public class BdbTrimAgeRuleITest extends TestCase {
     }
   }
 
+  public void tearDown() throws Exception {
+    context = null;
+    catalog = null;
+    helper = null;
+    classUnderTest = null;
+    methodsControl = null;
+    methods = null;
+    fileUuidMap = null;
+  }
+  
   private String getFilePath(String resource) throws Exception {
     java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
     return f.getAbsolutePath();

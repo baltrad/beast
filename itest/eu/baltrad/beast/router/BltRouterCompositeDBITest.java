@@ -54,6 +54,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     context = null;
     helper = null;
     classUnderTest = null;
+    scheduler = null;
   }
 
   /**

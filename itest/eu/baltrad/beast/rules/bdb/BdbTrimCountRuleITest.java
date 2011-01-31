@@ -47,13 +47,13 @@ public class BdbTrimCountRuleITest extends TestCase {
 
   public BdbTrimCountRuleITest(String name) {
     super(name);
-    context = BeastDBTestHelper.loadContext(this);
-    catalog = (FileCatalog)context.getBean("fc");
-    helper = (BeastDBTestHelper)context.getBean("testHelper");
-    helper.createBaltradDbPath();
   }
 
   public void setUp() throws Exception {
+    context = BeastDBTestHelper.loadContext(this);
+    catalog = (FileCatalog)context.getBean("fc");
+    helper = (BeastDBTestHelper)context.getBean("testHelper");
+    helper.createBaltradDbPath();    
     helper.purgeBaltradDB();
     fileUuidMap = new HashMap<String, String>();
 
@@ -66,6 +66,14 @@ public class BdbTrimCountRuleITest extends TestCase {
     }
   }
 
+  public void tearDown() throws Exception {
+    context = null;
+    catalog = null;
+    helper = null;
+    classUnderTest = null;
+    fileUuidMap = null;
+  }
+  
   private String getFilePath(String resource) throws Exception {
     java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
     return f.getAbsolutePath();

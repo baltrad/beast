@@ -63,11 +63,6 @@ public class BaltradDBITest extends TestCase {
   
   public BaltradDBITest(String name) {
     super(name);
-    ApplicationContext context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("helper");
-    baltradDbPath = helper.getBaltradDbPth();
-    catalogue = new FileCatalog(helper.getBaltradDbUri(), baltradDbPath);
-    uuidMap = new HashMap<String, String>();
   }
   
   private String getFilePath(String resource) throws Exception {
@@ -76,6 +71,11 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void setUp() throws Exception {
+    ApplicationContext context = BeastDBTestHelper.loadContext(this);
+    helper = (BeastDBTestHelper)context.getBean("helper");
+    baltradDbPath = helper.getBaltradDbPth();
+    catalogue = new FileCatalog(helper.getBaltradDbUri(), baltradDbPath);
+    uuidMap = new HashMap<String, String>();
     helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
     for (String n : FIXTURES) {
@@ -88,6 +88,9 @@ public class BaltradDBITest extends TestCase {
   
   public void tearDown() throws Exception {
     catalogue = null;
+    helper = null;
+    uuidMap = null;
+    baltradDbPath = null;
   }
   
   public void testLoadWithNonExistingPath() {

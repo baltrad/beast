@@ -77,6 +77,7 @@ public class VolumeRuleManagerITest extends TestCase {
   public void tearDown() throws Exception {
     classUnderTest = null;
     dbcontext = null;
+    context = null;
     helper = null;
     template = null;
     catalog = null;

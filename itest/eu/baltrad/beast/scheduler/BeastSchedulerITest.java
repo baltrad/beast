@@ -42,11 +42,11 @@ public class BeastSchedulerITest extends TestCase {
   
   public BeastSchedulerITest(String name) {
     super(name);
-    context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("helper");
   }
 
   public void setUp() throws Exception {
+    context = BeastDBTestHelper.loadContext(this);
+    helper = (BeastDBTestHelper)context.getBean("helper");
     helper.purgeBaltradDB();
     helper.cleanInsert(this);
     classUnderTest = new BeastScheduler();
@@ -63,6 +63,8 @@ public class BeastSchedulerITest extends TestCase {
   public void tearDown() throws Exception {
     classUnderTest.destroy();
     classUnderTest = null;
+    context = null;
+    helper = null;
   }
   
   protected String getFilePath(String resource) throws Exception {

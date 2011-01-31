@@ -39,14 +39,14 @@ public class XmlRpcConfigurationManagerDBTest extends TestCase {
   
   public XmlRpcConfigurationManagerDBTest(String name) {
     super(name);
-    context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("testHelper");
   }
   
   /**
    * Setup of test
    */
   public void setUp() throws Exception {
+    context = BeastDBTestHelper.loadContext(this);
+    helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.cleanInsert(this);
     classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate((SimpleJdbcOperations)context.getBean("jdbcTemplate"));
@@ -57,6 +57,8 @@ public class XmlRpcConfigurationManagerDBTest extends TestCase {
    */
   public void tearDown() throws Exception {
     classUnderTest = null;
+    context = null;
+    helper = null;
   }
   
   /**

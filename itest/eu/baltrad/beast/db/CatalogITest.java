@@ -55,11 +55,6 @@ public class CatalogITest extends TestCase {
   
   public CatalogITest(String name) {
     super(name);
-
-    context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("testHelper");
-    helper.createBaltradDbPath();
-    catalog = new FileCatalog(helper.getBaltradDbUri(), helper.getBaltradDbPth());
   }
 
   private String getFilePath(String resource) throws Exception {
@@ -68,6 +63,11 @@ public class CatalogITest extends TestCase {
   }
   
   public void setUp() throws Exception {
+    context = BeastDBTestHelper.loadContext(this);
+    helper = (BeastDBTestHelper)context.getBean("testHelper");
+    helper.createBaltradDbPath();
+    catalog = new FileCatalog(helper.getBaltradDbUri(), helper.getBaltradDbPth());
+    
     classUnderTest = new Catalog();
     classUnderTest.setCatalog(catalog);
     
@@ -86,6 +86,9 @@ public class CatalogITest extends TestCase {
   
   public void tearDown() throws Exception {
     classUnderTest = null;
+    context = null;
+    helper = null;
+    catalog = null;
   }
   
   public void testFetch_TimeIntervalFilter_PVOL() throws Exception {

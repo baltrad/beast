@@ -38,11 +38,11 @@ public class PropertyManagerDBTest extends TestCase {
 
   public PropertyManagerDBTest(String name) {
     super(name);
-    context = BeastDBTestHelper.loadContext(this);
-    helper = (BeastDBTestHelper)context.getBean("testHelper");
   }
 
   public void setUp() throws Exception {
+    context = BeastDBTestHelper.loadContext(this);
+    helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.cleanInsert(this);
     classUnderTest = new PropertyManager();
     SimpleJdbcOperations template = (SimpleJdbcOperations)context.getBean("jdbcTemplate");

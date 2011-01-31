@@ -77,6 +77,7 @@ public class XmlRpcAdaptorITest extends TestCase {
   
   public void tearDown() throws Exception {
     server.shutdown();
+    server = null;
   }
   
   public void testHandleBltCommandMessage() throws Exception {

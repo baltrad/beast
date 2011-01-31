@@ -87,15 +87,16 @@ public class CompositingRuleITest extends TestCase {
   
   public CompositingRuleITest(String name) {
     super(name);
+  }
+
+  public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");
     ruleutil = (IRuleUtilities)context.getBean("ruleutil");
     timeoutManager = (TimeoutManager)context.getBean("timeoutmanager");
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.createBaltradDbPath();
-  }
 
-  public void setUp() throws Exception {
     helper.purgeBaltradDB();
 
     classUnderTest = new CompositingRule();
@@ -110,7 +111,12 @@ public class CompositingRuleITest extends TestCase {
   }
   
   public void tearDown() throws Exception {
+    context = null;
+    catalog = null;
     classUnderTest = null;
+    helper = null;
+    timeoutManager = null;
+    ruleutil = null;    
   }
   
   private String getFilePath(String resource) throws Exception {

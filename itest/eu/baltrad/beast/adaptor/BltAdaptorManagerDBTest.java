@@ -61,6 +61,7 @@ public class BltAdaptorManagerDBTest extends TestCase {
    */
   public void tearDown() throws Exception {
     helper.tearDown();
+    classUnderTest = null;
   }
 
   /**

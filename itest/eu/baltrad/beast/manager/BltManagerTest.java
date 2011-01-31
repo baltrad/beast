@@ -115,6 +115,8 @@ public class BltManagerTest extends TestCase {
     server = null;
     classUnderTest = null;
     generator = null;
+    generator= null;
+    groovymgr = null;
   }
   
   private static class TestCallback implements IAdaptorCallback {
