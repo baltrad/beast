@@ -26,5 +26,8 @@
   
   <bean id="dataFactory" class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory"/>
   
-  <bean id="helper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType" />
+  <bean id="helper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType">
+    <property name="baltradDbUri" value="${blt.db.uri}"/>
+    <property name="baltradDbPth" value="${blt.db.path}"/>  
+  </bean>
 </beans>

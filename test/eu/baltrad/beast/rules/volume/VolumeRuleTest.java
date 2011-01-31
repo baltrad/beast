@@ -30,6 +30,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
+import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
@@ -56,6 +57,8 @@ public class VolumeRuleTest extends TestCase {
     public TimeIntervalFilter createFilter(DateTime nominalTime, String source);
     public boolean replaceScanElevation(List<CatalogEntry> entries, CatalogEntry entry, Time nominalTime);
     public List<CatalogEntry> createCatalogEntryList();
+    public VolumeTimerData createTimerData(IBltMessage msg);
+    public boolean isHandled(VolumeTimerData data);
   };
 
   public void setUp() throws Exception {
@@ -91,6 +94,53 @@ public class VolumeRuleTest extends TestCase {
     timeoutControl.verify();
     utilitiesControl.verify();
   }
+  
+  public void testHandle_noScanData() throws Exception {
+    IBltMessage msg = new IBltMessage() {};
+    methods.createTimerData(msg);
+    methodsControl.setReturnValue(null);
+    
+    VolumeRule classUnderTest = new VolumeRule() {
+      public VolumeTimerData createTimerData(IBltMessage msg) {
+        return methods.createTimerData(msg);
+      }
+    };
+    
+    replay();
+    
+    IBltMessage result = classUnderTest.handle(msg);
+    
+    verify();
+    assertNull(result);
+  }
+  
+  public void testHandle_alreadyHandled() throws Exception {
+    IBltMessage msg = new IBltMessage() {};
+    VolumeTimerData data = new VolumeTimerData(1, new DateTime(), "some");
+    
+    methods.createTimerData(msg);
+    methodsControl.setReturnValue(data);
+    methods.isHandled(data);
+    methodsControl.setReturnValue(true);
+    
+    VolumeRule classUnderTest = new VolumeRule() {
+      public VolumeTimerData createTimerData(IBltMessage msg) {
+        return methods.createTimerData(msg);
+      }
+      public boolean isHandled(VolumeTimerData data) {
+        return methods.isHandled(data);
+      }
+    };
+    
+    replay();
+    
+    IBltMessage result = classUnderTest.handle(msg);
+    
+    verify();
+    assertNull(result);
+    
+  }
+  
   
   public void testAreCriteriasMet_noHit() throws Exception {
     DateTime now = new DateTime();

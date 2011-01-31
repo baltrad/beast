@@ -144,7 +144,12 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	protected List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg, RouteDefinition def) {
 	  List<IMultiRoutedMessage> result = new ArrayList<IMultiRoutedMessage>();
 	  if (def != null) {
-	    IBltMessage nmsg = def.getRule().handle(msg);
+	    IBltMessage nmsg = null;
+	    try {
+	      nmsg = def.getRule().handle(msg);
+	    } catch (Throwable t) {
+	      logger.info("Rule caused exception", t);
+	    }
 	    if (nmsg != null) {
 	      if (nmsg instanceof IMultiRoutedMessage) {
 	        result.add((IMultiRoutedMessage) nmsg);
@@ -215,7 +220,12 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	protected List<IRoutedMessage> getRoutedMessages(IBltMessage msg, RouteDefinition def) {
 	  List<IRoutedMessage> result = new ArrayList<IRoutedMessage>();
 	  if (def != null) {
-	    IBltMessage nmsg = def.getRule().handle(msg);
+	    IBltMessage nmsg = null;
+	    try {
+	      nmsg = def.getRule().handle(msg);
+	    } catch (Throwable t) {
+        logger.info("Rule caused exception", t);
+	    }
 	    if (nmsg != null) {
 	      if (nmsg instanceof IRoutedMessage) {
 	        result.add((IRoutedMessage) nmsg);
