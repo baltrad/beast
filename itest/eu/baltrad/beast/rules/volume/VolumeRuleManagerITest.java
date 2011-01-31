@@ -83,6 +83,7 @@ public class VolumeRuleManagerITest extends TestCase {
     catalog = null;
     utilities = null;
     timeoutManager = null;
+    System.gc();
   }
  
   protected void verifyDatabaseTables(String extras) throws Exception {

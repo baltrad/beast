@@ -65,6 +65,7 @@ public class BeastSchedulerITest extends TestCase {
     classUnderTest = null;
     context = null;
     helper = null;
+    System.gc();
   }
   
   protected String getFilePath(String resource) throws Exception {
