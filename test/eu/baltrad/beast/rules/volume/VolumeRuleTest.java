@@ -59,6 +59,10 @@ public class VolumeRuleTest extends TestCase {
     public List<CatalogEntry> createCatalogEntryList();
     public VolumeTimerData createTimerData(IBltMessage msg);
     public boolean isHandled(VolumeTimerData data);
+    public List<CatalogEntry> fetchAllCurrentEntries(DateTime nominalTime, String source);
+    public boolean areCriteriasMet(List<CatalogEntry> entries, DateTime dt, String source);
+    public List<CatalogEntry> filterEntries(List<CatalogEntry> entries, Time nominalTime);
+    public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
   };
 
   public void setUp() throws Exception {
@@ -138,9 +142,61 @@ public class VolumeRuleTest extends TestCase {
     
     verify();
     assertNull(result);
-    
   }
   
+  public void testHandle() throws Exception {
+    IBltMessage msg = new IBltMessage() {};
+    DateTime nominalTime = new DateTime();
+    VolumeTimerData data = new VolumeTimerData(1, nominalTime, "some");
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    List<CatalogEntry> newentries = new ArrayList<CatalogEntry>();
+    BltGenerateMessage message = new BltGenerateMessage();
+    
+    methods.createTimerData(msg);
+    methodsControl.setReturnValue(data);
+    methods.isHandled(data);
+    methodsControl.setReturnValue(false);
+    methods.fetchAllCurrentEntries(nominalTime, "some");
+    methodsControl.setReturnValue(entries);
+    timeoutManager.getRegisteredTask(data);
+    timeoutControl.setReturnValue(null);
+    methods.areCriteriasMet(entries, nominalTime, "some");
+    methodsControl.setReturnValue(true);
+    methods.filterEntries(entries, nominalTime.time());
+    methodsControl.setReturnValue(newentries);
+    methods.createMessage(nominalTime, newentries);
+    methodsControl.setReturnValue(message);
+    
+    VolumeRule classUnderTest = new VolumeRule() {
+      public VolumeTimerData createTimerData(IBltMessage msg) {
+        return methods.createTimerData(msg);
+      }
+      public boolean isHandled(VolumeTimerData data) {
+        return methods.isHandled(data);
+      }
+      protected List<CatalogEntry> fetchAllCurrentEntries(DateTime nominalTime, String source) {
+        return methods.fetchAllCurrentEntries(nominalTime, source);
+      }
+      protected boolean areCriteriasMet(List<CatalogEntry> entries, DateTime dt, String source) {
+        return methods.areCriteriasMet(entries, dt, source);
+      }
+      public List<CatalogEntry> filterEntries(List<CatalogEntry> entries, Time nominalTime) {
+        return methods.filterEntries(entries, nominalTime);
+      }
+      public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries) {
+        return methods.createMessage(nominalTime, entries);
+      }
+    };
+    classUnderTest.setTimeoutManager(timeoutManager);
+    
+    replay();
+    
+    IBltMessage result = classUnderTest.handle(msg);
+    
+    verify();
+    assertSame(message, result);
+    
+  }
   
   public void testAreCriteriasMet_noHit() throws Exception {
     DateTime now = new DateTime();

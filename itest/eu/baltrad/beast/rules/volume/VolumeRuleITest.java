@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.db.Catalog;
@@ -34,7 +36,6 @@ import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.db.FileEntry;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
@@ -287,6 +288,47 @@ public class VolumeRuleITest extends TestCase {
     validateMessage(h_1930.messages.get(0), expected_1930_args, h_1930.filemap.values());
   }  
   
+  public void testHandleNoDuplicateAngles() throws Exception {
+    HandleHelper h_1845 = null;
+    FileEntry f = null;
+    String path = null;
+    Map<String, String> filemap = new HashMap<String, String>();
+    
+    classUnderTest.setElevationMin(0.0);
+    classUnderTest.setElevationMax(40.0);
+    
+    h_1845 = storeFiles(classUnderTest, FIXTURES_1845);
+    assertEquals(1, h_1845.triggeringFiles.size());
+    
+    // Now we should populate the database with all 1930 entries except the
+    // final one.
+    for (int i = 0; i < FIXTURES_1900.length - 1; i++) {
+      f = catalog.getCatalog().store(getFilePath(FIXTURES_1900[i]));
+      path = catalog.getCatalog().storage().store(f);
+      filemap.put(FIXTURES_1900[i], path);
+    }
+    
+    f = catalog.getCatalog().store(getFilePath(FIXTURES_1900[FIXTURES_1900.length-1]));
+    path = catalog.getCatalog().storage().store(f);
+    filemap.put(FIXTURES_1900[FIXTURES_1900.length-1], path);
+    
+    BltGenerateMessage msg = (BltGenerateMessage)classUnderTest.handle(createDataMessage(f));
+    assertNotNull(msg);
+    // We should not have the two duplicate 0.5 angles
+    assertEquals(FIXTURES_1900.length-2, msg.getFiles().length);
+    // Since it is ascending strategy, it is the 0.5 degree file closest to nominal time that should be used
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[0])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[1])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[2])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[3])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[4])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[5])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[6])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[7])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[8])));
+    assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[9])));
+  }
+  
   protected HandleHelper storeFiles(VolumeRule testclass, String[] fixtures) throws Exception {
     HandleHelper handled = new HandleHelper();
     
@@ -314,5 +356,14 @@ public class VolumeRuleITest extends TestCase {
     for (String file : msgfiles) {
       assertTrue(values.contains(file));
     }
+  }
+  
+  protected boolean containsFile(String[] files, String expected) {
+    for (String f : files) {
+      if (f.equals(expected)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -292,8 +292,8 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
       
       if (areCriteriasMet(entries, data.getDateTime(), data.getSource())) {
-        removeEntriesOutsideElevationRange(entries);
-        result = createMessage(data.getDateTime(), entries);
+        List<CatalogEntry> newentries = filterEntries(entries, data.getDateTime().time());
+        result = createMessage(data.getDateTime(), newentries);
         if (tt != null) {
           timeoutManager.unregister(tt.getId());
         }
@@ -310,20 +310,6 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
       setHandled(data);
     }
     return result;
-  }
-
-  /**
-   * @param entries
-   */
-  protected void removeEntriesOutsideElevationRange(List<CatalogEntry> entries) {
-    int index = entries.size() - 1;
-    while (index >= 0) {
-      Double elangle = (Double)entries.get(index).getAttribute("/dataset1/where/elangle");
-      if (elangle < eMin || elangle > eMax) {
-        entries.remove(index);
-      }
-      index --;
-    }
   }
 
   /**
@@ -399,7 +385,8 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     VolumeTimerData vtd = (VolumeTimerData)data;
     if (vtd != null) {
       List<CatalogEntry> entries = fetchAllCurrentEntries(vtd.getDateTime(), vtd.getSource());
-      IBltMessage msgtosend = createMessage(vtd.getDateTime(), entries);
+      List<CatalogEntry> newentries = filterEntries(entries, vtd.getDateTime().time());
+      IBltMessage msgtosend = createMessage(vtd.getDateTime(), newentries);
       BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
       mrmsg.setDestinations(recipients);
       mrmsg.setMessage(msgtosend);
