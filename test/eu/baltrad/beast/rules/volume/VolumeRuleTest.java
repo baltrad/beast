@@ -240,9 +240,9 @@ public class VolumeRuleTest extends TestCase {
     DateTime nt = new DateTime(date, time);
     
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("searl","/tmp/searl_1.h5"));
-    entries.add(createCatalogEntry("searl","/tmp/searl_2.h5"));
-    entries.add(createCatalogEntry("searl","/tmp/searl_3.h5"));
+    entries.add(createCatalogEntry("searl"));
+    entries.add(createCatalogEntry("searl"));
+    entries.add(createCatalogEntry("searl"));
 
     List<String> fileEntries = new ArrayList<String>();
     fileEntries.add("/tmp/searl_1.h5");
@@ -603,13 +603,11 @@ public class VolumeRuleTest extends TestCase {
     return entry;
   }
   
-  protected CatalogEntry createCatalogEntry(String source, String path) {
+  protected CatalogEntry createCatalogEntry(String source) {
     MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
     CatalogEntry entry = (CatalogEntry)entryControl.getMock();
     entry.getSource();
     entryControl.setReturnValue(source, MockControl.ZERO_OR_MORE);
-    entry.getPath();
-    entryControl.setReturnValue(path, MockControl.ZERO_OR_MORE);
     entryControl.replay();
     return entry;
   }

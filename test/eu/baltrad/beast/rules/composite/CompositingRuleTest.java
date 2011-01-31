@@ -388,13 +388,11 @@ public class CompositingRuleTest extends TestCase {
   }
 
   
-  protected CatalogEntry createCatalogEntry(String source, String file) {
+  protected CatalogEntry createCatalogEntry(String source) {
     MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
     CatalogEntry entry = (CatalogEntry)entryControl.getMock();
     entry.getSource();
     entryControl.setReturnValue(source, MockControl.ZERO_OR_MORE);
-    entry.getPath();
-    entryControl.setReturnValue(file, MockControl.ZERO_OR_MORE);
     entryControl.replay();
     return entry;
   }
@@ -405,10 +403,10 @@ public class CompositingRuleTest extends TestCase {
     sources.add("sekkr");
     sources.add("seosu");
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("sekkr",null));
-    entries.add(createCatalogEntry("seosu",null));
-    entries.add(createCatalogEntry("selul",null));
-    entries.add(createCatalogEntry("searl",null));
+    entries.add(createCatalogEntry("sekkr"));
+    entries.add(createCatalogEntry("seosu"));
+    entries.add(createCatalogEntry("selul"));
+    entries.add(createCatalogEntry("searl"));
     List<String> entrySources = new ArrayList<String>();
     entrySources.add("sekkr");
     entrySources.add("seosu");
@@ -432,9 +430,9 @@ public class CompositingRuleTest extends TestCase {
     sources.add("sekkr");
     sources.add("seosu");
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("sekkr",null));
-    entries.add(createCatalogEntry("selul",null));
-    entries.add(createCatalogEntry("searl",null));
+    entries.add(createCatalogEntry("sekkr"));
+    entries.add(createCatalogEntry("selul"));
+    entries.add(createCatalogEntry("searl"));
     List<String> entrySources = new ArrayList<String>();
     entrySources.add("sekkr");
     entrySources.add("selul");
@@ -466,16 +464,16 @@ public class CompositingRuleTest extends TestCase {
     
     // actual entries don't matter, just make the list of different size to distinguish
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("sekkr","/tmp/sekkr.h5"));
+    entries.add(createCatalogEntry("sekkr"));
 
     List<CatalogEntry> entriesByTime = new ArrayList<CatalogEntry>();
-    entriesByTime.add(createCatalogEntry("sekkr","/tmp/sekkr.h5"));
-    entriesByTime.add(createCatalogEntry("selul","/tmp/selul.h5"));
+    entriesByTime.add(createCatalogEntry("sekkr"));
+    entriesByTime.add(createCatalogEntry("selul"));
 
     List<CatalogEntry> entriesBySources = new ArrayList<CatalogEntry>();
-    entriesBySources.add(createCatalogEntry("sekkr","/tmp/sekkr.h5"));
-    entriesBySources.add(createCatalogEntry("selul","/tmp/selul.h5"));
-    entriesBySources.add(createCatalogEntry("searl","/tmp/searl.h5"));
+    entriesBySources.add(createCatalogEntry("sekkr"));
+    entriesBySources.add(createCatalogEntry("selul"));
+    entriesBySources.add(createCatalogEntry("searl"));
     
     List<String> fileEntries = new ArrayList<String>();
     fileEntries.add("/tmp/sekkr.h5");
@@ -590,9 +588,9 @@ public class CompositingRuleTest extends TestCase {
     List<String> sources = new ArrayList<String>();
     List<CatalogEntry> currEntries = new ArrayList<CatalogEntry>();
 
-    CatalogEntry e1 = createCatalogEntry("sekkr", "/tmp/ab.h5", pdt, 0.1);
+    CatalogEntry e1 = createCatalogEntry("sekkr", pdt, 0.1);
     currEntries.add(e1);
-    CatalogEntry e2 = createCatalogEntry("searl", "/tmp/bb.h5", pdt, 0.5);
+    CatalogEntry e2 = createCatalogEntry("searl", pdt, 0.5);
     currEntries.add(e2);
 
     sources.add("sekkr");
@@ -798,13 +796,11 @@ public class CompositingRuleTest extends TestCase {
     assertSame(stopDT, result.getStop());
   }
   
-  private CatalogEntry createCatalogEntry(String src, String file, DateTime dt, double elangle) {
+  private CatalogEntry createCatalogEntry(String src, DateTime dt, double elangle) {
     MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
     CatalogEntry entry = (CatalogEntry)entryControl.getMock();
     entry.getSource();
     entryControl.setReturnValue(src, MockControl.ZERO_OR_MORE);
-    entry.getPath();
-    entryControl.setReturnValue(file, MockControl.ZERO_OR_MORE);
     entry.getDateTime();
     entryControl.setReturnValue(dt, MockControl.ZERO_OR_MORE);
     entry.getAttribute("/dataset1/where/elangle");

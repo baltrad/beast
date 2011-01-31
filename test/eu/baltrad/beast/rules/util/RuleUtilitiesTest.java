@@ -26,8 +26,13 @@ import junit.framework.TestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
+import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+
 import eu.baltrad.fc.DateTime;
+import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.fc.LocalStorage;
+import eu.baltrad.fc.db.FileEntry;
 
 
 /**
@@ -35,40 +40,71 @@ import eu.baltrad.fc.DateTime;
  */
 public class RuleUtilitiesTest extends TestCase {
   private RuleUtilities classUnderTest = null;
+  private MockControl catalogControl = null;
+  private Catalog catalog = null;
+  private MockControl fileCatalogControl = null;
+  private FileCatalog fileCatalog = null;
+  private MockControl storageControl = null;
+  private LocalStorage storage = null;
   
   public void setUp() throws Exception {
+    catalogControl = MockClassControl.createControl(Catalog.class);
+    catalog = (Catalog)catalogControl.getMock();
+    fileCatalogControl = MockClassControl.createControl(FileCatalog.class);
+    fileCatalog = (FileCatalog)fileCatalogControl.getMock();
+    storageControl = MockClassControl.createControl(LocalStorage.class);
+    storage = (LocalStorage)storageControl.getMock();
     classUnderTest = new RuleUtilities();
+    classUnderTest.setCatalog(catalog);
   }
   
   public void tearDown() throws Exception {
     classUnderTest = null;
+    storage = null;
+    storageControl = null;
+    fileCatalog = null;
+    fileCatalogControl = null;
+    catalog = null;
+    catalogControl = null;
+  }
+
+  protected void replay() {
+    catalogControl.replay();
+    fileCatalogControl.replay();
+    storageControl.replay();
   }
   
+  protected void verify() {
+    catalogControl.verify();
+    fileCatalogControl.verify();
+    storageControl.verify();
+  }
+
   public void testGetEntryBySource() throws Exception {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seosu", "/tmp/4.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("sevan", "/tmp/5.h5", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sehud", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sevan", new DateTime(2010,1,1,10,1,2)));
     
     CatalogEntry result = classUnderTest.getEntryBySource("seang", entries);
-    assertEquals("/tmp/1.h5", result.getPath());
+    assertEquals(entries.get(0), result);
     result = classUnderTest.getEntryBySource("sehud", entries);
-    assertEquals("/tmp/3.h5", result.getPath());
+    assertEquals(entries.get(2), result);
     result = classUnderTest.getEntryBySource("sevan", entries);
-    assertEquals("/tmp/5.h5", result.getPath());
+    assertEquals(entries.get(4), result);
     result = classUnderTest.getEntryBySource("senone", entries);
     assertNull(result);
   }
 
   public void testGetEntriesByClosestTime() {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seosu", "/tmp/4.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("seosu", "/tmp/5.h5", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sehud", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
     
     List<CatalogEntry> result = classUnderTest.getEntriesByClosestTime(new DateTime(2010,1,1,10,1,1), entries);
     
@@ -80,11 +116,11 @@ public class RuleUtilitiesTest extends TestCase {
 
   public void testGetEntriesBySources() {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seosu", "/tmp/4.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("sevan", "/tmp/5.h5", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sehud", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sevan", new DateTime(2010,1,1,10,1,2)));
     
     List<String> sources = new ArrayList<String>();
     sources.add("seang");
@@ -102,12 +138,25 @@ public class RuleUtilitiesTest extends TestCase {
 
   public void testGetFilesFromEntries() {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sehud", new DateTime(2010,1,1,10,1,1)));
+
+    catalog.getCatalog();
+    catalogControl.setReturnValue(fileCatalog);
+    fileCatalog.storage();
+    fileCatalogControl.setReturnValue(storage);
+    storage.store(entries.get(0).getFileEntry());
+    storageControl.setReturnValue("/tmp/1.h5");
+    storage.store(entries.get(1).getFileEntry());
+    storageControl.setReturnValue("/tmp/2.h5");
+    storage.store(entries.get(2).getFileEntry());
+    storageControl.setReturnValue("/tmp/3.h5");
+    replay();
 
     List<String> result = classUnderTest.getFilesFromEntries(entries);
-    
+
+    verify();
     assertEquals(3, result.size());
     assertTrue(result.contains("/tmp/1.h5"));
     assertTrue(result.contains("/tmp/2.h5"));
@@ -116,11 +165,11 @@ public class RuleUtilitiesTest extends TestCase {
 
   public void testGetSourcesFromEntries() throws Exception {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new DateTime(2010,1,1,10,1,1)));
-    entries.add(createCatalogEntry("seosu", "/tmp/4.h5", new DateTime(2010,1,1,10,1,2)));
-    entries.add(createCatalogEntry("sevan", "/tmp/5.h5", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sehud", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sevan", new DateTime(2010,1,1,10,1,2)));
     
     List<String> result = classUnderTest.getSourcesFromEntries(entries);
     
@@ -248,16 +297,19 @@ public class RuleUtilitiesTest extends TestCase {
   }
 
   
-  private CatalogEntry createCatalogEntry(String src, String file, DateTime dt) {
+  private CatalogEntry createCatalogEntry(String src, DateTime dt) {
     MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
     CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    MockControl fileEntryControl = MockClassControl.createControl(FileEntry.class);
+    FileEntry fileEntry = (FileEntry)fileEntryControl.getMock();
+    entry.getFileEntry();
+    entryControl.setReturnValue(fileEntry, MockControl.ZERO_OR_MORE);
     entry.getSource();
     entryControl.setReturnValue(src, MockControl.ZERO_OR_MORE);
-    entry.getPath();
-    entryControl.setReturnValue(file, MockControl.ZERO_OR_MORE);
     entry.getDateTime();
     entryControl.setReturnValue(dt, MockControl.ZERO_OR_MORE);
     entryControl.replay();
+    fileEntryControl.replay();
     return entry;
   }
 }

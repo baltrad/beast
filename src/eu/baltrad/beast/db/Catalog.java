@@ -69,9 +69,7 @@ public class Catalog implements InitializingBean {
       while (set.next()) {
         FileEntry fEntry = set.entry();
         CatalogEntry cEntry = new CatalogEntry();
-        String path = fc.storage().store(fEntry);
         cEntry.setFileEntry(fEntry);
-        cEntry.setPath(path);
         result.add(cEntry);
       }
     } catch (Throwable t) {
