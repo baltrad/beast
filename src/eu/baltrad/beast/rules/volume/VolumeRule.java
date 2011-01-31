@@ -456,7 +456,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     
     result.setAlgorithm("eu.baltrad.beast.GenerateVolume");
 
-    result.setFiles(getFilesFromEntries(entries));
+    result.setFiles(ruleUtilities.getFilesFromEntries(entries).toArray(new String[0]));
 
     String[] args = new String[3];
     args[0] = "--source="+source;
@@ -465,21 +465,6 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     
     result.setArguments(args);
     
-    return result;
-  }
-  
-  /**
-   * Returns the list of scans that should be used for generating
-   * the volume
-   * @param entries the entries
-   * @return a list of paths
-   */
-  protected String[] getFilesFromEntries(List<CatalogEntry> entries) {
-    int i = 0;
-    String[] result = new String[entries.size()];
-    for (CatalogEntry e: entries) {
-      result[i++] = e.getPath();
-    }
     return result;
   }
   

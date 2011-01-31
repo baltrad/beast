@@ -52,17 +52,31 @@ public interface IRuleUtilities {
    * @return a catalog entry
    */
   public CatalogEntry getEntryBySource(String source, List<CatalogEntry> entries);
+
+  /**
+   * Filter entries by time closest to a nominal time. If the list contains more than
+   * one entry from the same source, the one nearest in time to the nominal time will
+   * be used.
+   * @param nominalDT the nominal time
+   * @param entries a list of entries
+   * @return a list of entries
+   */
+  public List<CatalogEntry> getEntriesByClosestTime(DateTime nominalDT, List<CatalogEntry> entries);
   
   /**
-   * Creates a list of files from the entries. If the list contains more than
-   * one entry from the same source, the one nearest in time to the nominal time 
-   * will be used.
-   * @param nominalDT the nominal time
-   * @param sources the sources that should be returned (acts as a filter)
+   * Filter entries by source. Pick entries that have a source present in sources.
+   * @param sources list of sources to match against
+   * @param entries a list of entries to filter
+   * @return a list of entries
+   */
+  public List<CatalogEntry> getEntriesBySources(List<String> sources, List<CatalogEntry> entries);
+
+  /**
+   * Creates a list of files from the entries. 
    * @param entries a list of entries
    * @return a list of files
    */
-  public List<String> getFilesFromEntries(DateTime nominalDT, List<String> sources, List<CatalogEntry> entries);
+  public List<String> getFilesFromEntries(List<CatalogEntry> entries);
   
   /**
    * Returns a list of sources from the provided entries

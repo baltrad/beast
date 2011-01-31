@@ -464,10 +464,18 @@ public class CompositingRuleTest extends TestCase {
     Time time = new Time(1, 0, 0);
     DateTime nominalTime = new DateTime(date, time);
     
+    // actual entries don't matter, just make the list of different size to distinguish
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     entries.add(createCatalogEntry("sekkr","/tmp/sekkr.h5"));
-    entries.add(createCatalogEntry("selul","/tmp/selul.h5"));
-    entries.add(createCatalogEntry("searl","/tmp/searl.h5"));
+
+    List<CatalogEntry> entriesByTime = new ArrayList<CatalogEntry>();
+    entriesByTime.add(createCatalogEntry("sekkr","/tmp/sekkr.h5"));
+    entriesByTime.add(createCatalogEntry("selul","/tmp/selul.h5"));
+
+    List<CatalogEntry> entriesBySources = new ArrayList<CatalogEntry>();
+    entriesBySources.add(createCatalogEntry("sekkr","/tmp/sekkr.h5"));
+    entriesBySources.add(createCatalogEntry("selul","/tmp/selul.h5"));
+    entriesBySources.add(createCatalogEntry("searl","/tmp/searl.h5"));
     
     List<String> fileEntries = new ArrayList<String>();
     fileEntries.add("/tmp/sekkr.h5");
@@ -482,7 +490,11 @@ public class CompositingRuleTest extends TestCase {
     sources.add("searl");
     classUnderTest.setSources(sources);
     
-    ruleUtil.getFilesFromEntries(nominalTime, sources, entries);
+    ruleUtil.getEntriesByClosestTime(nominalTime, entries);
+    ruleUtilControl.setReturnValue(entriesByTime);
+    ruleUtil.getEntriesBySources(sources, entriesByTime);
+    ruleUtilControl.setReturnValue(entriesBySources);
+    ruleUtil.getFilesFromEntries(entriesBySources);
     ruleUtilControl.setReturnValue(fileEntries);
 
     replay();
