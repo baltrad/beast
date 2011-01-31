@@ -99,15 +99,26 @@ public class BeastSchedulerITest extends TestCase {
   }
 
   public void testRegister() throws Exception {
-    int result = classUnderTest.register("0 * * * * ?", "nisse");
+    int result = classUnderTest.register("0 * * * * ?", "C");
     assertEquals(4, result);
     CronEntry entry = classUnderTest.getEntry(4);
     assertEquals(4, entry.getId());
-    assertEquals("nisse", entry.getName());
+    assertEquals("C", entry.getName());
     assertEquals("0 * * * * ?", entry.getExpression());
     verifyDatabaseTables("register");
   }
 
+  public void testRegister_nonExisting() throws Exception {
+    try {
+      classUnderTest.register("0 * * * * ?", "D");
+      fail("Expected SchedulerException");
+    } catch (SchedulerException e) {
+      // pass
+    }
+    assertNull(classUnderTest.getEntry(4));
+    verifyDatabaseTables(null);
+  }
+  
   private static class DummyManager implements IBltMessageManager {
     private volatile boolean triggered = false;
     @Override
@@ -142,17 +153,17 @@ public class BeastSchedulerITest extends TestCase {
     classUnderTest.setMessageManager(mgr);
     classUnderTest.afterPropertiesSet();
     
-    classUnderTest.register("* * * * * ?", "nisse");
+    classUnderTest.register("* * * * * ?", "C");
     boolean triggered = mgr.waitForManage(3000);
     assertEquals(true, triggered);
   }
 
   public void testReregister() throws Exception {
-    classUnderTest.reregister(2, "2 * * * * ?", "pelle");
+    classUnderTest.reregister(2, "2 * * * * ?", "C");
     
     CronEntry entry = classUnderTest.getEntry(2);
     assertEquals(2, entry.getId());
-    assertEquals("pelle", entry.getName());
+    assertEquals("C", entry.getName());
     assertEquals("2 * * * * ?", entry.getExpression());
     verifyDatabaseTables("reregister");
   }
@@ -167,6 +178,20 @@ public class BeastSchedulerITest extends TestCase {
     verifyDatabaseTables("reregister-same");
   }
 
+  public void testReregister_nonExisting() throws Exception {
+    try {
+      classUnderTest.reregister(2, "2 * * * * ?", "D");
+      fail("Expected SchedulerException");
+    } catch (SchedulerException e) {
+      // pass
+    }
+    
+    CronEntry entry = classUnderTest.getEntry(2);
+    assertEquals(2, entry.getId());
+    assertEquals("B", entry.getName());
+    assertEquals("1 * * * * ?", entry.getExpression());
+    verifyDatabaseTables(null);
+  }
   
   public void testUnregister() throws Exception {
     classUnderTest.unregister(2);

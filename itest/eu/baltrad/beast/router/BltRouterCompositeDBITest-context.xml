@@ -37,7 +37,10 @@
   
   <bean id="dataFactory" class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory"/>
   
-  <bean id="testHelper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType" />
+  <bean id="testHelper" class="eu.baltrad.beast.itest.BeastDBTestHelper" autowire="byType">
+    <property name="baltradDbUri" value="${blt.db.uri}"/>
+    <property name="baltradDbPth" value="${blt.db.path}"/>
+  </bean>  
 
   <!-- Some initialization that is necessary to wire the composite manager -->  
   <bean id="ruleutilities" class="eu.baltrad.beast.rules.util.RuleUtilities" autowire="byType" />
@@ -58,4 +61,7 @@
       </map>
     </property>
   </bean>
+  
+  <bean id="beastscheduler" class="eu.baltrad.beast.scheduler.BeastScheduler" autowire="byType"/>
+  
 </beans>

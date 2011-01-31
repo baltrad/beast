@@ -51,8 +51,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION add_fk_to_scheduled_jobs() RETURNS VOID AS $$
+BEGIN
+  PERFORM true from information_schema.TABLE_CONSTRAINTS
+    WHERE CONSTRAINT_NAME = 'beast_scheduled_jobs_name_fkey' AND TABLE_NAME='beast_scheduled_jobs';
+  IF FOUND THEN
+    RAISE NOTICE 'Foreign key constraint already exist from beast_scheduled_jobs to beast_router_rules';
+  ELSE
+    RAISE NOTICE 'Adding foreign key restriction to beast_scheduled_jobs';
+    DELETE FROM beast_scheduled_jobs WHERE NAME NOT IN (SELECT DISTINCT name FROM beast_router_rules);
+    ALTER TABLE beast_scheduled_jobs ADD FOREIGN KEY(name)  REFERENCES beast_router_rules(name);
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 select upgrade_beast_composite_rules();
 select create_beast_rule_properties();
+select add_fk_to_scheduled_jobs();
 
 drop function make_plpgsql();
+drop function create_beast_rule_properties();
 drop function upgrade_beast_composite_rules();
+drop function add_fk_to_scheduled_jobs();

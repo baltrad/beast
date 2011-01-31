@@ -329,7 +329,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
       template.update("delete from beast_router_dest where rule_id=?", new Object[]{rule_id});
       template.update("delete from beast_router_rules where rule_id=?", new Object[]{rule_id});
     } catch (Throwable t) {
-      throw new RuleException("Failed to remove rule: '" + name+"'");
+      throw new RuleException("Failed to remove rule: '" + name+"'", t);
     }
     removeDefinitionFromList(name);
   }

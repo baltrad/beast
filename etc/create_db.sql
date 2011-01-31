@@ -66,6 +66,6 @@ create table beast_volume_sources (
 create table beast_scheduled_jobs (
   id SERIAL PRIMARY KEY,
   expression text NOT NULL,
-  name text NOT NULL
+  name text NOT NULL REFERENCES beast_router_rules(name)
 );
 
