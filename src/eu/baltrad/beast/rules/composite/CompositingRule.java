@@ -478,8 +478,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     Time time = nominalDT.time();
     
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
+    
+    entries = ruleUtil.getEntriesByClosestTime(nominalDT, entries);
+    entries = ruleUtil.getEntriesBySources(sources, entries);
 
-    result.setFiles(ruleUtil.getFilesFromEntries(nominalDT, sources, entries).toArray(new String[0]));
+    result.setFiles(ruleUtil.getFilesFromEntries(entries).toArray(new String[0]));
 
     String[] args = new String[3];
     args[0] = "--area="+area;

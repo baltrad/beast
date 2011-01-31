@@ -61,8 +61,24 @@ public class RuleUtilitiesTest extends TestCase {
     result = classUnderTest.getEntryBySource("senone", entries);
     assertNull(result);
   }
-  
-  public void testGetFilesFromEntries() throws Exception {
+
+  public void testGetEntriesByClosestTime() {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seosu", "/tmp/4.h5", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seosu", "/tmp/5.h5", new DateTime(2010,1,1,10,1,2)));
+    
+    List<CatalogEntry> result = classUnderTest.getEntriesByClosestTime(new DateTime(2010,1,1,10,1,1), entries);
+    
+    assertEquals(3, result.size());
+    assertTrue(result.contains(entries.get(0)));
+    assertTrue(result.contains(entries.get(2)));
+    assertTrue(result.contains(entries.get(3)));
+  }
+
+  public void testGetEntriesBySources() {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     entries.add(createCatalogEntry("seang", "/tmp/1.h5", new DateTime(2010,1,1,10,1,1)));
     entries.add(createCatalogEntry("seang", "/tmp/2.h5", new DateTime(2010,1,1,10,1,2)));
@@ -74,26 +90,28 @@ public class RuleUtilitiesTest extends TestCase {
     sources.add("seang");
     sources.add("sehud");
     sources.add("seosu");
-    
-    List<String> result = classUnderTest.getFilesFromEntries(new DateTime(2010,1,1,10,1,1), sources, entries);
+
+    List<CatalogEntry> result = classUnderTest.getEntriesBySources(sources, entries);
+
+    assertEquals(4, result.size());
+    assertTrue(result.contains(entries.get(0)));
+    assertTrue(result.contains(entries.get(1)));
+    assertTrue(result.contains(entries.get(2)));
+    assertTrue(result.contains(entries.get(3)));
+  }
+
+  public void testGetFilesFromEntries() {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("seang", "/tmp/1.h5", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", "/tmp/2.h5", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("sehud", "/tmp/3.h5", new DateTime(2010,1,1,10,1,1)));
+
+    List<String> result = classUnderTest.getFilesFromEntries(entries);
     
     assertEquals(3, result.size());
     assertTrue(result.contains("/tmp/1.h5"));
+    assertTrue(result.contains("/tmp/2.h5"));
     assertTrue(result.contains("/tmp/3.h5"));
-    assertTrue(result.contains("/tmp/4.h5"));    
-  }
-
-  public void testGetFilesFromEntries_noEntries() throws Exception {
-    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    
-    List<String> sources = new ArrayList<String>();
-    sources.add("seang");
-    sources.add("sehud");
-    sources.add("seosu");
-    
-    List<String> result = classUnderTest.getFilesFromEntries(new DateTime(2010,1,1,10,1,1), sources, entries);
-    
-    assertEquals(0, result.size());
   }
 
   public void testGetSourcesFromEntries() throws Exception {

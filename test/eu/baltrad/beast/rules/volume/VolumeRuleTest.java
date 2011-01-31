@@ -188,7 +188,19 @@ public class VolumeRuleTest extends TestCase {
     entries.add(createCatalogEntry("searl","/tmp/searl_2.h5"));
     entries.add(createCatalogEntry("searl","/tmp/searl_3.h5"));
 
+    List<String> fileEntries = new ArrayList<String>();
+    fileEntries.add("/tmp/searl_1.h5");
+    fileEntries.add("/tmp/searl_2.h5");
+    fileEntries.add("/tmp/searl_3.h5");
+
+    utilities.getFilesFromEntries(entries);
+    utilitiesControl.setReturnValue(fileEntries);
+
+    replay();
+
     BltGenerateMessage result = (BltGenerateMessage)classUnderTest.createMessage(nt, entries);
+
+    verify();
     assertEquals("eu.baltrad.beast.GenerateVolume", result.getAlgorithm());
     String[] files = result.getFiles();
     assertEquals(3, files.length);

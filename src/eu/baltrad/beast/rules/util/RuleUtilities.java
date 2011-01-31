@@ -157,36 +157,54 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getFilesFromEntries(eu.baltrad.fc.DateTime, java.util.List, java.util.List)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getEntriesByClosestTime(eu.baltrad.fc.DateTime, java.util.List)
    */
   @Override
-  public List<String> getFilesFromEntries(DateTime nominalDT, List<String> sources, List<CatalogEntry> entries) {
+  public List<CatalogEntry> getEntriesByClosestTime(DateTime nominalDT, List<CatalogEntry> entries) {
     Map<String, CatalogEntry> entryMap = new HashMap<String, CatalogEntry>();
     GregorianCalendar nominalTimeCalendar = createCalendar(nominalDT);
     List<String> result = new ArrayList<String>();
     
     for (CatalogEntry entry: entries) {
       String src = entry.getSource();
-      if (sources.contains(src)) {
-        if (!entryMap.containsKey(src)) {
+      if (!entryMap.containsKey(src)) {
+        entryMap.put(src, entry);
+      } else {
+        GregorianCalendar entryCalendar = createCalendar(entry.getDateTime());
+        CatalogEntry mapEntry = entryMap.get(src);
+        GregorianCalendar mapEntryCalendar = createCalendar(mapEntry.getDateTime());
+      
+        // If the entrys time is closer to the nominal time than the existing one, replace it
+        if (Math.abs(entryCalendar.compareTo(nominalTimeCalendar)) < Math.abs(mapEntryCalendar.compareTo(nominalTimeCalendar))) {
           entryMap.put(src, entry);
-        } else {
-          GregorianCalendar entryCalendar = createCalendar(entry.getDateTime());
-          CatalogEntry mapEntry = entryMap.get(src);
-          GregorianCalendar mapEntryCalendar = createCalendar(mapEntry.getDateTime());
-        
-          // If the entrys time is closer to the nominal time than the existing one, replace it
-          if (Math.abs(entryCalendar.compareTo(nominalTimeCalendar)) < Math.abs(mapEntryCalendar.compareTo(nominalTimeCalendar))) {
-            entryMap.put(src, entry);
-          }
         }
       }
     }
-    
-    for (CatalogEntry entry : entryMap.values()) {
+    return new ArrayList<CatalogEntry>(entryMap.values());
+  }
+
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getEntriesBySources(java.util.List, java.util.List)
+   */
+  public List<CatalogEntry> getEntriesBySources(List<String> sources, List<CatalogEntry> entries) {
+    List<CatalogEntry> result = new ArrayList<CatalogEntry>();
+    for (CatalogEntry entry : entries) {
+      if (sources.contains(entry.getSource())) {
+        result.add(entry);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getFilesFromEntries(java.util.List)
+   */
+  @Override
+  public List<String> getFilesFromEntries(List<CatalogEntry> entries) {
+    List<String> result = new ArrayList<String>();
+    for (CatalogEntry entry : entries) {
       result.add(entry.getPath());
     }
-
     return result;
   }
 
