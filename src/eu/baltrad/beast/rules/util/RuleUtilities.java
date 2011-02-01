@@ -31,14 +31,16 @@ import org.apache.log4j.Logger;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+
+import eu.baltrad.fc.Date;
+import eu.baltrad.fc.DateTime;
+import eu.baltrad.fc.LocalStorage;
+import eu.baltrad.fc.Time;
+import eu.baltrad.fc.db.AttributeQuery;
+import eu.baltrad.fc.db.AttributeResult;
 import eu.baltrad.fc.expr.Attribute;
 import eu.baltrad.fc.expr.ExpressionFactory;
 import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.db.AttributeQuery;
-import eu.baltrad.fc.db.AttributeResult;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Time;
 import eu.baltrad.fc.oh5.Source;
 
 /**
@@ -202,8 +204,9 @@ public class RuleUtilities implements IRuleUtilities {
   @Override
   public List<String> getFilesFromEntries(List<CatalogEntry> entries) {
     List<String> result = new ArrayList<String>();
+    LocalStorage storage = catalog.getCatalog().storage();
     for (CatalogEntry entry : entries) {
-      result.add(entry.getPath());
+      result.add(storage.store(entry.getFileEntry()));
     }
     return result;
   }

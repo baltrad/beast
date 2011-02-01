@@ -55,20 +55,6 @@ public class CatalogEntry {
   }
   
   /**
-   * @param path the path to set
-   */
-  public void setPath(String path) {
-    this.path = path;
-  }
-  
-  /**
-   * @return the path
-   */
-  public String getPath() {
-    return path;
-  }
-
-  /**
    * @return the node
    */
   public String getSource() {
