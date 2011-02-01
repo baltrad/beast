@@ -26,12 +26,20 @@ import java.net.URL;
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
+import org.easymock.classextension.MockClassControl;
 
+import eu.baltrad.beast.ManagerContext;
+import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
+import eu.baltrad.beast.message.mo.BltDataMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IScriptableRule;
 import eu.baltrad.beast.rules.RuleException;
+import eu.baltrad.fc.Date;
+import eu.baltrad.fc.Time;
+import eu.baltrad.fc.db.FileEntry;
 
 /**
  * @author Anders Henja
@@ -127,5 +135,90 @@ public class GroovyRuleTest extends TestCase {
     } catch (RuleException e) {
       // pass
     }
+  }
+  
+  public void testSetScript_GoogleMapRule() throws Exception {
+    MockControl fileEntryControl = MockClassControl.createControl(FileEntry.class);
+    FileEntry fileEntry = (FileEntry)fileEntryControl.getMock();
+    MockControl catalogControl = MockClassControl.createControl(Catalog.class);
+    Catalog catalog = (Catalog)catalogControl.getMock();
+    
+    Date date = new Date(2011,2,1);
+    Time time = new Time(10,15,0);
+    
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fileEntry);
+
+    GroovyRule rule = new GroovyRule();
+    rule.setScript(readScript("GoogleMap.groovy"));
+
+    fileEntry.what_object();
+    fileEntryControl.setReturnValue("COMP");
+    fileEntry.what_source();
+    fileEntryControl.setReturnValue("ORG:82,CMT:baltrad_2000");
+    fileEntry.what_date();
+    fileEntryControl.setReturnValue(date);
+    fileEntry.what_time();
+    fileEntryControl.setReturnValue(time);
+    fileEntry.uuid();
+    fileEntryControl.setReturnValue("ab-cd");
+    catalog.getFileCatalogPath("ab-cd");
+    catalogControl.setReturnValue("/tmp/something.h5");
+    fileEntryControl.replay();
+    catalogControl.replay();
+    
+    // Verify that the rule has loaded properly
+    new ManagerContext().setCatalog(catalog);
+    
+    BltGenerateMessage result = (BltGenerateMessage)rule.handle(msg);
+    
+    fileEntryControl.verify();
+    catalogControl.verify();
+    
+    assertEquals("se.smhi.rave.creategmapimage", result.getAlgorithm());
+    
+    assertEquals(1, result.getFiles().length);
+    assertEquals("/tmp/something.h5", result.getFiles()[0]);
+    
+    assertEquals(2, result.getArguments().length);
+    assertEquals("outfile", result.getArguments()[0]);
+    assertEquals("/opt/baltrad/rave_gmap/web/data/baltrad_2000/2011/02/01/201102011015.png", result.getArguments()[1]);
+  }
+
+  public void testSetScript_GoogleMapRule_notSupportedArea() throws Exception {
+    MockControl fileEntryControl = MockClassControl.createControl(FileEntry.class);
+    FileEntry fileEntry = (FileEntry)fileEntryControl.getMock();
+    MockControl catalogControl = MockClassControl.createControl(Catalog.class);
+    Catalog catalog = (Catalog)catalogControl.getMock();
+    
+    Date date = new Date(2011,2,1);
+    Time time = new Time(10,15,0);
+    
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fileEntry);
+
+    GroovyRule rule = new GroovyRule();
+    rule.setScript(readScript("GoogleMap.groovy"));
+
+    fileEntry.what_object();
+    fileEntryControl.setReturnValue("COMP");
+    fileEntry.what_source();
+    fileEntryControl.setReturnValue("ORG:82,CMT:mydummyarea");
+    fileEntry.what_date();
+    fileEntryControl.setReturnValue(date);
+    fileEntry.what_time();
+    fileEntryControl.setReturnValue(time);
+
+    fileEntryControl.replay();
+    catalogControl.replay();
+    
+    // Verify that the rule has loaded properly
+    new ManagerContext().setCatalog(catalog);
+    
+    BltGenerateMessage result = (BltGenerateMessage)rule.handle(msg);
+    
+    fileEntryControl.verify();
+    catalogControl.verify();
+    assertNull(result);
   }
 }
