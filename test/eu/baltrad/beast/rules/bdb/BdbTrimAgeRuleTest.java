@@ -31,6 +31,7 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.fc.db.Database;
 import eu.baltrad.fc.db.FileEntry;
 import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.db.FileResult;
@@ -40,6 +41,8 @@ public class BdbTrimAgeRuleTest extends TestCase {
   private BdbTrimAgeRule classUnderTest = null;
   private MockControl methodsControl = null;
   private BdbTrimAgeRuleMethods methods = null;
+  private MockControl dbControl = null;
+  private Database db = null;
   private MockControl catalogControl = null;
   private FileCatalog catalog = null;
   private MockControl queryControl = null;
@@ -60,6 +63,8 @@ public class BdbTrimAgeRuleTest extends TestCase {
     classUnderTest = new BdbTrimAgeRule();
     methodsControl = MockControl.createControl(BdbTrimAgeRuleMethods.class);
     methods = (BdbTrimAgeRuleMethods)methodsControl.getMock();
+    dbControl = MockClassControl.createControl(Database.class);
+    db = (Database)dbControl.getMock();
     catalogControl = MockClassControl.createControl(FileCatalog.class);
     catalog = (FileCatalog)catalogControl.getMock();
     queryControl = MockClassControl.createControl(FileQuery.class);
@@ -76,6 +81,7 @@ public class BdbTrimAgeRuleTest extends TestCase {
 
   protected void replay() {
     methodsControl.replay();
+    dbControl.replay();
     catalogControl.replay();
     queryControl.replay();
     resultControl.replay();
@@ -84,6 +90,7 @@ public class BdbTrimAgeRuleTest extends TestCase {
 
   protected void verify() {
     methodsControl.verify();
+    dbControl.verify();
     catalogControl.verify();
     queryControl.verify();
     resultControl.verify();
@@ -163,8 +170,10 @@ public class BdbTrimAgeRuleTest extends TestCase {
 
     methods.getExcessiveFileQuery();
     methodsControl.setReturnValue(query);
-    query.execute();
-    queryControl.setReturnValue(result);
+    catalog.database();
+    catalogControl.setReturnValue(db);
+    db.execute(query);
+    dbControl.setReturnValue(result);
     result.size();
     resultControl.setReturnValue(1);
     result.next();
@@ -192,19 +201,14 @@ public class BdbTrimAgeRuleTest extends TestCase {
     classUnderTest.setFileCatalog(catalog);
     DateTime dt = new DateTime(2011, 1, 7, 11, 0, 0);
     
-    catalog.query_file();
-    catalogControl.setReturnValue(query);
     methods.getAgeLimitDateTime();
     methodsControl.setReturnValue(dt);
-    // XXX: ignore argument, need to rewrite as ICatalogFilter
-    query.filter(null);
-    queryControl.setMatcher(MockControl.ALWAYS_MATCHER);
-    queryControl.setReturnValue(query);
     replay();
-
+  
     FileQuery q = classUnderTest.getExcessiveFileQuery();
     verify();
-    assertEquals(q, query);
+    assertNotNull(q);
+    // XXX: assert valid filter
   }
 
   public void testGetAgeLimitDateTime() {

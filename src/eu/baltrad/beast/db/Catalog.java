@@ -60,11 +60,11 @@ public class Catalog implements InitializingBean {
    */
   public List<CatalogEntry> fetch(ICatalogFilter filter) {
     List<CatalogEntry> result = new ArrayList<CatalogEntry>();
-    FileQuery q = fc.query_file();
+    FileQuery q = new FileQuery();
     
     filter.apply(q);
     
-    FileResult set = q.execute();
+    FileResult set = fc.database().execute(q);
     try {
       while (set.next()) {
         FileEntry fEntry = set.entry();

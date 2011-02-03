@@ -27,8 +27,12 @@ import org.springframework.context.ApplicationContext;
 import eu.baltrad.beast.db.filters.PolarScanAngleFilter;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
+
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.fc.LocalStorage;
+import eu.baltrad.fc.NullStorage;
+import eu.baltrad.fc.db.Database;
 import eu.baltrad.fc.oh5.File;
 
 /**
@@ -38,6 +42,8 @@ import eu.baltrad.fc.oh5.File;
 public class CatalogITest extends TestCase {
   private ApplicationContext context = null;
   private BeastDBTestHelper helper = null;
+  private Database db = null;
+  private LocalStorage storage = null;
   private FileCatalog catalog = null;
   private Catalog classUnderTest = null;
   
@@ -66,7 +72,9 @@ public class CatalogITest extends TestCase {
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.createBaltradDbPath();
-    catalog = new FileCatalog(helper.getBaltradDbUri(), helper.getBaltradDbPth());
+    db = Database.create(helper.getBaltradDbUri());
+    storage = new NullStorage();
+    catalog = new FileCatalog(db, storage);
     
     classUnderTest = new Catalog();
     classUnderTest.setCatalog(catalog);
@@ -89,6 +97,8 @@ public class CatalogITest extends TestCase {
     context = null;
     helper = null;
     catalog = null;
+    storage = null;
+    db = null;
   }
   
   public void testFetch_TimeIntervalFilter_PVOL() throws Exception {

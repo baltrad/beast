@@ -124,13 +124,13 @@ public class RuleUtilities implements IRuleUtilities {
     filter = xpr.and_(filter, dtAttr.lt(xpr.datetime(stopDT)));
     filter = xpr.and_(filter, srcFilter);
 
-    AttributeQuery qry = catalog.getCatalog().query_attribute();
+    AttributeQuery qry = new AttributeQuery();
     qry.fetch(srcAttr);
     qry.fetch(xpr.min(xpr.attribute("where/elangle")));
     qry.filter(filter);
     qry.group(srcAttr);
 
-    AttributeResult rset = qry.execute();
+    AttributeResult rset = catalog.getCatalog().database().execute(qry);
     try {
       while (rset.next()) {
         if (!rset.is_null(1)) {

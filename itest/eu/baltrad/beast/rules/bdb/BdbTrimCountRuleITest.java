@@ -29,6 +29,7 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.db.FileResult;
 
 public class BdbTrimCountRuleITest extends TestCase {
@@ -85,7 +86,7 @@ public class BdbTrimCountRuleITest extends TestCase {
 
     String sease_uuid = fileUuidMap.get("fixtures/Z_SCAN_C_ESWI_20101016080000_sease_000000.h5");
     
-    FileResult rset = catalog.query_file().execute();
+    FileResult rset = catalog.database().execute(new FileQuery());
     try {
       assertTrue(rset.next());
       assertEquals(sease_uuid, rset.entry().uuid());
@@ -99,7 +100,7 @@ public class BdbTrimCountRuleITest extends TestCase {
     classUnderTest.setFileCountLimit(3);
     classUnderTest.handle(new BltTriggerJobMessage());
 
-    FileResult rset = catalog.query_file().execute();
+    FileResult rset = catalog.database().execute(new FileQuery());
     try {
       assertEquals(3, rset.size());
     } finally {

@@ -31,6 +31,7 @@ import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.db.FileResult;
 
 public class BdbTrimAgeRuleITest extends TestCase {
@@ -111,7 +112,7 @@ public class BdbTrimAgeRuleITest extends TestCase {
 
     classUnderTest.handle(new BltTriggerJobMessage());
     String uuid = fileUuidMap.get("fixtures/Z_SCAN_C_ESWI_20101016080500_seang_000000.h5");
-    FileResult rset = catalog.query_file().execute();
+    FileResult rset = catalog.database().execute(new FileQuery());
     try {
       assertEquals(1, rset.size());
       assertTrue(rset.next());

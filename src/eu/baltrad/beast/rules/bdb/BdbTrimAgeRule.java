@@ -150,7 +150,7 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
    */
   protected void execute() {
     FileQuery qry = getExcessiveFileQuery();
-    FileResult rset = qry.execute();
+    FileResult rset = catalog.database().execute(qry);
     try {
       int numFiles = rset.size();
       int numRemoved = 0;
@@ -172,7 +172,7 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
    */
   protected FileQuery getExcessiveFileQuery() {
     ExpressionFactory xpr = new ExpressionFactory();
-    FileQuery qry = catalog.query_file();
+    FileQuery qry = new FileQuery();
     qry.filter(xpr.combined_datetime("what/date", "what/time").lt(xpr.datetime(getAgeLimitDateTime())));
     return qry;
   }

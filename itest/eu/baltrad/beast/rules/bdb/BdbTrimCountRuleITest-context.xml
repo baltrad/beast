@@ -26,9 +26,17 @@
     <property name="baltradDbUri" value="${blt.db.uri}"/>
     <property name="baltradDbPth" value="${blt.db.path}"/>
   </bean>
+
+  <bean id="bdb_db" class="eu.baltrad.fc.db.Database" factory-method="create">
+       <constructor-arg value="${blt.db.uri}" />
+  </bean>
+  
+  <bean id="bdb_storage" class="eu.baltrad.fc.CacheDirStorage">
+       <constructor-arg value="${blt.db.path}" />
+  </bean>
   
   <bean id="fc" class="eu.baltrad.fc.FileCatalog">
-  	<constructor-arg value="${blt.db.uri}" />
-  	<constructor-arg value="${blt.db.path}" />
+       <constructor-arg ref="bdb_db" />
+       <constructor-arg ref="bdb_storage" />
   </bean>
 </beans>

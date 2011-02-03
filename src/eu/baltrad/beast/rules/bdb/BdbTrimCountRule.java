@@ -145,7 +145,7 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
     if (qry == null)
       return;
 
-    FileResult r = qry.execute();
+    FileResult r = catalog.database().execute(qry);
 
     try {
       int numFiles = r.size();
@@ -168,8 +168,8 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
    */
   protected int getFileCount() {
     // XXX: this should use catalog.file_count() once implemented in BDB
-    FileQuery qry = catalog.query_file();
-    FileResult r = qry.execute();
+    FileQuery qry = new FileQuery();
+    FileResult r = catalog.database().execute(qry);
     try {
       return r.size();
     } finally {
@@ -188,7 +188,7 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
     if (fileCount <= fileCountLimit)
       return null;
 
-    FileQuery qry = catalog.query_file();
+    FileQuery qry = new FileQuery();
     qry.order_by(xpr.attribute("file:stored_at"), FileQuery.SortDir.ASC);
     qry.limit(fileCount - fileCountLimit);
     return qry;

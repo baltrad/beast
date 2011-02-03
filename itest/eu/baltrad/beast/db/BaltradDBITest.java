@@ -28,13 +28,13 @@ import junit.framework.TestCase;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.FileSystemError;
+import eu.baltrad.fc.db.Database;
 import eu.baltrad.fc.db.AttributeQuery;
 import eu.baltrad.fc.db.AttributeResult;
 import eu.baltrad.fc.db.FileEntry;
 import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.oh5.hl.HlFile;
 
 /**
  * @author Anders Henja
@@ -42,7 +42,7 @@ import eu.baltrad.fc.expr.ExpressionFactory;
  */
 public class BaltradDBITest extends TestCase {
   private BeastDBTestHelper helper = null;
-  private FileCatalog catalogue = null;
+  private Database db = null;
   private String baltradDbPath = null;
   private Map<String, String> uuidMap = null;
   
@@ -74,12 +74,13 @@ public class BaltradDBITest extends TestCase {
     ApplicationContext context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("helper");
     baltradDbPath = helper.getBaltradDbPth();
-    catalogue = new FileCatalog(helper.getBaltradDbUri(), baltradDbPath);
+    db = Database.create(helper.getBaltradDbUri());
     uuidMap = new HashMap<String, String>();
     helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
     for (String n : FIXTURES) {
-      FileEntry result = catalogue.store(getFilePath(n));
+      HlFile f = new HlFile(getFilePath(n));
+      FileEntry result = db.store(f);
       assertNotNull(result);
       uuidMap.put(n, result.uuid());
     }
@@ -87,27 +88,18 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void tearDown() throws Exception {
-    catalogue = null;
+    db = null;
     helper = null;
     uuidMap = null;
     baltradDbPath = null;
   }
   
-  public void testLoadWithNonExistingPath() {
-    try {
-      new FileCatalog(helper.getBaltradDbUri(), "/mr/yoda");
-      fail("Expected FileSystemError");
-    } catch (FileSystemError fse) {
-      // pass
-    }
-  }
-  
   public void test_find_seang() throws Exception {
-    AttributeQuery q = catalogue.query_attribute();
+    AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
     q.fetch(xpr.attribute("file:uuid"));
     q.filter(xpr.attribute("what/source:_name").eq(xpr.string("seang")));
-    AttributeResult rs = q.execute();
+    AttributeResult rs = db.execute(q);
     assertEquals(1, rs.size());
     rs.next();
     String result = rs.string(0);
@@ -117,13 +109,13 @@ public class BaltradDBITest extends TestCase {
   }
 
   public void test_find_all() throws Exception {
-    AttributeQuery q = catalogue.query_attribute();
+    AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
     q.fetch(xpr.attribute("what/source:_name"));
 
-    AttributeResult rs = q.execute();
+    AttributeResult rs = db.execute(q);
     assertEquals(12, rs.size());
     while (rs.next()) {
       result.add(rs.string(0));
@@ -144,14 +136,14 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void test_find_sekir_or_selul() throws Exception {
-    AttributeQuery q = catalogue.query_attribute();
+    AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
     
     q.fetch(xpr.attribute("what/source:_name"));
     Expression e1 = xpr.attribute("what/source:_name").eq(xpr.string("sekir"));
     Expression e2 = xpr.attribute("what/source:_name").eq(xpr.string("selul"));
     q.filter(xpr.or_(e1, e2));
-    AttributeResult rs = q.execute();
+    AttributeResult rs = db.execute(q);
     assertEquals(2, rs.size());
     rs.next();
     String result1 = rs.string(0);
@@ -168,13 +160,13 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void test_find_all_but_sekir() throws Exception {
-    AttributeQuery q = catalogue.query_attribute();
+    AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
     q.fetch(xpr.attribute("what/source:_name"));
     q.filter(xpr.attribute("what/source:_name").ne(xpr.string("sekir")));
-    AttributeResult rs = q.execute();
+    AttributeResult rs = db.execute(q);
     assertEquals(11, rs.size());
     while (rs.next()) {
       result.add(rs.string(0));
