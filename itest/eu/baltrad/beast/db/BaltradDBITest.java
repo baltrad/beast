@@ -97,12 +97,12 @@ public class BaltradDBITest extends TestCase {
   public void test_find_seang() throws Exception {
     AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
-    q.fetch(xpr.attribute("file:uuid"));
+    q.fetch("uuid", xpr.attribute("file:uuid"));
     q.filter(xpr.attribute("what/source:_name").eq(xpr.string("seang")));
     AttributeResult rs = db.execute(q);
     assertEquals(1, rs.size());
     rs.next();
-    String result = rs.string(0);
+    String result = rs.string("uuid");
     rs.delete();
     String seang_uuid = (String)uuidMap.get("fixtures/Z_SCAN_C_ESWI_20101023180000_seang_000000.h5");
     assertEquals(seang_uuid, result);
@@ -113,12 +113,12 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
-    q.fetch(xpr.attribute("what/source:_name"));
+    q.fetch("uuid", xpr.attribute("what/source:_name"));
 
     AttributeResult rs = db.execute(q);
     assertEquals(12, rs.size());
     while (rs.next()) {
-      result.add(rs.string(0));
+      result.add(rs.string("uuid"));
     }
     rs.delete();
     assertTrue(result.contains("sekir"));
@@ -139,16 +139,16 @@ public class BaltradDBITest extends TestCase {
     AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
     
-    q.fetch(xpr.attribute("what/source:_name"));
+    q.fetch("source", xpr.attribute("what/source:_name"));
     Expression e1 = xpr.attribute("what/source:_name").eq(xpr.string("sekir"));
     Expression e2 = xpr.attribute("what/source:_name").eq(xpr.string("selul"));
     q.filter(xpr.or_(e1, e2));
     AttributeResult rs = db.execute(q);
     assertEquals(2, rs.size());
     rs.next();
-    String result1 = rs.string(0);
+    String result1 = rs.string("source");
     rs.next();
-    String result2 = rs.string(0);
+    String result2 = rs.string("source");
     rs.delete();
     if (result1.equals("sekir")) {
       assertEquals("selul", result2);
@@ -164,12 +164,12 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
-    q.fetch(xpr.attribute("what/source:_name"));
+    q.fetch("source", xpr.attribute("what/source:_name"));
     q.filter(xpr.attribute("what/source:_name").ne(xpr.string("sekir")));
     AttributeResult rs = db.execute(q);
     assertEquals(11, rs.size());
     while (rs.next()) {
-      result.add(rs.string(0));
+      result.add(rs.string("source"));
     }
     rs.delete();
     assertTrue(result.contains("selul"));

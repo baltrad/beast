@@ -125,16 +125,16 @@ public class RuleUtilities implements IRuleUtilities {
     filter = xpr.and_(filter, srcFilter);
 
     AttributeQuery qry = new AttributeQuery();
-    qry.fetch(srcAttr);
-    qry.fetch(xpr.min(xpr.attribute("where/elangle")));
+    qry.fetch("source", srcAttr);
+    qry.fetch("min_elangle", xpr.min(xpr.attribute("where/elangle")));
     qry.filter(filter);
     qry.group(srcAttr);
 
     AttributeResult rset = catalog.getCatalog().database().execute(qry);
     try {
       while (rset.next()) {
-        if (!rset.is_null(1)) {
-          result.put(rset.string(0), rset.double_(1));
+        if (!rset.is_null("min_elangle")) {
+          result.put(rset.string("source"), rset.double_("min_elangle"));
         }
       }
     } finally {
