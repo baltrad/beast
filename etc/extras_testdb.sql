@@ -30,3 +30,6 @@ CREATE TRIGGER set_beast_rule_id_seq_to_max AFTER INSERT OR UPDATE ON beast_rout
 CREATE TRIGGER set_scheduled_jobs_id_seq_to_max AFTER INSERT OR UPDATE ON beast_scheduled_jobs
   FOR EACH STATEMENT EXECUTE PROCEDURE set_seq_to_max('id')
 ;
+
+CREATE TRIGGER set_beast_filter_id_seq_to_max AFTER INSERT OR UPDATE ON beast_filters
+  FOR EACH STATEMENT EXECUTE PROCEDURE set_seq_to_max('filter_id');

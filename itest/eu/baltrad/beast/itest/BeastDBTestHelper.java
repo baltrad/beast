@@ -182,6 +182,8 @@ public class BeastDBTestHelper {
     template.update("delete from beast_rule_properties");
     template.update("delete from beast_scheduled_jobs");
     template.update("delete from beast_router_rules");
+    template.update("delete from beast_attr_filters");
+    template.update("delete from beast_filters");
   }
   
   /**

@@ -10,6 +10,19 @@ create table beast_adaptors_xmlrpc (
   timeout integer
 );
 
+create table beast_filters (
+  filter_id serial primary key,
+  type text not null
+);
+
+create table beast_attr_filters (
+  filter_id integer primary key references beast_filters(filter_id),
+  attr text not null,
+  op text not null,
+  value_type text not null,
+  value text not null
+);
+
 create table beast_router_rules (
   rule_id SERIAL PRIMARY KEY,
   name text NOT NULL UNIQUE,
