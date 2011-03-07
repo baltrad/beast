@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
  * this class which delegates to correct submanager based on filter
  * type.
  */
-class CoreFilterManager implements IFilterManager {
+public class CoreFilterManager implements IFilterManager {
   private Map<String, IFilterManager> subManagers = null;
   private SimpleJdbcOperations template;
 
