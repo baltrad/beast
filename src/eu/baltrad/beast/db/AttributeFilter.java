@@ -164,7 +164,6 @@ public class AttributeFilter implements IFilter {
       ExpressionList exprList = new ExpressionList();
       String[] values = StringUtils.commaDelimitedListToStringArray(value);
       for (int i = 0; i < values.length; i++) {
-        System.out.println(values[i]);
         exprList.append(new Literal(valueType.parseString(values[i].trim())));
       }
       return exprList;
