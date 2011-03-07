@@ -9,6 +9,8 @@ drop table if exists beast_volume_rules;
 drop table if exists beast_groovy_rules;
 drop table if exists beast_rule_properties;
 drop table if exists beast_router_rules;
+drop table if exists beast_combined_filter_children;
+drop table if exists beast_combined_filters;
 drop table if exists beast_attr_filters;
 drop table if exists beast_filters;
 drop table if exists router_dest;

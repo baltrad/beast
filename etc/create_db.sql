@@ -23,6 +23,17 @@ create table beast_attr_filters (
   value text not null
 );
 
+create table beast_combined_filters (
+  filter_id integer primary key references beast_filters(filter_id),
+  match_type text not null
+);
+
+create table beast_combined_filter_children (
+  filter_id integer not null references beast_combined_filters(filter_id),
+  child_id integer not null references beast_filters(filter_id),
+  primary key(filter_id, child_id)
+);
+
 create table beast_router_rules (
   rule_id SERIAL PRIMARY KEY,
   name text NOT NULL UNIQUE,
