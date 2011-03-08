@@ -238,6 +238,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	<junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
 	  <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
 	  <formatter type="xml"/> 
+	  <formatter type="brief" usefile="false" if="test.format.brief" />
 	  <classpath refid="test.lib.path"/>
 	  <classpath location="${build.classes.dir}"/>
 	  <classpath refid="lib.path"/>
@@ -319,6 +320,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     <junit dir="${build.itest.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
       <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
       <formatter type="xml"/> 
+      <formatter type="brief" usefile="false" if="test.format.brief" />
       <classpath refid="test.lib.path"/>
       <classpath location="${build.classes.dir}"/>
       <classpath refid="lib.path"/>
