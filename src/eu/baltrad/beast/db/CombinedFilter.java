@@ -80,6 +80,17 @@ public class CombinedFilter implements IFilter {
     }
   }
 
+  /**
+   * @see IFilter#isValid()
+   */
+  public boolean isValid() {
+    try {
+      return getExpression() != null;
+    } catch(Exception e) {
+      return false;
+    }
+  }
+
   public MatchType getMatchType() { return matchType; }
   public void setMatchType(MatchType type) { this.matchType = type; }
 

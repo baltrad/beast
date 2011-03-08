@@ -94,5 +94,40 @@ public class CombinedFilterTest extends TestCase {
     assertTrue(e.equals(expected));
   }
 
-  
+  public void testIsValid() {
+    List<IFilter> children = new ArrayList<IFilter>();
+    children.add(filter1);
+    children.add(filter2);
+    classUnderTest.setChildFilters(children);
+    classUnderTest.setMatchType(CombinedFilter.MatchType.ALL);
+
+    filter1.getExpression();
+    filter1Control.setReturnValue(xpr.long_(1));
+    filter2.getExpression();
+    filter2Control.setReturnValue(xpr.long_(2));
+    replay();
+    
+    assertTrue(classUnderTest.isValid());
+  }
+
+  public void testIsValid_noChild() {
+    classUnderTest.setMatchType(CombinedFilter.MatchType.ALL);
+
+    assertFalse(classUnderTest.isValid()); 
+  }
+
+  public void testIsValid_noMatchType() {
+    List<IFilter> children = new ArrayList<IFilter>();
+    children.add(filter1);
+    children.add(filter2);
+    classUnderTest.setChildFilters(children);
+
+    filter1.getExpression();
+    filter1Control.setReturnValue(xpr.long_(1), MockControl.ZERO_OR_MORE);
+    filter2.getExpression();
+    filter2Control.setReturnValue(xpr.long_(2), MockControl.ZERO_OR_MORE);
+    replay();
+
+    assertFalse(classUnderTest.isValid());
+  } 
 }

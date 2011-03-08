@@ -146,6 +146,19 @@ public class AttributeFilter implements IFilter {
                               attrExpr,
                               valueExpr);
   }
+  
+  /**
+   * @see IFilter#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    try {
+      getExpression();
+    } catch (Exception e) {
+      return false;
+    }
+    return true;
+  }
 
   public String getAttribute() { return attr; }
   public void setAttribute(String attr) { this.attr = attr; }
@@ -163,6 +176,8 @@ public class AttributeFilter implements IFilter {
     if (op.isMultiValued()) {
       ExpressionList exprList = new ExpressionList();
       String[] values = StringUtils.commaDelimitedListToStringArray(value);
+      if (values.length == 0)
+        throw new RuntimeException("no value associated with AttributeFilter");
       for (int i = 0; i < values.length; i++) {
         exprList.append(new Literal(valueType.parseString(values[i].trim())));
       }

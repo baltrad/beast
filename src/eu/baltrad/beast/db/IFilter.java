@@ -41,4 +41,9 @@ public interface IFilter {
    * access BDB expression represented by this filter
    */
   Expression getExpression();
+
+  /**
+   * check if this filter is valid
+   */
+  boolean isValid();
 }

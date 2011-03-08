@@ -66,4 +66,54 @@ public class AttributeFilterTest extends TestCase {
 
     assertTrue(classUnderTest.getValueExpression().equals(expected));
   }
+
+  public void testIsValid() {
+    classUnderTest.setAttribute("where/elangle");
+    classUnderTest.setOperator(AttributeFilter.Operator.IN);
+    classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
+    classUnderTest.setValue("PVOL, SCAN");
+
+    assertTrue(classUnderTest.isValid());
+  }
+
+  public void testIsValid_noAttribute() {
+    classUnderTest.setOperator(AttributeFilter.Operator.IN);
+    classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
+    classUnderTest.setValue("PVOL, SCAN");
+
+    assertFalse(classUnderTest.isValid());
+  }
+
+  public void testIsValid_noOperator() {
+    classUnderTest.setAttribute("where/elangle");
+    classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
+    classUnderTest.setValue("PVOL, SCAN");
+
+    assertFalse(classUnderTest.isValid());
+  }
+
+  public void testIsValid_noValueType() {
+    classUnderTest.setAttribute("where/elangle");
+    classUnderTest.setOperator(AttributeFilter.Operator.IN);
+    classUnderTest.setValue("PVOL, SCAN");
+
+    assertFalse(classUnderTest.isValid());
+  }
+
+  public void testIsValid_noValue() {
+    classUnderTest.setAttribute("where/elangle");
+    classUnderTest.setOperator(AttributeFilter.Operator.IN);
+    classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
+
+    assertFalse(classUnderTest.isValid());
+  }
+  
+  public void testIsValid_invalidValue() {
+    classUnderTest.setAttribute("where/elangle");
+    classUnderTest.setOperator(AttributeFilter.Operator.IN);
+    classUnderTest.setValueType(AttributeFilter.ValueType.DOUBLE);
+    classUnderTest.setValue("PVOL, SCAN");
+
+    assertFalse(classUnderTest.isValid());
+  }
 }
