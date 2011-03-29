@@ -241,7 +241,21 @@ public class BltRouterTest extends TestCase {
     verify();
     assertEquals(0, result.size());
   }
-
+  
+  public void testGetMultiRoutedMessagesFromDefinition_notActive() throws Exception {
+    RouteDefinition d = new RouteDefinition();
+    d.setActive(false);
+    d.setRule(rule);
+    
+    IBltMessage msg = new IBltMessage() {};
+    replay();
+    
+    BltRouter classUnderTest = new BltRouter();
+    List<IMultiRoutedMessage> result = classUnderTest.getMultiRoutedMessages(msg, d);
+    
+    verify();
+    assertEquals(0, result.size());
+  }
   
   private static class MRM implements IBltMessage, IMultiRoutedMessage {
     private IBltMessage msg = null;
@@ -644,6 +658,21 @@ public class BltRouterTest extends TestCase {
     BltRouter classUnderTest = new BltRouter();
     classUnderTest.setDefinitions(definitions);
     
+    List<IRoutedMessage> result = classUnderTest.getRoutedMessages(msg, d);
+    
+    verify();
+    assertEquals(0, result.size());
+  }
+
+  public void testGetRoutedMessages_withDefinition_notActive() throws Exception {
+    RouteDefinition d = new RouteDefinition();
+    d.setActive(false);
+    d.setRule(rule);
+    
+    IBltMessage msg = new IBltMessage() {};
+    replay();
+    
+    BltRouter classUnderTest = new BltRouter();
     List<IRoutedMessage> result = classUnderTest.getRoutedMessages(msg, d);
     
     verify();

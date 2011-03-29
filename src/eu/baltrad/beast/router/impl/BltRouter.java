@@ -146,9 +146,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	  if (def != null) {
 	    IBltMessage nmsg = null;
 	    try {
-	      nmsg = def.getRule().handle(msg);
-	    } catch (Throwable t) {
-	      logger.info("Rule caused exception", t);
+	      nmsg = def.handle(msg);
+	    } catch (Exception e) {
+	      logger.info("Rule caused exception", e);
 	    }
 	    if (nmsg != null) {
 	      if (nmsg instanceof IMultiRoutedMessage) {
@@ -222,9 +222,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	  if (def != null) {
 	    IBltMessage nmsg = null;
 	    try {
-	      nmsg = def.getRule().handle(msg);
-	    } catch (Throwable t) {
-        logger.info("Rule caused exception", t);
+	      nmsg = def.handle(msg);
+	    } catch (Exception e) {
+        logger.info("Rule caused exception", e);
 	    }
 	    if (nmsg != null) {
 	      if (nmsg instanceof IRoutedMessage) {
