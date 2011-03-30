@@ -24,7 +24,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
@@ -48,6 +48,8 @@ import eu.baltrad.beast.rules.groovy.GroovyRuleManager;
  * @author Anders Henja
  */
 public class BltManagerTest extends TestCase {
+  private AbstractApplicationContext dbcontext = null;
+
   /**
    * The class under test
    */
@@ -86,7 +88,7 @@ public class BltManagerTest extends TestCase {
   }
   
   public void setUp() throws Exception {
-    ApplicationContext dbcontext = BeastDBTestHelper.loadDbContext(this);
+    dbcontext = BeastDBTestHelper.loadDbContext(this);
     helper = (BeastDBTestHelper)dbcontext.getBean("helper");
     helper.tearDown(); // remove everything from db before we start the system
     
@@ -117,6 +119,7 @@ public class BltManagerTest extends TestCase {
     generator = null;
     generator= null;
     groovymgr = null;
+    dbcontext.close();
   }
   
   private static class TestCallback implements IAdaptorCallback {

@@ -29,14 +29,14 @@ import org.dbunit.dataset.ITable;
 
 import org.easymock.MockControl;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 
 public class CombinedFilterManagerDBTest extends TestCase {
   private CombinedFilterManager classUnderTest;
-  private ApplicationContext context;
+  private AbstractApplicationContext context;
   private BeastDBTestHelper helper;
 
   private MockControl filter1Control;
@@ -62,6 +62,10 @@ public class CombinedFilterManagerDBTest extends TestCase {
     SimpleJdbcOperations template = (SimpleJdbcOperations)context.getBean("jdbcTemplate");
     classUnderTest.setJdbcTemplate(template);
     classUnderTest.setChildManager(childManager);
+  }
+
+  public void tearDown() throws Exception {
+    context.close();
   }
 
   protected void verifyDatabaseTables(String extras) throws Exception {

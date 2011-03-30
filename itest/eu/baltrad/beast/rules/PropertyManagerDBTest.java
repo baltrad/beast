@@ -26,14 +26,14 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 
 public class PropertyManagerDBTest extends TestCase {
   private PropertyManager classUnderTest = null;
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private BeastDBTestHelper helper = null;
 
   public PropertyManagerDBTest(String name) {
@@ -51,8 +51,8 @@ public class PropertyManagerDBTest extends TestCase {
 
   public void tearDown() throws Exception {
     helper = null;
-    context = null;
     classUnderTest = null;
+    context.close();
   }
 
   protected void verifyDatabaseTables(String extras) throws Exception {

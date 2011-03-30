@@ -25,7 +25,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.fc.db.Database;
@@ -41,6 +41,7 @@ import eu.baltrad.fc.oh5.hl.HlFile;
  *
  */
 public class BaltradDBITest extends TestCase {
+  private AbstractApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   private Database db = null;
   private String baltradDbPath = null;
@@ -61,17 +62,13 @@ public class BaltradDBITest extends TestCase {
     "fixtures/Z_SCAN_C_ESWI_20101023180000_sevil_000000.h5"    
   };
   
-  public BaltradDBITest(String name) {
-    super(name);
-  }
-  
   private String getFilePath(String resource) throws Exception {
     java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
     return f.getAbsolutePath();
   }
   
   public void setUp() throws Exception {
-    ApplicationContext context = BeastDBTestHelper.loadContext(this);
+    context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("helper");
     baltradDbPath = helper.getBaltradDbPth();
     db = Database.create(helper.getBaltradDbUri());
@@ -92,6 +89,7 @@ public class BaltradDBITest extends TestCase {
     helper = null;
     uuidMap = null;
     baltradDbPath = null;
+    context.close();
   }
   
   public void test_find_seang() throws Exception {

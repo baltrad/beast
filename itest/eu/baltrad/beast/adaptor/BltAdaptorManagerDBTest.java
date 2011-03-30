@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.easymock.MockControl;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor;
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptorConfiguration;
@@ -38,22 +38,20 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
  * @author Anders Henja
  */
 public class BltAdaptorManagerDBTest extends TestCase {
+  AbstractApplicationContext dbcontext = null;
+  AbstractApplicationContext context = null;
   private BltAdaptorManager classUnderTest = null;
   private BeastDBTestHelper helper = null;
-  
-  public BltAdaptorManagerDBTest(String name) {
-    super(name);
-    ApplicationContext dbcontext = BeastDBTestHelper.loadDbContext(this);
-    helper = (BeastDBTestHelper)dbcontext.getBean("helper");
-  }
   
   /**
    * Setup of test
    */
   public void setUp() throws Exception {
-   helper.cleanInsert(this);
-   ApplicationContext context = BeastDBTestHelper.loadContext(this);
-   classUnderTest = (BltAdaptorManager)context.getBean("adaptormgr");
+    dbcontext = BeastDBTestHelper.loadDbContext(this);
+    helper = (BeastDBTestHelper)dbcontext.getBean("helper");
+    helper.cleanInsert(this);
+    context = BeastDBTestHelper.loadContext(this);
+    classUnderTest = (BltAdaptorManager)context.getBean("adaptormgr");
   }
   
   /**
@@ -62,6 +60,8 @@ public class BltAdaptorManagerDBTest extends TestCase {
   public void tearDown() throws Exception {
     helper.tearDown();
     classUnderTest = null;
+    context.close();
+    dbcontext.close();
   }
 
   /**

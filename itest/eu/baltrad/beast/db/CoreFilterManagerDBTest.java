@@ -26,14 +26,14 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 
 public class CoreFilterManagerDBTest extends TestCase {
   private CoreFilterManager classUnderTest;
-  private ApplicationContext context;
+  private AbstractApplicationContext context;
   private BeastDBTestHelper helper;
 
   public void setUp() throws Exception {
@@ -43,6 +43,10 @@ public class CoreFilterManagerDBTest extends TestCase {
     classUnderTest = new CoreFilterManager();
     SimpleJdbcOperations template = (SimpleJdbcOperations)context.getBean("jdbcTemplate");
     classUnderTest.setJdbcTemplate(template);
+  }
+
+  public void tearDown() throws Exception {
+    context.close();
   }
 
   protected void verifyDatabaseTables(String extras) throws Exception {

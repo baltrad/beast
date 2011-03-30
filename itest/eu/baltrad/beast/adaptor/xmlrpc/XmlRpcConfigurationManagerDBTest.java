@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.adaptor.AdaptorException;
@@ -34,7 +34,7 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
  */
 public class XmlRpcConfigurationManagerDBTest extends TestCase {
   private XmlRpcConfigurationManager classUnderTest = null;
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   
   public XmlRpcConfigurationManagerDBTest(String name) {
@@ -57,8 +57,8 @@ public class XmlRpcConfigurationManagerDBTest extends TestCase {
    */
   public void tearDown() throws Exception {
     classUnderTest = null;
-    context = null;
     helper = null;
+    context.close();
   }
   
   /**

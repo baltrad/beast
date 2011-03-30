@@ -22,7 +22,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.db.filters.PolarScanAngleFilter;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
@@ -40,7 +40,7 @@ import eu.baltrad.fc.oh5.File;
  *
  */
 public class CatalogITest extends TestCase {
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   private Database db = null;
   private LocalStorage storage = null;
@@ -94,11 +94,11 @@ public class CatalogITest extends TestCase {
   
   public void tearDown() throws Exception {
     classUnderTest = null;
-    context = null;
     helper = null;
     catalog.delete();
     storage.delete();
     db.delete();
+    context.close();
   }
   
   public void testFetch_TimeIntervalFilter_PVOL() throws Exception {

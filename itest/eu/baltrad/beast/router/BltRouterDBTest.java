@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.router.impl.BltRouter;
@@ -39,7 +39,7 @@ import eu.baltrad.beast.rules.RuleException;
  */
 public class BltRouterDBTest extends TestCase {
   private BltRouter classUnderTest = null;
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   public BltRouterDBTest(String name) {
     super(name);
@@ -60,9 +60,9 @@ public class BltRouterDBTest extends TestCase {
    * Teardown of test
    */
   public void tearDown() throws Exception {
-    context = null;
     helper = null;
     classUnderTest = null;
+    context.close();
   }
   
   /**

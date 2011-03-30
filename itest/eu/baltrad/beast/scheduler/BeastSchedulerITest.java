@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -36,14 +36,10 @@ import eu.baltrad.beast.message.IBltMessage;
  *
  */
 public class BeastSchedulerITest extends TestCase {
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private BeastScheduler classUnderTest = null;
   private BeastDBTestHelper helper = null;
   
-  public BeastSchedulerITest(String name) {
-    super(name);
-  }
-
   public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("helper");
@@ -63,9 +59,8 @@ public class BeastSchedulerITest extends TestCase {
   public void tearDown() throws Exception {
     classUnderTest.destroy();
     classUnderTest = null;
-    context = null;
     helper = null;
-    System.gc();
+    context.close();
   }
   
   protected String getFilePath(String resource) throws Exception {

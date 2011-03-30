@@ -20,7 +20,7 @@ package eu.baltrad.beast.parser.impl;
 
 import junit.framework.TestCase;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.IBltXmlMessage;
@@ -35,15 +35,11 @@ import eu.baltrad.beast.parser.IXmlMessageFactory;
  * @author Anders Henja
  */
 public class XmlMessageParserITest extends TestCase {
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private XmlMessageParser classUnderTest = null;
   
-  public XmlMessageParserITest(String name) {
-    super(name);
-    context = BeastDBTestHelper.loadContext(this);    
-  }
-  
   public void setUp() throws Exception {
+    context = BeastDBTestHelper.loadContext(this);    
     classUnderTest = new XmlMessageParser();
     classUnderTest.setFactory((IXmlMessageFactory)context.getBean("xmlmsgFactory"));
    }
@@ -53,6 +49,7 @@ public class XmlMessageParserITest extends TestCase {
     */
    public void tearDown() throws Exception {
      classUnderTest = null;
+     context.close();
    }
    
    public void testParse_bltalert() throws Exception {
