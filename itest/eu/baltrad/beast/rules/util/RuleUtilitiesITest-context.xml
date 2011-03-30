@@ -26,16 +26,16 @@
     <property name="baltradDbUri" value="${blt.db.uri}"/>
     <property name="baltradDbPth" value="${blt.db.path}"/>
   </bean>
-  
-  <bean id="bdb_db" class="eu.baltrad.fc.db.Database" factory-method="create">
+
+  <bean id="bdb_db" class="eu.baltrad.fc.db.Database" factory-method="create" destroy-method="delete">
        <constructor-arg value="${blt.db.uri}" />
   </bean>
   
-  <bean id="bdb_storage" class="eu.baltrad.fc.CacheDirStorage">
+  <bean id="bdb_storage" class="eu.baltrad.fc.CacheDirStorage" destroy-method="delete">
        <constructor-arg value="${blt.db.path}" />
   </bean>
   
-  <bean id="fc" class="eu.baltrad.fc.FileCatalog">
+  <bean id="fc" class="eu.baltrad.fc.FileCatalog" destroy-method="delete">
        <constructor-arg ref="bdb_db" />
        <constructor-arg ref="bdb_storage" />
   </bean>

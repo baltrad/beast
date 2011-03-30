@@ -26,7 +26,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -42,6 +42,7 @@ import eu.baltrad.fc.db.FileEntry;
  *
  */
 public class VolumeRuleITest extends TestCase {
+  private AbstractApplicationContext context = null;
   private VolumeRule classUnderTest = null;
   private Catalog catalog = null;
   private IRuleUtilities ruleUtilities = null;
@@ -112,13 +113,9 @@ public class VolumeRuleITest extends TestCase {
     "fixtures/scan_sehud_0.5_20110126T193500Z.h5",
     "fixtures/scan_sehud_0.5_20110126T194000Z.h5"
   };  
-  
-  public VolumeRuleITest(String name) {
-    super(name);
-  }
 
   public void setUp() throws Exception {
-    ApplicationContext context = BeastDBTestHelper.loadContext(this);
+    context = BeastDBTestHelper.loadContext(this);
     BeastDBTestHelper helper = (BeastDBTestHelper)context.getBean("helper");
     helper.tearDown();
     helper.purgeBaltradDB();
@@ -138,6 +135,7 @@ public class VolumeRuleITest extends TestCase {
     catalog = null;
     classUnderTest = null;
     ruleUtilities = null;    
+    context.close();
   }
   
   private String getFilePath(String resource) throws Exception {

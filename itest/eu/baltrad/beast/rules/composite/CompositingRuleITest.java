@@ -23,7 +23,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -39,7 +39,7 @@ import eu.baltrad.fc.db.FileEntry;
  *
  */
 public class CompositingRuleITest extends TestCase {
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private Catalog catalog = null;
   private CompositingRule classUnderTest = null;
   private BeastDBTestHelper helper = null;
@@ -111,12 +111,12 @@ public class CompositingRuleITest extends TestCase {
   }
   
   public void tearDown() throws Exception {
-    context = null;
     catalog = null;
     classUnderTest = null;
     helper = null;
     timeoutManager = null;
     ruleutil = null;    
+    context.close();
   }
   
   private String getFilePath(String resource) throws Exception {

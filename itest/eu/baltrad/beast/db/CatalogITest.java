@@ -96,9 +96,9 @@ public class CatalogITest extends TestCase {
     classUnderTest = null;
     context = null;
     helper = null;
-    catalog = null;
-    storage = null;
-    db = null;
+    catalog.delete();
+    storage.delete();
+    db.delete();
   }
   
   public void testFetch_TimeIntervalFilter_PVOL() throws Exception {

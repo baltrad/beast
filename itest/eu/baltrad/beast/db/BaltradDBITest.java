@@ -88,7 +88,7 @@ public class BaltradDBITest extends TestCase {
   }
   
   public void tearDown() throws Exception {
-    db = null;
+    db.delete();
     helper = null;
     uuidMap = null;
     baltradDbPath = null;

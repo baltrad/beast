@@ -24,7 +24,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -35,7 +35,7 @@ import eu.baltrad.fc.DateTime;
  * @author Anders Henja
  */
 public class RuleUtilitiesITest extends TestCase {
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private Catalog catalog = null;
   private BeastDBTestHelper helper = null;
   private RuleUtilities classUnderTest = null;
@@ -75,10 +75,10 @@ public class RuleUtilitiesITest extends TestCase {
   }
   
   public void tearDown() throws Exception {
-    context = null;
     catalog = null;
     helper = null;
     classUnderTest = null;
+    context.close();
   }
   
   public void testFetchLowestSourceElevationAngle() throws Exception {

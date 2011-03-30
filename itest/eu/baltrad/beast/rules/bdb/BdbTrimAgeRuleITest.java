@@ -24,7 +24,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
@@ -35,7 +35,7 @@ import eu.baltrad.fc.db.FileQuery;
 import eu.baltrad.fc.db.FileResult;
 
 public class BdbTrimAgeRuleITest extends TestCase {
-  private ApplicationContext context = null;
+  private AbstractApplicationContext context = null;
   private FileCatalog catalog = null;
   private BeastDBTestHelper helper = null;
   private BdbTrimAgeRule classUnderTest = null;
@@ -55,10 +55,6 @@ public class BdbTrimAgeRuleITest extends TestCase {
   };
 
   private static Map<String, String> fileUuidMap;
-
-  public BdbTrimAgeRuleITest(String name) {
-    super(name);
-  }
 
   public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
@@ -83,13 +79,13 @@ public class BdbTrimAgeRuleITest extends TestCase {
   }
 
   public void tearDown() throws Exception {
-    context = null;
     catalog = null;
     helper = null;
     classUnderTest = null;
     methodsControl = null;
     methods = null;
     fileUuidMap = null;
+    context.close();
   }
   
   private String getFilePath(String resource) throws Exception {

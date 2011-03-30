@@ -35,7 +35,7 @@ import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.datatype.IDataTypeFactory;
 import org.dbunit.dataset.excel.XlsDataSet;
 import org.dbunit.operation.DatabaseOperation;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -146,7 +146,7 @@ public class BeastDBTestHelper {
    * @param tc the test case
    * @return the application context
    */
-  public static ApplicationContext loadContext(TestCase tc) {
+  public static AbstractApplicationContext loadContext(TestCase tc) {
     String cln = getClassName(tc.getClass());
     String cname = cln + "-context.xml";
     File f = new File(tc.getClass().getResource(cname).getFile());
@@ -162,7 +162,7 @@ public class BeastDBTestHelper {
    * @param tc
    * @return
    */
-  public static ApplicationContext loadDbContext(TestCase tc) {
+  public static AbstractApplicationContext loadDbContext(TestCase tc) {
     String cln = getClassName(tc.getClass());
     String cname = cln + "-dbcontext.xml";
     File f = new File(tc.getClass().getResource(cname).getFile());

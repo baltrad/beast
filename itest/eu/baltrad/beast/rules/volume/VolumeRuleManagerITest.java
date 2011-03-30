@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.db.Catalog;
@@ -41,8 +41,8 @@ import eu.baltrad.fc.db.FileEntry;
  *
  */
 public class VolumeRuleManagerITest extends TestCase {
-  private ApplicationContext dbcontext = null;
-  private ApplicationContext context = null;
+  private AbstractApplicationContext dbcontext = null;
+  private AbstractApplicationContext context = null;
   
   private BeastDBTestHelper helper = null;
   private VolumeRuleManager classUnderTest = null;
@@ -76,14 +76,13 @@ public class VolumeRuleManagerITest extends TestCase {
   
   public void tearDown() throws Exception {
     classUnderTest = null;
-    dbcontext = null;
-    context = null;
     helper = null;
     template = null;
     catalog = null;
     utilities = null;
     timeoutManager = null;
-    System.gc();
+    context.close();
+    dbcontext.close();
   }
  
   protected void verifyDatabaseTables(String extras) throws Exception {
