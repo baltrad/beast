@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import eu.baltrad.beast.net.ftp.FTPFileUploadHandler;
+import eu.baltrad.beast.net.scp.SCPFileUploadHandler;
 
 public class FileUploader {
   /**
@@ -45,13 +46,14 @@ public class FileUploader {
     
   /**
    * Create FileUploader with default configuration. The instance has handlers
-   * for 'ftp' and 'copy' schemes.
+   * for 'ftp' and 'scp' schemes.
    *
    * @return a new FileUploader instance
    */
   public static FileUploader createDefault() {
     Map<String, FileUploadHandler> handlers = new HashMap<String, FileUploadHandler>();
     handlers.put("ftp", new FTPFileUploadHandler());
+    handlers.put("scp", new SCPFileUploadHandler());
     return new FileUploader(handlers);
   }
   

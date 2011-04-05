@@ -331,6 +331,18 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     </junit>
   </target>	
 
+  <!-- target that can be used to manually test FileUploader -->
+  <target name="execute.itest.fileuploader" depends="compile.itest">
+    <java classname="eu.baltrad.beast.net.FileUploaderITest" fork="true">
+      <arg value="${itest.fileuploader.src}"/>
+      <arg value="${itest.fileuploader.dst}"/>
+      <classpath refid="test.lib.path"/>
+      <classpath location="${build.classes.dir}"/>
+      <classpath refid="lib.path"/>
+      <classpath location="${build.itest.dir}" />
+    </java>
+  </target>
+
   <!-- CODE COVERAGE -->
   <target name="instrument.coverage">
     <delete dir="${build.instrument.dir}" />
