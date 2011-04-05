@@ -25,13 +25,14 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
 
-import eu.baltrad.beast.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
 
 import eu.baltrad.beast.net.FileUploadHandler;
 
 public class FTPFileUploadHandler implements FileUploadHandler {
   public FTPFileUploadHandler() {
-    this(new CommonsFTPClient());
+    this(new FTPClient());
   }
 
   public FTPFileUploadHandler(FTPClient client) {
@@ -58,18 +59,20 @@ public class FTPFileUploadHandler implements FileUploadHandler {
 
   protected void connect(URI uri) throws IOException {
     client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
-    if (!client.connect(getHost(uri), getPort(uri)))
+    client.connect(uri.getHost(), getPort(uri));
+    int reply = client.getReplyCode();
+    if (!FTPReply.isPositiveCompletion(reply))
       throw new IOException("Failed to connect to " + uri.getHost());
     client.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
-    client.setPassive(true);
+    client.enterLocalPassiveMode();
   }
 
   protected void store(File src, URI dst) throws IOException {
-    if (!client.setWorkingDirectory(getPath(dst)))
+    if (!client.changeWorkingDirectory(getPath(dst)))
       throw new IOException("Failed to cwd: " + getPath(dst));
-    if (!client.setBinary(true))
+    if (!client.setFileType(client.BINARY_FILE_TYPE))
       throw new IOException("Failed to set binary transfer mode");
-    if (!client.store(src.getName(), openStream(src)))
+    if (!client.storeFile(src.getName(), openStream(src)))
       throw new IOException("Failed to store " + src.toString());
   }
 

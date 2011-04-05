@@ -27,7 +27,10 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.net.ftp.FTPClient;
+
 import org.easymock.MockControl;
+import org.easymock.classextension.MockClassControl;
 
 public class FTPFileUploadHandlerTest extends TestCase {
   private static interface MockMethods {
@@ -44,7 +47,7 @@ public class FTPFileUploadHandlerTest extends TestCase {
   
   protected void setUp() {
     // client call order is important
-    clientControl = MockControl.createStrictControl(FTPClient.class);
+    clientControl = MockClassControl.createStrictControl(FTPClient.class);
     client = (FTPClient)clientControl.getMock();
     methodsControl = MockControl.createControl(MockMethods.class);
     methods = (MockMethods)methodsControl.getMock();
@@ -164,13 +167,30 @@ public class FTPFileUploadHandlerTest extends TestCase {
     
     client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
     client.connect("host", 21);
-    clientControl.setReturnValue(true);
+    client.getReplyCode();
+    clientControl.setReturnValue(200);
     client.setSoTimeout(classUnderTest.DEFAULT_SOCKET_TIMEOUT);
-    client.setPassive(true);
+    client.enterLocalPassiveMode();
     replay();
 
     classUnderTest.connect(dst);
     verify();
+  }
+
+  public void testConnect_negativeReplyCode() throws Exception {
+    URI dst = URI.create("ftp://user:passwd@host");
+    
+    client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
+    client.connect("host", 21);
+    client.getReplyCode();
+    clientControl.setReturnValue(500);
+    replay();
+
+    try {
+      classUnderTest.connect(dst);
+      fail("expected IOException");
+    } catch (IOException e) { }
+    verify();    
   }
 
   public void testConnect_Failure() throws Exception {
@@ -178,7 +198,8 @@ public class FTPFileUploadHandlerTest extends TestCase {
     
     client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
     client.connect("host", 21);
-    clientControl.setReturnValue(false);
+    client.getReplyCode();
+    clientControl.setReturnValue(500);
     replay();
 
     try {
@@ -193,9 +214,10 @@ public class FTPFileUploadHandlerTest extends TestCase {
     
     client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
     client.connect("host", 1234);
-    clientControl.setReturnValue(true);
+    client.getReplyCode();
+    clientControl.setReturnValue(200);
     client.setSoTimeout(classUnderTest.DEFAULT_SOCKET_TIMEOUT);
-    client.setPassive(true);
+    client.enterLocalPassiveMode();
     replay();
 
     classUnderTest.connect(dst);
@@ -215,13 +237,13 @@ public class FTPFileUploadHandlerTest extends TestCase {
       }
     };
 
-    client.setWorkingDirectory("/remote/path");
+    client.changeWorkingDirectory("/remote/path");
     clientControl.setReturnValue(true);
-    client.setBinary(true);
+    client.setFileType(client.BINARY_FILE_TYPE);
     clientControl.setReturnValue(true);
     methods.openStream(src);
     methodsControl.setReturnValue(stream);
-    client.store("file", stream);
+    client.storeFile("file", stream);
     clientControl.setReturnValue(true);
     replay();
 
@@ -233,7 +255,7 @@ public class FTPFileUploadHandlerTest extends TestCase {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
 
-    client.setWorkingDirectory("/remote/path");
+    client.changeWorkingDirectory("/remote/path");
     clientControl.setReturnValue(false);
     replay();
   
@@ -248,9 +270,9 @@ public class FTPFileUploadHandlerTest extends TestCase {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
 
-    client.setWorkingDirectory("/remote/path");
+    client.changeWorkingDirectory("/remote/path");
     clientControl.setReturnValue(true);
-    client.setBinary(true);
+    client.setFileType(client.BINARY_FILE_TYPE);
     clientControl.setReturnValue(false);
     replay();
 
@@ -274,13 +296,13 @@ public class FTPFileUploadHandlerTest extends TestCase {
       }
     };
 
-    client.setWorkingDirectory("/remote/path");
+    client.changeWorkingDirectory("/remote/path");
     clientControl.setReturnValue(true);
-    client.setBinary(true);
+    client.setFileType(client.BINARY_FILE_TYPE);
     clientControl.setReturnValue(true);
     methods.openStream(src);
     methodsControl.setReturnValue(stream);
-    client.store("file", stream);
+    client.storeFile("file", stream);
     clientControl.setReturnValue(false);
     replay();
 
