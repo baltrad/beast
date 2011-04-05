@@ -54,6 +54,8 @@ public class FileUploaderTest extends TestCase {
     FileUploader u = FileUploader.createDefault();
     assertNotNull(u);
     assertNotNull(u.getHandlerByScheme("ftp"));
+    assertNotNull(u.getHandlerByScheme("scp"));
+    assertNotNull(u.getHandlerByScheme("copy"));
   }
 
   public void testUpload() throws Exception {

@@ -54,6 +54,7 @@ public class FileUploader {
     Map<String, FileUploadHandler> handlers = new HashMap<String, FileUploadHandler>();
     handlers.put("ftp", new FTPFileUploadHandler());
     handlers.put("scp", new SCPFileUploadHandler());
+    handlers.put("copy", new CopyFileUploadHandler());
     return new FileUploader(handlers);
   }
   
