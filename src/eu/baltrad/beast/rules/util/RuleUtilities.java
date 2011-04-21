@@ -165,7 +165,6 @@ public class RuleUtilities implements IRuleUtilities {
   public List<CatalogEntry> getEntriesByClosestTime(DateTime nominalDT, List<CatalogEntry> entries) {
     Map<String, CatalogEntry> entryMap = new HashMap<String, CatalogEntry>();
     GregorianCalendar nominalTimeCalendar = createCalendar(nominalDT);
-    List<String> result = new ArrayList<String>();
     
     for (CatalogEntry entry: entries) {
       String src = entry.getSource();

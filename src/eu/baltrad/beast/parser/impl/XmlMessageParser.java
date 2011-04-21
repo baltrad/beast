@@ -20,8 +20,10 @@ package eu.baltrad.beast.parser.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
 import eu.baltrad.beast.message.IBltXmlMessage;
@@ -69,7 +71,9 @@ public class XmlMessageParser implements IXmlMessageParser {
       SAXReader xmlReader = new SAXReader();
       InputStream in = new ByteArrayInputStream(xml.getBytes("ISO-8859-1"));
       return xmlReader.read(in);
-    } catch (Throwable t) {
+    } catch (UnsupportedEncodingException t) {
+      throw new MessageParserException("Failed to parse xml", t);
+    } catch (DocumentException t) {
       throw new MessageParserException("Failed to parse xml", t);
     }
   }

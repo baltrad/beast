@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.scheduler;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -338,8 +339,8 @@ public class CronEntryUtilities {
   public static void validateExpression(String expression) {
     try {
       new CronExpression(expression);
-    } catch (Throwable t) {
-      throw new SchedulerException(t.getMessage());
+    } catch (ParseException t) {
+      throw new SchedulerException(t.getMessage(), t);
     }
   }
 }

@@ -19,6 +19,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.scheduler;
 
+import java.text.ParseException;
+
 import org.quartz.CronExpression;
 
 /**
@@ -243,8 +245,8 @@ public class CronEntryFactory {
   protected void validateExpression(String expression) {
     try {
       new CronExpression(expression);
-    } catch (Throwable t) {
-      throw new SchedulerException(t.getMessage());
+    } catch (ParseException t) {
+      throw new SchedulerException(t.getMessage(), t);
     }
   }
 }

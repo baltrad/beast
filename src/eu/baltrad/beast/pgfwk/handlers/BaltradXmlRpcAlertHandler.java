@@ -46,7 +46,7 @@ public class BaltradXmlRpcAlertHandler implements XmlRpcHandler {
     for (IAlertPlugin plugin: plugins) {
       try {
         plugin.alert(ecode, message);
-      } catch (Throwable t) {
+      } catch (RuntimeException t) {
         t.printStackTrace();
       }
     }

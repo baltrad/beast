@@ -105,7 +105,12 @@ public class BaltradXmlRpcCommandHandler implements XmlRpcHandler {
       outreader.join();
       result[1] = outreader.getTrace();
       result[2] = errreader.getTrace();
-    } catch (Throwable e) {
+    } catch (IOException e) {
+      StringWriter writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      result[1] = "";
+      result[2] = writer.toString();
+    } catch (InterruptedException e) {
       StringWriter writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
       result[1] = "";

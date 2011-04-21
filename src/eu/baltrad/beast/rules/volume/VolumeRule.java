@@ -341,7 +341,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
           break;
         }
       }
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       t.printStackTrace();
     }
     

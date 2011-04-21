@@ -28,7 +28,6 @@ import eu.baltrad.fc.oh5.Scalar;
  */
 public class CatalogEntry {
   private FileEntry entry = null;
-  private String path = null;
   
   /**
    * @param entry the file entry to set

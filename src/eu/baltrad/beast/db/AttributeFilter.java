@@ -19,8 +19,6 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
-import java.util.Set;
-
 import org.springframework.util.StringUtils;
 
 import eu.baltrad.fc.Variant;

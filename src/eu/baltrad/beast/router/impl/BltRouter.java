@@ -338,7 +338,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
       manager.delete(rule_id);
       template.update("delete from beast_router_dest where rule_id=?", new Object[]{rule_id});
       template.update("delete from beast_router_rules where rule_id=?", new Object[]{rule_id});
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       throw new RuleException("Failed to remove rule: '" + name+"'", t);
     }
     removeDefinitionFromList(name);
@@ -370,7 +370,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
         ((IRuleRecipientAware)rule).setRecipients(def.getRecipients());
       }
       storeRecipients(ruleid, def.getRecipients());
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       throw new RuleException("Failed to add router rule definition: " + t.getMessage(), t);
     }
     this.definitions.add(def);
@@ -406,7 +406,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 
       // replace recipients
       storeRecipients(rule_id, def.getRecipients());
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       throw new RuleException("Failed to update router rule definition: " + t.getMessage(), t);
     }
     

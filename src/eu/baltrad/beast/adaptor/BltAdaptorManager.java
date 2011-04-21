@@ -135,7 +135,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
         IAdaptor result = mgr.store(index, configuration);
         adaptors.put(name, result);
         return result;
-      } catch (Throwable t) {
+      } catch (RuntimeException t) {
         throw new AdaptorException("Failed to add adaptor");
       }
     }
@@ -155,7 +155,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     
     try {
       entry = template.queryForMap("select type, adaptor_id from beast_adaptors where name=?", new Object[]{name});
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       throw new AdaptorException("No configuration with that name stored");
     }
     
@@ -202,7 +202,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     // Try to modify type for the adaptor
     try {
       template.update("update beast_adaptors set type=? where adaptor_id=?", new Object[]{ntype, adaptor_id});
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       throw new AdaptorException("Failed to change type of adaptor");
     }
     
@@ -211,7 +211,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     mgr = typeRegistry.get(type);
     try {
       mgr.remove(adaptor_id);
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       t.printStackTrace();
     }
     return result;
@@ -308,7 +308,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
           logger.debug("handle(IMultiRoutedMessage): Forwarding to " + key);
           adaptor.handle(msg);
         }
-      } catch (Throwable t) {
+      } catch (RuntimeException t) {
         t.printStackTrace();
       }
     }

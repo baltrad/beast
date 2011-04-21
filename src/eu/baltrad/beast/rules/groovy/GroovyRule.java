@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.groovy;
 
+import org.codehaus.groovy.control.CompilationFailedException;
+
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IScriptableRule;
@@ -91,9 +93,13 @@ public class GroovyRule implements IRule {
     try {
       Class c = gcl.parseClass(script);
       rule = (IScriptableRule)c.newInstance();
-    } catch (Throwable t) {
+    } catch (CompilationFailedException t) {
+      throw new RuleException("Failed to compile groovy script", t);
+    } catch (InstantiationException t) {
       throw new RuleException("Failed to instantiate groovy script", t);
-    }       
+    } catch (IllegalAccessException t) {
+      throw new RuleException("Failed to instantiate groovy script due to access problems", t);
+    }
     this.script = script;
   }
   

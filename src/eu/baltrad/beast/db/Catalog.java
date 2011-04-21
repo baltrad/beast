@@ -72,7 +72,7 @@ public class Catalog implements InitializingBean {
         cEntry.setFileEntry(fEntry);
         result.add(cEntry);
       }
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       t.printStackTrace();
     } finally {
       if (set != null) {

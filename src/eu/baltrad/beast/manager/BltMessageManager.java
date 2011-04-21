@@ -114,7 +114,7 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean, 
     Runnable r = createRunnable(message);
     try {
       executor.execute(r);
-    }catch (Throwable t) {
+    }catch (RuntimeException t) {
       t.printStackTrace();
     }
   }
@@ -134,7 +134,7 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean, 
           for (IMultiRoutedMessage msg : msgs) {
             manager.handle(msg);
           }
-        } catch (Throwable t) {
+        } catch (RuntimeException t) {
           t.printStackTrace();
         }
       }

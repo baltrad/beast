@@ -20,6 +20,7 @@ package eu.baltrad.beast.scheduler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -238,7 +239,9 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
           }
         }
       }
-    } catch (Throwable t) {
+    } catch (org.quartz.SchedulerException t) {
+      t.printStackTrace();
+    } catch (RuntimeException t) {
       t.printStackTrace();
     }
     
@@ -301,8 +304,8 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
       result.setJobGroup(GROUP_NAME);
       result.setCronExpression(entry.getExpression());
       return result;
-    } catch (Throwable t) {
-      throw new SchedulerException(t);
+    } catch (ParseException e) {
+      throw new SchedulerException(e);
     }    
   }
   
@@ -436,7 +439,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
     BeastScheduler scheduler = new BeastScheduler();
     try {
       scheduler.afterPropertiesSet();
-    } catch (Throwable t) {
+    } catch (Exception t) {
       t.printStackTrace();
     }
 

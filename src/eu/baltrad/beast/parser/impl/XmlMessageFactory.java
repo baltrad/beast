@@ -52,7 +52,11 @@ public class XmlMessageFactory implements IXmlMessageFactory {
     }
     try {
       return (IBltXmlMessage)Class.forName(cname).newInstance();
-    } catch (Throwable t) {
+    } catch (IllegalAccessException t) {
+      throw new XmlMessageFactoryException("Failed to create instance", t);
+    } catch (InstantiationException t) {
+      throw new XmlMessageFactoryException("Failed to create instance", t);
+    } catch (ClassNotFoundException t) {
       throw new XmlMessageFactoryException("Failed to create instance", t);
     }
   }

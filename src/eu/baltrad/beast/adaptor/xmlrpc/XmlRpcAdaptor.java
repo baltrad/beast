@@ -18,10 +18,12 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.TimingOutCallback;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
@@ -137,7 +139,7 @@ public class XmlRpcAdaptor implements IAdaptor {
       config.setServerURL(createUrl(url));
       client.setConfig(config);
       this.url = url;
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       throw new AdaptorAddressException("Failed to set url", t);
     }
   }
@@ -207,7 +209,10 @@ public class XmlRpcAdaptor implements IAdaptor {
           cb.error(message, t);
         }
       }
-    } catch (Throwable t) {
+    } catch (XmlRpcException e) {
+      logger.debug("executeAsync Failed to execute command: ", e);
+      throw new AdaptorException("Failed to execute command", e);
+    } catch (RuntimeException t) {
       logger.debug("executeAsync Failed to execute command: ", t);
       throw new AdaptorException("Failed to execute command", t);
     }
@@ -230,7 +235,7 @@ public class XmlRpcAdaptor implements IAdaptor {
   protected URL createUrl(String url) {
     try {
       return new URL(url);
-    } catch (Throwable t) {
+    } catch (MalformedURLException t) {
       throw new AdaptorAddressException("bad url", t);
     }
   }

@@ -77,7 +77,7 @@ public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationC
           connector.send(message);
         }
         result = new Integer(0);
-      } catch (Throwable t) {
+      } catch (RuntimeException t) {
         t.printStackTrace();
       }
     }
