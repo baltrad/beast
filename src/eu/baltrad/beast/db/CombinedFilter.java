@@ -67,14 +67,14 @@ public class CombinedFilter implements IFilter {
   public Expression getExpression() {
     List<Expression> exprList = new ArrayList<Expression>(childFilters.size());
     for (IFilter filter : childFilters) {
-      exprList.add(filter.getExpression().parentheses());
+      exprList.add(filter.getExpression());
     }
 
     switch (matchType) {
       case ALL:
-        return xpr.and_(exprList);
+        return xpr.and_(new Expression(exprList));
       case ANY:
-        return xpr.or_(exprList);
+        return xpr.or_(new Expression(exprList));
       default:
         return null;
     }

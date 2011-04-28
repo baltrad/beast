@@ -96,7 +96,7 @@ public class BaltradDBITest extends TestCase {
     AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
     q.fetch("uuid", xpr.attribute("file:uuid"));
-    q.filter(xpr.attribute("what/source:_name").eq(xpr.string("seang")));
+    q.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string("seang")));
     AttributeResult rs = db.execute(q);
     assertEquals(1, rs.size());
     rs.next();
@@ -138,8 +138,8 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     
     q.fetch("source", xpr.attribute("what/source:_name"));
-    Expression e1 = xpr.attribute("what/source:_name").eq(xpr.string("sekir"));
-    Expression e2 = xpr.attribute("what/source:_name").eq(xpr.string("selul"));
+    Expression e1 = xpr.eq(xpr.attribute("what/source:_name"), xpr.string("sekir"));
+    Expression e2 = xpr.eq(xpr.attribute("what/source:_name"), xpr.string("selul"));
     q.filter(xpr.or_(e1, e2));
     AttributeResult rs = db.execute(q);
     assertEquals(2, rs.size());
@@ -163,7 +163,7 @@ public class BaltradDBITest extends TestCase {
     Set<String> result = new HashSet<String>();
     
     q.fetch("source", xpr.attribute("what/source:_name"));
-    q.filter(xpr.attribute("what/source:_name").ne(xpr.string("sekir")));
+    q.filter(xpr.ne(xpr.attribute("what/source:_name"), xpr.string("sekir")));
     AttributeResult rs = db.execute(q);
     assertEquals(11, rs.size());
     while (rs.next()) {

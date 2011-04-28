@@ -23,8 +23,6 @@ import junit.framework.TestCase;
 
 import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.expr.ExpressionFactory;
-import eu.baltrad.fc.expr.ExpressionList;
-import eu.baltrad.fc.expr.Literal;
 
 public class AttributeFilterTest extends TestCase {
   private AttributeFilter classUnderTest;
@@ -36,16 +34,16 @@ public class AttributeFilterTest extends TestCase {
   }
 
   public void testGetExpression_singleValuedDouble() {
-    Expression expected = xpr.attribute("where/elangle").lt(xpr.double_(7.5));
+    Expression expected = xpr.lt(xpr.attribute("where/elangle"), xpr.double_(7.5));
     classUnderTest.setAttribute("where/elangle");
     classUnderTest.setOperator(AttributeFilter.Operator.LT);
     classUnderTest.setValueType(AttributeFilter.ValueType.DOUBLE);
     classUnderTest.setValue("7.5");
-    assertTrue(classUnderTest.getExpression().equals(expected));
+    assertEquals(expected, classUnderTest.getExpression());
   }
 
   public void testGetExpression_multiValuedString() {
-    Expression expected = xpr.attribute("what/object").in(new Expression[]{xpr.string("PVOL"), xpr.string("SCAN")});
+    Expression expected = xpr.in(xpr.attribute("what/object"), new Expression(new Expression[]{xpr.string("PVOL"), xpr.string("SCAN")}));
     classUnderTest.setAttribute("what/object");
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
@@ -54,7 +52,7 @@ public class AttributeFilterTest extends TestCase {
   }
 
   public void testGetValueExpression_multiValuedString() {
-    Expression expected = new ExpressionList(
+    Expression expected = new Expression(
                             new Expression[]{
                               xpr.string("PVOL"),
                               xpr.string("SCAN")

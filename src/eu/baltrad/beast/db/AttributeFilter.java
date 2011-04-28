@@ -21,12 +21,8 @@ package eu.baltrad.beast.db;
 
 import org.springframework.util.StringUtils;
 
-import eu.baltrad.fc.Variant;
-import eu.baltrad.fc.expr.Attribute;
-import eu.baltrad.fc.expr.BinaryOperator;
 import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.expr.ExpressionList;
-import eu.baltrad.fc.expr.Literal;
+import eu.baltrad.fc.expr.ExpressionFactory;
 
 
 /**
@@ -40,46 +36,60 @@ public class AttributeFilter implements IFilter {
   private Operator op;
   private ValueType valueType;
   private String value;
+
+  private ExpressionFactory xpr;
   
+  /**
+   * Default constructor.
+   */
+  public AttributeFilter() {
+    xpr = new ExpressionFactory();
+  }
+
   /**
    * value type
    */
   public enum ValueType {
     STRING() {
       @Override
-      public Variant parseString(String str) {
-        return new Variant(str);
+      public Expression parseString(String str) {
+        return new Expression(str);
       }
     },
     LONG() {
       @Override
-      public Variant parseString(String str) {
-        return new Variant(Long.parseLong(str));
+      public Expression parseString(String str) {
+        return new Expression(Long.parseLong(str));
+      }
+
+      @Override
+      public String toBdbAttributeType() {
+        return "int64";
       }
     },
     DOUBLE() {
       @Override
-      public Variant parseString(String str) {
-        return new Variant(Double.parseDouble(str));
+      public Expression parseString(String str) {
+        return new Expression(Double.parseDouble(str));
       }
     },
     BOOL() {
       @Override
-      public Variant parseString(String str) {
-        return new Variant(Boolean.parseBoolean(str));
+      public Expression parseString(String str) {
+        return new Expression(Boolean.parseBoolean(str));
       }
     };
     
     /**
-     * parse BDB Variant from string
+     * parse BDB Expression from string
      */
-    public abstract Variant parseString(String str);
+    public abstract Expression parseString(String str);
     
     /**
      * convert to BDB Attribute expression type
      */
-    public Attribute.Type toBdbAttributeType() {
-      return Attribute.Type.valueOf(this.toString());
+    public String toBdbAttributeType() {
+      return this.toString().toLowerCase();
     }
   }
   
@@ -87,12 +97,24 @@ public class AttributeFilter implements IFilter {
    * operator type
    */
   public enum Operator {
-    EQ,
-    NE,
-    LT,
-    LE,
-    GT,
-    GE,
+    EQ() {
+      @Override public String toBdbBinaryOperatorType() { return "="; }
+    },
+    NE() {
+      @Override public String toBdbBinaryOperatorType() { return "!="; }
+    },
+    LT() {
+      @Override public String toBdbBinaryOperatorType() { return "<"; }
+    },
+    LE() {
+      @Override public String toBdbBinaryOperatorType() { return "<="; }
+    },
+    GT() {
+      @Override public String toBdbBinaryOperatorType() { return ">"; }
+    },
+    GE() {
+      @Override public String toBdbBinaryOperatorType() { return ">="; }
+    },
     IN() {
       @Override
       public boolean isMultiValued() { return true; }
@@ -110,8 +132,8 @@ public class AttributeFilter implements IFilter {
     /**
      * convert to BDB BinaryOperator expression type
      */
-    public BinaryOperator.Type toBdbBinaryOperatorType() {
-      return BinaryOperator.Type.valueOf(this.toString());
+    public String toBdbBinaryOperatorType() {
+      return this.toString().toLowerCase();
     }
   }
   
@@ -138,13 +160,11 @@ public class AttributeFilter implements IFilter {
    */
   @Override
   public Expression getExpression() {
-    Expression attrExpr = new Attribute(attr, valueType.toBdbAttributeType());
+    Expression attrExpr = xpr.attribute(attr, valueType.toBdbAttributeType());
     Expression valueExpr = getValueExpression();
-    return new BinaryOperator(op.toBdbBinaryOperatorType(),
-                              attrExpr,
-                              valueExpr);
+    return xpr.binary_op(op.toBdbBinaryOperatorType(), attrExpr, valueExpr);
   }
-  
+
   /**
    * @see IFilter#isValid()
    */
@@ -172,16 +192,16 @@ public class AttributeFilter implements IFilter {
   
   protected Expression getValueExpression() {
     if (op.isMultiValued()) {
-      ExpressionList exprList = new ExpressionList();
+      Expression exprList = new Expression();
       String[] values = StringUtils.commaDelimitedListToStringArray(value);
       if (values.length == 0)
         throw new RuntimeException("no value associated with AttributeFilter");
       for (int i = 0; i < values.length; i++) {
-        exprList.append(new Literal(valueType.parseString(values[i].trim())));
+        exprList.push_back(valueType.parseString(values[i].trim()));
       }
       return exprList;
     } else {
-      return new Literal(valueType.parseString(value));
+      return valueType.parseString(value);
     }
   }
 }

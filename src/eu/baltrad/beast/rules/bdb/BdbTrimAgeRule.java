@@ -173,7 +173,7 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
   protected FileQuery getExcessiveFileQuery() {
     ExpressionFactory xpr = new ExpressionFactory();
     FileQuery qry = new FileQuery();
-    qry.filter(xpr.combined_datetime("what/date", "what/time").lt(xpr.datetime(getAgeLimitDateTime())));
+    qry.filter(xpr.lt(xpr.combined_datetime("what/date", "what/time"), xpr.datetime(getAgeLimitDateTime())));
     return qry;
   }
 

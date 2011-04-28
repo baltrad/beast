@@ -38,7 +38,6 @@ import eu.baltrad.fc.LocalStorage;
 import eu.baltrad.fc.Time;
 import eu.baltrad.fc.db.AttributeQuery;
 import eu.baltrad.fc.db.AttributeResult;
-import eu.baltrad.fc.expr.Attribute;
 import eu.baltrad.fc.expr.ExpressionFactory;
 import eu.baltrad.fc.expr.Expression;
 import eu.baltrad.fc.oh5.Source;
@@ -110,24 +109,23 @@ public class RuleUtilities implements IRuleUtilities {
 
     ExpressionFactory xpr = new ExpressionFactory();
     Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
-    Attribute srcAttr = xpr.attribute("what/source:_name");
-
-    Iterator<String> srcIter = sources.iterator();
-    Expression srcFilter = srcAttr.eq(xpr.string(srcIter.next()));
-    while (srcIter.hasNext()) {
-      srcFilter = xpr.or_(srcFilter, srcAttr.eq(xpr.string(srcIter.next())));
+    Expression srcAttr = xpr.attribute("what/source:_name");
+    
+    Expression srcExpr = new Expression();
+    for (String srcStr : sources) {
+      srcExpr.push_back(xpr.string(srcStr));
     }
-    srcFilter = srcFilter.parentheses();
 
-    Expression filter = xpr.attribute("what/object").eq(xpr.string("SCAN"));
-    filter = xpr.and_(filter, dtAttr.ge(xpr.datetime(startDT)));
-    filter = xpr.and_(filter, dtAttr.lt(xpr.datetime(stopDT)));
-    filter = xpr.and_(filter, srcFilter);
+    List<Expression> filter = new ArrayList<Expression>();
+    filter.add(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
+    filter.add(xpr.ge(dtAttr, xpr.datetime(startDT)));
+    filter.add(xpr.lt(dtAttr, xpr.datetime(stopDT)));
+    filter.add(xpr.in(srcAttr, srcExpr));
 
     AttributeQuery qry = new AttributeQuery();
     qry.fetch("source", srcAttr);
     qry.fetch("min_elangle", xpr.min(xpr.attribute("where/elangle")));
-    qry.filter(filter);
+    qry.filter(xpr.and_(new Expression(filter)));
     qry.group(srcAttr);
 
     AttributeResult rset = catalog.getCatalog().database().execute(qry);

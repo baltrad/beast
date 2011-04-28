@@ -79,8 +79,8 @@ public class PolarScanAngleFilter implements ICatalogFilter {
     query.filter(xpr.eq(xpr.attribute("what/date"), xpr.date(dt)));
     query.filter(xpr.eq(xpr.attribute("what/time"), xpr.time(dt)));
 
-    query.filter(xpr.attribute("where/elangle").ge(xpr.double_(minElevation)));
-    query.filter(xpr.attribute("where/elangle").le(xpr.double_(maxElevation)));
+    query.filter(xpr.ge(xpr.attribute("where/elangle"), xpr.double_(minElevation)));
+    query.filter(xpr.le(xpr.attribute("where/elangle"), xpr.double_(maxElevation)));
     
     if (this.order == ASCENDING) {
       query.order_by(xpr.attribute("where/elangle"), FileQuery.SortDir.ASC);

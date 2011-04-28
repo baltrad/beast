@@ -69,7 +69,7 @@ public class CombinedFilterTest extends TestCase {
     filter2Control.setReturnValue(xpr.long_(2));
     replay();
 
-    Expression expected = xpr.long_(1).parentheses().or_(xpr.long_(2).parentheses());
+    Expression expected = xpr.or_(xpr.long_(1), xpr.long_(2));
     Expression e = classUnderTest.getExpression();
     verify();
     assertTrue(e.equals(expected));
@@ -88,7 +88,7 @@ public class CombinedFilterTest extends TestCase {
     filter2Control.setReturnValue(xpr.long_(2));
     replay();
 
-    Expression expected = xpr.long_(1).parentheses().and_(xpr.long_(2).parentheses());
+    Expression expected = xpr.and_(xpr.long_(1), xpr.long_(2));
     Expression e = classUnderTest.getExpression();
     verify();
     assertTrue(e.equals(expected));
