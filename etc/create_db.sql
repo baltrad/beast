@@ -20,7 +20,8 @@ create table beast_attr_filters (
   attr text not null,
   op text not null,
   value_type text not null,
-  value text not null
+  value text not null,
+  negated boolean not null
 );
 
 create table beast_combined_filters (

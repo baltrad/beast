@@ -96,6 +96,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION add_beast_attr_filters_negated() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns
+    WHERE table_name = 'beast_attr_filters' AND column_name = 'negated';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_attr_filters ADD COLUMN negated boolean NOT NULL DEFAULT false;
+    ALTER TABLE beast_attr_filters ALTER COLUMN negated DROP DEFAULT;
+  ELSE
+    RAISE NOTICE 'Column beast_attr_filters.negated already exists';
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION create_beast_combined_filters() RETURNS VOID AS $$
 BEGIN
   PERFORM true FROM information_schema.tables WHERE table_name = 'beast_combined_filters';
@@ -126,6 +139,7 @@ select create_beast_rule_properties();
 select add_fk_to_scheduled_jobs();
 select create_beast_filters();
 select create_beast_attr_filters();
+select add_beast_attr_filters_negated();
 select create_beast_combined_filters();
 
 drop function make_plpgsql();
@@ -134,4 +148,5 @@ drop function upgrade_beast_composite_rules();
 drop function add_fk_to_scheduled_jobs();
 drop function create_beast_filters();
 drop function create_beast_attr_filters();
+drop function add_beast_attr_filters_negated();
 drop function create_beast_combined_filters();

@@ -44,6 +44,7 @@ public class AttributeFilterManager implements IFilterManager {
           flt.setOperator(AttributeFilter.Operator.valueOf(rs.getString("op")));
           flt.setValueType(AttributeFilter.ValueType.valueOf(rs.getString("value_type")));
           flt.setValue(rs.getString("value"));
+          flt.setNegated(rs.getBoolean("negated"));
           return flt;
         }
       };
@@ -58,13 +59,14 @@ public class AttributeFilterManager implements IFilterManager {
 
     template.update(
       "insert into beast_attr_filters " +
-        "(filter_id, attr, op, value_type, value)" +
-        "values (?,?,?,?,?)",
+        "(filter_id, attr, op, value_type, value, negated)" +
+        "values (?,?,?,?,?,?)",
       flt.getId(),
       flt.getAttribute(),
       flt.getOperator().toString(),
       flt.getValueType().toString(),
-      flt.getValue());
+      flt.getValue(),
+      flt.isNegated());
   }
 
   @Override
@@ -72,12 +74,13 @@ public class AttributeFilterManager implements IFilterManager {
     AttributeFilter flt = (AttributeFilter)filter;
 
     template.update(
-      "update beast_attr_filters set attr=?, op=?, value_type=?, value=? " +
+      "update beast_attr_filters set attr=?, op=?, value_type=?, value=?, negated=?" +
         "where filter_id=?",
       flt.getAttribute(),
       flt.getOperator().toString(),
       flt.getValueType().toString(),
       flt.getValue(),
+      flt.isNegated(),
       flt.getId());
   }
 

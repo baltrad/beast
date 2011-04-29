@@ -62,6 +62,7 @@ public class AttributeFilterManagerDBTest extends TestCase {
     f.setOperator(AttributeFilter.Operator.IN);
     f.setValueType(AttributeFilter.ValueType.STRING);
     f.setValue("seang, searl");
+    f.setNegated(true);
 
     classUnderTest.store(f);
     verifyDatabaseTables("store");
@@ -73,6 +74,7 @@ public class AttributeFilterManagerDBTest extends TestCase {
     assertEquals(AttributeFilter.Operator.EQ, f.getOperator());
     assertEquals(AttributeFilter.ValueType.STRING, f.getValueType());
     assertEquals("PVOL", f.getValue());
+    assertEquals(true, f.isNegated());
   }
 
   public void testUpdate() throws Exception {
@@ -82,6 +84,7 @@ public class AttributeFilterManagerDBTest extends TestCase {
     f.setOperator(AttributeFilter.Operator.EQ);
     f.setValueType(AttributeFilter.ValueType.LONG);
     f.setValue("100");
+    f.setNegated(true);
     
     classUnderTest.update(f);
     verifyDatabaseTables("update");

@@ -36,6 +36,7 @@ public class AttributeFilter implements IFilter {
   private Operator op;
   private ValueType valueType;
   private String value;
+  private boolean negated;
 
   private ExpressionFactory xpr;
   
@@ -158,7 +159,12 @@ public class AttributeFilter implements IFilter {
   public Expression getExpression() {
     Expression attrExpr = xpr.attribute(attr, valueType.toBdbAttributeType());
     Expression valueExpr = getValueExpression();
-    return xpr.binary_op(op.toBdbBinaryOperatorType(), attrExpr, valueExpr);
+    Expression opExpr = xpr.binary_op(op.toBdbBinaryOperatorType(), attrExpr, valueExpr);
+    if (isNegated()) {
+      return xpr.not_(opExpr);
+    } else {
+      return opExpr;
+    }
   }
 
   /**
@@ -185,7 +191,10 @@ public class AttributeFilter implements IFilter {
 
   public String getValue() { return value; }
   public void setValue(String value) { this.value = value; }
-  
+
+  public boolean isNegated() { return negated; }
+  public void setNegated(boolean negated) { this.negated = negated; }
+
   protected Expression getValueExpression() {
     if (op.isMultiValued()) {
       Expression exprList = new Expression();

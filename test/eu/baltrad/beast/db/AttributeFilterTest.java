@@ -48,6 +48,16 @@ public class AttributeFilterTest extends TestCase {
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
     classUnderTest.setValue("PVOL, SCAN");
+    assertEquals(expected, classUnderTest.getExpression());
+  }
+
+  public void testGetExpression_negated() {
+    Expression expected = xpr.not_(xpr.eq(xpr.attribute("what/object"), xpr.string("PVOL")));
+    classUnderTest.setAttribute("what/object");
+    classUnderTest.setOperator(AttributeFilter.Operator.EQ);
+    classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
+    classUnderTest.setValue("PVOL");
+    classUnderTest.setNegated(true);
     assertTrue(classUnderTest.getExpression().equals(expected));
   }
 
@@ -62,7 +72,7 @@ public class AttributeFilterTest extends TestCase {
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
     classUnderTest.setValue("PVOL, SCAN");
 
-    assertTrue(classUnderTest.getValueExpression().equals(expected));
+    assertEquals(expected, classUnderTest.getValueExpression());
   }
 
   public void testIsValid() {
