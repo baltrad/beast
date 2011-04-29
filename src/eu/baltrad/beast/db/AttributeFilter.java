@@ -118,10 +118,6 @@ public class AttributeFilter implements IFilter {
     IN() {
       @Override
       public boolean isMultiValued() { return true; }
-    },
-    NOT_IN() {
-      @Override
-      public boolean isMultiValued() { return true; }
     };
   
     /**
