@@ -19,9 +19,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.db;
 
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.db.FileEntry;
-import eu.baltrad.fc.oh5.Attribute;
-import eu.baltrad.fc.oh5.Scalar;
+import eu.baltrad.fc.FileEntry;
+import eu.baltrad.fc.Oh5Attribute;
+import eu.baltrad.fc.Oh5Scalar;
 
 /**
  * @author Anders Henja
@@ -76,18 +76,18 @@ public class CatalogEntry {
   public Object getAttribute(String name) {
     if (entry == null)
       return null;
-    Attribute attr = entry.root().attribute(name);
+    Oh5Attribute attr = entry.root().attribute(name);
     if (attr == null)
       return null;
-    Scalar value = attr.value();
-    if (value.type() == Scalar.Type.STRING) {
+    Oh5Scalar value = attr.value();
+    if (value.type() == Oh5Scalar.Type.STRING) {
       return value.string();
-    } else if (value.type() == Scalar.Type.INT64) {
+    } else if (value.type() == Oh5Scalar.Type.INT64) {
       return new Long(value.int64_());
-    } else if (value.type() == Scalar.Type.DOUBLE) {
+    } else if (value.type() == Oh5Scalar.Type.DOUBLE) {
       return new Double(value.double_());
     } else {
-      throw new RuntimeException("unhandled oh5.Scalar type: " + value.type().toString());
+      throw new RuntimeException("unhandled Oh5Scalar type: " + value.type().toString());
     }
   }
 }

@@ -32,8 +32,8 @@ import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.LocalStorage;
 import eu.baltrad.fc.NullStorage;
-import eu.baltrad.fc.db.Database;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.Database;
+import eu.baltrad.fc.Oh5File;
 
 /**
  * @author Anders Henja
@@ -82,11 +82,11 @@ public class CatalogITest extends TestCase {
     helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
     for (String n : FIXTURES) {
-      File result = catalog.store(getFilePath(n));
+      Oh5File result = catalog.store(getFilePath(n));
       assertNotNull(result);
     }
     for (String n : SCAN_FIXTURES) {
-      File result = catalog.store(getFilePath(n));
+      Oh5File result = catalog.store(getFilePath(n));
       assertNotNull(result);
     }
     System.out.println("Catalogued " + (FIXTURES.length+SCAN_FIXTURES.length) + " files in " + (System.currentTimeMillis() - startTime) + "ms");

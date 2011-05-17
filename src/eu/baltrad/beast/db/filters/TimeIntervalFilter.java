@@ -20,9 +20,9 @@ package eu.baltrad.beast.db.filters;
 
 import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.db.FileQuery;
-import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.FileQuery;
+import eu.baltrad.fc.Expression;
+import eu.baltrad.fc.ExpressionFactory;
 
 /**
  * Fetches all objects that are within a specified start - stop
@@ -69,7 +69,7 @@ public class TimeIntervalFilter implements ICatalogFilter {
   private int limit = 0;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.FileQuery)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.FileQuery)
    */
   @Override
   public void apply(FileQuery query) {

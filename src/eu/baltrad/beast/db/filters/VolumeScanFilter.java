@@ -22,9 +22,9 @@ import eu.baltrad.beast.db.ICatalogFilter;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.db.FileQuery;
-import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.FileQuery;
+import eu.baltrad.fc.Expression;
+import eu.baltrad.fc.ExpressionFactory;
 
 /**
  * Filter to be used when searching for a number of scans that
@@ -39,7 +39,7 @@ public class VolumeScanFilter implements ICatalogFilter {
   private Time stopTime = null;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.db.FileQuery)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.FileQuery)
    */
   @Override
   public void apply(FileQuery query) {

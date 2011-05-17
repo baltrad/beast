@@ -32,7 +32,7 @@ import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.LocalStorage;
-import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.FileEntry;
 
 
 /**

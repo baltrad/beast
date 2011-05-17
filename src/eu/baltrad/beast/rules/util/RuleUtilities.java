@@ -36,11 +36,11 @@ import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.LocalStorage;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.db.AttributeQuery;
-import eu.baltrad.fc.db.AttributeResult;
-import eu.baltrad.fc.expr.ExpressionFactory;
-import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.oh5.Source;
+import eu.baltrad.fc.AttributeQuery;
+import eu.baltrad.fc.AttributeResult;
+import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.fc.Expression;
+import eu.baltrad.fc.Oh5Source;
 
 /**
  * @author Anders Henja
@@ -325,10 +325,10 @@ public class RuleUtilities implements IRuleUtilities {
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#getRadarSources()
    */
   public synchronized List<String> getRadarSources() {
-    List<Source> sources = catalog.getCatalog().database().sources();
+    List<Oh5Source> sources = catalog.getCatalog().database().sources();
     List<String> radarNames = new ArrayList<String>(sources.size());
 
-    for (Source src : sources) {
+    for (Oh5Source src : sources) {
       if (src.has("RAD")) {
          radarNames.add(src.get("_name"));
       }

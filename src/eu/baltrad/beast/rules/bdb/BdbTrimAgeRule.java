@@ -34,9 +34,9 @@ import eu.baltrad.beast.rules.IRulePropertyAccess;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
 import eu.baltrad.fc.TimeDelta;
-import eu.baltrad.fc.db.FileQuery;
-import eu.baltrad.fc.db.FileResult;
-import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.FileQuery;
+import eu.baltrad.fc.FileResult;
+import eu.baltrad.fc.ExpressionFactory;
 
 /**
  * Rule to keep the age of files in BDB above a limit.

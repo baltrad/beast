@@ -18,7 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
-import eu.baltrad.fc.db.FileQuery;
+import eu.baltrad.fc.FileQuery;
 
 /**
  * @author Anders Henja

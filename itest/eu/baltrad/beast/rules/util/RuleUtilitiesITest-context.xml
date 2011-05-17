@@ -27,7 +27,7 @@
     <property name="baltradDbPth" value="${blt.db.path}"/>
   </bean>
 
-  <bean id="bdb_db" class="eu.baltrad.fc.db.Database" factory-method="create" destroy-method="delete">
+  <bean id="bdb_db" class="eu.baltrad.fc.Database" factory-method="create" destroy-method="delete">
        <constructor-arg value="${blt.db.uri}" />
   </bean>
   

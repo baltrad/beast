@@ -22,8 +22,8 @@ package eu.baltrad.beast.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.Expression;
+import eu.baltrad.fc.ExpressionFactory;
 
 /**
  * Combine different filters

@@ -19,7 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.message.mo;
 
 import junit.framework.TestCase;
-import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.FileEntry;
 
 /**
  * @author Anders Henja

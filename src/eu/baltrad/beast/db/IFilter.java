@@ -19,7 +19,7 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
-import eu.baltrad.fc.expr.Expression;
+import eu.baltrad.fc.Expression;
 
 public interface IFilter {
   /**

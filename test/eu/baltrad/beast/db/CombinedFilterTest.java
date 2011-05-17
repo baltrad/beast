@@ -26,8 +26,8 @@ import junit.framework.TestCase;
 
 import org.easymock.MockControl;
 
-import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.expr.ExpressionFactory;
+import eu.baltrad.fc.Expression;
+import eu.baltrad.fc.ExpressionFactory;
 
 public class CombinedFilterTest extends TestCase {
   private MockControl filter1Control;

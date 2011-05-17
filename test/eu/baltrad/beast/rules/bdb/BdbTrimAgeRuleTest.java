@@ -31,10 +31,10 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.db.Database;
-import eu.baltrad.fc.db.FileEntry;
-import eu.baltrad.fc.db.FileQuery;
-import eu.baltrad.fc.db.FileResult;
+import eu.baltrad.fc.Database;
+import eu.baltrad.fc.FileEntry;
+import eu.baltrad.fc.FileQuery;
+import eu.baltrad.fc.FileResult;
 
 
 public class BdbTrimAgeRuleTest extends TestCase {

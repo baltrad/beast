@@ -43,7 +43,7 @@ import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.FileEntry;
 
 /**
  * @author Anders Henja

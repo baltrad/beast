@@ -25,9 +25,9 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.db.FileEntry;
-import eu.baltrad.fc.db.FileQuery;
-import eu.baltrad.fc.db.FileResult;
+import eu.baltrad.fc.FileEntry;
+import eu.baltrad.fc.FileQuery;
+import eu.baltrad.fc.FileResult;
 
 /**
  * Helper API for simplifying certain tasks related to the FileCatalog

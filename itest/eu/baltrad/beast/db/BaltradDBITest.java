@@ -28,13 +28,13 @@ import junit.framework.TestCase;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.fc.db.Database;
-import eu.baltrad.fc.db.AttributeQuery;
-import eu.baltrad.fc.db.AttributeResult;
-import eu.baltrad.fc.db.FileEntry;
-import eu.baltrad.fc.expr.Expression;
-import eu.baltrad.fc.expr.ExpressionFactory;
-import eu.baltrad.fc.oh5.hl.HlFile;
+import eu.baltrad.fc.Database;
+import eu.baltrad.fc.AttributeQuery;
+import eu.baltrad.fc.AttributeResult;
+import eu.baltrad.fc.FileEntry;
+import eu.baltrad.fc.Expression;
+import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.fc.HlFile;
 
 /**
  * @author Anders Henja

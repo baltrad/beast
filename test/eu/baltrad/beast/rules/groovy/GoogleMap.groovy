@@ -6,8 +6,8 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IScriptableRule;
-import eu.baltrad.fc.db.FileEntry;
-import eu.baltrad.fc.oh5.File;
+import eu.baltrad.fc.FileEntry;
+import eu.baltrad.fc.Oh5File;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.Time;
 

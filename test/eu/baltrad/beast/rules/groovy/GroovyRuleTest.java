@@ -39,7 +39,7 @@ import eu.baltrad.beast.rules.IScriptableRule;
 import eu.baltrad.beast.rules.RuleException;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.Time;
-import eu.baltrad.fc.db.FileEntry;
+import eu.baltrad.fc.FileEntry;
 
 /**
  * @author Anders Henja
