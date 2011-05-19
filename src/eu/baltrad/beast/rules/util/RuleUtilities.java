@@ -120,7 +120,7 @@ public class RuleUtilities implements IRuleUtilities {
     filter.add(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
     filter.add(xpr.ge(dtAttr, xpr.datetime(startDT)));
     filter.add(xpr.lt(dtAttr, xpr.datetime(stopDT)));
-    filter.add(xpr.in(srcAttr, srcExpr));
+    filter.add(xpr.in(srcAttr, xpr.list(srcExpr)));
 
     AttributeQuery qry = new AttributeQuery();
     qry.fetch("source", srcAttr);

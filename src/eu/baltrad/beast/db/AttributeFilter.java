@@ -204,7 +204,7 @@ public class AttributeFilter implements IFilter {
       for (int i = 0; i < values.length; i++) {
         exprList.push_back(valueType.parseString(values[i].trim()));
       }
-      return exprList;
+      return xpr.list(exprList);
     } else {
       return valueType.parseString(value);
     }

@@ -43,7 +43,7 @@ public class AttributeFilterTest extends TestCase {
   }
 
   public void testGetExpression_multiValuedString() {
-    Expression expected = xpr.in(xpr.attribute("what/object"), new Expression(new Expression[]{xpr.string("PVOL"), xpr.string("SCAN")}));
+    Expression expected = xpr.in(xpr.attribute("what/object"), xpr.list(new Expression(new Expression[]{xpr.string("PVOL"), xpr.string("SCAN")})));
     classUnderTest.setAttribute("what/object");
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
@@ -62,11 +62,11 @@ public class AttributeFilterTest extends TestCase {
   }
 
   public void testGetValueExpression_multiValuedString() {
-    Expression expected = new Expression(
-                            new Expression[]{
-                              xpr.string("PVOL"),
-                              xpr.string("SCAN")
-                            });
+    Expression expected = xpr.list(new Expression(
+                                    new Expression[]{
+                                      xpr.string("PVOL"),
+                                      xpr.string("SCAN")
+                                    }));
 
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
