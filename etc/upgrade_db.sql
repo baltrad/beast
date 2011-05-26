@@ -133,6 +133,26 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_groovy_rules_bdb_packages() RETURNS VOID AS $$
+BEGIN
+  UPDATE beast_groovy_rules
+    SET definition = regexp_replace(definition,
+                                    E'eu\\.baltrad\\.fc\\.oh5\\.PhysicalFile',
+                                    E'eu.baltrad.fc.PhysicalOh5File', 'g');
+  UPDATE beast_groovy_rules
+    SET definition = regexp_replace(definition,
+                                    E'eu\\.baltrad\\.fc\\.oh5\\.hl\\.(\\w+)',
+                                    E'eu.baltrad.fc.\\1', 'g');
+  UPDATE beast_groovy_rules
+    SET definition = regexp_replace(definition,
+                                    E'eu\\.baltrad\\.fc\\.oh5\\.(\\w+)',
+                                    E'eu.baltrad.fc.Oh5\\1', 'g');
+  UPDATE beast_groovy_rules
+    SET definition = regexp_replace(definition,
+                                    E'eu\\.baltrad\\.fc\\.\\w+\\.(\\w+)',
+                                    E'eu.baltrad.fc.\\1', 'g');
+END;
+$$ LANGUAGE plpgsql;
 
 select upgrade_beast_composite_rules();
 select create_beast_rule_properties();
@@ -141,6 +161,7 @@ select create_beast_filters();
 select create_beast_attr_filters();
 select add_beast_attr_filters_negated();
 select create_beast_combined_filters();
+select update_groovy_rules_bdb_packages();
 
 drop function make_plpgsql();
 drop function create_beast_rule_properties();
@@ -150,3 +171,4 @@ drop function create_beast_filters();
 drop function create_beast_attr_filters();
 drop function add_beast_attr_filters_negated();
 drop function create_beast_combined_filters();
+drop function update_groovy_rules_bdb_packages();
