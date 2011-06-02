@@ -41,17 +41,10 @@ public class SCPFileUploadHandler implements FileUploadHandler {
    * Default constructor.
    */
   public SCPFileUploadHandler() {
-    this(new SSHClient());
   }
-  
-  /**
-   * Construct with user-specified client. This is for testing purposes.
-   */
-  public SCPFileUploadHandler(SSHClient client) {
-    this.client = client;
-  }
-  
+    
   public void upload(File src, URI dst) throws IOException {
+    this.client = acquireSSHClient();
     connect(dst);
     try {
       auth(dst);
@@ -118,6 +111,17 @@ public class SCPFileUploadHandler implements FileUploadHandler {
     if (result == null || result.isEmpty())
       result = "/";
     return result;
+  }
+
+  protected SSHClient acquireSSHClient() {
+    return new SSHClient();
+  }
+
+  /**
+   * Set ssh client instance. This is for testing purposes.
+   */
+  protected void setSSHClient(SSHClient client) {
+    this.client = client;
   }
 
   protected static final int DEFAULT_CONNECT_TIMEOUT = 10000;

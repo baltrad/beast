@@ -34,6 +34,7 @@ import org.easymock.classextension.MockClassControl;
 
 public class SCPFileUploadHandlerTest extends TestCase {
   private static interface MockMethods {
+    SSHClient acquireSSHClient();
     void connect(URI u) throws IOException;
     void auth(URI u) throws IOException;
     void store(File s, URI d) throws IOException;
@@ -54,7 +55,7 @@ public class SCPFileUploadHandlerTest extends TestCase {
     xfer = (SCPFileTransfer)xferControl.getMock();
     methodsControl = MockControl.createControl(MockMethods.class);
     methods = (MockMethods)methodsControl.getMock();
-    classUnderTest = new SCPFileUploadHandler(client);
+    classUnderTest = new SCPFileUploadHandler();
   }
 
   protected void replay() {
@@ -73,7 +74,9 @@ public class SCPFileUploadHandlerTest extends TestCase {
     File src = new File("/path/to/file");
     URI dst = URI.create("scp://user:pass@host/path");
 
-    classUnderTest = new SCPFileUploadHandler(client) {
+    classUnderTest = new SCPFileUploadHandler() {
+      @Override
+      public SSHClient acquireSSHClient() { return methods.acquireSSHClient(); }
       @Override
       public void connect(URI u) throws IOException { methods.connect(u); }
       @Override
@@ -81,7 +84,9 @@ public class SCPFileUploadHandlerTest extends TestCase {
       @Override
       public void store(File s, URI d) throws IOException { methods.store(s, d); }
     };
-
+  
+    methods.acquireSSHClient();
+    methodsControl.setReturnValue(client);
     methods.connect(dst);
     methods.auth(dst);
     methods.store(src, dst);
@@ -96,11 +101,15 @@ public class SCPFileUploadHandlerTest extends TestCase {
     File src = new File("/path/to/file");
     URI dst = URI.create("scp://user:pass@host/path");
 
-    classUnderTest = new SCPFileUploadHandler(client) {
+    classUnderTest = new SCPFileUploadHandler() {
+      @Override
+      public SSHClient acquireSSHClient() { return methods.acquireSSHClient(); }
       @Override
       public void connect(URI u) throws IOException { methods.connect(u); }
     };
 
+    methods.acquireSSHClient();
+    methodsControl.setReturnValue(client);
     methods.connect(dst);
     methodsControl.setThrowable(new IOException());
     replay();
@@ -116,13 +125,17 @@ public class SCPFileUploadHandlerTest extends TestCase {
     File src = new File("/path/to/file");
     URI dst = URI.create("scp://user:pass@host/path");
 
-    classUnderTest = new SCPFileUploadHandler(client) {
+    classUnderTest = new SCPFileUploadHandler() {
+      @Override
+      public SSHClient acquireSSHClient() { return methods.acquireSSHClient(); }
       @Override
       public void connect(URI u) throws IOException { methods.connect(u); }
       @Override
       public void auth(URI u) throws IOException { methods.auth(u); }
     };
 
+    methods.acquireSSHClient();
+    methodsControl.setReturnValue(client);
     methods.connect(dst);
     methods.auth(dst);
     methodsControl.setThrowable(new IOException());
@@ -140,7 +153,9 @@ public class SCPFileUploadHandlerTest extends TestCase {
     File src = new File("/path/to/file");
     URI dst = URI.create("scp://user:pass@host/path");
 
-    classUnderTest = new SCPFileUploadHandler(client) {
+    classUnderTest = new SCPFileUploadHandler() {
+      @Override
+      public SSHClient acquireSSHClient() { return methods.acquireSSHClient(); }
       @Override
       public void connect(URI u) throws IOException { methods.connect(u); }
       @Override
@@ -149,6 +164,8 @@ public class SCPFileUploadHandlerTest extends TestCase {
       public void store(File s, URI d) throws IOException { methods.store(s, d); }
     };
 
+    methods.acquireSSHClient();
+    methodsControl.setReturnValue(client);
     methods.connect(dst);
     methods.auth(dst);
     methods.store(src, dst);
@@ -164,6 +181,7 @@ public class SCPFileUploadHandlerTest extends TestCase {
   }
 
   public void testConnect() throws Exception {
+    classUnderTest.setSSHClient(client);
     client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
     client.setTimeout(classUnderTest.DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
@@ -175,6 +193,7 @@ public class SCPFileUploadHandlerTest extends TestCase {
   }
 
   public void testConnect_defaultPort() throws Exception {
+    classUnderTest.setSSHClient(client);
     client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
     client.setTimeout(classUnderTest.DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
@@ -186,6 +205,7 @@ public class SCPFileUploadHandlerTest extends TestCase {
   }
 
   public void testAuth_pubkey() throws Exception {
+    classUnderTest.setSSHClient(client);
     client.authPublickey("user");
     replay();
 
@@ -194,6 +214,7 @@ public class SCPFileUploadHandlerTest extends TestCase {
   }
 
   public void testAuth_password() throws Exception {
+    classUnderTest.setSSHClient(client);
     client.authPassword("user", "pass");
     replay();
 
@@ -202,6 +223,7 @@ public class SCPFileUploadHandlerTest extends TestCase {
   }
 
   public void testStore() throws Exception {
+    classUnderTest.setSSHClient(client);
     File src = new File("/path/to/file");
 
     client.newSCPFileTransfer();
@@ -210,6 +232,7 @@ public class SCPFileUploadHandlerTest extends TestCase {
   }
 
   public void testStore_missingPath() throws Exception {
+    classUnderTest.setSSHClient(client);
     File src = new File("/path/to/file");
 
     client.newSCPFileTransfer();
