@@ -27,6 +27,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.StringUtils;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
@@ -480,9 +481,18 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
     
     entries = ruleUtil.getEntriesByClosestTime(nominalDT, entries);
+    logger.debug("createMessage: " + String.valueOf(entries.size()) +
+                 " entries for nominal time " + nominalDT.toString());
     entries = ruleUtil.getEntriesBySources(sources, entries);
+    logger.debug("createMessage: " + String.valueOf(entries.size()) + 
+                 " entries after filtering for sources " +
+                 StringUtils.collectionToCommaDelimitedString(sources));
 
-    result.setFiles(ruleUtil.getFilesFromEntries(entries).toArray(new String[0]));
+    List<String> files = ruleUtil.getFilesFromEntries(entries);
+
+    logger.debug("createMessage: set files to: " + StringUtils.collectionToCommaDelimitedString(files));
+
+    result.setFiles(files.toArray(new String[0]));
 
     String[] args = new String[3];
     args[0] = "--area="+area;
