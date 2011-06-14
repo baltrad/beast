@@ -466,7 +466,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     }
     return true;
   }
-  
+
   /**
    * Creates a message if all nessecary entries are there
    * @param nominalDT the nominal time
@@ -481,17 +481,14 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
     
     entries = ruleUtil.getEntriesByClosestTime(nominalDT, entries);
-    logger.debug("createMessage: " + String.valueOf(entries.size()) +
-                 " entries for nominal time " + nominalDT.toString());
+    logger.debug("createMessage: entries for nominal time " +
+                 nominalDT.to_iso_string() + ": " + 
+                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), ", "));
     entries = ruleUtil.getEntriesBySources(sources, entries);
-    logger.debug("createMessage: " + String.valueOf(entries.size()) + 
-                 " entries after filtering for sources " +
-                 StringUtils.collectionToCommaDelimitedString(sources));
-
+    logger.debug("createMessage: entries after filtering for sources: " +
+                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), ", "));
+    
     List<String> files = ruleUtil.getFilesFromEntries(entries);
-
-    logger.debug("createMessage: set files to: " + StringUtils.collectionToCommaDelimitedString(files));
-
     result.setFiles(files.toArray(new String[0]));
 
     String[] args = new String[3];
@@ -555,6 +552,14 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
     filter.setStop(stopDT);
     return filter;
+  }
+
+  protected List<String> getUuidsFromEntries(List<CatalogEntry> entries) {
+    List<String> uuids = new ArrayList<String>(entries.size());
+    for (CatalogEntry e: entries) {
+      uuids.add(e.getUuid());
+    }
+    return uuids;
   }
 
   /**

@@ -393,6 +393,8 @@ public class CompositingRuleTest extends TestCase {
     CatalogEntry entry = (CatalogEntry)entryControl.getMock();
     entry.getSource();
     entryControl.setReturnValue(source, MockControl.ZERO_OR_MORE);
+    entry.getUuid();
+    entryControl.setReturnValue("uuid", MockControl.ZERO_OR_MORE);
     entryControl.replay();
     return entry;
   }
@@ -805,6 +807,8 @@ public class CompositingRuleTest extends TestCase {
     entryControl.setReturnValue(dt, MockControl.ZERO_OR_MORE);
     entry.getAttribute("/dataset1/where/elangle");
     entryControl.setReturnValue(new Double(elangle), MockControl.ZERO_OR_MORE);
+    entry.getUuid();
+    entryControl.setReturnValue("uuid", MockControl.ZERO_OR_MORE);
     entryControl.replay();
     return entry;
   }

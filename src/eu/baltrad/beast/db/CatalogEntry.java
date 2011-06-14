@@ -44,6 +44,16 @@ public class CatalogEntry {
   }
   
   /**
+   * @return the unique identifier
+   */
+  public String getUuid() {
+    if (entry != null)
+      return entry.uuid();
+    else
+      return null;
+  }
+  
+  /**
    * @return the object
    */
   public String getObject() {
