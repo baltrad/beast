@@ -479,14 +479,17 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     Time time = nominalDT.time();
     
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
-    
+    logger.debug("createMessage: entries: " +
+                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
+    logger.debug("createMessage: filtering for nominal time: " + nominalDT.to_iso_string());
     entries = ruleUtil.getEntriesByClosestTime(nominalDT, entries);
-    logger.debug("createMessage: entries for nominal time " +
-                 nominalDT.to_iso_string() + ": " + 
-                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), ", "));
+    logger.debug("createMessage: entries: " +
+                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
+    logger.debug("createMessage: filtering for sources: " +
+                 StringUtils.collectionToDelimitedString(sources, " "));
     entries = ruleUtil.getEntriesBySources(sources, entries);
-    logger.debug("createMessage: entries after filtering for sources: " +
-                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), ", "));
+    logger.debug("createMessage: entries: " +
+                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
     
     List<String> files = ruleUtil.getFilesFromEntries(entries);
     result.setFiles(files.toArray(new String[0]));
