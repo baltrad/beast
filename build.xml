@@ -40,10 +40,10 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="compile.optimize" value="true" />
   <property name="compile.includeAntRuntime" value="no" />
 
+  <property file="develop.properties" />
   <property name="prefix" value="/opt/baltrad" />
 
   <property file="${etc.dir}/testdb.properties" />
-  <property file="develop.properties" />
 
   <!-- override this with -Dbaltraddb.path= -->
   <property name="baltraddb.path" value="/opt/baltrad/db-devel"/>
