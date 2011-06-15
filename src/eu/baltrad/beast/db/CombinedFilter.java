@@ -95,5 +95,6 @@ public class CombinedFilter implements IFilter {
   public void setMatchType(MatchType type) { this.matchType = type; }
 
   public List<IFilter> getChildFilters() { return childFilters; }
+  public void addChildFilter(IFilter filter) { this.childFilters.add(filter); }
   public void setChildFilters(List<IFilter> filters) { this.childFilters = filters; }
 }

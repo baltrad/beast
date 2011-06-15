@@ -94,6 +94,11 @@ public class CombinedFilterTest extends TestCase {
     assertTrue(e.equals(expected));
   }
 
+  public void testAddChildFilter() {
+    classUnderTest.addChildFilter(filter1);
+    assertTrue(classUnderTest.getChildFilters().contains(filter1));
+  }
+
   public void testIsValid() {
     List<IFilter> children = new ArrayList<IFilter>();
     children.add(filter1);
