@@ -22,12 +22,15 @@ package eu.baltrad.beast.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+
 import eu.baltrad.fc.Expression;
 import eu.baltrad.fc.ExpressionFactory;
 
 /**
  * Combine different filters
  */
+@JsonAutoDetect
 public class CombinedFilter implements IFilter {
   private static final String TYPE = "combined";
 

@@ -22,6 +22,12 @@ package eu.baltrad.beast.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
+import org.codehaus.jackson.node.JsonNodeFactory;
+
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
@@ -30,6 +36,7 @@ import eu.baltrad.fc.Expression;
 import eu.baltrad.fc.ExpressionFactory;
 
 public class CombinedFilterTest extends TestCase {
+  private ObjectMapper jsonMapper;
   private MockControl filter1Control;
   private IFilter filter1;
   private MockControl filter2Control;
@@ -43,6 +50,7 @@ public class CombinedFilterTest extends TestCase {
     filter2Control = MockControl.createControl(IFilter.class);
     filter2 = (IFilter)filter2Control.getMock();
     xpr = new ExpressionFactory();
+    jsonMapper = new ObjectMapper();
     classUnderTest = new CombinedFilter();
   }
 
@@ -135,4 +143,58 @@ public class CombinedFilterTest extends TestCase {
 
     assertFalse(classUnderTest.isValid());
   } 
+
+  public void testGson_toJson() {
+    CombinedFilter child1 = new CombinedFilter();
+    child1.setId(1);
+    child1.setMatchType(CombinedFilter.MatchType.ALL);
+    CombinedFilter child2 = new CombinedFilter();
+    child2.setId(2);
+    child2.setMatchType(CombinedFilter.MatchType.ANY);
+    classUnderTest.setId(3);
+    classUnderTest.addChildFilter(child1);
+    classUnderTest.addChildFilter(child2);
+    classUnderTest.setMatchType(CombinedFilter.MatchType.ALL);
+
+    JsonNode json = jsonMapper.valueToTree(classUnderTest);
+    assertEquals(4, json.size());
+    assertEquals("combined", json.get("type").getValueAsText());
+    assertEquals(3, json.get("id").getValueAsInt());
+    assertEquals("ALL", json.get("matchType").getValueAsText());
+    JsonNode children = json.get("childFilters");
+    assertEquals(2, children.size());
+    json = children.get(0);
+    assertEquals(4, json.size());
+    assertEquals("combined", json.get("type").getValueAsText());
+    assertEquals(1, json.get("id").getValueAsInt());
+    assertEquals("ALL", json.get("matchType").getValueAsText());
+    assertEquals(0, json.get("childFilters").size());
+    json = children.get(1);
+    assertEquals(4, json.size());
+    assertEquals("combined", json.get("type").getValueAsText());
+    assertEquals(2, json.get("id").getValueAsInt());
+    assertEquals("ANY", json.get("matchType").getValueAsText());
+    assertEquals(0, json.get("childFilters").size());
+  }
+
+  public void testGson_fromJson() throws java.io.IOException {
+    ObjectNode child = JsonNodeFactory.instance.objectNode();
+    child.put("type", "combined");
+    child.put("id", 2);
+    child.put("matchType", "ALL");
+    child.put("childFilters", JsonNodeFactory.instance.arrayNode());
+    ObjectNode json = JsonNodeFactory.instance.objectNode();
+    json.put("type", "combined");
+    json.put("id", 1);
+    json.put("matchType", "ANY");
+    ArrayNode children = JsonNodeFactory.instance.arrayNode();
+    children.add(child);
+    json.put("childFilters", children);
+
+    classUnderTest = (CombinedFilter)jsonMapper.treeToValue(json, IFilter.class);
+
+    assertEquals(new Integer(1), classUnderTest.getId());
+    assertEquals(CombinedFilter.MatchType.ANY, classUnderTest.getMatchType());
+    assertEquals(1, classUnderTest.getChildFilters().size());
+  }
 }

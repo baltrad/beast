@@ -19,6 +19,11 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
+import org.codehaus.jackson.node.JsonNodeFactory;
+
 import junit.framework.TestCase;
 
 import eu.baltrad.fc.Expression;
@@ -27,9 +32,11 @@ import eu.baltrad.fc.ExpressionFactory;
 public class AttributeFilterTest extends TestCase {
   private AttributeFilter classUnderTest;
   private ExpressionFactory xpr;
+  private ObjectMapper jsonMapper;
 
   public void setUp() {
     xpr = new ExpressionFactory();
+    jsonMapper = new ObjectMapper();
     classUnderTest = new AttributeFilter();
   }
 
@@ -123,5 +130,45 @@ public class AttributeFilterTest extends TestCase {
     classUnderTest.setValue("PVOL, SCAN");
 
     assertFalse(classUnderTest.isValid());
+  }
+
+  public void testGson_toJson() {
+    classUnderTest.setId(5);
+    classUnderTest.setAttribute("where/object");
+    classUnderTest.setOperator(AttributeFilter.Operator.IN);
+    classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
+    classUnderTest.setValue("PVOL, SCAN");
+    
+    JsonNode json = jsonMapper.valueToTree(classUnderTest);
+    
+    assertEquals(7, json.size());
+    assertEquals("attr", json.get("type").getValueAsText());
+    assertEquals(5, json.get("id").getValueAsInt());
+    assertEquals("where/object", json.get("attribute").getValueAsText());
+    assertEquals("IN", json.get("operator").getValueAsText());
+    assertEquals("STRING", json.get("valueType").getValueAsText());
+    assertEquals("PVOL, SCAN", json.get("value").getValueAsText());
+    assertFalse(json.get("negated").getValueAsBoolean());
+    assertFalse(json.has("xpr"));
+  }
+
+  public void testGson_fromJson() throws java.io.IOException {
+    ObjectNode json = JsonNodeFactory.instance.objectNode();
+    json.put("type", "attr");
+    json.put("id", 5);
+    json.put("attribute", "where/object");
+    json.put("operator", "IN");
+    json.put("valueType", "STRING");
+    json.put("value", "PVOL, SCAN");
+    json.put("negated", true);
+    
+    classUnderTest = (AttributeFilter)jsonMapper.treeToValue(json, IFilter.class);
+
+    assertEquals(new Integer(5), classUnderTest.getId());
+    assertEquals("where/object", classUnderTest.getAttribute());
+    assertEquals(AttributeFilter.Operator.IN, classUnderTest.getOperator());
+    assertEquals(AttributeFilter.ValueType.STRING, classUnderTest.getValueType());
+    assertEquals("PVOL, SCAN", classUnderTest.getValue());
+    assertTrue(classUnderTest.isNegated());
   }
 }

@@ -19,8 +19,20 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 import eu.baltrad.fc.Expression;
 
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME,
+              include=JsonTypeInfo.As.PROPERTY,
+              property="type")
+@JsonSubTypes({
+  @JsonSubTypes.Type(value=CombinedFilter.class, name="combined"),
+  @JsonSubTypes.Type(value=AttributeFilter.class, name="attr")
+})
+@JsonIgnoreProperties(value={"expression", "valid"})
 public interface IFilter {
   /**
    * access the typename of this filter
