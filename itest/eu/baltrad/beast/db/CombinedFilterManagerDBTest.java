@@ -101,8 +101,10 @@ public class CombinedFilterManagerDBTest extends TestCase {
 
     filter1.getId();
     filter1Control.setReturnValue(new Integer(1));
+    childManager.store(filter1);
     filter2.getId();
     filter2Control.setReturnValue(new Integer(2));
+    childManager.store(filter2);
     replay();
     
     classUnderTest.store(f);

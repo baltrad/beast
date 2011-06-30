@@ -28,7 +28,10 @@ import eu.baltrad.fc.Expression;
 import eu.baltrad.fc.ExpressionFactory;
 
 /**
- * Combine different filters
+ * Combine different filters.
+ *
+ * Persistance of child filters is managed through this filter.
+ * Child filters are explicitly owned by this filter and should not be shared.
  */
 @JsonAutoDetect
 public class CombinedFilter implements IFilter {

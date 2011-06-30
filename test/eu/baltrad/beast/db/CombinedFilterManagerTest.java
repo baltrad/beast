@@ -62,6 +62,38 @@ public class CombinedFilterManagerTest extends TestCase {
     return filter;
   }
 
+  public void testStore() {
+    CombinedFilter f = new CombinedFilter();
+    f.setMatchType(CombinedFilter.MatchType.ALL);
+    f.setId(3);
+    IFilter cf1 = createFakeFilter(1);
+    IFilter cf2 = createFakeFilter(2);
+    f.addChildFilter(cf1);
+    f.addChildFilter(cf2);
+    
+    jdbcOps.update(
+      "insert into beast_combined_filters(filter_id, match_type) values (?, ?)",
+      new Object[]{3, "ALL"}
+    );
+    jdbcOpsControl.setReturnValue(1);
+    childManager.store(cf1);
+    childManager.store(cf2);
+    jdbcOps.update(
+      "insert into beast_combined_filter_children (filter_id, child_id) values (?, ?)",
+      new Object[]{3, 1}
+    );
+    jdbcOpsControl.setReturnValue(1);
+    jdbcOps.update(
+      "insert into beast_combined_filter_children (filter_id, child_id) values (?, ?)",
+      new Object[]{3, 2}
+    );
+    jdbcOpsControl.setReturnValue(1);
+    replay();
+
+    classUnderTest.store(f);
+    verify();
+  }
+
   public void testRemove() {
     CombinedFilter f = new CombinedFilter();
     f.setId(10);

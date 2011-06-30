@@ -67,6 +67,11 @@ public class CombinedFilterManager implements IFilterManager {
     childManager = manager;
   }
   
+  /**
+   * load combined filter from the database.
+   *
+   * also cascades to all child filters through childFilterManager
+   */
   public CombinedFilter load(int id) {
     String sql = "select * from beast_combined_filters where filter_id=?";
     CombinedFilter flt = template.queryForObject(sql, new CombinedFilterMapper(), id);
@@ -78,6 +83,11 @@ public class CombinedFilterManager implements IFilterManager {
   }
 
   @Override
+  /**
+   * store combined filter in the database.
+   *
+   * also cascades to all child filters through childFilterManager
+   */
   public void store(IFilter filter) {
     CombinedFilter flt = (CombinedFilter)filter;
 
@@ -86,6 +96,9 @@ public class CombinedFilterManager implements IFilterManager {
         "values (?, ?)",
       flt.getId(),
       flt.getMatchType().toString());
+    for (IFilter child: flt.getChildFilters()) {
+      childManager.store(child);
+    }
     insertChildren(flt);
   }
 
@@ -104,6 +117,11 @@ public class CombinedFilterManager implements IFilterManager {
   }
 
   @Override
+  /**
+   * remove combined filter from the database.
+   *
+   * also cascades to all child filters through childFilterManager
+   */
   public void remove(IFilter filter) {
     CombinedFilter flt = (CombinedFilter)filter;
 
