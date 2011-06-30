@@ -110,6 +110,11 @@ public class CombinedFilterManager implements IFilterManager {
     template.update(
       "delete from beast_combined_filter_children where filter_id=?",
       flt.getId());
+
+    for (IFilter child : flt.getChildFilters()) {
+      childManager.remove(child);
+    }
+
     template.update(
       "delete from beast_combined_filters where filter_id=?",
       flt.getId());
