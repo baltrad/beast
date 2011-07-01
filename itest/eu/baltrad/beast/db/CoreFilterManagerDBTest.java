@@ -20,6 +20,7 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 package eu.baltrad.beast.db;
 
 import java.util.Map;
+import java.util.HashMap;
 
 import junit.framework.TestCase;
 
@@ -43,6 +44,15 @@ public class CoreFilterManagerDBTest extends TestCase {
     classUnderTest = new CoreFilterManager();
     SimpleJdbcOperations template = (SimpleJdbcOperations)context.getBean("jdbcTemplate");
     classUnderTest.setJdbcTemplate(template);
+    Map<String,IFilterManager> subManagers = new HashMap<String,IFilterManager>();
+    AttributeFilterManager attributeFilterManager = new AttributeFilterManager();
+    attributeFilterManager.setJdbcTemplate(template);
+    subManagers.put("attr", attributeFilterManager);
+    CombinedFilterManager combinedFilterManager = new CombinedFilterManager();
+    combinedFilterManager.setChildManager(classUnderTest);
+    combinedFilterManager.setJdbcTemplate(template);
+    subManagers.put("combined", combinedFilterManager);
+    classUnderTest.setSubManagers(subManagers);
   }
 
   public void tearDown() throws Exception {
@@ -70,5 +80,26 @@ public class CoreFilterManagerDBTest extends TestCase {
   public void testSqlDeleteFilter() throws Exception {
     classUnderTest.sqlDeleteFilter(1);
     verifyDatabaseTables("deleteFilter");
+  }
+
+  public void testStoreCombinedWithAttributeChildren() {
+    AttributeFilter sourceFilter = new AttributeFilter();
+    sourceFilter.setAttribute( "what/source:WMO" );
+    sourceFilter.setValueType( AttributeFilter.ValueType.STRING );
+    sourceFilter.setOperator( AttributeFilter.Operator.IN );
+    sourceFilter.setValue( "someValue" );
+
+    AttributeFilter fileObjectFilter = new AttributeFilter();
+    fileObjectFilter.setAttribute( "what/object" );
+    fileObjectFilter.setValueType( AttributeFilter.ValueType.STRING );
+    fileObjectFilter.setOperator( AttributeFilter.Operator.IN );
+    fileObjectFilter.setValue( "anotherValue" );
+
+    CombinedFilter combinedFilter = new CombinedFilter();
+    combinedFilter.addChildFilter( sourceFilter );
+    combinedFilter.addChildFilter( fileObjectFilter );
+    combinedFilter.setMatchType( CombinedFilter.MatchType.ALL );
+
+    classUnderTest.store( combinedFilter );
   }
 }
