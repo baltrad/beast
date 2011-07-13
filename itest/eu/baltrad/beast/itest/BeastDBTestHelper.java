@@ -180,6 +180,7 @@ public class BeastDBTestHelper {
     template.update("delete from beast_adaptors_xmlrpc");
     template.update("delete from beast_adaptors");
     template.update("delete from beast_rule_properties");
+    template.update("delete from beast_rule_filters");
     template.update("delete from beast_scheduled_jobs");
     template.update("delete from beast_router_rules");
     template.update("delete from beast_combined_filter_children");

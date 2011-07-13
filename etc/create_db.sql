@@ -74,6 +74,13 @@ create table beast_rule_properties (
   PRIMARY KEY(rule_id, key)
 );
 
+create table beast_rule_filters (
+  rule_id integer NOT NULL REFERENCES beast_router_rules(rule_id),
+  key text NOT NULL,
+  filter_id integer NOT NULL REFERENCES beast_filters(filter_id),
+  PRIMARY KEY(rule_id, key)
+);
+
 create table beast_volume_rules (
   rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
   interval integer NOT NULL,

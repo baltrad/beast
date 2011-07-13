@@ -133,6 +133,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION create_beast_rule_filters() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_rule_filters';
+  IF NOT FOUND THEN
+    create table beast_rule_filters (
+      rule_id integer NOT NULL REFERENCES beast_router_rules(rule_id),
+      key text NOT NULL,
+      filter_id integer NOT NULL REFERENCES beast_filters(filter_id),
+      PRIMARY KEY(rule_id, key)
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_rule_filters already exists';
+  END IF;  
+
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION update_groovy_rules_bdb_packages() RETURNS VOID AS $$
 BEGIN
   UPDATE beast_groovy_rules
@@ -162,6 +179,7 @@ select create_beast_attr_filters();
 select add_beast_attr_filters_negated();
 select create_beast_combined_filters();
 select update_groovy_rules_bdb_packages();
+select create_beast_rule_filters();
 
 drop function make_plpgsql();
 drop function create_beast_rule_properties();
@@ -172,3 +190,4 @@ drop function create_beast_attr_filters();
 drop function add_beast_attr_filters_negated();
 drop function create_beast_combined_filters();
 drop function update_groovy_rules_bdb_packages();
+drop function create_beast_rule_filters();

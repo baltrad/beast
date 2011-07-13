@@ -1,4 +1,7 @@
 build
 develop.properties
 dist
+!src/eu/baltrad/beast/rules/dist
+!test/eu/baltrad/beast/rules/dist
+!itest/eu/baltrad/beast/rules/dist
 *.swp
