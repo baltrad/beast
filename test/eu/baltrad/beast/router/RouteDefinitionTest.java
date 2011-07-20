@@ -66,6 +66,12 @@ public class RouteDefinitionTest extends TestCase {
     List<String> result = classUnderTest.getRecipients();
     assertSame(recipients, result);
   }
+
+  public void testSetGetRecipients_null() {
+    RouteDefinition classUnderTest = new RouteDefinition();
+    classUnderTest.setRecipients(null);
+    assertNotNull(classUnderTest.getRecipients());
+  }
   
   public void testSetGetName() {
     RouteDefinition classUnderTest = new RouteDefinition();

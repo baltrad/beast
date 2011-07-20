@@ -88,6 +88,8 @@ public class RouteDefinition {
    * @param recipients the recipients to set
    */
   public void setRecipients(List<String> recipients) {
+    if (recipients == null)
+      recipients = new ArrayList<String>();
     this.recipients = recipients;
   }
 
