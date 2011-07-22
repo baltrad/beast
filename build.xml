@@ -54,12 +54,14 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <available file="${baltraddb.path}/lib/libbrfc_java.so" property="libjbrfc_java.so.available"/>
   <available file="${baltraddb.path}/lib/libbrfc.so" property="libbrfc.so.available"/>
   <available file="${baltraddb.path}/share/baltrad-db/sql/postgresql/create.sql" property="create.sql.available"/>
+  <available file="${baltraddb.path}/share/baltrad-db/sql/postgresql/data.sql" property="data.sql.available"/>
   <available file="${baltraddb.path}/share/baltrad-db/sql/postgresql/drop.sql" property="drop.sql.available"/>
 
   <fail unless="jbrfc.jar.available" message="Can not find baltrad-db / jbrfc.jar!" />
   <fail unless="libjbrfc_java.so.available" message="Can not find baltrad-db / libjbrfc_java.so!" />
   <fail unless="libbrfc.so.available" message="Can not find baltrad-db / libbrfc.so!" />
   <fail unless="create.sql.available" message="Can not find baltrad-db / create.sql!" />
+  <fail unless="data.sql.available" message="Can not find baltrad-db / data.sql!" />
   <fail unless="drop.sql.available" message="Can not find baltrad-db / drop.sql!" />
 
   <fail unless="blt.db.path" message="No storage root path defined (blt.db.path)!"/>
@@ -299,7 +301,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	     userid="${db.user}" 
 	     password="${db.pwd}">
 	  <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/drop.sql"/>
-      <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/create.sql"/>
+          <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/create.sql"/>
+          <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/data.sql"/>
 	</sql>
   </target>
 
