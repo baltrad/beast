@@ -132,7 +132,7 @@ public class AttributeFilterTest extends TestCase {
     assertFalse(classUnderTest.isValid());
   }
 
-  public void testGson_toJson() {
+  public void testJackson_toJson() {
     classUnderTest.setId(5);
     classUnderTest.setAttribute("where/object");
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
@@ -152,7 +152,7 @@ public class AttributeFilterTest extends TestCase {
     assertFalse(json.has("xpr"));
   }
 
-  public void testGson_fromJson() throws java.io.IOException {
+  public void testJackson_fromJson() throws java.io.IOException {
     ObjectNode json = JsonNodeFactory.instance.objectNode();
     json.put("type", "attr");
     json.put("id", 5);

@@ -144,7 +144,7 @@ public class CombinedFilterTest extends TestCase {
     assertFalse(classUnderTest.isValid());
   } 
 
-  public void testGson_toJson() {
+  public void testJackson_toJson() {
     CombinedFilter child1 = new CombinedFilter();
     child1.setId(1);
     child1.setMatchType(CombinedFilter.MatchType.ALL);
@@ -177,7 +177,7 @@ public class CombinedFilterTest extends TestCase {
     assertEquals(0, json.get("childFilters").size());
   }
 
-  public void testGson_fromJson() throws java.io.IOException {
+  public void testJackson_fromJson() throws java.io.IOException {
     ObjectNode child = JsonNodeFactory.instance.objectNode();
     child.put("type", "combined");
     child.put("id", 2);
