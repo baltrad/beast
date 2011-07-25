@@ -103,7 +103,6 @@ public class BdbTrimAgeRuleManagerTest extends TestCase {
     methods.createRule();
     methodsControl.setReturnValue(rule);
     rule.setProperties(props);
-    rule.setFileCatalog(fileCatalog);
     replay();
 
     IRule result = classUnderTest.load(1);

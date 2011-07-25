@@ -71,7 +71,6 @@ public class BdbTrimAgeRuleManager implements IRuleManager {
     Map<String, String> props = propManager.loadProperties(ruleId);
     BdbTrimAgeRule rule = createRule();
     rule.setProperties(props);
-    rule.setFileCatalog(fileCatalog);
     return rule;
   }
   
