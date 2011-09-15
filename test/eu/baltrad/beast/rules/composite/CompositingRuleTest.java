@@ -42,8 +42,9 @@ import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Time;
 import eu.baltrad.fc.FileEntry;
+import eu.baltrad.fc.Oh5Metadata;
+import eu.baltrad.fc.Time;
 
 /**
  * @author Anders Henja
@@ -261,17 +262,20 @@ public class CompositingRuleTest extends TestCase {
 
     MockControl fileControl = MockClassControl.createControl(FileEntry.class);
     FileEntry file = (FileEntry)fileControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
+    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
 
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFileEntry(file);
 
-    
-    file.what_object();
-    fileControl.setReturnValue("PVOL");
-    file.what_date();
-    fileControl.setReturnValue(date);
-    file.what_time();
-    fileControl.setReturnValue(time);
+    file.metadata();
+    fileControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
+    metadata.what_object();
+    metadataControl.setReturnValue("PVOL");
+    metadata.what_date();
+    metadataControl.setReturnValue(date);
+    metadata.what_time();
+    metadataControl.setReturnValue(time);
     ruleUtil.createNominalTime(date, time, 10);
     ruleUtilControl.setReturnValue(nominalTime);
     ruleUtil.isTriggered(25, nominalTime);
@@ -282,11 +286,13 @@ public class CompositingRuleTest extends TestCase {
     
     replay();
     fileControl.replay();
+    metadataControl.replay();
     
     CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
     fileControl.verify();
+    metadataControl.verify();
     assertSame(nominalTime, result.getDateTime());
     assertEquals(25, result.getRuleId());
   }
@@ -298,17 +304,21 @@ public class CompositingRuleTest extends TestCase {
 
     MockControl fileControl = MockClassControl.createControl(FileEntry.class);
     FileEntry file = (FileEntry)fileControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
+    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
 
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFileEntry(file);
 
     
-    file.what_object();
-    fileControl.setReturnValue("PVOL");
-    file.what_date();
-    fileControl.setReturnValue(date);
-    file.what_time();
-    fileControl.setReturnValue(time);
+    file.metadata();
+    fileControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
+    metadata.what_object();
+    metadataControl.setReturnValue("PVOL");
+    metadata.what_date();
+    metadataControl.setReturnValue(date);
+    metadata.what_time();
+    metadataControl.setReturnValue(time);
     ruleUtil.createNominalTime(date, time, 10);
     ruleUtilControl.setReturnValue(nominalTime);
     ruleUtil.isTriggered(25, nominalTime);
@@ -319,17 +329,21 @@ public class CompositingRuleTest extends TestCase {
     
     replay();
     fileControl.replay();
+    metadataControl.replay();
     
     CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
     fileControl.verify();
+    metadataControl.verify();
     assertNull(result);
   }
 
   public void testCreateTimerData_notVolume() throws Exception {
     MockControl fileControl = MockClassControl.createControl(FileEntry.class);
     FileEntry file = (FileEntry)fileControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
+    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
     Date d = new Date(2010, 1, 1);
     Time t = new Time(10, 1, 15);
     DateTime dt = new DateTime();
@@ -337,13 +351,14 @@ public class CompositingRuleTest extends TestCase {
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFileEntry(file);
 
-    
-    file.what_object();
-    fileControl.setReturnValue("IMAGE");
-    file.what_date();
-    fileControl.setReturnValue(d);
-    file.what_time();
-    fileControl.setReturnValue(t);
+    file.metadata();
+    fileControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
+    metadata.what_object();
+    metadataControl.setReturnValue("IMAGE");
+    metadata.what_date();
+    metadataControl.setReturnValue(d);
+    metadata.what_time();
+    metadataControl.setReturnValue(t);
     ruleUtil.createNominalTime(d, t, 10);
     ruleUtilControl.setReturnValue(dt);
     ruleUtil.isTriggered(25, dt);
@@ -353,11 +368,13 @@ public class CompositingRuleTest extends TestCase {
     
     replay();
     fileControl.replay();
+    metadataControl.replay();
     
     CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
     
     verify();
     fileControl.verify();
+    metadataControl.verify();
     assertEquals(null, result);
   }
 

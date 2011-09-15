@@ -34,7 +34,8 @@ import eu.baltrad.fc.AttributeResult;
 import eu.baltrad.fc.FileEntry;
 import eu.baltrad.fc.Expression;
 import eu.baltrad.fc.ExpressionFactory;
-import eu.baltrad.fc.HlFile;
+import eu.baltrad.fc.Oh5File;
+import eu.baltrad.fc.Oh5HlFileReader;
 
 /**
  * @author Anders Henja
@@ -75,8 +76,10 @@ public class BaltradDBITest extends TestCase {
     uuidMap = new HashMap<String, String>();
     helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
+    Oh5HlFileReader reader = new Oh5HlFileReader();
     for (String n : FIXTURES) {
-      HlFile f = new HlFile(getFilePath(n));
+      Oh5File f = new Oh5File();
+      reader.read(getFilePath(n), f);
       FileEntry result = db.store(f);
       assertNotNull(result);
       uuidMap.put(n, result.uuid());

@@ -33,7 +33,8 @@ import eu.baltrad.beast.net.FileUploader;
 
 import eu.baltrad.fc.Expression;
 import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.Oh5FileMatcher;
+import eu.baltrad.fc.Oh5Metadata;
+import eu.baltrad.fc.Oh5MetadataMatcher;
 
 public class DistributionRuleTest extends TestCase {
   private static interface DistributionRuleMethods {
@@ -47,8 +48,10 @@ public class DistributionRuleTest extends TestCase {
   private DistributionRuleMethods methods;
   private MockControl entryControl;
   private FileEntry entry;
+  private MockControl metadataControl;
+  private Oh5Metadata metadata;
   private MockControl matcherControl;
-  private Oh5FileMatcher matcher;
+  private Oh5MetadataMatcher matcher;
   private MockControl filterControl;
   private IFilter filter;
   private MockControl fileControl;
@@ -63,8 +66,10 @@ public class DistributionRuleTest extends TestCase {
     methods = (DistributionRuleMethods)methodsControl.getMock();
     entryControl = MockClassControl.createControl(FileEntry.class);
     entry = (FileEntry)entryControl.getMock();
-    matcherControl = MockClassControl.createControl(Oh5FileMatcher.class);
-    matcher = (Oh5FileMatcher)matcherControl.getMock();
+    metadataControl = MockClassControl.createControl(Oh5Metadata.class);
+    metadata = (Oh5Metadata)metadataControl.getMock();
+    matcherControl = MockClassControl.createControl(Oh5MetadataMatcher.class);
+    matcher = (Oh5MetadataMatcher)matcherControl.getMock();
     filterControl = MockControl.createControl(IFilter.class);
     filter = (IFilter)filterControl.getMock();
     fileControl = MockClassControl.createControl(File.class);
@@ -86,6 +91,7 @@ public class DistributionRuleTest extends TestCase {
     matcherControl.replay();
     filterControl.replay();
     fileControl.replay();
+    metadataControl.replay();
     uploaderControl.replay();
   }
 
@@ -95,6 +101,7 @@ public class DistributionRuleTest extends TestCase {
     matcherControl.verify();
     filterControl.verify();
     fileControl.verify();
+    metadataControl.verify();
     uploaderControl.verify();
   }
 
@@ -151,7 +158,9 @@ public class DistributionRuleTest extends TestCase {
     Expression x = new Expression();
     filter.getExpression();
     filterControl.setReturnValue(x);
-    matcher.match(entry, x);
+    entry.metadata();
+    entryControl.setReturnValue(metadata);
+    matcher.match(metadata, x);
     matcherControl.setReturnValue(true);
     replay();
 

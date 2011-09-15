@@ -423,9 +423,9 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     VolumeTimerData result = null;
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
-      if (file.what_object().equals("SCAN")) {
-        Time t = file.what_time();
-        Date d = file.what_date();
+      if (file.metadata().what_object().equals("SCAN")) {
+        Time t = file.metadata().what_time();
+        Date d = file.metadata().what_date();
         String s = file.source().get("_name");
         DateTime nominalTime = ruleUtilities.createNominalTime(d, t, interval);
         if (sources.size() == 0 || sources.contains(s)) {

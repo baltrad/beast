@@ -40,6 +40,7 @@ import eu.baltrad.beast.rules.RuleException;
 import eu.baltrad.fc.Date;
 import eu.baltrad.fc.Time;
 import eu.baltrad.fc.FileEntry;
+import eu.baltrad.fc.Oh5Metadata;
 
 /**
  * @author Anders Henja
@@ -140,6 +141,8 @@ public class GroovyRuleTest extends TestCase {
   public void testSetScript_GoogleMapRule() throws Exception {
     MockControl fileEntryControl = MockClassControl.createControl(FileEntry.class);
     FileEntry fileEntry = (FileEntry)fileEntryControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
+    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
     MockControl catalogControl = MockClassControl.createControl(Catalog.class);
     Catalog catalog = (Catalog)catalogControl.getMock();
     
@@ -152,19 +155,22 @@ public class GroovyRuleTest extends TestCase {
     GroovyRule rule = new GroovyRule();
     rule.setScript(readScript("GoogleMap.groovy"));
 
-    fileEntry.what_object();
-    fileEntryControl.setReturnValue("COMP");
-    fileEntry.what_source();
-    fileEntryControl.setReturnValue("ORG:82,CMT:baltrad_2000");
-    fileEntry.what_date();
-    fileEntryControl.setReturnValue(date);
-    fileEntry.what_time();
-    fileEntryControl.setReturnValue(time);
+    fileEntry.metadata();
+    fileEntryControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
+    metadata.what_object();
+    metadataControl.setReturnValue("COMP");
+    metadata.what_source();
+    metadataControl.setReturnValue("ORG:82,CMT:baltrad_2000");
+    metadata.what_date();
+    metadataControl.setReturnValue(date);
+    metadata.what_time();
+    metadataControl.setReturnValue(time);
     fileEntry.uuid();
     fileEntryControl.setReturnValue("ab-cd");
     catalog.getFileCatalogPath("ab-cd");
     catalogControl.setReturnValue("/tmp/something.h5");
     fileEntryControl.replay();
+    metadataControl.replay();
     catalogControl.replay();
     
     // Verify that the rule has loaded properly
@@ -173,6 +179,7 @@ public class GroovyRuleTest extends TestCase {
     BltGenerateMessage result = (BltGenerateMessage)rule.handle(msg);
     
     fileEntryControl.verify();
+    metadataControl.verify();
     catalogControl.verify();
     
     assertEquals("se.smhi.rave.creategmapimage", result.getAlgorithm());
@@ -188,6 +195,8 @@ public class GroovyRuleTest extends TestCase {
   public void testSetScript_GoogleMapRule_notSupportedArea() throws Exception {
     MockControl fileEntryControl = MockClassControl.createControl(FileEntry.class);
     FileEntry fileEntry = (FileEntry)fileEntryControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
+    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
     MockControl catalogControl = MockClassControl.createControl(Catalog.class);
     Catalog catalog = (Catalog)catalogControl.getMock();
     
@@ -199,17 +208,20 @@ public class GroovyRuleTest extends TestCase {
 
     GroovyRule rule = new GroovyRule();
     rule.setScript(readScript("GoogleMap.groovy"));
-
-    fileEntry.what_object();
-    fileEntryControl.setReturnValue("COMP");
-    fileEntry.what_source();
-    fileEntryControl.setReturnValue("ORG:82,CMT:mydummyarea");
-    fileEntry.what_date();
-    fileEntryControl.setReturnValue(date);
-    fileEntry.what_time();
-    fileEntryControl.setReturnValue(time);
+    
+    fileEntry.metadata();
+    fileEntryControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
+    metadata.what_object();
+    metadataControl.setReturnValue("COMP");
+    metadata.what_source();
+    metadataControl.setReturnValue("ORG:82,CMT:mydummyarea");
+    metadata.what_date();
+    metadataControl.setReturnValue(date);
+    metadata.what_time();
+    metadataControl.setReturnValue(time);
 
     fileEntryControl.replay();
+    metadataControl.replay();
     catalogControl.replay();
     
     // Verify that the rule has loaded properly
@@ -218,6 +230,7 @@ public class GroovyRuleTest extends TestCase {
     BltGenerateMessage result = (BltGenerateMessage)rule.handle(msg);
     
     fileEntryControl.verify();
+    metadataControl.verify();
     catalogControl.verify();
     assertNull(result);
   }

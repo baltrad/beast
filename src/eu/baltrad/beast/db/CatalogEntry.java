@@ -58,7 +58,7 @@ public class CatalogEntry {
    */
   public String getObject() {
     if (entry != null)
-      return entry.what_object();
+      return entry.metadata().what_object();
     else
       return null;
   }
@@ -78,7 +78,8 @@ public class CatalogEntry {
    */
   public DateTime getDateTime() {
     if (entry != null)
-      return new DateTime(entry.what_date(), entry.what_time());
+      return new DateTime(entry.metadata().what_date(),
+                          entry.metadata().what_time());
     else
       return null;
   }
@@ -86,7 +87,7 @@ public class CatalogEntry {
   public Object getAttribute(String name) {
     if (entry == null)
       return null;
-    Oh5Attribute attr = entry.root().attribute(name);
+    Oh5Attribute attr = entry.metadata().root().attribute(name);
     if (attr == null)
       return null;
     Oh5Scalar value = attr.value();

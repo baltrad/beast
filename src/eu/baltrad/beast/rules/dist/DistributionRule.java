@@ -35,7 +35,7 @@ import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 
 import eu.baltrad.fc.DefaultFileNamer;
-import eu.baltrad.fc.Oh5FileMatcher;
+import eu.baltrad.fc.Oh5MetadataMatcher;
 import eu.baltrad.fc.FileEntry;
 
 /**
@@ -49,7 +49,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   private final static File TEMPDIR = new File(System.getProperty("java.io.tmpdir"));
 
   private IFilter filter;
-  private Oh5FileMatcher matcher;
+  private Oh5MetadataMatcher matcher;
   private URI destination;
   private FileUploader uploader;
 
@@ -63,10 +63,10 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
    */
   protected DistributionRule() {
     this.uploader = FileUploader.createDefault();
-    this.matcher = new Oh5FileMatcher();
+    this.matcher = new Oh5MetadataMatcher();
   }
 
-  protected void setMatcher(Oh5FileMatcher matcher) {
+  protected void setMatcher(Oh5MetadataMatcher matcher) {
     this.matcher = matcher;
   }
 
@@ -133,7 +133,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   }
 
   protected boolean match(FileEntry entry) {
-    return matcher.match(entry, filter.getExpression());
+    return matcher.match(entry.metadata(), filter.getExpression());
   }
 
   protected void upload(FileEntry entry) {

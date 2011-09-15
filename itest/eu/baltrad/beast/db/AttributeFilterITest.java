@@ -20,13 +20,13 @@ package eu.baltrad.beast.db;
 
 import junit.framework.TestCase;
 
-import eu.baltrad.fc.HlFile;
 import eu.baltrad.fc.Oh5File;
-import eu.baltrad.fc.Oh5FileMatcher;
+import eu.baltrad.fc.Oh5HlFileReader;
+import eu.baltrad.fc.Oh5MetadataMatcher;
 
 public class AttributeFilterITest extends TestCase {
   private Oh5File file;
-  private Oh5FileMatcher matcher;
+  private Oh5MetadataMatcher matcher;
   private AttributeFilter filter;
 
   private String getFilePath(String resource) throws Exception {
@@ -35,8 +35,10 @@ public class AttributeFilterITest extends TestCase {
   }
 
   protected void setUp() throws Exception {
-    file = new HlFile(getFilePath("fixtures/Z_SCAN_C_ESWI_20101023180000_seang_000000.h5"));
-    matcher = new Oh5FileMatcher();
+    file = new Oh5File();
+    Oh5HlFileReader reader = new Oh5HlFileReader();
+    reader.read(getFilePath("fixtures/Z_SCAN_C_ESWI_20101023180000_seang_000000.h5"), file);
+    matcher = new Oh5MetadataMatcher();
     filter = new AttributeFilter();
   }
 
@@ -46,7 +48,7 @@ public class AttributeFilterITest extends TestCase {
     filter.setValueType(AttributeFilter.ValueType.STRING);
     filter.setValue("SCAN");
 
-    assertTrue(matcher.match(file, filter.getExpression()));    
+    assertTrue(matcher.match(file.metadata(), filter.getExpression()));    
   }
 
   public void testObjectEqualsNegated() {
@@ -56,7 +58,7 @@ public class AttributeFilterITest extends TestCase {
     filter.setValue("SCAN");
     filter.setNegated(true);
 
-    assertFalse(matcher.match(file, filter.getExpression()));
+    assertFalse(matcher.match(file.metadata(), filter.getExpression()));
   }
 
   public void testSourceRADIn() {
@@ -65,7 +67,7 @@ public class AttributeFilterITest extends TestCase {
     filter.setValueType(AttributeFilter.ValueType.STRING);
     filter.setValue("SE50, SE51");
     
-    assertTrue(matcher.match(file, filter.getExpression()));
+    assertTrue(matcher.match(file.metadata(), filter.getExpression()));
   }
 
 }

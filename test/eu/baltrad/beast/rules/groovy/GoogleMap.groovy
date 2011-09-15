@@ -55,11 +55,11 @@ class GenerateGoogleMap implements IScriptableRule {
     Catalog cat = ManagerContext.getCatalog();
     if (msg != null && msg instanceof BltDataMessage) {
       FileEntry fe = ((BltDataMessage)msg).getFileEntry();
-      String object = fe.what_object();
+      String object = fe.metadata().what_object();
       if (object != null && object.equals("COMP")) {
-        String source = fe.what_source();
-        Date d = fe.what_date();
-        Time t = fe.what_time();
+        String source = fe.metadata().what_source();
+        Date d = fe.metadata().what_date();
+        Time t = fe.metadata().what_time();
         String area = getSupportedArea(source);
         if (area != null) {
           String oname = PATH + "/"+area+"/" + sprintf("%04d/%02d/%02d/%04d%02d%02d%02d%02d", [d.year(), d.month(), d.day(), d.year(), d.month(), d.day(), t.hour(), t.minute()] as int[]) + ".png";

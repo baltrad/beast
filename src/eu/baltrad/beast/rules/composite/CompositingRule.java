@@ -284,7 +284,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     try {
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
-        String object = file.what_object();
+        String object = file.metadata().what_object();
         if (object != null && object.equals("SCAN") && isScanBased()) {
           return handleCompositeFromScans(message);
         } else if (object != null && object.equals("PVOL") && !isScanBased()) {
@@ -435,9 +435,9 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     CompositeTimerData result = null;
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
-      String object = file.what_object();
-      Time t = file.what_time();
-      Date d = file.what_date();
+      String object = file.metadata().what_object();
+      Time t = file.metadata().what_time();
+      Date d = file.metadata().what_date();
       DateTime nominalTime = ruleUtil.createNominalTime(d, t, interval);
       if (!ruleUtil.isTriggered(ruleid, nominalTime)) {
         if (!isScanBased() && object.equals("PVOL")) {
