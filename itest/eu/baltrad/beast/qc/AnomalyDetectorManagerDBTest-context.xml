@@ -42,37 +42,5 @@
     <property name="baltradDbPth" value="${blt.db.path}"/>
   </bean>  
 
-  <!-- Some initialization that is necessary to wire the composite manager -->  
-  <bean id="ruleutilities" class="eu.baltrad.beast.rules.util.RuleUtilities" autowire="byType" />
-  <bean id="timeoutfactory" class="eu.baltrad.beast.rules.timer.TimeoutTaskFactory"/>  
-  <bean id="timeoutmanager" class="eu.baltrad.beast.rules.timer.TimeoutManager" autowire="byType" />
-  <bean id="anomalymanager" class="eu.baltrad.beast.qc.AnomalyDetectorManager" autowire="byType" />
-  
-  <bean id="bdb_db" class="eu.baltrad.fc.Database" factory-method="create" destroy-method="delete">
-       <constructor-arg value="${blt.db.uri}" />
-  </bean>
-  
-  <bean id="bdb_storage" class="eu.baltrad.fc.CacheDirStorage" destroy-method="delete">
-       <constructor-arg value="${blt.db.path}" />
-  </bean>
-  
-  <bean id="fc" class="eu.baltrad.fc.FileCatalog" destroy-method="delete">
-       <constructor-arg ref="bdb_db" />
-       <constructor-arg ref="bdb_storage" />
-  </bean>
-
-  <bean id="catalog" class="eu.baltrad.beast.db.Catalog" autowire="byType" />
-
-  <bean id="bltcompositemgr" class="eu.baltrad.beast.rules.composite.CompositingRuleManager" autowire="byType" />
-  
-  <bean id="router" class="eu.baltrad.beast.router.impl.BltRouter" autowire="byType">
-    <property name="ruleManagers">
-      <map>
-        <entry key="blt_composite" value-ref="bltcompositemgr"/>
-      </map>
-    </property>
-  </bean>
-  
-  <bean id="beastscheduler" class="eu.baltrad.beast.scheduler.BeastScheduler" autowire="byType"/>
-  
+  <bean id="detectorManager" class="eu.baltrad.beast.qc.AnomalyDetectorManager" autowire="byType"/>
 </beans>

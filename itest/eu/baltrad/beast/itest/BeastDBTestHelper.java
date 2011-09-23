@@ -32,6 +32,7 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
+import org.dbunit.dataset.SortedTable;
 import org.dbunit.dataset.datatype.IDataTypeFactory;
 import org.dbunit.dataset.excel.XlsDataSet;
 import org.dbunit.operation.DatabaseOperation;
@@ -173,6 +174,7 @@ public class BeastDBTestHelper {
     SimpleJdbcTemplate template = new SimpleJdbcTemplate(source);
     template.update("delete from beast_router_dest");
     template.update("delete from beast_groovy_rules");
+    template.update("delete from beast_composite_detectors");
     template.update("delete from beast_composite_sources");
     template.update("delete from beast_composite_rules");
     template.update("delete from beast_volume_sources");
@@ -183,6 +185,7 @@ public class BeastDBTestHelper {
     template.update("delete from beast_rule_filters");
     template.update("delete from beast_scheduled_jobs");
     template.update("delete from beast_router_rules");
+    template.update("delete from beast_anomaly_detectors");
     template.update("delete from beast_combined_filter_children");
     template.update("delete from beast_combined_filters");
     template.update("delete from beast_attr_filters");
@@ -230,18 +233,52 @@ public class BeastDBTestHelper {
    * Returns the specified table from the database
    * @param source the data source
    * @param name the name of the table
+   * @param order the order of the columns in which rows should be sorted (may be NULL)
    * @return the table
    * @throws Exception
    */
-  public ITable getDatabaseTable(String name) throws Exception {
+  public ITable getDatabaseTable(String name, String[] order) throws Exception {
     Connection conn = source.getConnection();
     try {
       IDatabaseConnection connection = getConnection(conn);
       IDataSet dataset = connection.createDataSet();
-      return dataset.getTable(name);
+      if (order != null) {
+        return new SortedTable(dataset.getTable(name), order);
+      } else {
+        return dataset.getTable(name);
+      }
     } finally {
       DataSourceUtils.releaseConnection(conn, source);
-    }     
+    }         
+  }
+  
+  /**
+   * Returns the specified table from the database
+   * @param source the data source
+   * @param name the name of the table
+   * @return the table
+   * @throws Exception
+   */
+  public ITable getDatabaseTable(String name) throws Exception {
+    return getDatabaseTable(name, null);
+  }
+  
+  /**
+   * Returns a specific sheet from an excel document
+   * @param tc the test case
+   * @param extras the extras field
+   * @param name the name of the sheet.
+   * @param order the order of the columns in which rows should be sorted (may be NULL)
+   * @return the table
+   * @throws Exception
+   */
+  public ITable getXlsTable(TestCase tc, String extras, String name, String[] order) throws Exception {
+    IDataSet dataset = getXlsDataset(tc, extras);
+    if (order != null) {
+      return new SortedTable(dataset.getTable(name),order);
+    } else {
+      return dataset.getTable(name);
+    }
   }
   
   /**
@@ -253,8 +290,7 @@ public class BeastDBTestHelper {
    * @throws Exception
    */
   public ITable getXlsTable(TestCase tc, String extras, String name) throws Exception {
-    IDataSet dataset = getXlsDataset(tc, extras);
-    return dataset.getTable(name);
+    return getXlsTable(tc,extras,name,null);
   }
   
   public void createBaltradDbPath() {

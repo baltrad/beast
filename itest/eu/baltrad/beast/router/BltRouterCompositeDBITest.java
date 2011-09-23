@@ -18,6 +18,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.router;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
@@ -25,6 +28,8 @@ import org.dbunit.dataset.ITable;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
+import eu.baltrad.beast.qc.AnomalyException;
+import eu.baltrad.beast.qc.IAnomalyDetectorManager;
 import eu.baltrad.beast.router.impl.BltRouter;
 import eu.baltrad.beast.rules.RuleException;
 import eu.baltrad.beast.rules.composite.CompositingRule;
@@ -38,6 +43,7 @@ public class BltRouterCompositeDBITest extends TestCase {
   private AbstractApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   private IBeastScheduler scheduler = null;
+  private IAnomalyDetectorManager anomalymanager = null;
   
   public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
@@ -45,15 +51,19 @@ public class BltRouterCompositeDBITest extends TestCase {
     helper.purgeBaltradDB();
     helper.tearDown();
     helper.cleanInsert(this);
+    context = BeastDBTestHelper.loadContext(this); // Reread context to work with fresh db
     classUnderTest = (BltRouter)context.getBean("router");
     classUnderTest.afterPropertiesSet();
     scheduler = (IBeastScheduler)context.getBean("beastscheduler");
+    anomalymanager = (IAnomalyDetectorManager)context.getBean("anomalymanager");
+    
   }
   
   public void tearDown() throws Exception {
     helper = null;
     classUnderTest = null;
     scheduler = null;
+    anomalymanager=null;
     context.close();
   }
 
@@ -80,6 +90,17 @@ public class BltRouterCompositeDBITest extends TestCase {
     Assertion.assertEquals(expected, actual);
   }
   
+  protected void verifyDetectorTables(String extras) throws Exception {
+    ITable expected = helper.getXlsTable(this, extras, "beast_anomaly_detectors");
+    ITable actual = helper.getDatabaseTable("beast_anomaly_detectors");
+    Assertion.assertEquals(expected, actual);
+
+    expected = helper.getXlsTable(this, extras, "beast_composite_detectors");
+    actual = helper.getDatabaseTable("beast_composite_detectors", new String[]{"rule_id","name"});
+    Assertion.assertEquals(expected, actual);
+  }
+
+  
   public void testLoadCompositingDef() {
     RouteDefinition def = classUnderTest.getDefinition("admin");
     assertNotNull(def);
@@ -88,6 +109,9 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals("blt_composite", def.getRuleType());
     assertEquals(20, ((CompositingRule)def.getRule()).getTimeout());
     assertEquals(true, ((CompositingRule)def.getRule()).isScanBased());
+    assertEquals(CompositingRule.SelectionMethod_NEAREST_RADAR, ((CompositingRule)def.getRule()).getSelectionMethod());
+    assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
+    assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
   }
   
   public void testRemoveCompositeWithScheduledJob() throws Exception {
@@ -115,5 +139,69 @@ public class BltRouterCompositeDBITest extends TestCase {
     verifyDatabaseTables("removeCompositeWithScheduledJobRemoved");
     RouteDefinition def = classUnderTest.getDefinition("admin");
     assertNull(def);
+  }
+
+  public void testCreateAndStoreComposite() throws Exception {
+    List<String> recipients = new ArrayList<String>();
+    recipients.add("A2");
+    List<String> sources = new ArrayList<String>();
+    sources.add("src1");
+    
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("ropo");
+    detectors.add("dmi");
+
+    CompositingRule rule = (CompositingRule)classUnderTest.createRule("blt_composite");
+    rule.setArea("sweet");
+    rule.setInterval(20);
+    rule.setTimeout(30);
+    rule.setScanBased(false);
+    rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    rule.setDetectors(detectors);
+    rule.setSources(sources);
+
+    RouteDefinition def = classUnderTest.create("ugly", "anders", true, "test", recipients, rule);
+    classUnderTest.storeDefinition(def);
+    
+    verifyDatabaseTables("createcomposite");
+    verifyDetectorTables("createcomposite");
+  }
+  
+  public void testCreateAndStoreCompositeWithBadDetector() throws Exception {
+    List<String> recipients = new ArrayList<String>();
+    recipients.add("A2");
+    List<String> sources = new ArrayList<String>();
+    sources.add("src1");
+    
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("sigge");
+
+    CompositingRule rule = (CompositingRule)classUnderTest.createRule("blt_composite");
+    rule.setArea("sweet");
+    rule.setInterval(20);
+    rule.setTimeout(30);
+    rule.setScanBased(false);
+    rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    rule.setDetectors(detectors);
+    rule.setSources(sources);
+
+    RouteDefinition def = classUnderTest.create("ugly", "anders", true, "test", recipients, rule);
+    try {
+      classUnderTest.storeDefinition(def);
+      fail("Expected RuleException");
+    } catch (RuleException e) {
+      // pass
+    }
+    
+    verifyDatabaseTables(null);
+  }
+  
+  public void testRemoveDetectorWhenCompositeDepends() throws Exception {
+    try {
+      anomalymanager.remove("ropo");
+      fail("Expected AnomalyException");
+    } catch (AnomalyException e) {
+      // pass
+    }
   }
 }

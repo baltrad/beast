@@ -480,6 +480,10 @@ public class CompositingRuleTest extends TestCase {
     Date date = new Date(2010, 2, 1);
     Time time = new Time(1, 0, 0);
     DateTime nominalTime = new DateTime(date, time);
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("ropo");
+    detectors.add("sigge");
+    detectors.add("nisse");
     
     // actual entries don't matter, just make the list of different size to distinguish
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
@@ -514,6 +518,9 @@ public class CompositingRuleTest extends TestCase {
     ruleUtil.getFilesFromEntries(entriesBySources);
     ruleUtilControl.setReturnValue(fileEntries);
 
+    classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    classUnderTest.setDetectors(detectors);
+    
     replay();
     IBltMessage result = classUnderTest.createMessage(nominalTime, entries);
     verify();
@@ -527,10 +534,12 @@ public class CompositingRuleTest extends TestCase {
     assertTrue(arrayContains(files, "/tmp/selul.h5"));
     assertTrue(arrayContains(files, "/tmp/searl.h5"));
     String[] arguments = msg.getArguments();
-    assertEquals(3, arguments.length);
+    assertEquals(5, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
+    assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
+    assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
   }
   
   public void testFetchEntries() throws Exception {
@@ -815,6 +824,38 @@ public class CompositingRuleTest extends TestCase {
     assertSame(stopDT, result.getStop());
   }
   
+  public void testSetGetSelectionMethod() throws Exception {
+    assertEquals(CompositingRule.SelectionMethod_NEAREST_RADAR, classUnderTest.getSelectionMethod());
+    classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    assertEquals(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, classUnderTest.getSelectionMethod());
+  }
+  
+  public void testSetGetSelectionMethod_exception() throws Exception {
+    try {
+      classUnderTest.setSelectionMethod(99);
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      // pass
+    }
+    assertEquals(CompositingRule.SelectionMethod_NEAREST_RADAR, classUnderTest.getSelectionMethod());
+  }
+
+  public void testSetGetDetectors() throws Exception {
+    List<String> detectors = new ArrayList<String>();
+    assertEquals(0, classUnderTest.getDetectors().size());
+    classUnderTest.setDetectors(detectors);
+    assertSame(detectors, classUnderTest.getDetectors());
+  }
+
+  public void testSetGetDetectors_null() throws Exception {
+    List<String> detectors = new ArrayList<String>();
+    classUnderTest.setDetectors(detectors);
+    classUnderTest.setDetectors(null);
+    assertNotNull(classUnderTest.getDetectors());
+    assertEquals(0, classUnderTest.getDetectors().size());
+    assertNotSame(detectors, classUnderTest.getDetectors());
+  }
+
   private CatalogEntry createCatalogEntry(String src, DateTime dt, double elangle) {
     MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
     CatalogEntry entry = (CatalogEntry)entryControl.getMock();

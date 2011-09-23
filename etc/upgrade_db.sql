@@ -31,6 +31,14 @@ BEGIN
   EXCEPTION
     WHEN duplicate_column THEN RAISE NOTICE 'Column beast_composite_rules.byscan already exists';
   END;
+  
+  BEGIN
+    ALTER TABLE beast_composite_rules ADD COLUMN selection_method INTEGER;
+    UPDATE beast_composite_rules SET selection_method=0;
+    ALTER TABLE beast_composite_rules ALTER COLUMN selection_method SET NOT NULL;
+  EXCEPTION
+    WHEN duplicate_column THEN RAISE NOTICE 'Column beast_composite_rules.selection_method already exists';
+  END;
 END;
 $$ LANGUAGE plpgsql
 ;
@@ -171,6 +179,34 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION create_beast_anomaly_detectors() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_anomaly_detectors';
+  IF NOT FOUND THEN
+    create table beast_anomaly_detectors (
+      name text PRIMARY KEY NOT NULL,
+      description text
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_anomaly_detectors already exists';
+  END IF;  
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION create_beast_composite_detectors() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_composite_detectors';
+  IF NOT FOUND THEN
+    create table beast_composite_detectors (
+      rule_id integer REFERENCES beast_composite_rules(rule_id),
+      name text REFERENCES beast_anomaly_detectors(name)
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_composite_detectors already exists';
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 select upgrade_beast_composite_rules();
 select create_beast_rule_properties();
 select add_fk_to_scheduled_jobs();
@@ -180,6 +216,8 @@ select add_beast_attr_filters_negated();
 select create_beast_combined_filters();
 select update_groovy_rules_bdb_packages();
 select create_beast_rule_filters();
+select create_beast_anomaly_detectors();
+select create_beast_composite_detectors();
 
 drop function make_plpgsql();
 drop function create_beast_rule_properties();
@@ -191,3 +229,5 @@ drop function add_beast_attr_filters_negated();
 drop function create_beast_combined_filters();
 drop function update_groovy_rules_bdb_packages();
 drop function create_beast_rule_filters();
+drop function create_beast_anomaly_detectors();
+drop function create_beast_composite_detectors();

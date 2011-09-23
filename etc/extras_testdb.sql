@@ -10,6 +10,11 @@ BEGIN
          || col_ ||
          ') FROM '
          || TG_TABLE_NAME INTO maxval;
+ 
+ IF maxval IS NULL THEN
+   maxval=0;
+ END IF;
+ 
  EXECUTE 'ALTER SEQUENCE '
          || seq_
          || ' RESTART WITH '
@@ -27,7 +32,7 @@ CREATE TRIGGER set_beast_rule_id_seq_to_max AFTER INSERT OR UPDATE ON beast_rout
   FOR EACH STATEMENT EXECUTE PROCEDURE set_seq_to_max('rule_id')
 ;
 
-CREATE TRIGGER set_scheduled_jobs_id_seq_to_max AFTER INSERT OR UPDATE ON beast_scheduled_jobs
+CREATE TRIGGER set_scheduled_jobs_id_seq_to_max AFTER INSERT OR UPDATE OR DELETE ON beast_scheduled_jobs
   FOR EACH STATEMENT EXECUTE PROCEDURE set_seq_to_max('id')
 ;
 

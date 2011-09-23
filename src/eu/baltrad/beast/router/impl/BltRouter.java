@@ -421,7 +421,6 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   @Override
   public synchronized void afterPropertiesSet() throws Exception {
     ParameterizedRowMapper<RouteDefinition> mapper = getRouteDefinitionMapper();
-        
     definitions = template.query(
         "select rule_id, name,type,author,description,active from beast_router_rules",
         mapper);

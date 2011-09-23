@@ -20,6 +20,7 @@ package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,16 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * The name of this static composite type
    */
   public final static String TYPE = "blt_composite";
+  
+  /**
+   * If pixel should be determined by "closest to radar"
+   */
+  public final static int SelectionMethod_NEAREST_RADAR = 0;
+  
+  /**
+   * If pixel should be determined by "nearest sea level"
+   */
+  public final static int SelectionMethod_HEIGHT_ABOVE_SEALEVEL = 1;
   
   /**
    * The catalog for database access
@@ -114,6 +125,16 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * If composite should be generated from scans or volumes.
    */
   private boolean scanBased = false;
+  
+  /**
+   * The selection method to use when determining the pixel
+   */
+  private int selectionMethod = SelectionMethod_NEAREST_RADAR; 
+  
+  /**
+   * Detectors that should be run for this composite rule
+   */
+  private List<String> detectors = new ArrayList<String>();
   
   /**
    * The recipients that are affected by this rule. Used
@@ -193,7 +214,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * is greater than 0 and evenly dividable by 60. E.g.
    * 1,2,3,4,...15,....30,60 
    * @param interval
-   * @throws InvalidArgumentException if interval not valid
+   * @throws IllegalArgumentException if interval not valid
    */
   public void setInterval(int interval) {
     if (interval != 0 && 60%interval == 0) {
@@ -494,12 +515,29 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     List<String> files = ruleUtil.getFilesFromEntries(entries);
     result.setFiles(files.toArray(new String[0]));
 
-    String[] args = new String[3];
-    args[0] = "--area="+area;
-    args[1] = "--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString(); 
-    args[2] = "--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString();
+    List<String> args = new ArrayList<String>();
+    args.add("--area="+area);
+    args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
+    args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
+    if (selectionMethod == SelectionMethod_NEAREST_RADAR) {
+      args.add("--selection=NEAREST_RADAR");
+    } else if (selectionMethod == SelectionMethod_HEIGHT_ABOVE_SEALEVEL) {
+      args.add("--selection=HEIGHT_ABOVE_SEALEVEL");
+    }
     
-    result.setArguments(args);
+    if (detectors.size() > 0) {
+      StringBuffer dstr = new StringBuffer();
+      Iterator<String> iterator = detectors.iterator();
+      while (iterator.hasNext()) {
+        dstr.append(iterator.next());
+        if (iterator.hasNext()) {
+          dstr.append(",");
+        }
+      }
+      args.add("--anomaly-qc="+dstr.toString());
+    }
+    
+    result.setArguments(args.toArray(new String[0]));
 
     logger.debug("createMessage: Returning algorithm " + result.getAlgorithm());
 
@@ -583,5 +621,40 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
         ruleUtil == null) {
       throw new BeanInitializationException("catalog, timeoutManager or ruleUtilities missing");
     }
+  }
+
+  /**
+   * @param selectionMethod the selectionMethod to set
+   */
+  public void setSelectionMethod(int selectionMethod) {
+    if (selectionMethod < SelectionMethod_NEAREST_RADAR || selectionMethod > SelectionMethod_HEIGHT_ABOVE_SEALEVEL) {
+      throw new IllegalArgumentException();
+    }
+    this.selectionMethod = selectionMethod;
+  }
+
+  /**
+   * @return the selectionMethod
+   */
+  public int getSelectionMethod() {
+    return selectionMethod;
+  }
+
+  /**
+   * @param detectors the detectors to set
+   */
+  public void setDetectors(List<String> detectors) {
+    if (detectors == null) {
+      this.detectors = new ArrayList<String>();
+    } else {
+      this.detectors = detectors;
+    }
+  }
+
+  /**
+   * @return the detectors
+   */
+  public List<String> getDetectors() {
+    return detectors;
   }
 }

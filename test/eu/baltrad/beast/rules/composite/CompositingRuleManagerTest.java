@@ -42,6 +42,8 @@ public class CompositingRuleManagerTest extends TestCase {
     public CompositingRule createRule();
     public void storeSources(int rule_id, List<String> sources);
     public List<String> getSources(int rule_id);
+    public void storeDetectors(int rule_id, List<String> detectors);
+    public List<String> getDetectors(int rule_id);
   };
 
   private CompositingRuleManager classUnderTest = null;
@@ -78,10 +80,15 @@ public class CompositingRuleManagerTest extends TestCase {
       protected void storeSources(int rule_id, List<String> sources) {
         methods.storeSources(rule_id, sources);
       }
+      protected void storeDetectors(int rule_id, List<String> detectors) {
+        methods.storeDetectors(rule_id, detectors);
+      }
     };
     classUnderTest.setJdbcTemplate(jdbc);
     
     methods.storeSources(13, null);
+    methods.storeDetectors(13, null);
+    
     jdbc.update("delete from beast_composite_rules where rule_id=?",
         new Object[]{13});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
@@ -127,24 +134,32 @@ public class CompositingRuleManagerTest extends TestCase {
     final ManagerMethods methods = (ManagerMethods)methodsControl.getMock();
     
     List<String> sources = new ArrayList<String>();
+    List<String> detectors = new ArrayList<String>();
+    
     CompositingRule rule = new CompositingRule();
     rule.setArea("seang");
     rule.setInterval(12);
     rule.setSources(sources);
     rule.setTimeout(20);
     rule.setScanBased(true);
+    rule.setDetectors(detectors);
+    rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     
     jdbc.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan)"+
-        " values (?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true});
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method)"+
+        " values (?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     
     methods.storeSources(13, sources);
+    methods.storeDetectors(13, detectors);
     
     classUnderTest = new CompositingRuleManager() {
       protected void storeSources(int rule_id, List<String> sources) {
         methods.storeSources(rule_id, sources);
+      }
+      protected void storeDetectors(int rule_id, List<String> detectors) {
+        methods.storeDetectors(rule_id, detectors);
       }
     };
     classUnderTest.setJdbcTemplate(jdbc);
@@ -164,23 +179,30 @@ public class CompositingRuleManagerTest extends TestCase {
     final ManagerMethods methods = (ManagerMethods)methodsControl.getMock();
     
     List<String> sources = new ArrayList<String>();
+    List<String> detectors = new ArrayList<String>();
     CompositingRule rule = new CompositingRule();
     rule.setArea("seang");
     rule.setInterval(12);
     rule.setSources(sources);
     rule.setTimeout(20);
     rule.setScanBased(true);
+    rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    rule.setDetectors(detectors);
     
-    jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=? where rule_id=?",
-        new Object[]{"seang", 12, 20, true, 13});
+    jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=? where rule_id=?",
+        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, 13});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     
     methods.storeSources(13, sources);
-
+    methods.storeDetectors(13, detectors);
+    
     classUnderTest = new CompositingRuleManager() {
       protected void storeSources(int rule_id, List<String> sources) {
         methods.storeSources(rule_id, sources);
+      }
+      protected void storeDetectors(int rule_id, List<String> sources) {
+        methods.storeDetectors(rule_id, sources);
       }
     };
     classUnderTest.setJdbcTemplate(jdbc);
@@ -234,7 +256,6 @@ public class CompositingRuleManagerTest extends TestCase {
     classUnderTest.storeSources(13, null);
     verify();
   }
-
   
   public void testGetSources() throws Exception {
     List<String> sources = new ArrayList<String>();
@@ -265,10 +286,81 @@ public class CompositingRuleManagerTest extends TestCase {
     assertSame(sources, result);
   }
   
-  public void testGetCompsiteRuleMapper() throws Exception {
+  public void testStoreDetectors() throws Exception {
+    List<String> sources = new ArrayList<String>();
+    sources.add("A");
+    sources.add("B");
+    
+    jdbc.update("delete from beast_composite_detectors where rule_id=?",
+        new Object[]{13});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+    
+    jdbc.update(
+        "insert into beast_composite_detectors (rule_id, name)"+
+        " values (?,?)", new Object[]{13, "A"});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+
+    jdbc.update(
+        "insert into beast_composite_detectors (rule_id, name)"+
+        " values (?,?)", new Object[]{13, "B"});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+    
+    replay();
+    
+    classUnderTest.storeDetectors(13, sources);
+    
+    verify();
+  }
+
+  public void testStoreDetectors_null() throws Exception {
+    jdbc.update("delete from beast_composite_detectors where rule_id=?",
+        new Object[]{13});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(0);
+    
+    replay();
+    classUnderTest.storeDetectors(13, null);
+    verify();
+  }
+  
+  public void testGetDetectors() throws Exception {
+    List<String> detectors = new ArrayList<String>();
+    
+    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+      public String mapRow(ResultSet arg0, int arg1) throws SQLException {
+        return null;
+      }
+    };
+    classUnderTest = new CompositingRuleManager() {
+      protected ParameterizedRowMapper<String> getDetectorMapper() {
+        return mapper;
+      }
+    };
+    classUnderTest.setJdbcTemplate(jdbc);
+    
+    jdbc.query("select name from beast_composite_detectors where rule_id=?",
+        mapper,
+        new Object[]{13});
+    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
+    jdbcControl.setReturnValue(detectors);
+    
+    replay();
+    
+    List<String> result = classUnderTest.getDetectors(13);
+    
+    verify();
+    assertSame(detectors, result);
+  }
+  
+  public void testGetCompositeRuleMapper() throws Exception {
     MockControl rsControl = MockControl.createControl(ResultSet.class);
     ResultSet rs = (ResultSet)rsControl.getMock();
     List<String> sources = new ArrayList<String>();
+    List<String> detectors = new ArrayList<String>();
+    
     MockControl methodControl = MockControl.createControl(ManagerMethods.class);
     final ManagerMethods method = (ManagerMethods)methodControl.getMock();
     CompositingRule arule = new CompositingRule();
@@ -288,11 +380,16 @@ public class CompositingRuleManagerTest extends TestCase {
     rsControl.setReturnValue(true);
     method.getSources(10);
     methodControl.setReturnValue(sources);
+    method.getDetectors(10);
+    methodControl.setReturnValue(detectors);
     
     classUnderTest = new CompositingRuleManager() {
       protected List<String> getSources(int rule_id) {
         return method.getSources(rule_id);
       }
+      protected List<String> getDetectors(int rule_id) {
+        return method.getDetectors(rule_id);
+      }      
       public CompositingRule createRule() {
         return method.createRule();
       }

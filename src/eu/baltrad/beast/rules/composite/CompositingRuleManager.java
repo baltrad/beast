@@ -90,6 +90,7 @@ public class CompositingRuleManager implements IRuleManager {
   @Override
   public void delete(int ruleId) {
     storeSources(ruleId, null);
+    storeDetectors(ruleId, null);
     template.update("delete from beast_composite_rules where rule_id=?",
         new Object[]{ruleId});
   }
@@ -115,11 +116,13 @@ public class CompositingRuleManager implements IRuleManager {
     int interval = crule.getInterval();
     int timeout = crule.getTimeout();
     boolean byscan = crule.isScanBased();
+    int selection_method = crule.getSelectionMethod();
     
     template.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan)"+
-        " values (?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout,byscan});
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method)"+
+        " values (?,?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout, byscan, selection_method});
     storeSources(ruleId, crule.getSources());
+    storeDetectors(ruleId, crule.getDetectors());
     crule.setRuleId(ruleId);
   }
 
@@ -130,9 +133,10 @@ public class CompositingRuleManager implements IRuleManager {
   public void update(int ruleId, IRule rule) {
     CompositingRule crule = (CompositingRule)rule;
     template.update(
-        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=? where rule_id=?",
-        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), ruleId});
+        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=? where rule_id=?",
+        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), crule.getSelectionMethod(), ruleId});
     storeSources(ruleId, crule.getSources());
+    storeDetectors(ruleId, crule.getDetectors());
     crule.setRuleId(ruleId);
   }
   
@@ -166,6 +170,34 @@ public class CompositingRuleManager implements IRuleManager {
   }
   
   /**
+   * Stores the detectors for this compositing rule
+   * @param rule_id the rule id these detectors should belong to
+   * @param detectors the detectors
+   */
+  protected void storeDetectors(int rule_id, List<String> detectors) {
+    template.update("delete from beast_composite_detectors where rule_id=?",
+        new Object[]{rule_id});
+    if (detectors != null) {
+      for (String src : detectors) {
+        template.update("insert into beast_composite_detectors (rule_id, name)"+
+            " values (?,?)", new Object[]{rule_id, src});
+      }
+    }    
+  }
+ 
+  /**
+   * Returns a list of sources connected to the rule_id
+   * @param rule_id the rule id
+   * @return a list of sources
+   */
+  protected List<String> getDetectors(int rule_id) {
+    return template.query(
+        "select name from beast_composite_detectors where rule_id=?",
+        getDetectorMapper(),
+        new Object[]{rule_id});
+  }
+  
+  /**
    * @return the CompositingRule mapper
    */
   protected ParameterizedRowMapper<CompositingRule> getCompsiteRuleMapper() {
@@ -181,6 +213,7 @@ public class CompositingRuleManager implements IRuleManager {
         result.setTimeout(rs.getInt("timeout"));
         result.setScanBased(rs.getBoolean("byscan"));
         result.setSources(getSources(rule_id));
+        result.setDetectors(getDetectors(rule_id));
         return result;
       }
     };
@@ -197,6 +230,17 @@ public class CompositingRuleManager implements IRuleManager {
     };
   }
 
+  /**
+   * @return the detector mapper
+   */
+  protected  ParameterizedRowMapper<String> getDetectorMapper() { 
+    return new ParameterizedRowMapper<String>() {
+      public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return rs.getString("name");
+      }
+    };
+  }
+  
   /**
    * @see eu.baltrad.beast.rules.IRuleManager#createRule()
    */

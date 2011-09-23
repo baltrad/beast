@@ -35,6 +35,11 @@ create table beast_combined_filter_children (
   primary key(filter_id, child_id)
 );
 
+create table beast_anomaly_detectors (
+  name text PRIMARY KEY NOT NULL,
+  description text
+);
+
 create table beast_router_rules (
   rule_id SERIAL PRIMARY KEY,
   name text NOT NULL UNIQUE,
@@ -59,12 +64,18 @@ create table beast_composite_rules (
   area text NOT NULL,
   interval integer NOT NULL,
   timeout integer NOT NULL,
-  byscan boolean NOT NULL
+  byscan boolean NOT NULL,
+  selection_method integer NOT NULL
 );
 
 create table beast_composite_sources (
   rule_id integer REFERENCES beast_composite_rules(rule_id),
   source text
+);
+
+create table beast_composite_detectors (
+  rule_id integer REFERENCES beast_composite_rules(rule_id),
+  name text REFERENCES beast_anomaly_detectors(name)
 );
 
 create table beast_rule_properties (
