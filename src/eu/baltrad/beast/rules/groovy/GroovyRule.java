@@ -32,6 +32,41 @@ import groovy.lang.GroovyClassLoader;
  */
 public class GroovyRule implements IRule {
   /**
+   * Rule has not got any script set
+   */
+  public final static int UNITIALIZED = -1;
+  
+  /**
+   * Rule is ok
+   */
+  public final static int OK = 0;
+  
+  /**
+   * Rule could not be compiled
+   */
+  public final static int COMPILATION_ERROR = 1;
+  
+  /**
+   * Rule coult not be instantiated
+   */
+  public final static int INSTANTIATION_EXCEPTION = 2;
+  
+  /**
+   * Access problems
+   */
+  public final static int ILLEGAL_ACCESS_EXCEPTION = 3;
+  
+  /**
+   * Class cast exception, probably not implementing IScriptableRule
+   */
+  public final static int CLASS_CAST_EXCEPTION = 4;
+  
+  /**
+   * Any type of throwable causing a failure
+   */
+  public final static int THROWABLE = 5;
+  
+  /**
    * The type name of this rule
    */
   public final static String TYPE = "groovy";
@@ -45,6 +80,16 @@ public class GroovyRule implements IRule {
    * The scriptable rule that is defined by a groovy script
    */
   private IScriptableRule rule = null;
+  
+  /**
+   * The state of this rule
+   */
+  private int state = UNITIALIZED;
+  
+  /**
+   * Upon error during set of compilation of code, this exception will be set
+   */
+  private Throwable throwable = null;
   
   /**
    * Default constructor, however use manager for creation
@@ -61,11 +106,20 @@ public class GroovyRule implements IRule {
   }
 
   /**
+   * @see eu.baltrad.beast.rules.IRule#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return (this.state == OK);
+  }
+  
+  /**
    * To be able to set a precompiled groovy rule
    * @param rule the rule to set
    */
   public void setScriptableRule(IScriptableRule rule) {
     this.rule = rule;
+    this.state = OK;
   }
   
   /**
@@ -76,31 +130,57 @@ public class GroovyRule implements IRule {
     if (message == null) {
       throw new NullPointerException();
     } else if (rule == null) {
-      throw new RuleException();
+      return null;
     }
     return rule.handle(message);
   }
 
+  /**
+   * Sets the script that has been loaded from the database. So that
+   * it is possible to load faulty scripts.
+   * @param script the script to set
+   * @return the status
+   */
+  @SuppressWarnings("unchecked")
+  int setScriptInternal(String script, boolean setscriptonfailure, boolean throwexception) {
+    this.throwable = null;
+    try {
+      Class c = parseClass(script);
+      rule = (IScriptableRule)c.newInstance();
+      state = OK;
+    } catch (CompilationFailedException e) {
+      state = COMPILATION_ERROR;
+      this.throwable = e;
+    } catch (InstantiationException e) {
+      state = INSTANTIATION_EXCEPTION;
+      this.throwable = e;
+    } catch (IllegalAccessException e) {
+      state = ILLEGAL_ACCESS_EXCEPTION;
+      this.throwable = e;
+    } catch (ClassCastException e) {
+      state = CLASS_CAST_EXCEPTION;
+      this.throwable = e;
+    } catch (Throwable t) {
+      state = THROWABLE;
+      this.throwable = t;
+    }
+    if (setscriptonfailure == true || (setscriptonfailure == false && throwable == null)) {
+      this.script = script;
+    }
+    if (throwable != null && throwexception) {
+      throw new RuleException(this.throwable);
+    }
+    return state;
+  }
+  
   /**
    * Creates an instance of the groovy script. Must be implementing
    * the @ref {@link IScriptableRule}. Will compile and validate the script.
    * @param script the script to set
    * @throws RuleException if the script could not be set
    */
-  @SuppressWarnings({"unchecked" })
   public void setScript(String script) {
-    GroovyClassLoader gcl = new GroovyClassLoader();
-    try {
-      Class c = gcl.parseClass(script);
-      rule = (IScriptableRule)c.newInstance();
-    } catch (CompilationFailedException t) {
-      throw new RuleException("Failed to compile groovy script", t);
-    } catch (InstantiationException t) {
-      throw new RuleException("Failed to instantiate groovy script", t);
-    } catch (IllegalAccessException t) {
-      throw new RuleException("Failed to instantiate groovy script due to access problems", t);
-    }
-    this.script = script;
+    setScriptInternal(script,false,true);
   }
   
   /**
@@ -108,5 +188,30 @@ public class GroovyRule implements IRule {
    */
   public String getScript() {
     return this.script;
+  }
+
+  /**
+   * @return the state
+   */
+  public int getState() {
+    return state;
+  }
+  
+  /**
+   * @return the exception if any occured during compilation
+   */
+  public Throwable getThrowable() {
+    return this.throwable;
+  }
+  
+  /**
+   * Parses code into a class
+   * @param code the code to parse
+   * @return a class
+   */
+  @SuppressWarnings("unchecked")
+  protected Class parseClass(String code) {
+    GroovyClassLoader gcl = new GroovyClassLoader();
+    return gcl.parseClass(code);
   }
 }

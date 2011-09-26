@@ -40,6 +40,11 @@ public class DummyRule implements IRule {
   }
 
   @Override
+  public boolean isValid() {
+    return true;
+  }
+  
+  @Override
   public IBltMessage handle(IBltMessage message) {
     this.message = message;
     return this.resultMessage;

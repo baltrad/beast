@@ -323,6 +323,10 @@ public class TimeoutManagerTest extends TestCase {
       return null;
     }
     @Override
+    public boolean isValid() {
+      return true;
+    }
+    @Override
     public synchronized IBltMessage handle(IBltMessage message) {
       id = mgr.register(this, 500, timerdata);
       try {

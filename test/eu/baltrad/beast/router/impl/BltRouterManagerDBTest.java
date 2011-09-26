@@ -141,6 +141,9 @@ public class BltRouterManagerDBTest extends TestCase {
       public IBltMessage handle(IBltMessage message) {
         return null;
       }
+      public boolean isValid() {
+        return true;
+      }
     };
     RouteDefinition def = new RouteDefinition();
     def.setActive(true);
@@ -192,6 +195,9 @@ public class BltRouterManagerDBTest extends TestCase {
       public IBltMessage handle(IBltMessage message) {
         return null;
       }
+      public boolean isValid() {
+        return true;
+      }      
     };
     RouteDefinition def = new RouteDefinition();
     def.setActive(true);

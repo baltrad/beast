@@ -72,4 +72,12 @@ public class ScriptedRule implements IRule {
   public String getType() {
     return this.type;
   }
+  
+  /**
+   * @see eu.baltrad.beast.rules.IRule#getType()
+   */
+  @Override
+  public boolean isValid() {
+    return true;
+  }  
 }

@@ -87,7 +87,7 @@ public class GroovyRuleManager implements IRuleManager {
    */
   protected GroovyRule createRule(String script) {
     GroovyRule rule = new GroovyRule();
-    rule.setScript(script);
+    rule.setScriptInternal(script, true, false);
     return rule;
   }
 

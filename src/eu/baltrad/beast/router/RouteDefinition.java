@@ -166,4 +166,14 @@ public class RouteDefinition {
     }
     return null;
   }
+  
+  /**
+   * @return if the rule is valid or not
+   */
+  public boolean isRuleValid() {
+    if (rule != null) {
+      return rule.isValid();
+    }
+    return false;
+  }
 }

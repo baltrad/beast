@@ -281,6 +281,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     return TYPE;
   }
 
+  /**
+   * @see eu.baltrad.beast.rules.IRule#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return true;
+  }  
 
   /**
    * @param scanBased the scanBased to set

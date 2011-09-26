@@ -25,6 +25,7 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
@@ -38,15 +39,21 @@ import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IScriptableRule;
 import eu.baltrad.beast.rules.RuleException;
 import eu.baltrad.fc.Date;
-import eu.baltrad.fc.Time;
 import eu.baltrad.fc.FileEntry;
 import eu.baltrad.fc.Oh5Metadata;
+import eu.baltrad.fc.Time;
 
 /**
  * @author Anders Henja
  *
  */
 public class GroovyRuleTest extends TestCase {
+  interface MethodMock {
+    @SuppressWarnings("unchecked")
+    public Class parseClass(String code);
+    public int setScriptInternal(String script, boolean setscriptonfailure, boolean throwexception);
+  };
+  
   protected String readScript(String scriptname) throws Exception {
     StringBuffer buffer = new StringBuffer();
     URL url = this.getClass().getResource(scriptname);
@@ -70,6 +77,11 @@ public class GroovyRuleTest extends TestCase {
     assertEquals(GroovyRule.TYPE, rule.getType());
   }
 
+  public void testGetState_init() {
+    GroovyRule rule = new GroovyRule();
+    assertEquals(GroovyRule.UNITIALIZED, rule.getState());
+  }
+  
   public void testHandle() throws Exception {
     IBltMessage msg = new IBltMessage() { };
     IBltMessage hmsg = new IBltMessage() { };
@@ -93,15 +105,9 @@ public class GroovyRuleTest extends TestCase {
 
   public void testHandle_noScript() throws Exception {
     IBltMessage msg = new IBltMessage() { };
-    
     GroovyRule classUnderTest = new GroovyRule();
-    
-    try {
-      classUnderTest.handle(msg);
-      fail("Expected RuleException");
-    } catch (RuleException e) {
-      // pass
-    }
+    IBltMessage result = classUnderTest.handle(msg);
+    assertNull(result);
   }
 
   public void testHandle_nullMessage() throws Exception {
@@ -114,7 +120,288 @@ public class GroovyRuleTest extends TestCase {
       // pass
     }
   }
+
+  public static class GoodClass implements IScriptableRule {
+    public GoodClass() {}
+    @Override
+    public IBltMessage handle(IBltMessage message) {
+      return null;
+    }
+  }
   
+  public class CanNotInstantiateClass implements IScriptableRule {
+    public CanNotInstantiateClass() {}
+    @Override
+    public IBltMessage handle(IBltMessage message) {
+      return null;
+    }    
+  }
+  
+  public static class IllegalAccessClass implements IScriptableRule {
+    private IllegalAccessClass() {
+    }
+    @Override
+    public IBltMessage handle(IBltMessage message) {
+      return null;
+    }
+  }
+  
+  public void testSetScriptInternal_OK() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    method.parseClass("some code");
+    methodControl.setReturnValue(GoodClass.class);
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    int result = rule.setScriptInternal("some code", true, false);
+    
+    methodControl.verify();
+    assertEquals(GroovyRule.OK, result);
+    assertNull(rule.getThrowable());
+  }
+
+  public void testSetScriptInternal_CompilationError() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    CompilationFailedException exception = new CompilationFailedException(0, null);
+    
+    method.parseClass("some code");
+    methodControl.setThrowable(exception);
+    
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    int result = rule.setScriptInternal("some code", true, false);
+    
+    methodControl.verify();
+    assertEquals(GroovyRule.COMPILATION_ERROR, rule.getState());
+    assertEquals(GroovyRule.COMPILATION_ERROR, result);
+    assertSame(exception, rule.getThrowable());
+  }
+
+  public void testSetScriptInternal_CanNotInstantiateException() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    method.parseClass("some code");
+    methodControl.setReturnValue(CanNotInstantiateClass.class);
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    int result = rule.setScriptInternal("some code", true, false);
+    
+    methodControl.verify();
+    
+    assertEquals(GroovyRule.INSTANTIATION_EXCEPTION, result);
+    assertEquals(GroovyRule.INSTANTIATION_EXCEPTION, rule.getState());
+    assertNotNull(rule.getThrowable());
+    assertTrue(rule.getThrowable() instanceof InstantiationException);
+  }
+  
+  public void testSetScriptInternal_IllegalAccessException() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    method.parseClass("some code");
+    methodControl.setReturnValue(IllegalAccessClass.class);
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    int result = rule.setScriptInternal("some code", true, false);
+    
+    methodControl.verify();
+    
+    assertEquals(GroovyRule.ILLEGAL_ACCESS_EXCEPTION, result);
+    assertEquals(GroovyRule.ILLEGAL_ACCESS_EXCEPTION, rule.getState());
+    assertNotNull(rule.getThrowable());
+    assertTrue(rule.getThrowable() instanceof IllegalAccessException);
+  }
+
+  public void testSetScriptInternal_ClassCastException() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    method.parseClass("some code");
+    methodControl.setReturnValue(Object.class);
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    int result = rule.setScriptInternal("some code", true, false);
+    
+    methodControl.verify();
+    
+    assertEquals(GroovyRule.CLASS_CAST_EXCEPTION, result);
+    assertEquals(GroovyRule.CLASS_CAST_EXCEPTION, rule.getState());
+    assertNotNull(rule.getThrowable());
+    assertTrue(rule.getThrowable() instanceof ClassCastException);
+  }
+  
+  public void testSetScriptInternal_Throwable() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    RuntimeException exception = new RuntimeException();
+    
+    method.parseClass("some code");
+    methodControl.setThrowable(exception);
+    
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    int result = rule.setScriptInternal("some code", true, false);
+    
+    methodControl.verify();
+    assertEquals(GroovyRule.THROWABLE, rule.getState());
+    assertEquals(GroovyRule.THROWABLE, result);
+    assertSame(exception, rule.getThrowable());
+  }
+
+  public void testSetScriptInternal_Exception_ThrowExceptionSetScript() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    RuntimeException exception = new RuntimeException();
+    
+    method.parseClass("some code");
+    methodControl.setThrowable(exception);
+    
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    try {
+      rule.setScriptInternal("some code", true, true);
+      fail("Expected RuleException");
+    } catch (RuleException e) {
+      // pass
+    }
+    
+    methodControl.verify();
+    assertEquals(GroovyRule.THROWABLE, rule.getState());
+    assertSame(exception, rule.getThrowable());
+    assertEquals("some code", rule.getScript());
+  }
+
+  public void testSetScriptInternal_Exception_ThrowExceptionDontSetScript() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    RuntimeException exception = new RuntimeException();
+    
+    method.parseClass("some code");
+    methodControl.setThrowable(exception);
+    
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    try {
+      rule.setScriptInternal("some code", false, true);
+      fail("Expected RuleException");
+    } catch (RuleException e) {
+      // pass
+    }
+    
+    methodControl.verify();
+    assertEquals(GroovyRule.THROWABLE, rule.getState());
+    assertSame(exception, rule.getThrowable());
+    assertNull(rule.getScript());
+  }
+
+  public void testSetScriptInternal_Exception_DontThrowExceptionDontSetScript() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    RuntimeException exception = new RuntimeException();
+    
+    method.parseClass("some code");
+    methodControl.setThrowable(exception);
+    
+    GroovyRule rule = new GroovyRule() {
+      @SuppressWarnings("unchecked")
+      protected Class parseClass(String code) {
+        return method.parseClass(code);
+      }
+    };
+    
+    methodControl.replay();
+    
+    rule.setScriptInternal("some code", false, false);
+    
+    methodControl.verify();
+    assertEquals(GroovyRule.THROWABLE, rule.getState());
+    assertSame(exception, rule.getThrowable());
+    assertNull(rule.getScript());
+  }
+  
+  public void testSetScript() throws Exception {
+    MockControl methodControl = MockControl.createControl(MethodMock.class);
+    final MethodMock method = (MethodMock)methodControl.getMock();
+    
+    method.setScriptInternal("some code", false, true);
+    methodControl.setReturnValue(GroovyRule.OK);
+    
+    GroovyRule rule = new GroovyRule() {
+      int setScriptInternal(String script, boolean setscriptonfailure, boolean throwexception) {
+        return method.setScriptInternal(script, false, true);
+      }
+    };
+    
+    methodControl.replay();
+    
+    rule.setScript("some code");
+
+    methodControl.verify();
+  }
   
   public void testSetScript_SimpleRule() throws Exception {
     BltCommandMessage msg = new BltCommandMessage();
@@ -126,6 +413,7 @@ public class GroovyRuleTest extends TestCase {
     // Verify that the rule has loaded properly
     BltAlertMessage result = (BltAlertMessage)rule.handle(msg);
     assertEquals("ls -la", result.getMessage());
+    assertEquals(GroovyRule.OK, rule.getState());
   }
   
   public void testSetScript_BadRule() throws Exception {
@@ -136,6 +424,7 @@ public class GroovyRuleTest extends TestCase {
     } catch (RuleException e) {
       // pass
     }
+    assertEquals(GroovyRule.COMPILATION_ERROR, rule.getState());
   }
   
   public void testSetScript_GoogleMapRule() throws Exception {

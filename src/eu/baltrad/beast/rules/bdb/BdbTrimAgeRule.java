@@ -133,6 +133,14 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
   }
 
   /**
+   * @see eu.baltrad.beast.rules.IRule#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return true;
+  }
+  
+  /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
   @Override

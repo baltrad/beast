@@ -746,6 +746,7 @@ public class BltRouterTest extends TestCase {
     IRule rule = new IRule() {
       public IBltMessage handle(IBltMessage message) {return null;}
       public String getType() {return null;}
+      public boolean isValid() {return true;}
     };
     BltRouter classUnderTest = new BltRouter();
     RouteDefinition result = classUnderTest.create(name, author, active, description, recipients, rule);
@@ -763,12 +764,9 @@ public class BltRouterTest extends TestCase {
     Map<String, IRuleManager> managers = new HashMap<String, IRuleManager>();
     managers.put("R1", r1);
     IRule arule = new IRule() {
-      public IBltMessage handle(IBltMessage message) {
-        return null;
-      }
-      public String getType() {
-        return null;
-      }
+      public IBltMessage handle(IBltMessage message) {return null;}
+      public String getType() {return null;}
+      public boolean isValid() {return true;}
     };
 
     r1.createRule();

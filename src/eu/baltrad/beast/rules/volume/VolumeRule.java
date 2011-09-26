@@ -222,6 +222,14 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   }
 
   /**
+   * @see eu.baltrad.beast.rules.IRule#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return true;
+  }
+  
+  /**
    * @param e the min elevation angle to set in degrees
    */
   public void setElevationMin(double e) {

@@ -36,6 +36,7 @@ public class RouteDefinitionTest extends TestCase {
     IRule rule = new IRule() {
       public String getType() {return null;}
       public IBltMessage handle(IBltMessage message) {return null;}
+      public boolean isValid() {return true;}
     };
     
     assertNull(classUnderTest.getRule());

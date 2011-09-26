@@ -41,4 +41,14 @@ public interface IRule {
    * @return the type
    */
   public String getType();
+  
+  /**
+   * Returns if this rule is valid or not. Even if a rule is deemed to
+   * be invalid, it will not prevent the rule from beeing invoked it
+   * is just a way to indicate that there might be a problem with the rule
+   * it self. So a suggested approach is that if isValid() returns false, then
+   * handle() probably also should return null.
+   * @return if this rule is valid or not
+   */
+  public boolean isValid();
 }
