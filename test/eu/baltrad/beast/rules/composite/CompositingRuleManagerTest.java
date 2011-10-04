@@ -144,10 +144,11 @@ public class CompositingRuleManagerTest extends TestCase {
     rule.setScanBased(true);
     rule.setDetectors(detectors);
     rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
-    
+    rule.setMethod(CompositingRule.PPI);
+    rule.setProdpar("0.5");
     jdbc.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method)"+
-        " values (?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL});
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar)"+
+        " values (?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5"});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     
@@ -188,9 +189,10 @@ public class CompositingRuleManagerTest extends TestCase {
     rule.setScanBased(true);
     rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     rule.setDetectors(detectors);
-    
-    jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=? where rule_id=?",
-        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, 13});
+    rule.setMethod(CompositingRule.PPI);
+    rule.setProdpar("0.5");
+    jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=? where rule_id=?",
+        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", 13});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     
@@ -378,6 +380,13 @@ public class CompositingRuleManagerTest extends TestCase {
     rsControl.setReturnValue(20);
     rs.getBoolean("byscan");
     rsControl.setReturnValue(true);
+    rs.getInt("selection_method");
+    rsControl.setReturnValue(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    rs.getString("method");
+    rsControl.setReturnValue(CompositingRule.PPI);
+    rs.getString("prodpar");
+    rsControl.setReturnValue("0.5");
+    
     method.getSources(10);
     methodControl.setReturnValue(sources);
     method.getDetectors(10);
@@ -410,6 +419,9 @@ public class CompositingRuleManagerTest extends TestCase {
     assertEquals(10, result.getRuleId());
     assertEquals(20, result.getTimeout());
     assertEquals(true, result.isScanBased());
+    assertEquals(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, result.getSelectionMethod());
+    assertEquals(CompositingRule.PPI, result.getMethod());
+    assertEquals("0.5", result.getProdpar());
   }  
   
   public void testCreateRule() throws Exception {

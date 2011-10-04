@@ -39,6 +39,23 @@ BEGIN
   EXCEPTION
     WHEN duplicate_column THEN RAISE NOTICE 'Column beast_composite_rules.selection_method already exists';
   END;
+
+  BEGIN
+    ALTER TABLE beast_composite_rules ADD COLUMN method TEXT;
+    UPDATE beast_composite_rules SET method='pcappi';
+    ALTER TABLE beast_composite_rules ALTER COLUMN method SET NOT NULL;
+  EXCEPTION
+    WHEN duplicate_column THEN RAISE NOTICE 'Column beast_composite_rules.method already exists';
+  END;
+
+  BEGIN
+    ALTER TABLE beast_composite_rules ADD COLUMN prodpar TEXT;
+    UPDATE beast_composite_rules SET method='1000.0';
+    ALTER TABLE beast_composite_rules ALTER COLUMN prodpar SET NOT NULL;
+  EXCEPTION
+    WHEN duplicate_column THEN RAISE NOTICE 'Column beast_composite_rules.method already exists';
+  END;
+  
 END;
 $$ LANGUAGE plpgsql
 ;

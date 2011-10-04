@@ -521,6 +521,9 @@ public class CompositingRuleTest extends TestCase {
     classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     classUnderTest.setDetectors(detectors);
     
+    classUnderTest.setMethod(CompositingRule.PPI);
+    classUnderTest.setProdpar("0.5");
+    
     replay();
     IBltMessage result = classUnderTest.createMessage(nominalTime, entries);
     verify();
@@ -534,12 +537,14 @@ public class CompositingRuleTest extends TestCase {
     assertTrue(arrayContains(files, "/tmp/selul.h5"));
     assertTrue(arrayContains(files, "/tmp/searl.h5"));
     String[] arguments = msg.getArguments();
-    assertEquals(5, arguments.length);
+    assertEquals(7, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
     assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
+    assertEquals("--method=ppi", arguments[5]);
+    assertEquals("--prodpar=0.5", arguments[6]);
   }
   
   public void testFetchEntries() throws Exception {

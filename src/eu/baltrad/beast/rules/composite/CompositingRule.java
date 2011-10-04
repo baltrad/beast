@@ -74,6 +74,21 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   public final static int SelectionMethod_HEIGHT_ABOVE_SEALEVEL = 1;
   
   /**
+   * To set that method should be PPI compositing
+   */
+  public final static String PPI = "ppi";
+
+  /**
+   * To set that method should be CAPPPI compositing
+   */
+  public final static String CAPPI = "cappi";
+  
+  /**
+   * To set that method should be PCAPPI compositing
+   */
+  public final static String PCAPPI = "pcappi";
+  
+  /**
    * The catalog for database access
    */
   private Catalog catalog = null;
@@ -135,6 +150,18 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * Detectors that should be run for this composite rule
    */
   private List<String> detectors = new ArrayList<String>();
+  
+  /**
+   * The algorithm to use
+   */
+  private String method = PCAPPI;
+  
+  /**
+   * The product parameter that should be used in conjunction with the algorithm.
+   * E.g. for PCAPPI, specify height in meters. For PPI, specify elevation angle
+   * in degrees. Etc. See ODIM specification.
+   */
+  private String prodpar = "1000.0";
   
   /**
    * The recipients that are affected by this rule. Used
@@ -543,6 +570,8 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       }
       args.add("--anomaly-qc="+dstr.toString());
     }
+    args.add("--method="+this.method);
+    args.add("--prodpar="+this.prodpar);
     
     result.setArguments(args.toArray(new String[0]));
 
@@ -663,5 +692,33 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    */
   public List<String> getDetectors() {
     return detectors;
+  }
+
+  /**
+   * @param algorithm the algorithm to set
+   */
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  /**
+   * @return the algorithm
+   */
+  public String getMethod() {
+    return method;
+  }
+
+  /**
+   * @param prodpar the prodpar to set
+   */
+  public void setProdpar(String prodpar) {
+    this.prodpar = prodpar;
+  }
+
+  /**
+   * @return the prodpar
+   */
+  public String getProdpar() {
+    return prodpar;
   }
 }

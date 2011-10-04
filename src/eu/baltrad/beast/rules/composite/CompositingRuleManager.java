@@ -117,10 +117,12 @@ public class CompositingRuleManager implements IRuleManager {
     int timeout = crule.getTimeout();
     boolean byscan = crule.isScanBased();
     int selection_method = crule.getSelectionMethod();
+    String method = crule.getMethod();
+    String prodpar = crule.getProdpar();
     
     template.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method)"+
-        " values (?,?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout, byscan, selection_method});
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar)"+
+        " values (?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout, byscan, selection_method, method, prodpar});
     storeSources(ruleId, crule.getSources());
     storeDetectors(ruleId, crule.getDetectors());
     crule.setRuleId(ruleId);
@@ -133,8 +135,8 @@ public class CompositingRuleManager implements IRuleManager {
   public void update(int ruleId, IRule rule) {
     CompositingRule crule = (CompositingRule)rule;
     template.update(
-        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=? where rule_id=?",
-        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), crule.getSelectionMethod(), ruleId});
+        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=? where rule_id=?",
+        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), crule.getSelectionMethod(), crule.getMethod(), crule.getProdpar(), ruleId});
     storeSources(ruleId, crule.getSources());
     storeDetectors(ruleId, crule.getDetectors());
     crule.setRuleId(ruleId);
@@ -212,6 +214,9 @@ public class CompositingRuleManager implements IRuleManager {
         result.setInterval(rs.getInt("interval"));
         result.setTimeout(rs.getInt("timeout"));
         result.setScanBased(rs.getBoolean("byscan"));
+        result.setSelectionMethod(rs.getInt("selection_method"));
+        result.setMethod(rs.getString("method"));
+        result.setProdpar(rs.getString("prodpar"));
         result.setSources(getSources(rule_id));
         result.setDetectors(getDetectors(rule_id));
         return result;

@@ -110,6 +110,8 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(20, ((CompositingRule)def.getRule()).getTimeout());
     assertEquals(true, ((CompositingRule)def.getRule()).isScanBased());
     assertEquals(CompositingRule.SelectionMethod_NEAREST_RADAR, ((CompositingRule)def.getRule()).getSelectionMethod());
+    assertEquals(CompositingRule.PPI, ((CompositingRule)def.getRule()).getMethod());
+    assertEquals("0.5", ((CompositingRule)def.getRule()).getProdpar());
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
     assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
   }
@@ -157,6 +159,8 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setTimeout(30);
     rule.setScanBased(false);
     rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    rule.setMethod(CompositingRule.CAPPI);
+    rule.setProdpar("500.0");
     rule.setDetectors(detectors);
     rule.setSources(sources);
 
