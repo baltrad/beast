@@ -19,44 +19,51 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import eu.baltrad.fc.Expression;
+import eu.baltrad.fc.ExpressionFactory;
 
-@JsonTypeInfo(use=JsonTypeInfo.Id.NAME,
-              include=JsonTypeInfo.As.PROPERTY,
-              property="type")
-@JsonSubTypes({
-  @JsonSubTypes.Type(value=CombinedFilter.class, name="combined"),
-  @JsonSubTypes.Type(value=AttributeFilter.class, name="attr"),
-  @JsonSubTypes.Type(value=AlwaysMatchFilter.class, name="always")
-})
-@JsonIgnoreProperties(value={"expression", "valid"})
-public interface IFilter {
-  /**
-   * access the typename of this filter
-   */
-  String getType();
-  
-  /**
-   * access filter identifier
-   */
-  Integer getId();
+/**
+ * Always matching filter
+ */
+@JsonAutoDetect
+public class AlwaysMatchFilter implements IFilter {
+  private static final String TYPE = "always";
+
+  private Integer id;
 
   /**
-   * set filter identifier
+   * @see IFilter#getType()
    */
-  void setId(Integer id);
-  
-  /**
-   * access BDB expression represented by this filter
-   */
-  Expression getExpression();
+  @Override
+  public String getType() { return TYPE; }
 
   /**
-   * check if this filter is valid
+   * @see IFilter#getId()
    */
-  boolean isValid();
+  @Override
+  public Integer getId() { return id; }
+
+  /**
+   * @see IFilter#setId()
+   */
+  @Override
+  public void setId(Integer id) { this.id = id; }
+
+  /**
+   * @see IFilter#getExpression()
+   */
+  @Override
+  public Expression getExpression() {
+    return new Expression(true);
+  }
+
+  /**
+   * @see IFilter#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return true;
+  }
 }
