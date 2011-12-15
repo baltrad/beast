@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------
-Copyright (C) 2009-2010 Swedish Meteorological and Hydrological Institute, SMHI,
+Copyright (C) 2009-2011 Swedish Meteorological and Hydrological Institute, SMHI,
 
 This file is part of the Beast library.
 
@@ -16,53 +16,36 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
+
 package eu.baltrad.beast.log;
 
-import org.apache.log4j.Logger;
-
 /**
+ * Beast reporter. Will report messages related to the BEAST framework.
  * @author Anders Henja
+ * @date Dec 15, 2011
  */
-public class BeastReport {
+public interface IBeastReporter {
   /**
-   * The string to use for getting hold of the BEAST logger
+   * Reports the message.
+   * @param message - the message
    */
-  private final static String MODULE="BEAST";
-  
-  /**
-   * The logger
-   */
-  private final static Logger logger = Logger.getLogger(MODULE);
+  public void info(String message);
   
   /**
    * Reports the message.
    * @param message - the message
    */
-  public static void info(String message) {
-    logger.info(message);
-  }
+  public void warn(String message);
   
   /**
    * Reports the message.
    * @param message - the message
    */
-  public static void warn(String message) {
-    logger.warn(message);
-  }
+  public void error(String message);
   
   /**
    * Reports the message.
    * @param message - the message
    */
-  public static void error(String message) {
-    logger.error(message);
-  }
-  
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public static void fatal(String message) {
-    logger.fatal(message);
-  }
+  public void fatal(String message);  
 }

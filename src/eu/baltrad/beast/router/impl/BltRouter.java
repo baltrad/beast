@@ -46,7 +46,8 @@ import eu.baltrad.beast.rules.IRuleIdAware;
 import eu.baltrad.beast.rules.IRuleManager;
 import eu.baltrad.beast.rules.IRuleRecipientAware;
 import eu.baltrad.beast.rules.RuleException;
-import eu.baltrad.beast.log.BeastReport;
+import eu.baltrad.beast.log.BeastReporter;
+import eu.baltrad.beast.log.IBeastReporter;
 
 /**
  * The Baltrad router that determines all routes.
@@ -69,6 +70,11 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   private Map<String, IRuleManager> ruleManagers = null;
   
   /**
+   * The reporter to use for reporting system messages
+   */
+  private IBeastReporter reporter = null;
+  
+  /**
    * The logger
    */
   private static Logger logger = LogManager.getLogger(BltRouter.class);
@@ -78,8 +84,20 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    */
   public BltRouter() {
     definitions = new ArrayList<RouteDefinition>();
+    reporter = new BeastReporter();
   };
 
+  /**
+   * Sets the reporter for managing system messages
+   * @param reporter the reporter to use
+   */
+  public void setBeastReporter(IBeastReporter reporter) {
+    if (reporter == null) {
+      throw new IllegalArgumentException("reporter may not be null");
+    }
+    this.reporter = reporter;
+  }
+  
   /**
    * Sets the jdbc template.
    * @param template the template
@@ -339,9 +357,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
       manager.delete(rule_id);
       template.update("delete from beast_router_dest where rule_id=?", new Object[]{rule_id});
       template.update("delete from beast_router_rules where rule_id=?", new Object[]{rule_id});
-      BeastReport.info("Route definition '" + name + "' removed");
+      reporter.info("Route definition '" + name + "' removed");
     } catch (RuntimeException t) {
-      BeastReport.warn("Failed to remove route definition '" + name + "'");
+      reporter.warn("Failed to remove route definition '" + name + "'");
       throw new RuleException("Failed to remove rule: '" + name+"'", t);
     }
     removeDefinitionFromList(name);
@@ -373,9 +391,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
         ((IRuleRecipientAware)rule).setRecipients(def.getRecipients());
       }
       storeRecipients(ruleid, def.getRecipients());
-      BeastReport.info("" + def.getAuthor() + " added route '" + def.getName()+"'");
+      reporter.info("" + def.getAuthor() + " added route '" + def.getName()+"'");
     } catch (RuntimeException t) {
-      BeastReport.warn("" + def.getAuthor() + " failed to add route '" + t.getMessage()+"'");
+      reporter.warn("" + def.getAuthor() + " failed to add route '" + t.getMessage()+"'");
       throw new RuleException("Failed to add router rule definition: " + t.getMessage(), t);
     }
     this.definitions.add(def);
@@ -412,9 +430,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
       // replace recipients
       storeRecipients(rule_id, def.getRecipients());
       
-      BeastReport.info("" + def.getAuthor() + " updated route '" + def.getName()+"'");
+      reporter.info("" + def.getAuthor() + " updated route '" + def.getName()+"'");
     } catch (RuntimeException t) {
-      BeastReport.warn("" + def.getAuthor() + " failed to update route '" + t.getMessage()+"'");
+      reporter.warn("" + def.getAuthor() + " failed to update route '" + t.getMessage()+"'");
       throw new RuleException("Failed to update router rule definition: " + t.getMessage(), t);
     }
     

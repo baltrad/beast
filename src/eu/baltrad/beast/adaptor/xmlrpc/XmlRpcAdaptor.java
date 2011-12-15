@@ -33,7 +33,8 @@ import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.beast.log.BeastReport;
+import eu.baltrad.beast.log.BeastReporter;
+import eu.baltrad.beast.log.IBeastReporter;
 
 /**
  * The XMLRPC adaptor
@@ -69,6 +70,11 @@ public class XmlRpcAdaptor implements IAdaptor {
    * The callback
    */
   private IAdaptorCallback callback = null;
+
+  /**
+   * The beast reporter
+   */
+  private IBeastReporter reporter = null;
   
   /**
    * The logger
@@ -80,6 +86,7 @@ public class XmlRpcAdaptor implements IAdaptor {
    */
   public XmlRpcAdaptor() {
     client = new XmlRpcClient();
+    reporter = new BeastReporter();
   }
   
   /**
@@ -96,6 +103,17 @@ public class XmlRpcAdaptor implements IAdaptor {
    */
   public IXmlRpcCommandGenerator getGenerator() {
     return this.generator;
+  }
+  
+  /**
+   * Sets the beast reporter
+   * @param reporter
+   */
+  public void setBeastReporter(IBeastReporter reporter) {
+    if (reporter == null) {
+      throw new IllegalArgumentException("reporter must always be != null");
+    }
+    this.reporter = reporter;
   }
   
   /**
@@ -201,13 +219,13 @@ public class XmlRpcAdaptor implements IAdaptor {
         }
       } catch (TimingOutCallback.TimeoutException e) {
         logger.debug("executeAsync TIMEOUT");
-        BeastReport.warn("XMLRPC communication with " + this.url + " TIMEOUT");
+        reporter.warn("XMLRPC communication with " + this.url + " TIMEOUT");
         if (cb != null) {
           cb.timeout(message);
         }
       } catch (Throwable t) {
         logger.debug("executeAsync TIMEOUT");
-        BeastReport.error("XMLRPC communication with " + this.url + " failed");
+        reporter.error("XMLRPC communication with " + this.url + " failed");
         if (cb != null) {
           cb.error(message, t);
         }
