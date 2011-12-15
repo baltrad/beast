@@ -33,6 +33,7 @@ import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.log.BeastReport;
 
 /**
  * The XMLRPC adaptor
@@ -73,7 +74,7 @@ public class XmlRpcAdaptor implements IAdaptor {
    * The logger
    */
   private static Logger logger = LogManager.getLogger(XmlRpcAdaptor.class);
-
+  
   /**
    * Default constructor
    */
@@ -200,11 +201,13 @@ public class XmlRpcAdaptor implements IAdaptor {
         }
       } catch (TimingOutCallback.TimeoutException e) {
         logger.debug("executeAsync TIMEOUT");
+        BeastReport.warn("XMLRPC communication with " + this.url + " TIMEOUT");
         if (cb != null) {
           cb.timeout(message);
         }
       } catch (Throwable t) {
-        logger.debug("executeAsync ERROR");
+        logger.debug("executeAsync TIMEOUT");
+        BeastReport.error("XMLRPC communication with " + this.url + " failed");
         if (cb != null) {
           cb.error(message, t);
         }

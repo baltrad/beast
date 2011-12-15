@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
+import eu.baltrad.beast.log.BeastReport;
 
 /**
  * @author Anders Henja
@@ -134,8 +135,10 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
         index = template.queryForInt("select adaptor_id from beast_adaptors where name=?", name);
         IAdaptor result = mgr.store(index, configuration);
         adaptors.put(name, result);
+        BeastReport.info("Registered adaptor '" + name + "' of type " + type);
         return result;
       } catch (RuntimeException t) {
+        BeastReport.warn("Failed to register adaptor '" + name + "'");
         throw new AdaptorException("Failed to add adaptor");
       }
     }
@@ -164,7 +167,8 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     } else {
       result = redefineAdaptorConfiguration((Integer)entry.get("adaptor_id"), (String)entry.get("type"), configuration);
     }
-    
+    BeastReport.info("Reregistered adaptor '" + name + "' of type " + type);
+
     adaptors.put(name, result);
     
     return result;
@@ -232,6 +236,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     template.update("delete from beast_adaptors where adaptor_id=?",
         new Object[]{adaptor_id});
     adaptors.remove(name);
+    BeastReport.info("Unregistered adaptor '" + name + "'");
   }
   
   /**
