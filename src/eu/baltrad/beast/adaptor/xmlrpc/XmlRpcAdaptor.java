@@ -34,7 +34,7 @@ import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.log.BeastReporter;
-import eu.baltrad.beast.log.IBeastReporter;
+import eu.baltrad.beast.log.ISystemReporter;
 
 /**
  * The XMLRPC adaptor
@@ -74,7 +74,7 @@ public class XmlRpcAdaptor implements IAdaptor {
   /**
    * The beast reporter
    */
-  private IBeastReporter reporter = null;
+  private ISystemReporter reporter = null;
   
   /**
    * The logger
@@ -109,7 +109,7 @@ public class XmlRpcAdaptor implements IAdaptor {
    * Sets the beast reporter
    * @param reporter
    */
-  public void setBeastReporter(IBeastReporter reporter) {
+  public void setBeastReporter(ISystemReporter reporter) {
     if (reporter == null) {
       throw new IllegalArgumentException("reporter must always be != null");
     }
@@ -219,13 +219,13 @@ public class XmlRpcAdaptor implements IAdaptor {
         }
       } catch (TimingOutCallback.TimeoutException e) {
         logger.debug("executeAsync TIMEOUT");
-        reporter.warn("XMLRPC communication with " + this.url + " TIMEOUT");
+        reporter.warn("00003", "XMLRPC communication with '%s' TIMEOUT", this.url);
         if (cb != null) {
           cb.timeout(message);
         }
       } catch (Throwable t) {
         logger.debug("executeAsync TIMEOUT");
-        reporter.error("XMLRPC communication with " + this.url + " failed");
+        reporter.error("00004", "XMLRPC communication with '%s' FAILED", this.url);
         if (cb != null) {
           cb.error(message, t);
         }

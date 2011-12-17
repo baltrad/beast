@@ -19,33 +19,28 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.log;
 
+import java.util.Map;
+
 /**
- * Beast reporter. Will report messages related to the BEAST framework.
+ * Interface for supporting log messages belonging to various modules.
+ * 
  * @author Anders Henja
- * @date Dec 15, 2011
+ * @date 2011-12-17
  */
-public interface IBeastReporter {
+public interface ILogMessageRepository {
   /**
-   * Reports the message.
-   * @param message - the message
+   * Returns a log message for the specified module and error code
+   * @param module the module name
+   * @param ecode the error code
+   * @return the log message or null if no message found
    */
-  public void info(String message);
+  public LogMessage getMessage(String module, String ecode);
   
   /**
-   * Reports the message.
-   * @param message - the message
+   * Returns all messages belonging to a specific module. The
+   * map has error codes as keys and log messages as values.
+   * @param module the specific module
+   * @return the messages, might be empty but will never be null
    */
-  public void warn(String message);
-  
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public void error(String message);
-  
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public void fatal(String message);  
+  public Map<String,LogMessage> getModuleMessages(String module);
 }

@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import eu.baltrad.beast.log.BeastReporter;
-import eu.baltrad.beast.log.IBeastReporter;
+import eu.baltrad.beast.log.ISystemReporter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
@@ -64,7 +64,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   /**
    * The beast reporter for reporting important system messages
    */
-  private IBeastReporter reporter = null;
+  private ISystemReporter reporter = null;
   
   /**
    * The logger
@@ -93,7 +93,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    * Sets the beast reporter
    * @param reporter the reporter to use, MAY not be null
    */
-  public void setBeastReporter(IBeastReporter reporter) {
+  public void setBeastReporter(ISystemReporter reporter) {
     if (reporter == null) {
       throw new IllegalArgumentException("reporter may not be null");
     }
@@ -153,10 +153,11 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
         index = template.queryForInt("select adaptor_id from beast_adaptors where name=?", name);
         IAdaptor result = mgr.store(index, configuration);
         adaptors.put(name, result);
-        reporter.info("Registered adaptor '" + name + "' of type " + type);
+        reporter.info("00001", "Registered adaptor '%s' of type %s", name, type);
+        //reporter.info("Registered adaptor '" + name + "' of type " + type);
         return result;
       } catch (RuntimeException t) {
-        reporter.warn("Failed to register adaptor '" + name + "'");
+        reporter.warn("00002", "Failed to register adaptor '%s'", name);
         throw new AdaptorException("Failed to add adaptor");
       }
     }
@@ -185,7 +186,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     } else {
       result = redefineAdaptorConfiguration((Integer)entry.get("adaptor_id"), (String)entry.get("type"), configuration);
     }
-    reporter.info("Reregistered adaptor '" + name + "' of type " + type);
+    reporter.info("XXXXX", "Reregistered adaptor '" + name + "' of type " + type);
 
     adaptors.put(name, result);
     
@@ -254,7 +255,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     template.update("delete from beast_adaptors where adaptor_id=?",
         new Object[]{adaptor_id});
     adaptors.remove(name);
-    reporter.info("Unregistered adaptor '" + name + "'");
+    reporter.info("XXXXX", "Unregistered adaptor '" + name + "'");
   }
   
   /**

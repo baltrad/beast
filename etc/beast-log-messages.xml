@@ -1,0 +1,42 @@
+<log-messages module="BEAST">
+  <message id="00001">
+    <text>Registered adaptor '%s' of type %s"</text>
+  </message>
+  
+  <message id="00002">
+    <text>Failed to register adaptor '%s'</text>
+  </message>
+  
+  <message id="00003">
+    <text>XMLRPC communication with '%s' TIMEOUT</text>
+  </message>
+  
+  <message id="00004">
+    <text>XMLRPC communication with '%s' FAILED</text>
+    <solution>Verify that the product generation framework is running</solution>
+  </message>
+
+  <message id="00005">
+    <text>Route definition '%s' removed</text>
+  </message>
+  
+  <message id="00006">
+    <text>Failed to remove route definition '%s'</text>
+  </message>
+
+  <message id="00007">
+    <text>%s added route '%s'</text>
+  </message>
+
+  <message id="00008">
+    <text>%s failed to add route '%s'</text>
+  </message>    
+
+  <message id="00009">
+    <text>%s updated route '%s'</text>
+  </message>
+
+  <message id="00010">
+    <text>%s failed to update route '%s'</text>
+  </message>
+</log-messages>
