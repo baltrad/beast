@@ -49,10 +49,14 @@ public class BltAlertMessageTest extends TestCase {
     BltAlertMessage classUnderTest = new BltAlertMessage();
     classUnderTest.setCode("ABC");
     classUnderTest.setMessage("server failure");
+    classUnderTest.setModule("MYMODULE");
+    classUnderTest.setSeverity(BltAlertMessage.INFO);
     Document result = classUnderTest.toDocument();
     assertEquals("bltalert", result.getRootElement().getName());
     assertEquals("ABC", result.valueOf("//bltalert/code"));
     assertEquals("server failure", result.valueOf("//bltalert/message"));
+    assertEquals("MYMODULE", result.valueOf("//bltalert/module"));
+    assertEquals("INFO", result.valueOf("//bltalert/severity"));
   }
 
   public void testToDocument_emptyNodes() {
@@ -61,6 +65,8 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("bltalert", result.getRootElement().getName());
     assertEquals("", result.valueOf("//bltalert/code"));
     assertEquals("", result.valueOf("//bltalert/message"));
+    assertEquals("", result.valueOf("//bltalert/module"));
+    assertEquals("INFO", result.valueOf("//bltalert/severity"));
   }
 
   public void testFromDocument() {
@@ -68,13 +74,46 @@ public class BltAlertMessageTest extends TestCase {
     Element el = document.addElement("bltalert");
     el.addElement("code").addText("123");
     el.addElement("message").addText("severe");
+    el.addElement("module").addText("MOD1");
+    el.addElement("severity").addText("INFO");
 
     BltAlertMessage classUnderTest = new BltAlertMessage();
     classUnderTest.fromDocument(document);
     assertEquals("123", classUnderTest.getCode());
     assertEquals("severe", classUnderTest.getMessage());
+    assertEquals("MOD1", classUnderTest.getModule());
+    assertEquals("INFO", classUnderTest.getSeverity());
   }
 
+  public void testFromDocument_noModule() {
+    Document document = DocumentHelper.createDocument();
+    Element el = document.addElement("bltalert");
+    el.addElement("code").addText("123");
+    el.addElement("message").addText("severe");
+    el.addElement("severity").addText("INFO");
+
+    BltAlertMessage classUnderTest = new BltAlertMessage();
+    classUnderTest.fromDocument(document);
+    assertEquals("123", classUnderTest.getCode());
+    assertEquals("severe", classUnderTest.getMessage());
+    assertEquals("", classUnderTest.getModule());
+  }
+  
+  public void testFromDocument_noSeverity() {
+    Document document = DocumentHelper.createDocument();
+    Element el = document.addElement("bltalert");
+    el.addElement("code").addText("123");
+    el.addElement("message").addText("severe");
+    el.addElement("module").addText("MOD1");
+
+    BltAlertMessage classUnderTest = new BltAlertMessage();
+    classUnderTest.fromDocument(document);
+    assertEquals("123", classUnderTest.getCode());
+    assertEquals("severe", classUnderTest.getMessage());
+    assertEquals("MOD1", classUnderTest.getModule());
+    assertEquals("INFO", classUnderTest.getSeverity());
+  }
+  
   public void testFromDocument_emptyNodes() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltalert");

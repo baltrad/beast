@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
  * Implementation of the beast reporter
  * @author Anders Henja
  */
-public class BeastReporter implements ISystemReporter{
+public class BeastReporter implements ISystemReporter {
   /**
    * The string to use for getting hold of the BEAST logger
    */

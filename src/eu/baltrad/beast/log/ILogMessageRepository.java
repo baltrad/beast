@@ -43,4 +43,15 @@ public interface ILogMessageRepository {
    * @return the messages, might be empty but will never be null
    */
   public Map<String,LogMessage> getModuleMessages(String module);
+  
+  /**
+   * Returns a message for specified module, code. The provided message is
+   * the default format string if no message can be found.
+   * @param module the module
+   * @param code the error code
+   * @param message the default message
+   * @param args the argument list
+   * @return a message
+   */
+  public String getMessage(String module, String code, String message, Object... args);
 }

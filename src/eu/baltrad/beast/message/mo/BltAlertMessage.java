@@ -31,9 +31,39 @@ import eu.baltrad.beast.message.MessageParserException;
  */
 public class BltAlertMessage implements IBltXmlMessage {
   /**
+   * Informational messages
+   */
+  public final static String INFO = "INFO";
+  
+  /**
+   * Warning
+   */
+  public final static String WARNING = "WARNING";
+  
+  /**
+   * Something erroneous has happened but we can continue
+   */
+  public final static String ERROR = "ERROR";
+  
+  /**
+   * Basically means that the system probably can not be relied on any longer.
+   */
+  public final static String FATAL = "FATAL";
+  
+  /**
    * Defines the alert.
    */
   public static final String BLT_ALERT = "bltalert";
+  
+  /**
+   * The module name
+   */
+  private String module = null;
+  
+  /**
+   * The severity of the alert
+   */
+  private String severity = INFO;
   
   /**
    * The error code
@@ -73,6 +103,34 @@ public class BltAlertMessage implements IBltXmlMessage {
   }
 
   /**
+   * @param module the module to set
+   */
+  public void setModule(String module) {
+    this.module = module;
+  }
+
+  /**
+   * @return the module
+   */
+  public String getModule() {
+    return module;
+  }
+
+  /**
+   * @param severity the severity to set
+   */
+  public void setSeverity(String severity) {
+    this.severity = severity;
+  }
+
+  /**
+   * @return the severity
+   */
+  public String getSeverity() {
+    return severity;
+  }
+  
+  /**
    * @see eu.baltrad.beast.message.IBltXmlMessage#fromDocument(org.dom4j.Document)
    */
   @Override
@@ -82,6 +140,12 @@ public class BltAlertMessage implements IBltXmlMessage {
     }
     setCode(dom.valueOf("//bltalert/code"));
     setMessage(dom.valueOf("//bltalert/message"));
+    setModule(dom.valueOf("//bltalert/module"));
+    String severity = dom.valueOf("//bltalert/severity");
+    if (severity == null || severity.equals("")) {
+      severity = BltAlertMessage.INFO;
+    }
+    setSeverity(severity);
   }
 
   /**
@@ -93,6 +157,8 @@ public class BltAlertMessage implements IBltXmlMessage {
     Element el = document.addElement(BLT_ALERT);
     el.addElement("code").addText(this.code==null?"":this.code);
     el.addElement("message").addText(this.msg==null?"":this.msg);
+    el.addElement("module").addText(this.module==null?"":this.module);
+    el.addElement("severity").addText(this.severity==null?INFO:this.severity);
     return document;
   }
 }

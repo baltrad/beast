@@ -102,6 +102,28 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
   }
   
   /**
+   * @see eu.baltrad.beast.log.ILogMessageRepository#getMessage(String, String, String, Object...)
+   */
+  @Override
+  public String getMessage(String module, String code, String message, Object... args) {
+    String msg = null;
+    LogMessage logmsg = getMessage(module, code);
+    if (logmsg != null) {
+      try {
+        msg = String.format(logmsg.getMessage(), args);
+      } catch (Exception e) {
+        // let default message be used instead and that one should not fail
+      }
+    }
+    
+    if (msg == null) {
+      msg = String.format(message, args);
+    }
+    
+    return msg;
+  }  
+  
+  /**
    * Adds a log message to this repository
    * @param message the message to add
    */

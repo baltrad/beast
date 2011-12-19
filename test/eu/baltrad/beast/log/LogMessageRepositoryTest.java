@@ -147,6 +147,42 @@ public class LogMessageRepositoryTest extends TestCase {
     assertSame(m3, result.get("00003"));
   }
 
+  public void testGetMessage_args() throws Exception {
+    LogMessage m1 = new LogMessage("00001", "Message %s ok");
+    LogMessage m2 = new LogMessage("00001", "Message %s nok");
+
+    classUnderTest.add("MODULE1", m1);
+    classUnderTest.add("MODULE2", m2);
+    
+    String result = classUnderTest.getMessage("MODULE1", "00001", "Message %s was ok", "abc");
+    assertEquals("Message abc ok", result);
+    result = classUnderTest.getMessage("MODULE1", "00002", "Message %s was ok", "abc");
+    assertEquals("Message abc was ok", result);
+    result = classUnderTest.getMessage("MODULE2", "00001", "Message %s was ok", "abc");
+    assertEquals("Message abc nok", result);
+    result = classUnderTest.getMessage("MODULE2", "00002", "Message %s was ok", "abc");
+    assertEquals("Message abc was ok", result);    
+  }
+  
+  /*
+  public String getMessage(String module, String code, String message, Object... args) {
+    String msg = null;
+    LogMessage logmsg = getMessage(module, code);
+    if (logmsg != null) {
+      try {
+        msg = String.format(logmsg.getMessage(), args);
+      } catch (Exception e) {
+        // let default message be used instead and that one should not fail
+      }
+    }
+    
+    if (msg == null) {
+      msg = String.format(message, args);
+    }
+    
+    return msg;
+  }*/
+  
   public void testLoad() throws Exception {
     File f = new File(this.getClass().getResource(XML_LOAD_TEST_FIXTURE).getFile());
     classUnderTest.load(f.getAbsolutePath());
