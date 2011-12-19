@@ -32,9 +32,9 @@ import eu.baltrad.beast.adaptor.AdaptorAddressException;
 import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
-import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.beast.log.BeastReporter;
 import eu.baltrad.beast.log.ISystemReporter;
+import eu.baltrad.beast.log.NullReporter;
+import eu.baltrad.beast.message.IBltMessage;
 
 /**
  * The XMLRPC adaptor
@@ -86,7 +86,7 @@ public class XmlRpcAdaptor implements IAdaptor {
    */
   public XmlRpcAdaptor() {
     client = new XmlRpcClient();
-    reporter = new BeastReporter();
+    reporter = new NullReporter();
   }
   
   /**
@@ -109,7 +109,7 @@ public class XmlRpcAdaptor implements IAdaptor {
    * Sets the beast reporter
    * @param reporter
    */
-  public void setBeastReporter(ISystemReporter reporter) {
+  public void setSystemReporter(ISystemReporter reporter) {
     if (reporter == null) {
       throw new IllegalArgumentException("reporter must always be != null");
     }

@@ -35,8 +35,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import eu.baltrad.beast.log.BeastReporter;
 import eu.baltrad.beast.log.ISystemReporter;
+import eu.baltrad.beast.log.NullReporter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
@@ -77,7 +77,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   public BltAdaptorManager() {
     adaptors = new HashMap<String, IAdaptor>();
     typeRegistry = new HashMap<String, IAdaptorConfigurationManager>();
-    reporter = new BeastReporter();
+    reporter = new NullReporter();
   }
   
   /**
@@ -90,10 +90,10 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   }
   
   /**
-   * Sets the beast reporter
+   * Sets the reporter
    * @param reporter the reporter to use, MAY not be null
    */
-  public void setBeastReporter(ISystemReporter reporter) {
+  public void setSystemReporter(ISystemReporter reporter) {
     if (reporter == null) {
       throw new IllegalArgumentException("reporter may not be null");
     }
@@ -154,7 +154,6 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
         IAdaptor result = mgr.store(index, configuration);
         adaptors.put(name, result);
         reporter.info("00001", "Registered adaptor '%s' of type %s", name, type);
-        //reporter.info("Registered adaptor '" + name + "' of type " + type);
         return result;
       } catch (RuntimeException t) {
         reporter.warn("00002", "Failed to register adaptor '%s'", name);
@@ -186,7 +185,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     } else {
       result = redefineAdaptorConfiguration((Integer)entry.get("adaptor_id"), (String)entry.get("type"), configuration);
     }
-    reporter.info("XXXXX", "Reregistered adaptor '" + name + "' of type " + type);
+    reporter.info("00011", "Reregistered adaptor '%s' of type %s", name, type);
 
     adaptors.put(name, result);
     

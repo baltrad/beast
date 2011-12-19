@@ -32,6 +32,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import eu.baltrad.beast.log.ISystemReporter;
+import eu.baltrad.beast.log.NullReporter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.message.mo.BltRoutedMessage;
@@ -46,8 +48,6 @@ import eu.baltrad.beast.rules.IRuleIdAware;
 import eu.baltrad.beast.rules.IRuleManager;
 import eu.baltrad.beast.rules.IRuleRecipientAware;
 import eu.baltrad.beast.rules.RuleException;
-import eu.baltrad.beast.log.BeastReporter;
-import eu.baltrad.beast.log.ISystemReporter;
 
 /**
  * The Baltrad router that determines all routes.
@@ -84,14 +84,14 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    */
   public BltRouter() {
     definitions = new ArrayList<RouteDefinition>();
-    reporter = new BeastReporter();
+    reporter = new NullReporter();
   };
 
   /**
    * Sets the reporter for managing system messages
    * @param reporter the reporter to use
    */
-  public void setBeastReporter(ISystemReporter reporter) {
+  public void setSystemReporter(ISystemReporter reporter) {
     if (reporter == null) {
       throw new IllegalArgumentException("reporter may not be null");
     }

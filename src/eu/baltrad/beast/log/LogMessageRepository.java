@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.log;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.dom4j.Element;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.ResourceUtils;
 
 /**
  * @author Anders Henja
@@ -145,15 +147,16 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
       this.filenames = new String[0];
     }
   }
-  
+
   /**
    * Loads a message file
    * @param filename the filename
    */
   protected synchronized void load(String filename) {
     try {
+      File f = ResourceUtils.getFile(filename);
       SAXReader reader = new SAXReader();
-      Document doc = reader.read(filename);
+      Document doc = reader.read(f);
       
       String module = doc.getRootElement().attribute("module").getText();
       Map<String,LogMessage> map = null;

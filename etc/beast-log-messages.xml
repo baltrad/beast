@@ -39,4 +39,8 @@
   <message id="00010">
     <text>%s failed to update route '%s'</text>
   </message>
+  
+  <message id="00011">
+    <text>Reregistered adaptor '%s' of type %s</text>
+  </message>
 </log-messages>
