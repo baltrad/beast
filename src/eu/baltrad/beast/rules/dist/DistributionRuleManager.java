@@ -24,7 +24,6 @@ import java.util.Map;
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
-import eu.baltrad.beast.rules.IRulePropertyAccess;
 import eu.baltrad.beast.rules.PropertyManager;
 import eu.baltrad.beast.rules.RuleFilterManager;
 

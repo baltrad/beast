@@ -30,12 +30,12 @@ import junit.framework.TestCase;
  * @author Anders Henja
  * @date Dec 17, 2011
  */
-public class BeastReporterTest extends TestCase {
+public class Log4jReporterTest extends TestCase {
   interface Methods {
     public String getMessage(String code, String message, Object... args);
   }
   
-  private BeastReporter classUnderTest = null;
+  private Log4jReporter classUnderTest = null;
   private MockControl loggerControl = null;
   private Logger logger = null;
   private MockControl repositoryControl = null;
@@ -55,7 +55,7 @@ public class BeastReporterTest extends TestCase {
     methodsControl = MockControl.createControl(Methods.class);
     methods = (Methods)methodsControl.getMock();
     
-    classUnderTest = new BeastReporter() {
+    classUnderTest = new Log4jReporter() {
       protected String getMessage(String code, String message, Object... args) {
         return methods.getMessage(code, message, args);
       }
@@ -155,7 +155,7 @@ public class BeastReporterTest extends TestCase {
   public void testGetMessage() throws Exception {
     LogMessage msg = new LogMessage("00032", "Message");
     
-    classUnderTest = new BeastReporter();
+    classUnderTest = new Log4jReporter();
     classUnderTest.logger = logger;
     classUnderTest.setRepository(repository);    
     
@@ -171,7 +171,7 @@ public class BeastReporterTest extends TestCase {
   }
 
   public void testGetMessage_notFound() throws Exception {
-    classUnderTest = new BeastReporter();
+    classUnderTest = new Log4jReporter();
     classUnderTest.logger = logger;
     classUnderTest.setRepository(repository);
     
@@ -187,7 +187,7 @@ public class BeastReporterTest extends TestCase {
   }
 
   public void testGetMessage_noRepository() throws Exception {
-    classUnderTest = new BeastReporter();
+    classUnderTest = new Log4jReporter();
     classUnderTest.logger = logger;
     
     replay();

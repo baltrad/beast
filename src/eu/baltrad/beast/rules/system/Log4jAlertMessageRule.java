@@ -17,7 +17,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
 
-package eu.baltrad.beast.log;
+package eu.baltrad.beast.rules.system;
 
 import org.apache.log4j.Logger;
 
@@ -31,16 +31,11 @@ import eu.baltrad.beast.rules.IRule;
  * @author Anders Henja
  * @date Dec 19, 2011
  */
-public class AlertSystemMessageRule implements IRule {
+public class Log4jAlertMessageRule implements IRule {
   /**
    * The type of rule
    */
   public static final String TYPE = "log4j_system_alert";
-  
-  /**
-   * The repository
-   */
-  private ILogMessageRepository repository = null;
   
   /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
@@ -50,7 +45,7 @@ public class AlertSystemMessageRule implements IRule {
     if (message instanceof BltAlertMessage) {
       BltAlertMessage bltmsg = (BltAlertMessage)message;
       String severity = bltmsg.getSeverity();
-      String msg = getMessage(bltmsg.getModule(), bltmsg.getCode(), bltmsg.getMessage());
+      String msg = bltmsg.getMessage();
       Logger logger = getLogger(bltmsg.getModule());
       if (severity == null) {
         severity = BltAlertMessage.INFO;
@@ -86,21 +81,6 @@ public class AlertSystemMessageRule implements IRule {
     return true;
   }
 
-
-  /**
-   * @param repository the repository to set
-   */
-  public void setRepository(ILogMessageRepository repository) {
-    this.repository = repository;
-  }
-
-  /**
-   * @return the repository
-   */
-  public ILogMessageRepository getRepository() {
-    return repository;
-  }
-  
   /**
    * Returns the logger with specified logname
    * @param logname the name of the logger
@@ -108,21 +88,5 @@ public class AlertSystemMessageRule implements IRule {
    */
   protected Logger getLogger(String logname) {
     return Logger.getLogger(logname);
-  }
-  
-  /**
-   * Returns the localized message if any could be found.
-   * @param[in] module - the specific module
-   * @param[in] code - the error code
-   * @param[in] message - the error message
-   */
-  protected String getMessage(String module, String code, String message, Object... args) {
-    String msg = null;
-    if (repository != null) {
-      msg = repository.getMessage(module, code, message, args);
-    } else {
-      msg = String.format(message, args);
-    }
-    return msg;
   }
 }
