@@ -34,7 +34,7 @@ public class AlertSystemMessageRule implements IRule {
   /**
    * The type of rule
    */
-  public static final String TYPE = "system_alert";
+  public static final String TYPE = "log4j_system_alert";
   
   /**
    * The repository

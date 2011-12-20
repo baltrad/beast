@@ -99,7 +99,7 @@ public class AlertSystemMessageRuleTest extends TestCase {
   
   public void testGetType() throws Exception {
     String result = classUnderTest.getType();
-    assertEquals("system_alert", result);
+    assertEquals("log4j_system_alert", result);
   }
   
   public void testIsValid() throws Exception {
