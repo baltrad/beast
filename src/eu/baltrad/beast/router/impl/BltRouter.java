@@ -43,6 +43,7 @@ import eu.baltrad.beast.router.IRoutedMessage;
 import eu.baltrad.beast.router.IRouter;
 import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
+import eu.baltrad.beast.router.SystemRulesDefinition;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleIdAware;
 import eu.baltrad.beast.rules.IRuleManager;
@@ -68,6 +69,11 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    * The rule factory. 
    */
   private Map<String, IRuleManager> ruleManagers = null;
+  
+  /**
+   * Manages all system specific rules.
+   */
+  private SystemRulesDefinition systemrules = null;
   
   /**
    * The reporter to use for reporting system messages
@@ -113,7 +119,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   public void setRuleManagers(Map<String,IRuleManager> ruleManagers) {
     this.ruleManagers = ruleManagers;
   }
-  
+
   /**
    * Sets a known list of definitions for this router. Used
    * for test purposes, otherwise this data is retrieved from
@@ -124,6 +130,14 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
     this.definitions = definitions;
   }
   
+  /**
+   * Sets the system definitions
+   * @param def the system definition
+   */
+  public void setSystemRules(SystemRulesDefinition def) {
+    systemrules = def;
+  }
+  
 	/**
 	 * @see IRouter#getMultiRoutedMessages(IBltMessage)
 	 * @param msg - the message that should result in the multi routed messages.
@@ -132,6 +146,11 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	@Override
 	public List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg) {
 	  List<IMultiRoutedMessage> result = new ArrayList<IMultiRoutedMessage>();
+	  
+	  if (systemrules != null) {
+	    systemrules.handle(msg);
+	  }
+	  
 	  if (msg instanceof IMultiRoutedMessage) {
 	    result.add((IMultiRoutedMessage)msg);
 	  } else if (msg instanceof IRoutedMessage) {
@@ -204,6 +223,11 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	@Override
 	public List<IRoutedMessage> getRoutedMessages(IBltMessage msg) {
     List<IRoutedMessage> result = new ArrayList<IRoutedMessage>();
+    
+    if (systemrules != null) {
+      systemrules.handle(msg);
+    }
+    
     if (msg instanceof IRoutedMessage) {
       result.add((IRoutedMessage)msg);
     } else if (msg instanceof IMultiRoutedMessage) {

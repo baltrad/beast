@@ -26,6 +26,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.easymock.MockControl;
+import org.easymock.classextension.MockClassControl;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
@@ -34,6 +35,7 @@ import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
 import eu.baltrad.beast.router.RouteDefinition;
+import eu.baltrad.beast.router.SystemRulesDefinition;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
 
@@ -54,6 +56,9 @@ public class BltRouterTest extends TestCase {
   private MockControl rule3Control = null;
   private IRule rule3 = null;
   
+  private MockControl systemrulesControl = null;
+  private SystemRulesDefinition systemrules = null;
+  
   private List<RouteDefinition> definitions = null;
   
   protected void setUp() throws Exception {
@@ -63,6 +68,9 @@ public class BltRouterTest extends TestCase {
     rule2 = (IRule)rule2Control.getMock();
     rule3Control = MockControl.createControl(IRule.class);
     rule3 = (IRule)rule3Control.getMock();
+    
+    systemrulesControl = MockClassControl.createControl(SystemRulesDefinition.class);
+    systemrules = (SystemRulesDefinition)systemrulesControl.getMock();
     
     definitions = new ArrayList<RouteDefinition>();
     
@@ -102,12 +110,14 @@ public class BltRouterTest extends TestCase {
     ruleControl.replay();
     rule2Control.replay();
     rule3Control.replay();
+    systemrulesControl.replay();
   }
 
   protected void verify() {
     ruleControl.verify();
     rule2Control.verify();
     rule3Control.verify();
+    systemrulesControl.verify();
   }
 
   public void testGetMultiRoutedMessages() throws Exception {
@@ -123,6 +133,8 @@ public class BltRouterTest extends TestCase {
     l1.add(m2);
     List<IMultiRoutedMessage> l2 = new ArrayList<IMultiRoutedMessage>();
     l1.add(m3);
+
+    systemrules.handle(message);
     
     methods.getMultiRoutedMessages(message, definitions.get(0));
     methodsControl.setReturnValue(new ArrayList<IMultiRoutedMessage>());
@@ -137,6 +149,7 @@ public class BltRouterTest extends TestCase {
       }
     };
     classUnderTest.setDefinitions(definitions);
+    classUnderTest.setSystemRules(systemrules);
     
     replay();
     methodsControl.replay();
@@ -423,6 +436,7 @@ public class BltRouterTest extends TestCase {
     IBltMessage r2message = new IBltMessage() {};
     IBltMessage r3message = new IBltMessage() {};
     
+    systemrules.handle(message);
     rule.handle(message);
     ruleControl.setReturnValue(null);
     rule2.handle(message);
@@ -432,6 +446,7 @@ public class BltRouterTest extends TestCase {
     
     BltRouter classUnderTest = new BltRouter();
     classUnderTest.setDefinitions(definitions);
+    classUnderTest.setSystemRules(systemrules);
     
     replay();
     
@@ -446,6 +461,28 @@ public class BltRouterTest extends TestCase {
     assertEquals("Adaptor2", result.get(1).getDestination());
     assertSame(r3message, result.get(2).getMessage());
     assertEquals("Adaptor3", result.get(2).getDestination());
+  }
+
+  public void testGetRoutedMessages_noSystemdef() throws Exception {
+    IBltMessage message = new IBltMessage() {};
+
+    rule.handle(message);
+    ruleControl.setReturnValue(null);
+    rule2.handle(message);
+    rule2Control.setReturnValue(null);
+    rule3.handle(message);
+    rule3Control.setReturnValue(null);
+    
+    BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setDefinitions(definitions);
+    
+    replay();
+    
+    List<IRoutedMessage> result = classUnderTest.getRoutedMessages(message);
+    
+    verify();
+    
+    assertEquals(0, result.size());
   }
 
   public void testGetRoutedMessages_alreadyRouted() throws Exception {
@@ -473,6 +510,9 @@ public class BltRouterTest extends TestCase {
     message.setDestinations(destinations);
     
     BltRouter classUnderTest = new BltRouter();
+    classUnderTest.setSystemRules(systemrules);
+    
+    systemrules.handle(message);
     
     replay();
     
@@ -487,6 +527,29 @@ public class BltRouterTest extends TestCase {
     assertEquals("DEF", result.get(1).getDestination());
   }
   
+  public void testGetRoutedMessages_multiRouted_noSystemdef() throws Exception {
+    IBltMessage m = new IBltMessage() {};
+    MRM message = new MRM();
+    message.setMessage(m);
+    List<String> destinations = new ArrayList<String>();
+    destinations.add("ABC");
+    destinations.add("DEF");
+    message.setDestinations(destinations);
+    
+    BltRouter classUnderTest = new BltRouter();
+    
+    replay();
+    
+    List<IRoutedMessage> result = classUnderTest.getRoutedMessages(message);
+    
+    verify();
+    
+    assertEquals(2, result.size());
+    assertSame(m, result.get(0).getMessage());
+    assertSame(m, result.get(1).getMessage());
+    assertEquals("ABC", result.get(0).getDestination());
+    assertEquals("DEF", result.get(1).getDestination());
+  }
   
   public void testGetRoutedMessages_noHits() throws Exception {
     IBltMessage message = new IBltMessage() {};

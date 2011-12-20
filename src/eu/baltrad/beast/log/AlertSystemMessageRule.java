@@ -26,7 +26,8 @@ import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.rules.IRule;
 
 /**
- *
+ * Creates a log4j system message from a BltAlertMessage.
+ * 
  * @author Anders Henja
  * @date Dec 19, 2011
  */
