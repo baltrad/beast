@@ -18,6 +18,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.volume;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,13 +31,14 @@ import org.dbunit.dataset.ITable;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import eu.baltrad.bdb.db.FileEntry;
+
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.fc.FileEntry;
 
 /**
  * @author Anders Henja
@@ -96,7 +100,7 @@ public class VolumeRuleManagerITest extends TestCase {
   }
   
   private String getFilePath(String resource) throws Exception {
-    java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
+    File f = new File(this.getClass().getResource(resource).getFile());
     return f.getAbsolutePath();
   }
   
@@ -113,8 +117,8 @@ public class VolumeRuleManagerITest extends TestCase {
     assertNotNull(rule.getCatalog());
     assertNotNull(rule.getTimeoutManager());
     
-    FileEntry f = catalog.getCatalog().store(getFilePath(FIXTURE));
-    catalog.getCatalog().storage().store(f);
+    FileEntry f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURE)));
+    catalog.getCatalog().getLocalStorage().store(f);
 
     BltGenerateMessage msg = (BltGenerateMessage)rule.handle(createDataMessage(f));
 

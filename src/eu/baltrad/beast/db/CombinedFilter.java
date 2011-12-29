@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
 
 /**
  * Combine different filters.
@@ -78,11 +78,11 @@ public class CombinedFilter implements IFilter {
 
     switch (matchType) {
       case ALL:
-        return xpr.and_(new Expression(exprList));
+        return xpr.and(exprList);
       case ANY:
-        return xpr.or_(new Expression(exprList));
+        return xpr.or(exprList);
       default:
-        return null;
+        throw new RuntimeException("unhandled matchType: " + matchType);
     }
   }
 

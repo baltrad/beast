@@ -32,8 +32,8 @@ import junit.framework.TestCase;
 
 import org.easymock.MockControl;
 
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
 
 public class CombinedFilterTest extends TestCase {
   private ObjectMapper jsonMapper;
@@ -72,12 +72,12 @@ public class CombinedFilterTest extends TestCase {
     classUnderTest.setMatchType(CombinedFilter.MatchType.ANY);
 
     filter1.getExpression();
-    filter1Control.setReturnValue(xpr.long_(1));
+    filter1Control.setReturnValue(xpr.literal(1));
     filter2.getExpression();
-    filter2Control.setReturnValue(xpr.long_(2));
+    filter2Control.setReturnValue(xpr.literal(2));
     replay();
 
-    Expression expected = xpr.or_(xpr.long_(1), xpr.long_(2));
+    Expression expected = xpr.or(xpr.literal(1), xpr.literal(2));
     Expression e = classUnderTest.getExpression();
     verify();
     assertTrue(e.equals(expected));
@@ -91,15 +91,15 @@ public class CombinedFilterTest extends TestCase {
     classUnderTest.setMatchType(CombinedFilter.MatchType.ALL);
 
     filter1.getExpression();
-    filter1Control.setReturnValue(xpr.long_(1));
+    filter1Control.setReturnValue(xpr.literal(1));
     filter2.getExpression();
-    filter2Control.setReturnValue(xpr.long_(2));
+    filter2Control.setReturnValue(xpr.literal(2));
     replay();
 
-    Expression expected = xpr.and_(xpr.long_(1), xpr.long_(2));
+    Expression expected = xpr.and(xpr.literal(1), xpr.literal(2));
     Expression e = classUnderTest.getExpression();
     verify();
-    assertTrue(e.equals(expected));
+    assertEquals(expected, e);
   }
 
   public void testAddChildFilter() {
@@ -115,9 +115,9 @@ public class CombinedFilterTest extends TestCase {
     classUnderTest.setMatchType(CombinedFilter.MatchType.ALL);
 
     filter1.getExpression();
-    filter1Control.setReturnValue(xpr.long_(1));
+    filter1Control.setReturnValue(xpr.literal(1));
     filter2.getExpression();
-    filter2Control.setReturnValue(xpr.long_(2));
+    filter2Control.setReturnValue(xpr.literal(2));
     replay();
     
     assertTrue(classUnderTest.isValid());
@@ -136,9 +136,9 @@ public class CombinedFilterTest extends TestCase {
     classUnderTest.setChildFilters(children);
 
     filter1.getExpression();
-    filter1Control.setReturnValue(xpr.long_(1), MockControl.ZERO_OR_MORE);
+    filter1Control.setReturnValue(xpr.literal(1), MockControl.ZERO_OR_MORE);
     filter2.getExpression();
-    filter2Control.setReturnValue(xpr.long_(2), MockControl.ZERO_OR_MORE);
+    filter2Control.setReturnValue(xpr.literal(2), MockControl.ZERO_OR_MORE);
     replay();
 
     assertFalse(classUnderTest.isValid());

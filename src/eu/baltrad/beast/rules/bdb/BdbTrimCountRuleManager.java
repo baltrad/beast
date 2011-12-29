@@ -25,7 +25,7 @@ import eu.baltrad.beast.rules.IRuleManager;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 import eu.baltrad.beast.rules.PropertyManager;
 
-import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.bdb.FileCatalog;
 
 /**
  */

@@ -18,7 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.volume;
 
-import eu.baltrad.fc.DateTime;
+import eu.baltrad.bdb.util.DateTime;
+
 import junit.framework.TestCase;
 
 /**

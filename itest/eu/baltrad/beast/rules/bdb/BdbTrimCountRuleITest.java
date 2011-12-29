@@ -18,19 +18,23 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.bdb;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import junit.framework.TestCase;
 
 import org.springframework.context.support.AbstractApplicationContext;
 
+import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.db.FileResult;
+
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.FileResult;
 
 public class BdbTrimCountRuleITest extends TestCase {
   private AbstractApplicationContext context = null;
@@ -44,7 +48,7 @@ public class BdbTrimCountRuleITest extends TestCase {
     "fixtures/Z_SCAN_C_ESWI_20101016080000_sease_000000.h5",
   };
 
-  private static Map<String, String> fileUuidMap;
+  private static Map<String, UUID> fileUuidMap;
 
   public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
@@ -52,14 +56,14 @@ public class BdbTrimCountRuleITest extends TestCase {
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.createBaltradDbPath();    
     helper.purgeBaltradDB();
-    fileUuidMap = new HashMap<String, String>();
+    fileUuidMap = new HashMap<String, UUID>();
 
     classUnderTest = new BdbTrimCountRule();
     classUnderTest.setFileCatalog(catalog);
 
     for (String s: FIXTURES) {
-      FileEntry e = catalog.store(getFilePath(s));
-      fileUuidMap.put(s, e.uuid());
+      FileEntry e = catalog.store(new FileInputStream(getFilePath(s)));
+      fileUuidMap.put(s, e.getUuid());
     }
   }
 
@@ -71,24 +75,24 @@ public class BdbTrimCountRuleITest extends TestCase {
     context.close();
   }
   
-  private String getFilePath(String resource) throws Exception {
-    java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
-    return f.getAbsolutePath();
+  private File getFilePath(String resource) throws Exception {
+    File f = new File(this.getClass().getResource(resource).getFile());
+    return f.getAbsoluteFile();
   }
 
   public void testHandle() throws Exception {
     classUnderTest.setFileCountLimit(1);
     classUnderTest.handle(new BltTriggerJobMessage());
 
-    String sease_uuid = fileUuidMap.get("fixtures/Z_SCAN_C_ESWI_20101016080000_sease_000000.h5");
+    UUID sease_uuid = fileUuidMap.get("fixtures/Z_SCAN_C_ESWI_20101016080000_sease_000000.h5");
     
-    FileResult rset = catalog.database().execute(new FileQuery());
+    FileResult rset = catalog.getDatabase().execute(new FileQuery());
     try {
       assertTrue(rset.next());
-      assertEquals(sease_uuid, rset.entry().uuid());
+      assertEquals(sease_uuid, rset.getFileEntry().getUuid());
       assertFalse(rset.next());
     } finally {
-      rset.delete();
+      rset.close();
     }
   }
 
@@ -96,11 +100,11 @@ public class BdbTrimCountRuleITest extends TestCase {
     classUnderTest.setFileCountLimit(3);
     classUnderTest.handle(new BltTriggerJobMessage());
 
-    FileResult rset = catalog.database().execute(new FileQuery());
+    FileResult rset = catalog.getDatabase().execute(new FileQuery());
     try {
       assertEquals(3, rset.size());
     } finally {
-      rset.delete();
+      rset.close();
     }
   }
 }

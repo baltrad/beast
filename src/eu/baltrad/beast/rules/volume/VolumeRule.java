@@ -27,6 +27,11 @@ import java.util.Map;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.Time;
+
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
@@ -39,10 +44,6 @@ import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Time;
-import eu.baltrad.fc.FileEntry;
 
 /**
  * @author Anders Henja
@@ -300,7 +301,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
       
       if (areCriteriasMet(entries, data.getDateTime(), data.getSource())) {
-        List<CatalogEntry> newentries = filterEntries(entries, data.getDateTime().time());
+        List<CatalogEntry> newentries = filterEntries(entries, data.getDateTime().getTime());
         result = createMessage(data.getDateTime(), newentries);
         if (tt != null) {
           timeoutManager.unregister(tt.getId());
@@ -333,15 +334,15 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     boolean duplicate = false;
     int sz = entries.size();
     try {
-      Time t = Time.from_iso_string((String)entry.getAttribute("/dataset1/what/starttime"));
-      long diffTime = Math.abs(nominalTime.cumulative_msecs() - t.cumulative_msecs());
+      Time t = Time.fromIsoString((String)entry.getAttribute("/dataset1/what/starttime"));
+      long diffTime = Math.abs(nominalTime.getCumulativeMsecs() - t.getCumulativeMsecs());
       Double elangle = (Double)entry.getAttribute("/dataset1/where/elangle");
       for (int i = 0; i < sz; i++) {
         Double relangle = (Double)entries.get(i).getAttribute("/dataset1/where/elangle");
         if (relangle.equals(elangle)) {
           duplicate = true;
-          Time rt = Time.from_iso_string((String)entries.get(i).getAttribute("/dataset1/what/starttime"));
-          long rsDiffTime = Math.abs(nominalTime.cumulative_msecs() - rt.cumulative_msecs());
+          Time rt = Time.fromIsoString((String)entries.get(i).getAttribute("/dataset1/what/starttime"));
+          long rsDiffTime = Math.abs(nominalTime.getCumulativeMsecs() - rt.getCumulativeMsecs());
           if (diffTime < rsDiffTime) {
             entries.remove(i);
             entries.add(i, entry);
@@ -393,7 +394,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     VolumeTimerData vtd = (VolumeTimerData)data;
     if (vtd != null) {
       List<CatalogEntry> entries = fetchAllCurrentEntries(vtd.getDateTime(), vtd.getSource());
-      List<CatalogEntry> newentries = filterEntries(entries, vtd.getDateTime().time());
+      List<CatalogEntry> newentries = filterEntries(entries, vtd.getDateTime().getTime());
       IBltMessage msgtosend = createMessage(vtd.getDateTime(), newentries);
       BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
       mrmsg.setDestinations(recipients);
@@ -431,10 +432,10 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     VolumeTimerData result = null;
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
-      if (file.metadata().what_object().equals("SCAN")) {
-        Time t = file.metadata().what_time();
-        Date d = file.metadata().what_date();
-        String s = file.source().get("_name");
+      if (file.getMetadata().getWhatObject().equals("SCAN")) {
+        Time t = file.getMetadata().getWhatTime();
+        Date d = file.getMetadata().getWhatDate();
+        String s = file.getSource().getName();
         DateTime nominalTime = ruleUtilities.createNominalTime(d, t, interval);
         if (sources.size() == 0 || sources.contains(s)) {
           result = new VolumeTimerData(ruleid, nominalTime, s);
@@ -453,8 +454,8 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
    */
   protected IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries) {
     BltGenerateMessage result = new BltGenerateMessage();
-    Date date = nominalTime.date();
-    Time time = nominalTime.time();
+    Date date = nominalTime.getDate();
+    Time time = nominalTime.getTime();
 
     if (entries == null || entries.size() == 0) {
       return null;

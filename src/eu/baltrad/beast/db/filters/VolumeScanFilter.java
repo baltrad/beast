@@ -18,13 +18,17 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db.filters;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.Time;
+
 import eu.baltrad.beast.db.ICatalogFilter;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Time;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.ExpressionFactory;
 
 /**
  * Filter to be used when searching for a number of scans that
@@ -39,19 +43,21 @@ public class VolumeScanFilter implements ICatalogFilter {
   private Time stopTime = null;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.FileQuery)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.bdb.db.FileQuery)
    */
   @Override
   public void apply(FileQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
-    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
+    Expression dtAttr = xpr.combinedDateTime("what/date", "what/time");
     DateTime startDT = new DateTime(startDate, startTime);
     DateTime stopDT = new DateTime(stopDate, stopTime);
 
-    query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
-    query.filter(xpr.eq(xpr.attribute("what/source"), xpr.string(source)));
-    query.filter(xpr.ge(dtAttr, xpr.datetime(startDT)));
-    query.filter(xpr.lt(dtAttr, xpr.datetime(stopDT)));
+    List<Expression> filters = new ArrayList<Expression>();
+    filters.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
+    filters.add(xpr.eq(xpr.attribute("what/source"), xpr.literal(source)));
+    filters.add(xpr.ge(dtAttr, xpr.literal(startDT)));
+    filters.add(xpr.lt(dtAttr, xpr.literal(stopDT)));
+    query.setFilter(xpr.and(filters));
   }
   
   /**

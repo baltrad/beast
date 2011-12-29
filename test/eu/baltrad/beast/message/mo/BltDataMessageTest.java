@@ -18,8 +18,11 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message.mo;
 
+import eu.baltrad.bdb.db.FileEntry;
+
 import junit.framework.TestCase;
-import eu.baltrad.fc.FileEntry;
+
+import org.easymock.MockControl;
 
 /**
  * @author Anders Henja
@@ -27,10 +30,11 @@ import eu.baltrad.fc.FileEntry;
  */
 public class BltDataMessageTest extends TestCase {
   public void testSetFile() {
-    FileEntry o = new FileEntry(0,false);
+    MockControl mockEntryControl = MockControl.createControl(FileEntry.class);
+    FileEntry mockEntry = (FileEntry)mockEntryControl.getMock();
     BltDataMessage classUnderTest = new BltDataMessage();
     assertEquals(null, classUnderTest.getFileEntry());
-    classUnderTest.setFileEntry(o);
-    assertSame(o, classUnderTest.getFileEntry());
+    classUnderTest.setFileEntry(mockEntry);
+    assertSame(mockEntry, classUnderTest.getFileEntry());
   }
 }

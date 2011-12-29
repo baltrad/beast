@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
+import java.io.FileInputStream;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,15 +29,15 @@ import junit.framework.TestCase;
 
 import org.springframework.context.support.AbstractApplicationContext;
 
+import eu.baltrad.bdb.db.Database;
+import eu.baltrad.bdb.db.AttributeQuery;
+import eu.baltrad.bdb.db.AttributeResult;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.rest.RestfulDatabase;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.fc.Database;
-import eu.baltrad.fc.AttributeQuery;
-import eu.baltrad.fc.AttributeResult;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.ExpressionFactory;
-import eu.baltrad.fc.Oh5File;
-import eu.baltrad.fc.Oh5HlFileReader;
 
 /**
  * @author Anders Henja
@@ -72,23 +74,21 @@ public class BaltradDBITest extends TestCase {
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("helper");
     baltradDbPath = helper.getBaltradDbPth();
-    db = Database.create(helper.getBaltradDbUri());
+    db = new RestfulDatabase(helper.getBaltradDbUri());
     uuidMap = new HashMap<String, String>();
     helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
-    Oh5HlFileReader reader = new Oh5HlFileReader();
     for (String n : FIXTURES) {
-      Oh5File f = new Oh5File();
-      reader.read(getFilePath(n), f);
-      FileEntry result = db.store(f);
+      FileInputStream fileContent = new FileInputStream(getFilePath(n));
+      FileEntry result = db.store(fileContent);
       assertNotNull(result);
-      uuidMap.put(n, result.uuid());
+      uuidMap.put(n, result.getUuid().toString());
     }
     System.out.println("Catalogued " + FIXTURES.length + " files in " + (System.currentTimeMillis() - startTime) + "ms");
   }
   
   public void tearDown() throws Exception {
-    db.delete();
+    db.close();
     helper = null;
     uuidMap = null;
     baltradDbPath = null;
@@ -99,12 +99,12 @@ public class BaltradDBITest extends TestCase {
     AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
     q.fetch("uuid", xpr.attribute("file:uuid"));
-    q.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string("seang")));
+    q.setFilter(xpr.eq(xpr.attribute("what/source:_name"), xpr.literal("seang")));
     AttributeResult rs = db.execute(q);
     assertEquals(1, rs.size());
     rs.next();
-    String result = rs.string("uuid");
-    rs.delete();
+    String result = rs.getString("uuid");
+    rs.close();
     String seang_uuid = (String)uuidMap.get("fixtures/Z_SCAN_C_ESWI_20101023180000_seang_000000.h5");
     assertEquals(seang_uuid, result);
   }
@@ -119,9 +119,9 @@ public class BaltradDBITest extends TestCase {
     AttributeResult rs = db.execute(q);
     assertEquals(12, rs.size());
     while (rs.next()) {
-      result.add(rs.string("uuid"));
+      result.add(rs.getString("uuid"));
     }
-    rs.delete();
+    rs.close();
     assertTrue(result.contains("sekir"));
     assertTrue(result.contains("selul"));
     assertTrue(result.contains("seosu"));
@@ -141,16 +141,16 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     
     q.fetch("source", xpr.attribute("what/source:_name"));
-    Expression e1 = xpr.eq(xpr.attribute("what/source:_name"), xpr.string("sekir"));
-    Expression e2 = xpr.eq(xpr.attribute("what/source:_name"), xpr.string("selul"));
-    q.filter(xpr.or_(e1, e2));
+    Expression e1 = xpr.eq(xpr.attribute("what/source:_name"), xpr.literal("sekir"));
+    Expression e2 = xpr.eq(xpr.attribute("what/source:_name"), xpr.literal("selul"));
+    q.setFilter(xpr.or(e1, e2));
     AttributeResult rs = db.execute(q);
     assertEquals(2, rs.size());
     rs.next();
-    String result1 = rs.string("source");
+    String result1 = rs.getString("source");
     rs.next();
-    String result2 = rs.string("source");
-    rs.delete();
+    String result2 = rs.getString("source");
+    rs.close();
     if (result1.equals("sekir")) {
       assertEquals("selul", result2);
     } else if (result1.equals("selul")) {
@@ -166,13 +166,13 @@ public class BaltradDBITest extends TestCase {
     Set<String> result = new HashSet<String>();
     
     q.fetch("source", xpr.attribute("what/source:_name"));
-    q.filter(xpr.ne(xpr.attribute("what/source:_name"), xpr.string("sekir")));
+    q.setFilter(xpr.ne(xpr.attribute("what/source:_name"), xpr.literal("sekir")));
     AttributeResult rs = db.execute(q);
     assertEquals(11, rs.size());
     while (rs.next()) {
-      result.add(rs.string("source"));
+      result.add(rs.getString("source"));
     }
-    rs.delete();
+    rs.close();
     assertTrue(result.contains("selul"));
     assertTrue(result.contains("seosu"));
     assertTrue(result.contains("seovi"));

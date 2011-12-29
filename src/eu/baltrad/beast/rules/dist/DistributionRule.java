@@ -34,9 +34,9 @@ import eu.baltrad.beast.net.FileUploader;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 
-import eu.baltrad.fc.DefaultFileNamer;
-import eu.baltrad.fc.Oh5MetadataMatcher;
-import eu.baltrad.fc.FileEntry;
+import eu.baltrad.bdb.util.DefaultFileNamer;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 
 /**
  * Distribute incoming data to remote destinations. Incoming files that match
@@ -49,7 +49,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   private final static File TEMPDIR = new File(System.getProperty("java.io.tmpdir"));
 
   private IFilter filter;
-  private Oh5MetadataMatcher matcher;
+  private MetadataMatcher matcher;
   private URI destination;
   private FileUploader uploader;
 
@@ -63,10 +63,10 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
    */
   protected DistributionRule() {
     this.uploader = FileUploader.createDefault();
-    this.matcher = new Oh5MetadataMatcher();
+    this.matcher = new MetadataMatcher();
   }
 
-  protected void setMatcher(Oh5MetadataMatcher matcher) {
+  protected void setMatcher(MetadataMatcher matcher) {
     this.matcher = matcher;
   }
 
@@ -141,7 +141,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   }
 
   protected boolean match(FileEntry entry) {
-    return matcher.match(entry.metadata(), filter.getExpression());
+    return matcher.match(entry.getMetadata(), filter.getExpression());
   }
 
   protected void upload(FileEntry entry) {
@@ -155,9 +155,10 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     }
   }
 
+  @SuppressWarnings("deprecation")
   protected File entryToFile(FileEntry entry) {
     File f = new File(TEMPDIR, name(entry));
-    entry.write_to_file(f.toString());
+    entry.writeToFile(f); // XXX: deprecated
     return f;
   }
 

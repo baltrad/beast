@@ -6,10 +6,9 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IScriptableRule;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.Oh5File;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.Time;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.Time;
 
 /**
  * Rule for forwarding a specific area to the google map
@@ -55,17 +54,17 @@ class GenerateGoogleMap implements IScriptableRule {
     Catalog cat = ManagerContext.getCatalog();
     if (msg != null && msg instanceof BltDataMessage) {
       FileEntry fe = ((BltDataMessage)msg).getFileEntry();
-      String object = fe.metadata().what_object();
+      String object = fe.getMetadata().getWhatObject();
       if (object != null && object.equals("COMP")) {
-        String source = fe.metadata().what_source();
-        Date d = fe.metadata().what_date();
-        Time t = fe.metadata().what_time();
+        String source = fe.getMetadata().getWhatSource();
+        Date d = fe.getMetadata().getWhatDate();
+        Time t = fe.getMetadata().getWhatTime();
         String area = getSupportedArea(source);
         if (area != null) {
           String oname = PATH + "/"+area+"/" + sprintf("%04d/%02d/%02d/%04d%02d%02d%02d%02d", [d.year(), d.month(), d.day(), d.year(), d.month(), d.day(), t.hour(), t.minute()] as int[]) + ".png";
           result = new BltGenerateMessage();
           result.setAlgorithm("se.smhi.rave.creategmapimage");
-          result.setFiles([cat.getFileCatalogPath(fe.uuid())] as String[]);
+          result.setFiles([cat.getFileCatalogPath(fe.getUuid().toString())] as String[]);
           result.setArguments(["outfile",oname] as String[]);
         }
       }

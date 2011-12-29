@@ -43,10 +43,10 @@ import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Time;
-import eu.baltrad.fc.FileEntry;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.Time;
 
 /**
  * Compositing rule for beeing able to generate composites both from
@@ -339,7 +339,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     try {
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
-        String object = file.metadata().what_object();
+        String object = file.getMetadata().getWhatObject();
         if (object != null && object.equals("SCAN") && isScanBased()) {
           return handleCompositeFromScans(message);
         } else if (object != null && object.equals("PVOL") && !isScanBased()) {
@@ -490,9 +490,9 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     CompositeTimerData result = null;
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
-      String object = file.metadata().what_object();
-      Time t = file.metadata().what_time();
-      Date d = file.metadata().what_date();
+      String object = file.getMetadata().getWhatObject();
+      Time t = file.getMetadata().getWhatTime();
+      Date d = file.getMetadata().getWhatDate();
       DateTime nominalTime = ruleUtil.createNominalTime(d, t, interval);
       if (!ruleUtil.isTriggered(ruleid, nominalTime)) {
         if (!isScanBased() && object.equals("PVOL")) {
@@ -530,13 +530,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    */
   protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
     BltGenerateMessage result = new BltGenerateMessage();
-    Date date = nominalDT.date();
-    Time time = nominalDT.time();
+    Date date = nominalDT.getDate();
+    Time time = nominalDT.getTime();
     
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
     logger.debug("createMessage: entries: " +
                  StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
-    logger.debug("createMessage: filtering for nominal time: " + nominalDT.to_iso_string());
+    logger.debug("createMessage: filtering for nominal time: " + nominalDT.toIsoString());
     entries = ruleUtil.getEntriesByClosestTime(nominalDT, entries);
     logger.debug("createMessage: entries: " +
                  StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));

@@ -27,14 +27,14 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.springframework.beans.factory.BeanInitializationException;
 
+import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.Database;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.db.FileResult;
+
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.Database;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.FileResult;
-
 
 public class BdbTrimCountRuleTest extends TestCase {
   private BdbTrimCountRule classUnderTest = null;
@@ -64,7 +64,7 @@ public class BdbTrimCountRuleTest extends TestCase {
     classUnderTest = new BdbTrimCountRule();
     dbControl = MockClassControl.createControl(Database.class);
     db = (Database)dbControl.getMock();
-    catalogControl = MockClassControl.createControl(FileCatalog.class);
+    catalogControl = MockControl.createControl(FileCatalog.class);
     catalog = (FileCatalog)catalogControl.getMock();
     queryControl = MockClassControl.createControl(FileQuery.class);
     query = (FileQuery)queryControl.getMock();
@@ -169,7 +169,7 @@ public class BdbTrimCountRuleTest extends TestCase {
 
     methods.getExcessiveFileQuery();
     methodsControl.setReturnValue(query);
-    catalog.database();
+    catalog.getDatabase();
     catalogControl.setReturnValue(db);
     db.execute(query);
     dbControl.setReturnValue(result);
@@ -177,13 +177,12 @@ public class BdbTrimCountRuleTest extends TestCase {
     resultControl.setReturnValue(1);
     result.next();
     resultControl.setReturnValue(true);
-    result.entry();
+    result.getFileEntry();
     resultControl.setReturnValue(entry);
     catalog.remove(entry);
-    catalogControl.setReturnValue(true);
     result.next();
     resultControl.setReturnValue(false);
-    result.delete();
+    result.close();
     replay();
   
     classUnderTest.execute();
@@ -225,7 +224,7 @@ public class BdbTrimCountRuleTest extends TestCase {
     FileQuery q = classUnderTest.getExcessiveFileQuery();
     verify();
     assertNotNull(q);
-    assertEquals(10, q.limit());
+    assertEquals(new Integer(10), q.getLimit());
     // XXX: test for filter, order
   }
 
@@ -251,14 +250,14 @@ public class BdbTrimCountRuleTest extends TestCase {
     classUnderTest.setFileCatalog(catalog);
 
 
-    catalog.database();
+    catalog.getDatabase();
     catalogControl.setReturnValue(db);
     db.execute(new FileQuery());
     dbControl.setMatcher(MockControl.ALWAYS_MATCHER);
     dbControl.setReturnValue(result); 
     result.size();
     resultControl.setReturnValue(10);
-    result.delete();
+    result.close();
     replay();
 
     int result = classUnderTest.getFileCount();

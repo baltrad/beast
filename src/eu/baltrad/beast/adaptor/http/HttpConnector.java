@@ -32,6 +32,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.util.EntityUtils;
 import org.dom4j.Document;
 
 import eu.baltrad.beast.message.IBltMessage;
@@ -97,7 +98,7 @@ public class HttpConnector implements IHttpConnector {
       HttpResponse response = httpClient.execute( httpPost );
       HttpEntity resEntity = response.getEntity();
       if( resEntity != null ) {
-        resEntity.consumeContent();
+        EntityUtils.consume(resEntity);
       }
     } catch (Exception e) {
       throw new HttpConnectorException(e);

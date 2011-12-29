@@ -18,12 +18,16 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.composite;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.springframework.context.support.AbstractApplicationContext;
+
+import eu.baltrad.bdb.db.FileEntry;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -32,7 +36,6 @@ import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.fc.FileEntry;
 
 /**
  * @author Anders Henja
@@ -106,7 +109,7 @@ public class CompositingRuleITest extends TestCase {
     classUnderTest.setTimeout(0); // no timeouts
     
     for (String s: SCAN_DATA_0) {
-      catalog.getCatalog().store(getFilePath(s));
+      catalog.getCatalog().store(new FileInputStream(getFilePath(s)));
     }
   }
   
@@ -120,7 +123,7 @@ public class CompositingRuleITest extends TestCase {
   }
   
   private String getFilePath(String resource) throws Exception {
-    java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
+    File f = new File(this.getClass().getResource(resource).getFile());
     return f.getAbsolutePath();
   }
   
@@ -143,22 +146,22 @@ public class CompositingRuleITest extends TestCase {
     classUnderTest.setInterval(10);
     classUnderTest.setSources(sources);
     
-    FileEntry f = catalog.getCatalog().store(getFilePath(FIXTURES[0]));
-    String seang_path = catalog.getCatalog().storage().store(f);
+    FileEntry f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES[0])));
+    String seang_path = catalog.getCatalog().getLocalStorage().store(f).toString();
     IBltMessage result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
-    f = catalog.getCatalog().store(getFilePath(FIXTURES[2]));
-    String searl_path = catalog.getCatalog().storage().store(f);
+    f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES[2])));
+    String searl_path = catalog.getCatalog().getLocalStorage().store(f).toString();
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
 
-    f = catalog.getCatalog().store(getFilePath(FIXTURES[3]));
+    f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES[3])));
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
 
-    f = catalog.getCatalog().store(getFilePath(FIXTURES[5]));
-    String sehud_path = catalog.getCatalog().storage().store(f);
+    f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES[5])));
+    String sehud_path = catalog.getCatalog().getLocalStorage().store(f).toString();
     result = classUnderTest.handle(createDataMessage(f));
     assertNotNull(result);
     
@@ -185,15 +188,15 @@ public class CompositingRuleITest extends TestCase {
     classUnderTest.setTimeout(10000);
     classUnderTest.setScanBased(true);
     
-    f = catalog.getCatalog().store(getFilePath(SCAN_DATA_1[0]));
+    f = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_DATA_1[0])));
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
-    f = catalog.getCatalog().store(getFilePath(SCAN_DATA_1[1]));
+    f = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_DATA_1[1])));
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
-    f = catalog.getCatalog().store(getFilePath(SCAN_DATA_1[2]));
+    f = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_DATA_1[2])));
     result = classUnderTest.handle(createDataMessage(f));
     assertNotNull(result);
     
@@ -239,7 +242,7 @@ public class CompositingRuleITest extends TestCase {
   }
   
   protected IBltMessage catalogAndHandle(CompositingRule rule, String path) throws Exception {
-    FileEntry f = catalog.getCatalog().store(path);
+    FileEntry f = catalog.getCatalog().store(new FileInputStream(path));
     return rule.handle(createDataMessage(f));
   }
 }

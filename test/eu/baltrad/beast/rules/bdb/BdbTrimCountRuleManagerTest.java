@@ -30,7 +30,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.PropertyManager;
 
-import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.bdb.FileCatalog;
 
 public class BdbTrimCountRuleManagerTest extends TestCase {
   private BdbTrimCountRuleManager classUnderTest = null;
@@ -56,7 +56,7 @@ public class BdbTrimCountRuleManagerTest extends TestCase {
     manager = (PropertyManager)managerControl.getMock();
     ruleControl = MockClassControl.createControl(BdbTrimCountRule.class);
     rule = (BdbTrimCountRule)ruleControl.getMock();
-    fileCatalogControl = MockClassControl.createControl(FileCatalog.class);
+    fileCatalogControl = MockControl.createControl(FileCatalog.class);
     fileCatalog = (FileCatalog)fileCatalogControl.getMock();
     classUnderTest.setPropertyManager(manager);
     classUnderTest.setFileCatalog(fileCatalog);

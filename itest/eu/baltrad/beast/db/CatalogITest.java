@@ -18,22 +18,26 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.springframework.context.support.AbstractApplicationContext;
 
+import eu.baltrad.bdb.BasicFileCatalog;
+import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.Database;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.rest.RestfulDatabase;
+import eu.baltrad.bdb.storage.LocalStorage;
+import eu.baltrad.bdb.storage.NullStorage;
+import eu.baltrad.bdb.util.DateTime;
+
 import eu.baltrad.beast.db.filters.PolarScanAngleFilter;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.LocalStorage;
-import eu.baltrad.fc.NullStorage;
-import eu.baltrad.fc.Database;
-import eu.baltrad.fc.FileEntry;
 
 /**
  * @author Anders Henja
@@ -64,7 +68,7 @@ public class CatalogITest extends TestCase {
   }
 
   private String getFilePath(String resource) throws Exception {
-    java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
+    File f = new File(this.getClass().getResource(resource).getFile());
     return f.getAbsolutePath();
   }
   
@@ -72,9 +76,9 @@ public class CatalogITest extends TestCase {
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.createBaltradDbPath();
-    db = Database.create(helper.getBaltradDbUri());
+    db = new RestfulDatabase(helper.getBaltradDbUri());
     storage = new NullStorage();
-    catalog = new FileCatalog(db, storage);
+    catalog = new BasicFileCatalog(db, storage);
     
     classUnderTest = new Catalog();
     classUnderTest.setCatalog(catalog);
@@ -82,11 +86,11 @@ public class CatalogITest extends TestCase {
     helper.purgeBaltradDB();
     long startTime = System.currentTimeMillis();
     for (String n : FIXTURES) {
-      FileEntry result = catalog.store(getFilePath(n));
+      FileEntry result = catalog.store(new FileInputStream(getFilePath(n)));
       assertNotNull(result);
     }
     for (String n : SCAN_FIXTURES) {
-      FileEntry result = catalog.store(getFilePath(n));
+      FileEntry result = catalog.store(new FileInputStream(getFilePath(n)));
       assertNotNull(result);
     }
     System.out.println("Catalogued " + (FIXTURES.length+SCAN_FIXTURES.length) + " files in " + (System.currentTimeMillis() - startTime) + "ms");
@@ -95,9 +99,7 @@ public class CatalogITest extends TestCase {
   public void tearDown() throws Exception {
     classUnderTest = null;
     helper = null;
-    catalog.delete();
-    storage.delete();
-    db.delete();
+    db.close();
     context.close();
   }
   
@@ -131,7 +133,7 @@ public class CatalogITest extends TestCase {
   
   public void testFetch_TimeIntervalFilter_previous() throws Exception {
     // First we need to add one entry from the current time period
-    catalog.store(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    catalog.store(new FileInputStream(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5")));
     
     // and now execute test, we shouldn't get the scan from specified time
     TimeIntervalFilter filter = new TimeIntervalFilter();
@@ -142,16 +144,11 @@ public class CatalogITest extends TestCase {
     List<CatalogEntry> result = classUnderTest.fetch(filter);
     assertEquals(1, result.size());
     DateTime dt = result.get(0).getDateTime();
-    assertEquals(2009, dt.date().year());
-    assertEquals(5, dt.date().month());
-    assertEquals(1, dt.date().day());
-    assertEquals(12, dt.time().hour());
-    assertEquals(31, dt.time().minute());
-    assertEquals(0, dt.time().second());
+    assertEquals(new DateTime(2009, 5, 1, 12, 31), dt);
   }
   
   public void testFetch_PolarScanAngleFilter_ascending() throws Exception {
-    catalog.store(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    catalog.store(new FileInputStream(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5")));
 
     PolarScanAngleFilter filter = new PolarScanAngleFilter();
     filter.setSource("sevil");
@@ -165,7 +162,7 @@ public class CatalogITest extends TestCase {
   }
 
   public void testFetch_PolarScanAngleFilter_descending() throws Exception {
-    catalog.store(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    catalog.store(new FileInputStream(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5")));
     
     PolarScanAngleFilter filter = new PolarScanAngleFilter();
     filter.setSource("sevil");
@@ -179,7 +176,7 @@ public class CatalogITest extends TestCase {
   }
 
   public void testFetch_PolarScanAngleFilter_minMaxElevation() throws Exception {
-    catalog.store(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5"));
+    catalog.store(new FileInputStream(getFilePath("fixtures/scan_sevil_20090501124600Z_1.0.h5")));
     
     PolarScanAngleFilter filter = new PolarScanAngleFilter();
     filter.setSource("sevil");

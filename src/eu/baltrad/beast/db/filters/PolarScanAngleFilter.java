@@ -18,10 +18,15 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db.filters;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+import eu.baltrad.bdb.util.DateTime;
+
 import eu.baltrad.beast.db.ICatalogFilter;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.ExpressionFactory;
 
 /**
  * @author Anders Henja
@@ -63,7 +68,7 @@ public class PolarScanAngleFilter implements ICatalogFilter {
   private double maxElevation = 90.0;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.FileQuery)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.bdb.db.FileQuery)
    */
   @Override
   public void apply(FileQuery query) {
@@ -73,19 +78,23 @@ public class PolarScanAngleFilter implements ICatalogFilter {
       throw new IllegalArgumentException("datetime and source id required");
     }
 
-    query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
-    query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
+    List<Expression> filters = new ArrayList<Expression>();
 
-    query.filter(xpr.eq(xpr.attribute("what/date"), xpr.date(dt)));
-    query.filter(xpr.eq(xpr.attribute("what/time"), xpr.time(dt)));
+    filters.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
+    filters.add(xpr.eq(xpr.attribute("what/source:_name"), xpr.literal(source)));
 
-    query.filter(xpr.ge(xpr.attribute("where/elangle"), xpr.double_(minElevation)));
-    query.filter(xpr.le(xpr.attribute("where/elangle"), xpr.double_(maxElevation)));
+    filters.add(xpr.eq(xpr.attribute("what/date"), xpr.literal(dt.getDate())));
+    filters.add(xpr.eq(xpr.attribute("what/time"), xpr.literal(dt.getTime())));
+
+    filters.add(xpr.ge(xpr.attribute("where/elangle"), xpr.literal(minElevation)));
+    filters.add(xpr.le(xpr.attribute("where/elangle"), xpr.literal(maxElevation)));
+
+    query.setFilter(xpr.and(filters));
     
     if (this.order == ASCENDING) {
-      query.order_by(xpr.attribute("where/elangle"), FileQuery.SortDir.ASC);
+      query.appendOrderClause(xpr.asc(xpr.attribute("where/elangle")));
     } else {
-      query.order_by(xpr.attribute("where/elangle"), FileQuery.SortDir.DESC);
+      query.appendOrderClause(xpr.desc(xpr.attribute("where/elangle")));
     }
   }
 

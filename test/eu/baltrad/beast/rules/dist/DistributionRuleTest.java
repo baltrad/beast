@@ -31,10 +31,10 @@ import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.net.FileUploader;
 
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.Oh5Metadata;
-import eu.baltrad.fc.Oh5MetadataMatcher;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 
 public class DistributionRuleTest extends TestCase {
   private static interface DistributionRuleMethods {
@@ -48,10 +48,12 @@ public class DistributionRuleTest extends TestCase {
   private DistributionRuleMethods methods;
   private MockControl entryControl;
   private FileEntry entry;
+  private MockControl expressionControl;
+  private Expression expression;
   private MockControl metadataControl;
-  private Oh5Metadata metadata;
+  private Metadata metadata;
   private MockControl matcherControl;
-  private Oh5MetadataMatcher matcher;
+  private MetadataMatcher matcher;
   private MockControl filterControl;
   private IFilter filter;
   private MockControl fileControl;
@@ -66,10 +68,12 @@ public class DistributionRuleTest extends TestCase {
     methods = (DistributionRuleMethods)methodsControl.getMock();
     entryControl = MockClassControl.createControl(FileEntry.class);
     entry = (FileEntry)entryControl.getMock();
-    metadataControl = MockClassControl.createControl(Oh5Metadata.class);
-    metadata = (Oh5Metadata)metadataControl.getMock();
-    matcherControl = MockClassControl.createControl(Oh5MetadataMatcher.class);
-    matcher = (Oh5MetadataMatcher)matcherControl.getMock();
+    expressionControl = MockControl.createControl(Expression.class);
+    expression = (Expression)expressionControl.getMock();
+    metadataControl = MockClassControl.createControl(Metadata.class);
+    metadata = (Metadata)metadataControl.getMock();
+    matcherControl = MockClassControl.createControl(MetadataMatcher.class);
+    matcher = (MetadataMatcher)matcherControl.getMock();
     filterControl = MockControl.createControl(IFilter.class);
     filter = (IFilter)filterControl.getMock();
     fileControl = MockClassControl.createControl(File.class);
@@ -155,12 +159,11 @@ public class DistributionRuleTest extends TestCase {
   }
 
   public void testMatch() {
-    Expression x = new Expression();
     filter.getExpression();
-    filterControl.setReturnValue(x);
-    entry.metadata();
+    filterControl.setReturnValue(expression);
+    entry.getMetadata();
     entryControl.setReturnValue(metadata);
-    matcher.match(metadata, x);
+    matcher.match(metadata, expression);
     matcherControl.setReturnValue(true);
     replay();
 
@@ -188,7 +191,8 @@ public class DistributionRuleTest extends TestCase {
     classUnderTest.upload(entry);
     verify();
   }
-
+  
+  @SuppressWarnings("deprecation")
   public void testEntryToFile() {
     classUnderTest = new DistributionRule() {
       @Override
@@ -201,7 +205,7 @@ public class DistributionRuleTest extends TestCase {
 
     methods.name(entry);
     methodsControl.setReturnValue("name");
-    entry.write_to_file(f.toString());
+    entry.writeToFile(f); // XXX: deprecated
     replay();
 
     File result = classUnderTest.entryToFile(entry);

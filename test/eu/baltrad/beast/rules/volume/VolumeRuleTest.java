@@ -27,6 +27,10 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.springframework.beans.factory.BeanInitializationException;
 
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.Time;
+
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
@@ -34,9 +38,6 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Time;
 
 /**
  * @author Anders Henja
@@ -162,7 +163,7 @@ public class VolumeRuleTest extends TestCase {
     timeoutControl.setReturnValue(null);
     methods.areCriteriasMet(entries, nominalTime, "some");
     methodsControl.setReturnValue(true);
-    methods.filterEntries(entries, nominalTime.time());
+    methods.filterEntries(entries, nominalTime.getTime());
     methodsControl.setReturnValue(newentries);
     methods.createMessage(nominalTime, newentries);
     methodsControl.setReturnValue(message);

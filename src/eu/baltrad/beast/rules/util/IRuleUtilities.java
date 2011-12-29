@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.Time;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.Time;
 
 /**
  * Utility functions when accessing the database and querying for

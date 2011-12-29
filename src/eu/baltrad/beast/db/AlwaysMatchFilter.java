@@ -21,8 +21,8 @@ package eu.baltrad.beast.db;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.BooleanExpression;
 
 /**
  * Always matching filter
@@ -56,7 +56,7 @@ public class AlwaysMatchFilter implements IFilter {
    */
   @Override
   public Expression getExpression() {
-    return new Expression(true);
+    return new BooleanExpression(true);
   }
 
   /**

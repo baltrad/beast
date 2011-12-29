@@ -31,12 +31,12 @@ import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.TimeDelta;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.FileResult;
-import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.db.FileResult;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.TimeDelta;
 
 /**
  * Rule to keep the age of files in BDB above a limit.
@@ -158,7 +158,7 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
    */
   protected void execute() {
     FileQuery qry = getExcessiveFileQuery();
-    FileResult rset = catalog.database().execute(qry);
+    FileResult rset = catalog.getDatabase().execute(qry);
     try {
       int numFiles = rset.size();
       int numRemoved = 0;
@@ -167,11 +167,11 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
           logger.debug("removing files from " + numRemoved +
                        " onwards of " + numFiles);
         }
-        catalog.remove(rset.entry());
+        catalog.remove(rset.getFileEntry());
         numRemoved += 1;
       }
     } finally {
-      rset.delete();
+      rset.close();
     }
   }
     
@@ -181,7 +181,10 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
   protected FileQuery getExcessiveFileQuery() {
     ExpressionFactory xpr = new ExpressionFactory();
     FileQuery qry = new FileQuery();
-    qry.filter(xpr.lt(xpr.combined_datetime("what/date", "what/time"), xpr.datetime(getAgeLimitDateTime())));
+    qry.setFilter(xpr.lt(
+      xpr.combinedDateTime("what/date", "what/time"),
+      xpr.literal(getAgeLimitDateTime())
+    ));
     return qry;
   }
 
@@ -190,8 +193,8 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
    */
   protected DateTime getAgeLimitDateTime() {
     TimeDelta dt = new TimeDelta();
-    dt.add_days(-(fileAgeLimit / SECONDS_IN_DAY));
-    dt.add_seconds(-(fileAgeLimit % SECONDS_IN_DAY));
+    dt = dt.addDays(-(fileAgeLimit / SECONDS_IN_DAY));
+    dt = dt.addSeconds(-(fileAgeLimit % SECONDS_IN_DAY));
     return getCurrentDateTime().add(dt);
   }
   
@@ -199,7 +202,7 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
    * get current UTC DateTime
    */
   protected DateTime getCurrentDateTime() {
-    return DateTime.utc_now();
+    return DateTime.utcNow();
   }
 
   /**

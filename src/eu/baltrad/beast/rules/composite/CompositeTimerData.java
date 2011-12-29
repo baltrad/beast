@@ -21,7 +21,7 @@ package eu.baltrad.beast.rules.composite;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.baltrad.fc.DateTime;
+import eu.baltrad.bdb.util.DateTime;
 
 /**
  * Used for keeping track on registered tasks in the timeout manager.
@@ -82,12 +82,7 @@ public class CompositeTimerData {
     if (data instanceof CompositeTimerData && data.getClass() == CompositeTimerData.class) {
       CompositeTimerData ctd = (CompositeTimerData)data;
       DateTime odt = ctd.getDateTime();
-      if (dt.date().year() == odt.date().year() &&
-          dt.date().month() == odt.date().month() &&
-          dt.date().day() == odt.date().day() &&
-          dt.time().hour() == odt.time().hour() &&
-          dt.time().minute() == odt.time().minute() &&
-          dt.time().second() == odt.time().second() &&
+      if (dt.equals(odt) && 
           ctd.getRuleId() == this.ruleid) {
           result = true;
       }

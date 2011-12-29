@@ -18,11 +18,14 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
+import java.io.File;
+import java.util.UUID;
+
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.springframework.beans.factory.BeanInitializationException;
 
-import eu.baltrad.fc.FileCatalog;
+import eu.baltrad.bdb.FileCatalog;
 
 import junit.framework.TestCase;
 
@@ -41,7 +44,7 @@ public class CatalogTest extends TestCase {
   }
   
   public void testAfterPropertiesSet() throws Exception {
-    MockControl fcControl = MockClassControl.createControl(FileCatalog.class);
+    MockControl fcControl = MockControl.createControl(FileCatalog.class);
     FileCatalog fc = (FileCatalog)fcControl.getMock();
     classUnderTest.setCatalog(fc);
     
@@ -53,15 +56,16 @@ public class CatalogTest extends TestCase {
   }
 
   public void testGetFileCatalogPath() throws Exception {
-    MockControl fcControl = MockClassControl.createControl(FileCatalog.class);
+    MockControl fcControl = MockControl.createControl(FileCatalog.class);
     FileCatalog fc = (FileCatalog)fcControl.getMock();
     classUnderTest.setCatalog(fc);
-
-    fc.local_path_for_uuid("xyz");
-    fcControl.setReturnValue("/some/path");
+    
+    UUID entryUuid = UUID.randomUUID();
+    fc.getLocalPathForUuid(entryUuid);
+    fcControl.setReturnValue(new File("/some/path"));
     
     fcControl.replay();
-    String result = classUnderTest.getFileCatalogPath("xyz");
+    String result = classUnderTest.getFileCatalogPath(entryUuid.toString());
     fcControl.verify();
     assertEquals("/some/path", result);
   }

@@ -27,15 +27,15 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.springframework.beans.factory.BeanInitializationException;
 
+import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.Database;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.db.FileResult;
+import eu.baltrad.bdb.util.DateTime;
+
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.Database;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.FileResult;
-
 
 public class BdbTrimAgeRuleTest extends TestCase {
   private BdbTrimAgeRule classUnderTest = null;
@@ -65,7 +65,7 @@ public class BdbTrimAgeRuleTest extends TestCase {
     methods = (BdbTrimAgeRuleMethods)methodsControl.getMock();
     dbControl = MockClassControl.createControl(Database.class);
     db = (Database)dbControl.getMock();
-    catalogControl = MockClassControl.createControl(FileCatalog.class);
+    catalogControl = MockControl.createControl(FileCatalog.class);
     catalog = (FileCatalog)catalogControl.getMock();
     queryControl = MockClassControl.createControl(FileQuery.class);
     query = (FileQuery)queryControl.getMock();
@@ -170,7 +170,7 @@ public class BdbTrimAgeRuleTest extends TestCase {
 
     methods.getExcessiveFileQuery();
     methodsControl.setReturnValue(query);
-    catalog.database();
+    catalog.getDatabase();
     catalogControl.setReturnValue(db);
     db.execute(query);
     dbControl.setReturnValue(result);
@@ -178,13 +178,12 @@ public class BdbTrimAgeRuleTest extends TestCase {
     resultControl.setReturnValue(1);
     result.next();
     resultControl.setReturnValue(true);
-    result.entry();
+    result.getFileEntry();
     resultControl.setReturnValue(entry);
     catalog.remove(entry);
-    catalogControl.setReturnValue(true);
     result.next();
     resultControl.setReturnValue(false);
-    result.delete();
+    result.close();
     replay();
   
     classUnderTest.execute();
@@ -237,8 +236,8 @@ public class BdbTrimAgeRuleTest extends TestCase {
       }
     };
     classUnderTest.setFileAgeLimit(86400 * 45);
-    DateTime now = new DateTime(2011, 1, 7, 11);
-    DateTime expected = new DateTime(2010, 11, 23, 11);
+    DateTime now = new DateTime(2011, 1, 7, 11, 0);
+    DateTime expected = new DateTime(2010, 11, 23, 11, 0);
 
     methods.getCurrentDateTime();
     methodsControl.setReturnValue(now);

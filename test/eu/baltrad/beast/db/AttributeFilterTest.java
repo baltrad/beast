@@ -26,8 +26,8 @@ import org.codehaus.jackson.node.JsonNodeFactory;
 
 import junit.framework.TestCase;
 
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
 
 public class AttributeFilterTest extends TestCase {
   private AttributeFilter classUnderTest;
@@ -41,7 +41,10 @@ public class AttributeFilterTest extends TestCase {
   }
 
   public void testGetExpression_singleValuedDouble() {
-    Expression expected = xpr.lt(xpr.attribute("where/elangle"), xpr.double_(7.5));
+    Expression expected = xpr.lt(
+      xpr.attribute("where/elangle"),
+      xpr.literal(7.5)
+    );
     classUnderTest.setAttribute("where/elangle");
     classUnderTest.setOperator(AttributeFilter.Operator.LT);
     classUnderTest.setValueType(AttributeFilter.ValueType.DOUBLE);
@@ -50,7 +53,10 @@ public class AttributeFilterTest extends TestCase {
   }
 
   public void testGetExpression_multiValuedString() {
-    Expression expected = xpr.in(xpr.attribute("what/object"), xpr.list(new Expression(new Expression[]{xpr.string("PVOL"), xpr.string("SCAN")})));
+    Expression expected = xpr.in(
+      xpr.attribute("what/object"),
+      xpr.list(xpr.literal("PVOL"), xpr.literal("SCAN"))
+    );
     classUnderTest.setAttribute("what/object");
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
@@ -59,7 +65,12 @@ public class AttributeFilterTest extends TestCase {
   }
 
   public void testGetExpression_negated() {
-    Expression expected = xpr.not_(xpr.eq(xpr.attribute("what/object"), xpr.string("PVOL")));
+    Expression expected = xpr.not(
+      xpr.eq(
+        xpr.attribute("what/object"),
+        xpr.literal("PVOL")
+      )
+    );
     classUnderTest.setAttribute("what/object");
     classUnderTest.setOperator(AttributeFilter.Operator.EQ);
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
@@ -69,11 +80,7 @@ public class AttributeFilterTest extends TestCase {
   }
 
   public void testGetValueExpression_multiValuedString() {
-    Expression expected = xpr.list(new Expression(
-                                    new Expression[]{
-                                      xpr.string("PVOL"),
-                                      xpr.string("SCAN")
-                                    }));
+    Expression expected = xpr.list(xpr.literal("PVOL"), xpr.literal("SCAN"));
 
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);

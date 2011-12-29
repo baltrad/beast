@@ -18,10 +18,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.Oh5Attribute;
-import eu.baltrad.fc.Oh5Scalar;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.Attribute;
+import eu.baltrad.bdb.util.DateTime;
 
 /**
  * @author Anders Henja
@@ -48,7 +47,7 @@ public class CatalogEntry {
    */
   public String getUuid() {
     if (entry != null)
-      return entry.uuid();
+      return entry.getUuid().toString();
     else
       return null;
   }
@@ -58,7 +57,7 @@ public class CatalogEntry {
    */
   public String getObject() {
     if (entry != null)
-      return entry.metadata().what_object();
+      return entry.getMetadata().getWhatObject();
     else
       return null;
   }
@@ -68,7 +67,7 @@ public class CatalogEntry {
    */
   public String getSource() {
     if (entry != null)
-      return entry.source().get("_name");
+      return entry.getSource().getName();
     else
       return null;
   }
@@ -77,28 +76,34 @@ public class CatalogEntry {
    * @return the date time
    */
   public DateTime getDateTime() {
-    if (entry != null)
-      return new DateTime(entry.metadata().what_date(),
-                          entry.metadata().what_time());
-    else
+    if (entry != null) {
+      return new DateTime(
+        entry.getMetadata().getWhatDate(),
+        entry.getMetadata().getWhatTime()
+      );
+    } else {
       return null;
+    }
   }
   
   public Object getAttribute(String name) {
     if (entry == null)
       return null;
-    Oh5Attribute attr = entry.metadata().root().attribute(name);
+    Attribute attr = entry.getMetadata().getAttribute(name);
     if (attr == null)
       return null;
-    Oh5Scalar value = attr.value();
-    if (value.type() == Oh5Scalar.Type.STRING) {
-      return value.string();
-    } else if (value.type() == Oh5Scalar.Type.INT64) {
-      return new Long(value.int64_());
-    } else if (value.type() == Oh5Scalar.Type.DOUBLE) {
-      return new Double(value.double_());
-    } else {
-      throw new RuntimeException("unhandled Oh5Scalar type: " + value.type().toString());
+
+    switch (attr.getType()) {
+      case STRING:
+        return attr.toString();
+      case LONG:
+        return attr.toLong();
+      case DOUBLE:
+        return attr.toDouble();
+      default:
+        throw new RuntimeException(
+          "unhandled attribute type: " + attr.getType()
+        );
     }
   }
 }

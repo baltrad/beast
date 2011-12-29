@@ -31,11 +31,11 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 
+import eu.baltrad.bdb.expr.Expression;
+
 import eu.baltrad.beast.db.CoreFilterManager;
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.db.IFilterManager;
-
-import eu.baltrad.fc.Expression;
 
 public class RuleFilterManagerDBTest extends TestCase {
   private RuleFilterManager classUnderTest = null;

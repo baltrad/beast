@@ -23,8 +23,13 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import org.springframework.util.StringUtils;
 
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.bdb.expr.BooleanExpression;
+import eu.baltrad.bdb.expr.DoubleExpression;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+import eu.baltrad.bdb.expr.ListExpression;
+import eu.baltrad.bdb.expr.LongExpression;
+import eu.baltrad.bdb.expr.StringExpression;
 
 
 /**
@@ -57,30 +62,30 @@ public class AttributeFilter implements IFilter {
     STRING() {
       @Override
       public Expression parseString(String str) {
-        return new Expression(str);
+        return new StringExpression(str);
       }
     },
     LONG() {
       @Override
       public Expression parseString(String str) {
-        return new Expression(Long.parseLong(str));
+        return new LongExpression(Long.parseLong(str));
       }
 
       @Override
       public String toBdbAttributeType() {
-        return "int64";
+        return "long";
       }
     },
     DOUBLE() {
       @Override
       public Expression parseString(String str) {
-        return new Expression(Double.parseDouble(str));
+        return new DoubleExpression(Double.parseDouble(str));
       }
     },
     BOOL() {
       @Override
       public Expression parseString(String str) {
-        return new Expression(Boolean.parseBoolean(str));
+        return new BooleanExpression(Boolean.parseBoolean(str));
       }
     };
     
@@ -162,9 +167,11 @@ public class AttributeFilter implements IFilter {
   public Expression getExpression() {
     Expression attrExpr = xpr.attribute(attr, valueType.toBdbAttributeType());
     Expression valueExpr = getValueExpression();
-    Expression opExpr = xpr.binary_op(op.toBdbBinaryOperatorType(), attrExpr, valueExpr);
+    Expression opExpr = xpr.binaryOperator(
+      op.toBdbBinaryOperatorType(), attrExpr, valueExpr
+    );
     if (isNegated()) {
-      return xpr.not_(opExpr);
+      return xpr.not(opExpr);
     } else {
       return opExpr;
     }
@@ -177,7 +184,7 @@ public class AttributeFilter implements IFilter {
   public boolean isValid() {
     try {
       getExpression();
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       return false;
     }
     return true;
@@ -200,14 +207,14 @@ public class AttributeFilter implements IFilter {
 
   protected Expression getValueExpression() {
     if (op.isMultiValued()) {
-      Expression exprList = new Expression();
+      ListExpression exprList = new ListExpression();
       String[] values = StringUtils.commaDelimitedListToStringArray(value);
       if (values.length == 0)
         throw new RuntimeException("no value associated with AttributeFilter");
       for (int i = 0; i < values.length; i++) {
-        exprList.push_back(valueType.parseString(values[i].trim()));
+        exprList.add(valueType.parseString(values[i].trim()));
       }
-      return xpr.list(exprList);
+      return exprList;
     } else {
       return valueType.parseString(value);
     }

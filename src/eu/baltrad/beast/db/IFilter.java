@@ -23,7 +23,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
-import eu.baltrad.fc.Expression;
+import eu.baltrad.bdb.expr.Expression;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME,
               include=JsonTypeInfo.As.PROPERTY,

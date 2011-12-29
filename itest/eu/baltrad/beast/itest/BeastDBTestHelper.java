@@ -27,6 +27,9 @@ import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
+import eu.baltrad.bdb.db.Database;
+import eu.baltrad.bdb.db.rest.RestfulDatabase;
+
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -321,8 +324,8 @@ public class BeastDBTestHelper {
       }
     }
 
-    SimpleJdbcTemplate template = new SimpleJdbcTemplate(getSource());
-    template.update("delete from bdb_files");
+    Database baltradDb = new RestfulDatabase(getBaltradDbUri());
+    baltradDb.removeAllFileEntries();
   }
   
   /**

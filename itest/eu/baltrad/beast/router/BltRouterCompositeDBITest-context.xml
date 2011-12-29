@@ -48,15 +48,15 @@
   <bean id="timeoutmanager" class="eu.baltrad.beast.rules.timer.TimeoutManager" autowire="byType" />
   <bean id="anomalymanager" class="eu.baltrad.beast.qc.AnomalyDetectorManager" autowire="byType" />
   
-  <bean id="bdb_db" class="eu.baltrad.fc.Database" factory-method="create" destroy-method="delete">
+  <bean id="bdb_db" class="eu.baltrad.bdb.db.rest.RestfulDatabase">
        <constructor-arg value="${blt.db.uri}" />
   </bean>
   
-  <bean id="bdb_storage" class="eu.baltrad.fc.CacheDirStorage" destroy-method="delete">
+  <bean id="bdb_storage" class="eu.baltrad.bdb.storage.CacheDirStorage">
        <constructor-arg value="${blt.db.path}" />
   </bean>
   
-  <bean id="fc" class="eu.baltrad.fc.FileCatalog" destroy-method="delete">
+  <bean id="fc" class="eu.baltrad.bdb.BasicFileCatalog">
        <constructor-arg ref="bdb_db" />
        <constructor-arg ref="bdb_storage" />
   </bean>

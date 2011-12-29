@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.util;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +28,10 @@ import junit.framework.TestCase;
 
 import org.springframework.context.support.AbstractApplicationContext;
 
+import eu.baltrad.bdb.util.DateTime;
+
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.fc.DateTime;
-
 
 /**
  * @author Anders Henja
@@ -65,12 +67,12 @@ public class RuleUtilitiesITest extends TestCase {
     classUnderTest.setCatalog(catalog);
     
     for (String s: FIXTURES) {
-      catalog.getCatalog().store(getFilePath(s));
+      catalog.getCatalog().store(new FileInputStream(getFilePath(s)));
     }
   }
   
   private String getFilePath(String resource) throws Exception {
-    java.io.File f = new java.io.File(this.getClass().getResource(resource).getFile());
+    File f = new File(this.getClass().getResource(resource).getFile());
     return f.getAbsolutePath();
   }
   

@@ -32,15 +32,15 @@ import org.apache.log4j.Logger;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.LocalStorage;
-import eu.baltrad.fc.Time;
-import eu.baltrad.fc.AttributeQuery;
-import eu.baltrad.fc.AttributeResult;
-import eu.baltrad.fc.ExpressionFactory;
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.Oh5Source;
+import eu.baltrad.bdb.db.AttributeQuery;
+import eu.baltrad.bdb.db.AttributeResult;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.oh5.Source;
+import eu.baltrad.bdb.storage.LocalStorage;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.Time;
 
 /**
  * @author Anders Henja
@@ -98,7 +98,7 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#fetchLowestSourceElevationAngle(eu.baltrad.fc.DateTime, eu.baltrad.fc.DateTime, java.util.List)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#fetchLowestSourceElevationAngle(eu.baltrad.bdb.util.DateTime, eu.baltrad.bdb.util.DateTime, java.util.List)
    */
   @Override
   public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources) {
@@ -108,35 +108,35 @@ public class RuleUtilities implements IRuleUtilities {
     }
 
     ExpressionFactory xpr = new ExpressionFactory();
-    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
+    Expression dtAttr = xpr.combinedDateTime("what/date", "what/time");
     Expression srcAttr = xpr.attribute("what/source:_name");
     
-    Expression srcExpr = new Expression();
+    List<Expression> srcExpr = new ArrayList<Expression>();
     for (String srcStr : sources) {
-      srcExpr.push_back(xpr.string(srcStr));
+      srcExpr.add(xpr.literal(srcStr));
     }
 
     List<Expression> filter = new ArrayList<Expression>();
-    filter.add(xpr.eq(xpr.attribute("what/object"), xpr.string("SCAN")));
-    filter.add(xpr.ge(dtAttr, xpr.datetime(startDT)));
-    filter.add(xpr.lt(dtAttr, xpr.datetime(stopDT)));
+    filter.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
+    filter.add(xpr.ge(dtAttr, xpr.literal(startDT)));
+    filter.add(xpr.lt(dtAttr, xpr.literal(stopDT)));
     filter.add(xpr.in(srcAttr, xpr.list(srcExpr)));
 
     AttributeQuery qry = new AttributeQuery();
     qry.fetch("source", srcAttr);
     qry.fetch("min_elangle", xpr.min(xpr.attribute("where/elangle")));
-    qry.filter(xpr.and_(new Expression(filter)));
-    qry.group(srcAttr);
+    qry.setFilter(xpr.and(filter));
+    qry.appendGroupClause(srcAttr);
 
-    AttributeResult rset = catalog.getCatalog().database().execute(qry);
+    AttributeResult rset = catalog.getCatalog().getDatabase().execute(qry);
     try {
       while (rset.next()) {
-        if (!rset.is_null("min_elangle")) {
-          result.put(rset.string("source"), rset.double_("min_elangle"));
+        if (!rset.isNull("min_elangle")) {
+          result.put(rset.getString("source"), rset.getDouble("min_elangle"));
         }
       }
     } finally {
-      rset.delete();
+      rset.close();
     }
 
     return result;
@@ -157,7 +157,7 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getEntriesByClosestTime(eu.baltrad.fc.DateTime, java.util.List)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getEntriesByClosestTime(eu.baltrad.bdb.util.DateTime, java.util.List)
    */
   @Override
   public List<CatalogEntry> getEntriesByClosestTime(DateTime nominalDT, List<CatalogEntry> entries) {
@@ -201,21 +201,21 @@ public class RuleUtilities implements IRuleUtilities {
   @Override
   public List<String> getFilesFromEntries(List<CatalogEntry> entries) {
     List<String> result = new ArrayList<String>();
-    LocalStorage storage = catalog.getCatalog().storage();
+    LocalStorage storage = catalog.getCatalog().getLocalStorage();
     for (CatalogEntry entry : entries) {
-      result.add(storage.store(entry.getFileEntry()));
+      result.add(storage.store(entry.getFileEntry()).toString());
     }
     return result;
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createCalendar(eu.baltrad.fc.DateTime)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createCalendar(eu.baltrad.bdb.util.DateTime)
    */
   @Override
   public GregorianCalendar createCalendar(DateTime dt) {
     GregorianCalendar c = new GregorianCalendar();
-    Date date = dt.date();
-    Time time = dt.time();
+    Date date = dt.getDate();
+    Time time = dt.getTime();
     c.set(date.year(), date.month()-1, date.day(), time.hour(), time.minute(), time.second());
     return c;
   }
@@ -236,21 +236,21 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createNominalTime(eu.baltrad.fc.DateTime, int)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createNominalTime(eu.baltrad.bdb.util.DateTime, int)
    */
   @Override
   public DateTime createNominalTime(DateTime now, int interval) {
     if (interval == 0 || 60%interval != 0) {
       throw new IllegalArgumentException("Interval must be evenly dividable by 60");
     }
-    Time t = now.time();
-    Date d = now.date();
+    Time t = now.getTime();
+    Date d = now.getDate();
     int period = t.minute() / interval;
     return new DateTime(d, new Time(t.hour(), period*interval, 0));
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createNominalTime(eu.baltrad.fc.Date, eu.baltrad.fc.Time, int)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createNominalTime(eu.baltrad.bdb.util.Date, eu.baltrad.bdb.util.Time, int)
    */
   @Override
   public DateTime createNominalTime(Date d, Time t, int interval) {
@@ -258,7 +258,7 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createNextNominalTime(eu.baltrad.fc.DateTime, int)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createNextNominalTime(eu.baltrad.bdb.util.DateTime, int)
    */
   @Override
   public DateTime createNextNominalTime(DateTime now, int interval) {
@@ -266,7 +266,7 @@ public class RuleUtilities implements IRuleUtilities {
       throw new IllegalArgumentException("Interval must be evenly dividable by 60");
     }
     GregorianCalendar cal = createCalendar(now);
-    Time t = now.time();
+    Time t = now.getTime();
     int period = t.minute() / interval;
     int minute = (period + 1) * interval;
     cal.set(Calendar.MINUTE, minute);
@@ -276,7 +276,7 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createPrevNominalTime(eu.baltrad.fc.DateTime, int)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createPrevNominalTime(eu.baltrad.bdb.util.DateTime, int)
    */
   @Override
   public DateTime createPrevNominalTime(DateTime now, int interval) {
@@ -284,7 +284,7 @@ public class RuleUtilities implements IRuleUtilities {
       throw new IllegalArgumentException("Interval must be evenly dividable by 60");
     }
     GregorianCalendar cal = createCalendar(now);
-    Time t = now.time();
+    Time t = now.getTime();
     int period = t.minute() / interval;
     int minute = (period - 1) * interval;
     cal.set(Calendar.MINUTE, minute);
@@ -295,7 +295,7 @@ public class RuleUtilities implements IRuleUtilities {
   
   /**
    * This function will keep a backlog of 100 entries.
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#trigger(int, eu.baltrad.fc.DateTime)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#trigger(int, eu.baltrad.bdb.util.DateTime)
    */
   @Override
   public synchronized void trigger(int ruleid, DateTime now) {
@@ -313,7 +313,7 @@ public class RuleUtilities implements IRuleUtilities {
   }
   
   /**
-   * @see eu.baltrad.beast.rules.util.IRuleUtilities#isTriggered(int, eu.baltrad.fc.DateTime)
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#isTriggered(int, eu.baltrad.bdb.util.DateTime)
    */
   @Override
   public synchronized boolean isTriggered(int ruleid, DateTime now) {
@@ -325,12 +325,12 @@ public class RuleUtilities implements IRuleUtilities {
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#getRadarSources()
    */
   public synchronized List<String> getRadarSources() {
-    List<Oh5Source> sources = catalog.getCatalog().database().sources();
+    List<Source> sources = catalog.getCatalog().getDatabase().getSources();
     List<String> radarNames = new ArrayList<String>(sources.size());
 
-    for (Oh5Source src : sources) {
+    for (Source src : sources) {
       if (src.has("RAD")) {
-         radarNames.add(src.get("_name"));
+         radarNames.add(src.getName());
       }
     }
     return radarNames;

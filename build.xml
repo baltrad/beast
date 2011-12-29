@@ -47,22 +47,14 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 
   <!-- override this with -Dbaltraddb.path= -->
   <property name="baltraddb.path" value="/opt/baltrad/db-devel"/>
+  <property name="baltraddb.bin.path" value="${baltraddb.path}/bin"/>
+
   <available file="${baltraddb.path}" type="dir" property="baltraddb.available"/>
-  <fail unless="baltraddb.available" message="Can not build the beast library without baltrad-db!" />
+  <available file="${baltraddb.path}/share/baltrad-bdb/java/baltrad-bdb-client.jar" property="baltrad-bdb-client.jar.available"/>
+  <available file="${baltraddb.bin.path}/baltrad-bdb-server" property="baltrad-bdb-server.available"/>
 
-  <available file="${baltraddb.path}/share/baltrad-db/java/jbrfc.jar" property="jbrfc.jar.available"/>
-  <available file="${baltraddb.path}/lib/libbrfc_java.so" property="libjbrfc_java.so.available"/>
-  <available file="${baltraddb.path}/lib/libbrfc.so" property="libbrfc.so.available"/>
-  <available file="${baltraddb.path}/share/baltrad-db/sql/postgresql/create.sql" property="create.sql.available"/>
-  <available file="${baltraddb.path}/share/baltrad-db/sql/postgresql/data.sql" property="data.sql.available"/>
-  <available file="${baltraddb.path}/share/baltrad-db/sql/postgresql/drop.sql" property="drop.sql.available"/>
-
-  <fail unless="jbrfc.jar.available" message="Can not find baltrad-db / jbrfc.jar!" />
-  <fail unless="libjbrfc_java.so.available" message="Can not find baltrad-db / libjbrfc_java.so!" />
-  <fail unless="libbrfc.so.available" message="Can not find baltrad-db / libbrfc.so!" />
-  <fail unless="create.sql.available" message="Can not find baltrad-db / create.sql!" />
-  <fail unless="data.sql.available" message="Can not find baltrad-db / data.sql!" />
-  <fail unless="drop.sql.available" message="Can not find baltrad-db / drop.sql!" />
+  <fail unless="baltrad-bdb-client.jar.available" message="Can not find baltrad-bdb-client.jar!" />
+  <fail unless="baltrad-bdb-server.available" message="Can not find baltrad-bdb-server executable" />
 
   <fail unless="blt.db.path" message="No storage root path defined (blt.db.path)!"/>
 	
@@ -75,9 +67,12 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <exclude name="emma/*.jar"/>
       <exclude name="cglib/*.jar"/>
     </fileset>
-  	<fileset dir="${baltraddb.path}/share/baltrad-db/java">
-  	  <include name="jbrfc.jar"/>
-  	</fileset>
+    <fileset dir="${baltraddb.path}/share/baltrad-bdb/java/">
+      <include name="baltrad-bdb-client.jar"/>
+    </fileset>
+    <fileset dir="${baltraddb.path}/share/baltrad-bdb/java/">
+      <include name="libs/*.jar"/>
+    </fileset>
   </path>
 
   <path id="test.lib.path">
@@ -294,17 +289,6 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	  <transaction src="${etc.dir}/drop_db.sql"/>
 	  <transaction src="${etc.dir}/create_db.sql"/>
 	</sql>
-
-  	<!--Add the baltrad-db database sceheme as well -->
-	<sql classpath="${lib.dir}/${db.jar}"
-	     driver="${db.driver}"
-	     url="${db.url}"
-	     userid="${db.user}" 
-	     password="${db.pwd}">
-	  <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/drop.sql"/>
-          <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/create.sql"/>
-          <transaction src="${baltraddb.path}/share/baltrad-db/sql/postgresql/data.sql"/>
-	</sql>
   </target>
 
   <target name="extras-testdb">
@@ -319,8 +303,36 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	  <transaction src="${etc.dir}/extras_testdb.sql"/>
 	</sql>
   </target>
+
+  <target name="start-baltrad-bdb-server">
+    <exec executable="${baltraddb.bin.path}/baltrad-bdb-drop">
+      <arg value="--conf=${etc.dir}/testdb.properties"/>
+    </exec>
+    <exec executable="${baltraddb.bin.path}/baltrad-bdb-create">
+      <arg value="--conf=${etc.dir}/testdb.properties"/>
+    </exec>
+    <exec executable="${baltraddb.bin.path}/baltrad-bdb-server">
+      <arg value="--conf=${etc.dir}/testdb.properties"/>
+      <arg value="--pidfile=${basedir}/baltrad-bdb-server.pid"/>
+    </exec>
+    <exec executable="${baltraddb.bin.path}/baltrad-bdb-client">
+      <arg value="import_sources"/>
+      <arg value="--url=${blt.db.uri}"/>
+      <arg value="${basedir}/etc/itest_sources.xml"/>
+    </exec>
+  </target>
+
+
+  <target name="stop-baltrad-bdb-server">
+    <exec executable="cat" outputproperty="baltraddb.server.pid">
+      <arg value="${basedir}/baltrad-bdb-server.pid"/>
+    </exec>
+    <exec executable="kill">
+      <arg value="${baltraddb.server.pid}"/>
+    </exec>
+  </target>
 	
-  <target name="execute.itest" depends="prepare.itest">
+  <target name="execute.itest" depends="prepare.itest,start-baltrad-bdb-server">
     <junit dir="${build.itest.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
       <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
       <formatter type="xml"/> 
@@ -334,7 +346,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
       </batchtest>
     </junit>
-  </target>	
+    <antcall target="stop-baltrad-bdb-server" />
+  </target>
 
   <!-- target that can be used to manually test FileUploader -->
   <target name="execute.itest.fileuploader" depends="compile.itest">

@@ -20,14 +20,15 @@ package eu.baltrad.beast.db;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.FileResult;
+import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.db.FileResult;
 
 /**
  * Helper API for simplifying certain tasks related to the FileCatalog
@@ -64,10 +65,10 @@ public class Catalog implements InitializingBean {
     
     filter.apply(q);
     
-    FileResult set = fc.database().execute(q);
+    FileResult set = fc.getDatabase().execute(q);
     try {
       while (set.next()) {
-        FileEntry fEntry = set.entry();
+        FileEntry fEntry = set.getFileEntry();
         CatalogEntry cEntry = new CatalogEntry();
         cEntry.setFileEntry(fEntry);
         result.add(cEntry);
@@ -76,7 +77,7 @@ public class Catalog implements InitializingBean {
       t.printStackTrace();
     } finally {
       if (set != null) {
-        set.delete();
+        set.close();
       }
     }
     return result;
@@ -89,7 +90,7 @@ public class Catalog implements InitializingBean {
    * @return the file location
    */
   public String getFileCatalogPath(String uuid) {
-    return fc.local_path_for_uuid(uuid);
+    return fc.getLocalPathForUuid(UUID.fromString(uuid)).toString();
   }
   
   /**

@@ -22,12 +22,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
+import java.util.UUID;
 
 import junit.framework.TestCase;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.Time;
 
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
@@ -38,10 +44,6 @@ import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IScriptableRule;
 import eu.baltrad.beast.rules.RuleException;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.Oh5Metadata;
-import eu.baltrad.fc.Time;
 
 /**
  * @author Anders Henja
@@ -430,8 +432,8 @@ public class GroovyRuleTest extends TestCase {
   public void testSetScript_GoogleMapRule() throws Exception {
     MockControl fileEntryControl = MockClassControl.createControl(FileEntry.class);
     FileEntry fileEntry = (FileEntry)fileEntryControl.getMock();
-    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
-    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Metadata.class);
+    Metadata metadata = (Metadata)metadataControl.getMock();
     MockControl catalogControl = MockClassControl.createControl(Catalog.class);
     Catalog catalog = (Catalog)catalogControl.getMock();
     
@@ -443,20 +445,21 @@ public class GroovyRuleTest extends TestCase {
 
     GroovyRule rule = new GroovyRule();
     rule.setScript(readScript("GoogleMap.groovy"));
+    UUID fileEntryUuid = UUID.randomUUID();
 
-    fileEntry.metadata();
+    fileEntry.getMetadata();
     fileEntryControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
-    metadata.what_object();
+    metadata.getWhatObject();
     metadataControl.setReturnValue("COMP");
-    metadata.what_source();
+    metadata.getWhatSource();
     metadataControl.setReturnValue("ORG:82,CMT:baltrad_2000");
-    metadata.what_date();
+    metadata.getWhatDate();
     metadataControl.setReturnValue(date);
-    metadata.what_time();
+    metadata.getWhatTime();
     metadataControl.setReturnValue(time);
-    fileEntry.uuid();
-    fileEntryControl.setReturnValue("ab-cd");
-    catalog.getFileCatalogPath("ab-cd");
+    fileEntry.getUuid();
+    fileEntryControl.setReturnValue(fileEntryUuid);
+    catalog.getFileCatalogPath(fileEntryUuid.toString());
     catalogControl.setReturnValue("/tmp/something.h5");
     fileEntryControl.replay();
     metadataControl.replay();
@@ -484,8 +487,8 @@ public class GroovyRuleTest extends TestCase {
   public void testSetScript_GoogleMapRule_notSupportedArea() throws Exception {
     MockControl fileEntryControl = MockClassControl.createControl(FileEntry.class);
     FileEntry fileEntry = (FileEntry)fileEntryControl.getMock();
-    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
-    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Metadata.class);
+    Metadata metadata = (Metadata)metadataControl.getMock();
     MockControl catalogControl = MockClassControl.createControl(Catalog.class);
     Catalog catalog = (Catalog)catalogControl.getMock();
     
@@ -498,15 +501,15 @@ public class GroovyRuleTest extends TestCase {
     GroovyRule rule = new GroovyRule();
     rule.setScript(readScript("GoogleMap.groovy"));
     
-    fileEntry.metadata();
+    fileEntry.getMetadata();
     fileEntryControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
-    metadata.what_object();
+    metadata.getWhatObject();
     metadataControl.setReturnValue("COMP");
-    metadata.what_source();
+    metadata.getWhatSource();
     metadataControl.setReturnValue("ORG:82,CMT:mydummyarea");
-    metadata.what_date();
+    metadata.getWhatDate();
     metadataControl.setReturnValue(date);
-    metadata.what_time();
+    metadata.getWhatTime();
     metadataControl.setReturnValue(time);
 
     fileEntryControl.replay();

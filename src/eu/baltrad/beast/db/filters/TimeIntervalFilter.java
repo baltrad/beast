@@ -18,11 +18,15 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db.filters;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+import eu.baltrad.bdb.util.DateTime;
+
 import eu.baltrad.beast.db.ICatalogFilter;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.Expression;
-import eu.baltrad.fc.ExpressionFactory;
 
 /**
  * Fetches all objects that are within a specified start - stop
@@ -69,32 +73,35 @@ public class TimeIntervalFilter implements ICatalogFilter {
   private int limit = 0;
   
   /**
-   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.fc.FileQuery)
+   * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.bdb.db.FileQuery)
    */
   @Override
   public void apply(FileQuery query) {
     ExpressionFactory xpr = new ExpressionFactory();
-    Expression dtAttr = xpr.combined_datetime("what/date", "what/time");
+    Expression dtAttr = xpr.combinedDateTime("what/date", "what/time");
 
     if (object == null) {
       throw new IllegalArgumentException("Must specify object type");
     }
-    
-    query.filter(xpr.eq(xpr.attribute("what/object"), xpr.string(object)));
+
+    List<Expression> filters = new ArrayList<Expression>();
+    filters.add(xpr.eq(xpr.attribute("what/object"), xpr.literal(object)));
     if (source != null) {
-      query.filter(xpr.eq(xpr.attribute("what/source:_name"), xpr.string(source)));
+      filters.add(xpr.eq(xpr.attribute("what/source:_name"), xpr.literal(source)));
     }
 
     if (startDT != null) {
-      query.filter(xpr.ge(dtAttr, xpr.datetime(this.startDT)));
+      filters.add(xpr.ge(dtAttr, xpr.literal(this.startDT)));
     }
     if (stopDT != null) {
-      query.filter(xpr.lt(dtAttr, xpr.datetime(this.stopDT)));
+      filters.add(xpr.lt(dtAttr, xpr.literal(this.stopDT)));
     }
+
+    query.setFilter(xpr.and(filters));
     
     if (this.limit > 0) {
-      query.order_by(dtAttr, FileQuery.SortDir.DESC);
-      query.limit(this.limit);
+      query.appendOrderClause(xpr.desc(dtAttr));
+      query.setLimit(this.limit);
     }
   }
   

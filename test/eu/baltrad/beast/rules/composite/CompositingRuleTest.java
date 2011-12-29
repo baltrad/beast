@@ -29,6 +29,12 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.springframework.beans.factory.BeanInitializationException;
 
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.Time;
+
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.LowestAngleFilter;
@@ -40,11 +46,6 @@ import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.fc.Date;
-import eu.baltrad.fc.DateTime;
-import eu.baltrad.fc.FileEntry;
-import eu.baltrad.fc.Oh5Metadata;
-import eu.baltrad.fc.Time;
 
 /**
  * @author Anders Henja
@@ -262,19 +263,19 @@ public class CompositingRuleTest extends TestCase {
 
     MockControl fileControl = MockClassControl.createControl(FileEntry.class);
     FileEntry file = (FileEntry)fileControl.getMock();
-    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
-    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Metadata.class);
+    Metadata metadata = (Metadata)metadataControl.getMock();
 
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFileEntry(file);
 
-    file.metadata();
+    file.getMetadata();
     fileControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
-    metadata.what_object();
+    metadata.getWhatObject();
     metadataControl.setReturnValue("PVOL");
-    metadata.what_date();
+    metadata.getWhatDate();
     metadataControl.setReturnValue(date);
-    metadata.what_time();
+    metadata.getWhatTime();
     metadataControl.setReturnValue(time);
     ruleUtil.createNominalTime(date, time, 10);
     ruleUtilControl.setReturnValue(nominalTime);
@@ -304,20 +305,20 @@ public class CompositingRuleTest extends TestCase {
 
     MockControl fileControl = MockClassControl.createControl(FileEntry.class);
     FileEntry file = (FileEntry)fileControl.getMock();
-    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
-    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Metadata.class);
+    Metadata metadata = (Metadata)metadataControl.getMock();
 
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFileEntry(file);
 
     
-    file.metadata();
+    file.getMetadata();
     fileControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
-    metadata.what_object();
+    metadata.getWhatObject();
     metadataControl.setReturnValue("PVOL");
-    metadata.what_date();
+    metadata.getWhatDate();
     metadataControl.setReturnValue(date);
-    metadata.what_time();
+    metadata.getWhatTime();
     metadataControl.setReturnValue(time);
     ruleUtil.createNominalTime(date, time, 10);
     ruleUtilControl.setReturnValue(nominalTime);
@@ -342,8 +343,8 @@ public class CompositingRuleTest extends TestCase {
   public void testCreateTimerData_notVolume() throws Exception {
     MockControl fileControl = MockClassControl.createControl(FileEntry.class);
     FileEntry file = (FileEntry)fileControl.getMock();
-    MockControl metadataControl = MockClassControl.createControl(Oh5Metadata.class);
-    Oh5Metadata metadata = (Oh5Metadata)metadataControl.getMock();
+    MockControl metadataControl = MockClassControl.createControl(Metadata.class);
+    Metadata metadata = (Metadata)metadataControl.getMock();
     Date d = new Date(2010, 1, 1);
     Time t = new Time(10, 1, 15);
     DateTime dt = new DateTime();
@@ -351,13 +352,13 @@ public class CompositingRuleTest extends TestCase {
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFileEntry(file);
 
-    file.metadata();
+    file.getMetadata();
     fileControl.setReturnValue(metadata, MockControl.ONE_OR_MORE);
-    metadata.what_object();
+    metadata.getWhatObject();
     metadataControl.setReturnValue("IMAGE");
-    metadata.what_date();
+    metadata.getWhatDate();
     metadataControl.setReturnValue(d);
-    metadata.what_time();
+    metadata.getWhatTime();
     metadataControl.setReturnValue(t);
     ruleUtil.createNominalTime(d, t, 10);
     ruleUtilControl.setReturnValue(dt);
@@ -599,12 +600,7 @@ public class CompositingRuleTest extends TestCase {
   }
   
   protected boolean compareDT(DateTime o1, DateTime o2) {
-    return (o1.date().year() == o2.date().year() &&
-            o1.date().month() == o2.date().month() &&
-            o1.date().day() == o2.date().day() &&
-            o1.time().hour() == o2.time().hour() &&
-            o1.time().minute() == o2.time().minute() &&
-            o1.time().second() == o2.time().second());
+    return o1.equals(o2);
   }
 
   public void testCreateCompositeScanMessage() throws Exception {

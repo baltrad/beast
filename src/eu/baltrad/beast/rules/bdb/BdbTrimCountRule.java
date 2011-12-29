@@ -31,10 +31,10 @@ import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 
-import eu.baltrad.fc.FileCatalog;
-import eu.baltrad.fc.FileQuery;
-import eu.baltrad.fc.FileResult;
-import eu.baltrad.fc.ExpressionFactory;
+import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.FileQuery;
+import eu.baltrad.bdb.db.FileResult;
+import eu.baltrad.bdb.expr.ExpressionFactory;
 
 /**
  * Rule to keep the number of files in BDB below a limit.
@@ -153,7 +153,7 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
     if (qry == null)
       return;
 
-    FileResult r = catalog.database().execute(qry);
+    FileResult r = catalog.getDatabase().execute(qry);
 
     try {
       int numFiles = r.size();
@@ -163,11 +163,11 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
           logger.debug("removing files from " + numRemoved +
                        " onwards of " + numFiles);
         }
-        catalog.remove(r.entry());
+        catalog.remove(r.getFileEntry());
         numRemoved += 1;
       }
     } finally {
-      r.delete();
+      r.close();
     }
   }
   
@@ -177,11 +177,11 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
   protected int getFileCount() {
     // XXX: this should use catalog.file_count() once implemented in BDB
     FileQuery qry = new FileQuery();
-    FileResult r = catalog.database().execute(qry);
+    FileResult r = catalog.getDatabase().execute(qry);
     try {
       return r.size();
     } finally {
-      r.delete();
+      r.close();
     }
   }
   
@@ -197,8 +197,12 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
       return null;
 
     FileQuery qry = new FileQuery();
-    qry.order_by(xpr.attribute("file:stored_at"), FileQuery.SortDir.ASC);
-    qry.limit(fileCount - fileCountLimit);
+    qry.appendOrderClause(
+      xpr.asc(
+        xpr.combinedDateTime("file:stored_date", "file:stored_time")
+      )
+    );
+    qry.setLimit(fileCount - fileCountLimit);
     return qry;
   }
 
