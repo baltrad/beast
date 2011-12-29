@@ -407,7 +407,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   </target>
 
   <!-- performs coverage from running all tests (unit tests, integration tests-->
-  <target name="test.coverage" depends="prepare.test,prepare.itest,instrument.coverage">
+  <target name="test.coverage" depends="prepare.test,prepare.itest,instrument.coverage,start-baltrad-bdb-server">
     <mkdir dir="${dist.dir}/junit-reports" />
     <mkdir dir="${dist.dir}/coverage-reports" />
 
@@ -429,6 +429,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
       </batchtest>
     </junit>
+
+    <antcall target="stop-baltrad-bdb-server" />
 
   	<emma enabled="true">
       <report sourcepath="${source.dir}" >
