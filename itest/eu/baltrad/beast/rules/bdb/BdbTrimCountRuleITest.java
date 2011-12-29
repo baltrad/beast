@@ -63,6 +63,8 @@ public class BdbTrimCountRuleITest extends TestCase {
 
     for (String s: FIXTURES) {
       FileEntry e = catalog.store(new FileInputStream(getFilePath(s)));
+      // sleep for a second. Storage timestamp in BDB is with second precision
+      Thread.sleep(1000); 
       fileUuidMap.put(s, e.getUuid());
     }
   }
