@@ -108,6 +108,11 @@ create table beast_volume_sources (
   source text
 );
 
+create table beast_volume_detectors (
+  rule_id integer REFERENCES beast_volume_rules(rule_id),
+  name text REFERENCES beast_anomaly_detectors(name)
+);
+
 create table beast_scheduled_jobs (
   id SERIAL PRIMARY KEY,
   expression text NOT NULL,

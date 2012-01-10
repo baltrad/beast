@@ -43,6 +43,8 @@ public class VolumeRuleManagerTest extends TestCase {
     public void storeSources(int rule_id, List<String> sources);
     public List<String> getSources(int rule_id);    
     public VolumeRule createRule();
+    public void storeDetectors(int rule_id, List<String> detectors);
+    public List<String> getDetectors(int rule_id);    
   };
   
   private VolumeRuleManager classUnderTest = null;
@@ -79,10 +81,14 @@ public class VolumeRuleManagerTest extends TestCase {
       protected void storeSources(int rule_id, List<String> sources) {
         methods.storeSources(rule_id, sources);
       }
+      protected void storeDetectors(int rule_id, List<String> detectors) {
+        methods.storeDetectors(rule_id, detectors);
+      }      
     };
     classUnderTest.setJdbcTemplate(jdbc);
     
     methods.storeSources(13, null);
+    methods.storeDetectors(13, null);
     jdbc.update("delete from beast_volume_rules where rule_id=?",
         new Object[] { 13 });
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
@@ -127,6 +133,8 @@ public class VolumeRuleManagerTest extends TestCase {
     final ManagerMethods methods = (ManagerMethods)methodsControl.getMock();
     
     List<String> sources = new ArrayList<String>();
+    List<String> detectors = new ArrayList<String>();
+    
     VolumeRule rule = new VolumeRule();
     rule.setAscending(false);
     rule.setElevationMax(10.0);
@@ -134,16 +142,21 @@ public class VolumeRuleManagerTest extends TestCase {
     rule.setInterval(6);
     rule.setTimeout(20);
     rule.setSources(sources);
+    rule.setDetectors(detectors);
     
     jdbc.update("insert into beast_volume_rules (rule_id, interval, timeout, " +
         "ascending, minelev, maxelev) values (?,?,?,?,?,?)", new Object[]{13, 6, 20, false, 2.0, 10.0});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     methods.storeSources(13, sources);
+    methods.storeDetectors(13, detectors);
     
     classUnderTest = new VolumeRuleManager() {
       protected void storeSources(int rule_id, List<String> sources) {
         methods.storeSources(rule_id, sources);
+      }
+      protected void storeDetectors(int rule_id, List<String> detectors) {
+        methods.storeDetectors(rule_id, detectors);
       }
     };
     classUnderTest.setJdbcTemplate(jdbc);
@@ -162,6 +175,8 @@ public class VolumeRuleManagerTest extends TestCase {
     final ManagerMethods methods = (ManagerMethods)methodsControl.getMock();
     
     List<String> sources = new ArrayList<String>();
+    List<String> detectors = new ArrayList<String>();
+    
     VolumeRule rule = new VolumeRule();
     rule.setAscending(false);
     rule.setElevationMax(10.0);
@@ -169,17 +184,22 @@ public class VolumeRuleManagerTest extends TestCase {
     rule.setInterval(6);
     rule.setTimeout(20);
     rule.setSources(sources);
+    rule.setDetectors(detectors);
     
     jdbc.update("update beast_volume_rules set interval=?, timeout=?, " +
         "ascending=?, minelev=?, maxelev=? where rule_id=?", new Object[]{6, 20, false, 2.0, 10.0, 13});
     jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
     jdbcControl.setReturnValue(0);
     methods.storeSources(13, sources);
+    methods.storeDetectors(13, detectors);
     
     classUnderTest = new VolumeRuleManager() {
       protected void storeSources(int rule_id, List<String> sources) {
         methods.storeSources(rule_id, sources);
       }
+      protected void storeDetectors(int rule_id, List<String> sources) {
+        methods.storeDetectors(rule_id, sources);
+      }      
     };
     classUnderTest.setJdbcTemplate(jdbc);
     
@@ -266,6 +286,7 @@ public class VolumeRuleManagerTest extends TestCase {
     MockControl rsControl = MockControl.createControl(ResultSet.class);
     ResultSet rs = (ResultSet)rsControl.getMock();
     List<String> sources = new ArrayList<String>();
+    List<String> detectors = new ArrayList<String>();
     MockControl methodControl = MockControl.createControl(ManagerMethods.class);
     final ManagerMethods method = (ManagerMethods)methodControl.getMock();
     VolumeRule volumeRule = new VolumeRule();
@@ -286,11 +307,16 @@ public class VolumeRuleManagerTest extends TestCase {
     rsControl.setReturnValue(10.0);
     method.getSources(10);
     methodControl.setReturnValue(sources);
+    method.getDetectors(10);
+    methodControl.setReturnValue(detectors);
     
     classUnderTest = new VolumeRuleManager() {
       protected List<String> getSources(int rule_id) {
         return method.getSources(rule_id);
       }
+      protected List<String> getDetectors(int rule_id) {
+          return method.getDetectors(rule_id);
+        }
       public VolumeRule createRule() {
         return method.createRule();
       }

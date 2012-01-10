@@ -97,6 +97,11 @@ public class VolumeRuleManagerITest extends TestCase {
     expected = helper.getXlsTable(this, extras, "beast_volume_sources");
     actual = helper.getDatabaseTable("beast_volume_sources");
     Assertion.assertEquals(expected, actual);
+
+    expected = helper.getXlsTable(this, extras, "beast_volume_detectors");
+    actual = helper.getDatabaseTable("beast_volume_detectors");
+    Assertion.assertEquals(expected, actual);
+
   }
   
   private String getFilePath(String resource) throws Exception {
@@ -136,6 +141,10 @@ public class VolumeRuleManagerITest extends TestCase {
     assertEquals(2, sources.size());
     assertTrue(sources.contains("S1"));
     assertTrue(sources.contains("S2"));
+    List<String> detectors = rule.getDetectors();
+    assertEquals(2, detectors.size());
+    assertTrue(detectors.contains("nisse"));
+    assertTrue(detectors.contains("kalle"));
   }
   
   public void testLoad_2() throws Exception  {
@@ -150,6 +159,9 @@ public class VolumeRuleManagerITest extends TestCase {
     assertTrue(sources.contains("S3"));
     assertTrue(sources.contains("S4"));
     assertTrue(sources.contains("S5"));
+    List<String> detectors = rule.getDetectors();
+    assertEquals(1, detectors.size());
+    assertTrue(detectors.contains("kalle"));
   }
   
   public void testLoad_3() throws Exception  {
@@ -161,12 +173,16 @@ public class VolumeRuleManagerITest extends TestCase {
     assertEquals(24.1, rule.getElevationMax());
     List<String> sources = rule.getSources();
     assertEquals(0, sources.size());
+    List<String> detectors = rule.getDetectors();
+    assertEquals(0, detectors.size());
   }
   
   public void testStore() throws Exception {
     List<String> sources = new ArrayList<String>();
     sources.add("S10");
     sources.add("S12");
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("kalle");
     VolumeRule rule = new VolumeRule();
     rule.setInterval(10);
     rule.setTimeout(20);
@@ -174,6 +190,7 @@ public class VolumeRuleManagerITest extends TestCase {
     rule.setElevationMin(2.0);
     rule.setElevationMax(20.0);
     rule.setSources(sources);
+    rule.setDetectors(detectors);
     
     classUnderTest.store(4, rule);
     
@@ -189,6 +206,8 @@ public class VolumeRuleManagerITest extends TestCase {
     List<String> sources = new ArrayList<String>();
     sources.add("S27");
     sources.add("S4");
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("nisse");
     VolumeRule rule = (VolumeRule)classUnderTest.load(2);
     rule.setInterval(15);
     rule.setTimeout(10);
@@ -196,6 +215,7 @@ public class VolumeRuleManagerITest extends TestCase {
     rule.setElevationMin(2.0);
     rule.setElevationMax(24.0);
     rule.setSources(sources);
+    rule.setDetectors(detectors);
     
     classUnderTest.update(2, rule);
     

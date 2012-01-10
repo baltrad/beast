@@ -5,6 +5,7 @@ drop table if exists beast_adaptors;
 drop table if exists beast_composite_detectors;
 drop table if exists beast_composite_sources;
 drop table if exists beast_composite_rules;
+drop table if exists beast_volume_detectors;
 drop table if exists beast_volume_sources;
 drop table if exists beast_volume_rules;
 drop table if exists beast_groovy_rules;

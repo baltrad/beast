@@ -92,6 +92,7 @@ public class VolumeRuleManager implements IRuleManager {
   @Override
   public void delete(int ruleId) {
     storeSources(ruleId, null);
+    storeDetectors(ruleId, null);    
     template.update("delete from beast_volume_rules where rule_id=?",
         new Object[] { ruleId });
   }
@@ -119,13 +120,15 @@ public class VolumeRuleManager implements IRuleManager {
     double minelev = vrule.getElevationMin();
     double maxelev = vrule.getElevationMax();
     List<String> sources = vrule.getSources();
-
+    List<String> detectors = vrule.getDetectors();
+    
     template.update("insert into beast_volume_rules" +
                     " (rule_id, interval, timeout, ascending, minelev, maxelev) values" +
                     " (?,?,?,?,?,?)", 
                     new Object[]{ruleId, interval, timeout, ascending, minelev, maxelev});
     
     storeSources(ruleId, sources);
+    storeDetectors(ruleId, detectors);
   }
 
   /**
@@ -141,12 +144,14 @@ public class VolumeRuleManager implements IRuleManager {
     double minelev = vrule.getElevationMin();
     double maxelev = vrule.getElevationMax();
     List<String> sources = vrule.getSources();
-
+    List<String> detectors = vrule.getDetectors();
+    
     template.update("update beast_volume_rules set" +
                     " interval=?, timeout=?, ascending=?, minelev=?, maxelev=? where rule_id=?", 
                     new Object[]{interval, timeout, ascending, minelev, maxelev, ruleId});
     
     storeSources(ruleId, sources);
+    storeDetectors(ruleId, detectors);
   }
 
   /**
@@ -178,6 +183,34 @@ public class VolumeRuleManager implements IRuleManager {
   }
   
   /**
+   * Stores the detectors for this volume rule
+   * @param rule_id the rule id these detectors should belong to
+   * @param detectors the detectors
+   */
+  protected void storeDetectors(int rule_id, List<String> detectors) {
+    template.update("delete from beast_volume_detectors where rule_id=?",
+        new Object[]{rule_id});
+    if (detectors != null) {
+      for (String src : detectors) {
+        template.update("insert into beast_volume_detectors (rule_id, name)"+
+            " values (?,?)", new Object[]{rule_id, src});
+      }
+    }    
+  }
+
+  /**
+   * Returns a list of sources connected to the rule_id
+   * @param rule_id the rule id
+   * @return a list of sources
+   */
+  protected List<String> getDetectors(int rule_id) {
+    return template.query(
+        "select name from beast_volume_detectors where rule_id=?",
+        getDetectorMapper(),
+        new Object[]{rule_id});
+  }
+  
+  /**
    * @return the VolumeRule mapper
    */
   protected ParameterizedRowMapper<VolumeRule> getVolumeRuleMapper() {
@@ -192,6 +225,7 @@ public class VolumeRuleManager implements IRuleManager {
         double mine = rs.getDouble("minelev");
         double maxe = rs.getDouble("maxelev");
         List<String> sources = getSources(rule_id);
+        List<String> detectors = getDetectors(rule_id);
         result.setRuleId(rule_id);
         result.setInterval(interval);
         result.setTimeout(timeout);
@@ -199,6 +233,7 @@ public class VolumeRuleManager implements IRuleManager {
         result.setElevationMin(mine);
         result.setElevationMax(maxe);
         result.setSources(sources);
+        result.setDetectors(detectors);
         return result;
       }
     };
@@ -215,6 +250,17 @@ public class VolumeRuleManager implements IRuleManager {
     };
   }
 
+  /**
+   * @return the detector mapper
+   */
+  protected  ParameterizedRowMapper<String> getDetectorMapper() { 
+    return new ParameterizedRowMapper<String>() {
+      public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return rs.getString("name");
+      }
+    };
+  }
+  
   /**
    * @see eu.baltrad.beast.rules.IRuleManager#createRule()
    */

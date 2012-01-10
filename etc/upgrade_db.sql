@@ -224,6 +224,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION create_beast_volume_detectors() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_volume_detectors';
+  IF NOT FOUND THEN
+    create table beast_volume_detectors (
+      rule_id integer REFERENCES beast_volume_rules(rule_id),
+      name text REFERENCES beast_anomaly_detectors(name)
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_volume_detectors already exists';
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 select upgrade_beast_composite_rules();
 select create_beast_rule_properties();
 select add_fk_to_scheduled_jobs();
@@ -235,6 +249,7 @@ select update_groovy_rules_bdb_packages();
 select create_beast_rule_filters();
 select create_beast_anomaly_detectors();
 select create_beast_composite_detectors();
+select create_beast_volume_detectors();
 
 drop function make_plpgsql();
 drop function create_beast_rule_properties();

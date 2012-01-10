@@ -21,6 +21,7 @@ package eu.baltrad.beast.rules.volume;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +125,11 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
    */
   private Map<String,VolumeTimerData> handledData = new HashMap<String, VolumeTimerData>();
 
+  /**
+   * Detectors that should be run for this composite rule
+   */
+  private List<String> detectors = new ArrayList<String>();
+  
   /**
    * Default constructor, however use manager for creation.
    */
@@ -286,6 +292,24 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
    */
   public List<String> getSources() {
     return this.sources;
+  }
+  
+  /**
+   * @param detectors the detectors to set
+   */
+  public void setDetectors(List<String> detectors) {
+    if (detectors == null) {
+      this.detectors = new ArrayList<String>();
+    } else {
+      this.detectors = detectors;
+    }
+  }
+
+  /**
+   * @return the detectors
+   */
+  public List<String> getDetectors() {
+    return detectors;
   }
   
   /**
@@ -467,12 +491,24 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
 
     result.setFiles(ruleUtilities.getFilesFromEntries(entries).toArray(new String[0]));
 
-    String[] args = new String[3];
-    args[0] = "--source="+source;
-    args[1] = "--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString(); 
-    args[2] = "--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString();
+    List<String> args = new ArrayList<String>();
+    args.add("--source="+source);
+    args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
+    args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
+
+    if (detectors.size() > 0) {
+      StringBuffer dstr = new StringBuffer();
+      Iterator<String> iterator = detectors.iterator();
+      while (iterator.hasNext()) {
+        dstr.append(iterator.next());
+        if (iterator.hasNext()) {
+          dstr.append(",");
+        }
+      }
+      args.add("--anomaly-qc="+dstr.toString());
+    }
     
-    result.setArguments(args);
+    result.setArguments(args.toArray(new String[0]));
     
     return result;
   }

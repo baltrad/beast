@@ -250,6 +250,49 @@ public class VolumeRuleTest extends TestCase {
     fileEntries.add("/tmp/searl_2.h5");
     fileEntries.add("/tmp/searl_3.h5");
 
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("ropo");
+    detectors.add("nisse");
+    
+    classUnderTest.setDetectors(detectors);
+    
+    utilities.getFilesFromEntries(entries);
+    utilitiesControl.setReturnValue(fileEntries);
+
+    replay();
+
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.createMessage(nt, entries);
+
+    verify();
+    assertEquals("eu.baltrad.beast.GenerateVolume", result.getAlgorithm());
+    String[] files = result.getFiles();
+    assertEquals(3, files.length);
+    assertEquals(files[0], "/tmp/searl_1.h5");
+    assertEquals(files[1], "/tmp/searl_2.h5");
+    assertEquals(files[2], "/tmp/searl_3.h5");
+    String[] arguments = result.getArguments();
+    assertEquals(4, arguments.length);
+    assertEquals("--source=searl", arguments[0]);
+    assertEquals("--date=20100201", arguments[1]);
+    assertEquals("--time=010000", arguments[2]);
+    assertEquals("--anomaly-qc=ropo,nisse", arguments[3]);
+  }
+
+  public void testCreateMessage_noDetectors() throws Exception {
+    Date date = new Date(2010, 2, 1);
+    Time time = new Time(1, 0, 0);
+    DateTime nt = new DateTime(date, time);
+    
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("searl"));
+    entries.add(createCatalogEntry("searl"));
+    entries.add(createCatalogEntry("searl"));
+
+    List<String> fileEntries = new ArrayList<String>();
+    fileEntries.add("/tmp/searl_1.h5");
+    fileEntries.add("/tmp/searl_2.h5");
+    fileEntries.add("/tmp/searl_3.h5");
+    
     utilities.getFilesFromEntries(entries);
     utilitiesControl.setReturnValue(fileEntries);
 
@@ -270,7 +313,7 @@ public class VolumeRuleTest extends TestCase {
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
   }
-
+  
   public void testCreateMessage_noEntries() throws Exception {
     DateTime nt = new DateTime(2010, 2, 1, 1, 0, 0);
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
