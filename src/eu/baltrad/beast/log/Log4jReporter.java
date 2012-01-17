@@ -90,10 +90,10 @@ public class Log4jReporter implements ISystemReporter {
   
   /**
    * Creates a message according to the string format
-   * @param code
-   * @param message
-   * @param objects
-   * @return
+   * @param code the error code
+   * @param message the message string format
+   * @param args the variable argument list
+   * @return the formatted message
    */
   protected String getMessage(String code, String message, Object... args) {
     String msg = null;

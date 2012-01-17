@@ -29,7 +29,6 @@ import org.quartz.CronExpression;
 /**
  * Utilities when working with cron entry expressions
  * @author Anders Henja
- * @date 2011-01-12
  */
 public class CronEntryUtilities {
   /**

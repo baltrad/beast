@@ -22,7 +22,6 @@ package eu.baltrad.beast.log;
 /**
  * A null reporter that doesn't do anything. 
  * @author Anders Henja
- * @date Dec 19, 2011
  */
 public class NullReporter implements ISystemReporter {
   /**

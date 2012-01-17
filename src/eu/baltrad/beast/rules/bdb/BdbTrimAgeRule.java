@@ -41,7 +41,7 @@ import eu.baltrad.bdb.util.TimeDelta;
 /**
  * Rule to keep the age of files in BDB above a limit.
  *
- * @note the nominal datetime (what/date + what/time) is used for file "age"
+ * NOTE! the nominal datetime (what/date + what/time) is used for file "age"
  */
 public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingBean {
   /**
@@ -112,7 +112,7 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
   }
 
   /**
-   * @see eu.baltrad.beast.rules.IRulePropertyAccess#setProperties()
+   * @see eu.baltrad.beast.rules.IRulePropertyAccess#setProperties(Map)
    */
   public void setProperties(Map<String, String> props) {
     fileAgeLimit = 0;

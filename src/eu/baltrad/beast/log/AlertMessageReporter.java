@@ -23,9 +23,7 @@ import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 
 /**
- *
  * @author Anders Henja
- * @date Dec 20, 2011
  */
 public class AlertMessageReporter implements ISystemReporter {
   /**
@@ -140,9 +138,9 @@ public class AlertMessageReporter implements ISystemReporter {
   
   /**
    * Returns the localized message if any could be found.
-   * @param[in] module - the specific module
-   * @param[in] code - the error code
-   * @param[in] message - the error message
+   * @param module - the specific module
+   * @param code - the error code
+   * @param message - the error message
    */
   protected String getMessage(String module, String code, String message, Object... args) {
     String msg = null;

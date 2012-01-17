@@ -23,12 +23,12 @@ groovy compatible.
 
 First of all, create a groovy project like with "File->New->Groovy Project".
 
-...
+\image html new_groovy_project.jpg
 
 After that, you will have to create a groovy class which is done with
 "File->New->Groovy Class".
 
-...
+\image html new_groovy_class.jpg
 
 Since you are going to use the beast API you need to setup the build path to include the
 beast.jar. Right click on your project and choose "Properties" and then

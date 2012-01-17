@@ -57,7 +57,9 @@ public class VolumeTimerData {
   }
   
   /**
-   * @see IRememberedRuleData#equals(Object)
+   * Checks if this instance if equal to data.
+   * @param data the instance to compare with
+   * @return true if they are equal otherwise false
    */
   @Override
   public boolean equals(Object data) {

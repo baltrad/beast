@@ -75,7 +75,6 @@ import org.quartz.CronExpression;
  * <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz</a>.
  * 
  * @author Anders Henja
- * @date 2011-01-11
  */
 public class CronEntryFactory {
   /**

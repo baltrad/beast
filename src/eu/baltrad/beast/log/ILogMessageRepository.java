@@ -25,7 +25,6 @@ import java.util.Map;
  * Interface for supporting log messages belonging to various modules.
  * 
  * @author Anders Henja
- * @date 2011-12-17
  */
 public interface ILogMessageRepository {
   /**

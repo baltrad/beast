@@ -695,14 +695,14 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   }
 
   /**
-   * @param algorithm the algorithm to set
+   * @param method the method to set
    */
   public void setMethod(String method) {
     this.method = method;
   }
 
   /**
-   * @return the algorithm
+   * @return the method
    */
   public String getMethod() {
     return method;

@@ -160,7 +160,7 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
   }
 
   /**
-   * @param filename the filename to set
+   * @param filenames the filenames to set
    */
   public void setFilenames(String[] filenames) {
     if (filenames != null) {

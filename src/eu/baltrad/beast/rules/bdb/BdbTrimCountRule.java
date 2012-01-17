@@ -106,7 +106,7 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
   }
 
   /**
-   * @see eu.baltrad.beast.rules.IRulePropertyAccess#setProperties()
+   * @see eu.baltrad.beast.rules.IRulePropertyAccess#setProperties(Map)
    */
   public void setProperties(Map<String, String> props) {
     fileCountLimit = 0;

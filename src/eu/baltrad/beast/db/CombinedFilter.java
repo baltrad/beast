@@ -61,7 +61,7 @@ public class CombinedFilter implements IFilter {
   public Integer getId() { return id; }
 
   /**
-   * @see IFilter#setId()
+   * @see IFilter#setId(Integer)
    */
   @Override
   public void setId(Integer id) { this.id = id; }

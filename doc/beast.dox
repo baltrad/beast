@@ -36,6 +36,29 @@ the users to adapt the library into their own structure but the core
 functionality and the provided code has been built to support the baltrad
 dex and baltrad product generation framework.
 
+\section adaptors Adaptors
+
+An adaptor can be seen as a connection point to an external resource. This adaptor knows
+how to transmit data to and from the external resource. It also knows what protocol that
+this external resource is using and can translate from and to beast messages.
+Currently, the only implemented adaptor is a XMLRPC adaptor. 
+
+\section routingandrules Routing and rules
+
+When you are passing on a message to the system it will eventually
+come to a router. This router will execute all registered rules and determine
+what should be done. Sometimes the message should just trigger an event, other
+times it might result in a completly different message and in some cases
+it might even result in nothing at all.
+
+A route can be seen as a a rule associated with 0 or more adaptors. Which means
+that if a rule evaluates to some sort of action. All associated adaptors will
+be asked to perform this action.
+
+Beast comes with a number of predefined rules for volume and composite generation.
+It also contains rules for db maintenance. One very powerful rule is the groovy rule that 
+you can read about here \ref p_groovyrules.
+
 \section messagemanager Message Manager
 
 The basics for the beast library is that messages are passed around. Each
@@ -47,7 +70,6 @@ should manage the message or another type of message.
 
 So that we get up and running, first an example on how you do to send a 
 message through the library.
-
 
 \verbatim
 // Create some message
@@ -89,29 +111,6 @@ The default bundled application context can be found in <b>etc/default-applicati
 take a look at it in order to get a feeling on how the system has been setup. You can also checkout
 the itest-directory since it contains various examples on how to wire the system depending on
 what you are after.
-
-\section adaptors Adaptors
-
-An adaptor can be seen as a connection point to an external resource. This adaptor knows
-how to transmit data to and from the external resource. It also knows what protocol that
-this external resource is using and can translate from and to beast messages.
-Currently, the only implemented adaptor is a XMLRPC adaptor. 
-
-\section routingandrules Routing and rules
-
-When you are passing on a message to the message manager it will eventually
-come to a router. This router will execute all registered rules and determine
-what should be done. Sometimes the message should just trigger an event, other
-times it might result in a completly different message and in some cases
-it might even result in nothing at all.
-
-A route can be seen as a a rule associated with 0 or more adaptors. Which means
-that if a rule evaluates to some sort of action. All associated adaptors will
-be asked to perform this action.
-
-Beast comes with a number of predefined rules for volume and composite generation.
-It also contains rules for db maintenance. One very powerful rule is the groovy rule that 
-you can read about here \ref p_groovyrules.
 
 \section xmlrpcserver Xml Rpc Server
 The beast library comes bundled with a xmlrpc server that is able to manage

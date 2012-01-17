@@ -100,7 +100,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     return props;
   }
   /**
-   * @see eu.baltrad.beast.rules.IRulePropertyAccess#setProperties()
+   * @see eu.baltrad.beast.rules.IRulePropertyAccess#setProperties(Map)
    */
   @Override
   public void setProperties(Map<String, String> props) {

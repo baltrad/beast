@@ -22,7 +22,6 @@ package eu.baltrad.beast.log;
 /**
  * System reporter. Will report messages to interested parties.
  * @author Anders Henja
- * @date Dec 15, 2011
  */
 public interface ISystemReporter {
   
