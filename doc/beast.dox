@@ -24,7 +24,7 @@ By obtaining, using, and/or copying this software and/or its associated
 documentation, you agree that you have read, understood, and will comply
 with the following terms and conditions:
 
-\section introduction "The beast library"
+\section introduction The beast library
 The beast library provides the internal mechanisms for managing
 messages and data that are transfered by the Baltrad Data Exchange engine.
 In it's own, it does not do much except providing some mechanisms
@@ -36,7 +36,7 @@ the users to adapt the library into their own structure but the core
 functionality and the provided code has been built to support the baltrad
 dex and baltrad product generation framework.
 
-\section messagemanager "Message Manager"
+\section messagemanager Message Manager
 
 The basics for the beast library is that messages are passed around. Each
 message contains some sort of information. These messages are managed by
@@ -90,7 +90,30 @@ take a look at it in order to get a feeling on how the system has been setup. Yo
 the itest-directory since it contains various examples on how to wire the system depending on
 what you are after.
 
-\section xmlrpcserver "Xml Rpc Server"
+\section adaptors Adaptors
+
+An adaptor can be seen as a connection point to an external resource. This adaptor knows
+how to transmit data to and from the external resource. It also knows what protocol that
+this external resource is using and can translate from and to beast messages.
+Currently, the only implemented adaptor is a XMLRPC adaptor. 
+
+\section routingandrules Routing and rules
+
+When you are passing on a message to the message manager it will eventually
+come to a router. This router will execute all registered rules and determine
+what should be done. Sometimes the message should just trigger an event, other
+times it might result in a completly different message and in some cases
+it might even result in nothing at all.
+
+A route can be seen as a a rule associated with 0 or more adaptors. Which means
+that if a rule evaluates to some sort of action. All associated adaptors will
+be asked to perform this action.
+
+Beast comes with a number of predefined rules for volume and composite generation.
+It also contains rules for db maintenance. One very powerful rule is the groovy rule that 
+you can read about here \ref p_groovyrules.
+
+\section xmlrpcserver Xml Rpc Server
 The beast library comes bundled with a xmlrpc server that is able to manage
 requests for system commands, alerts and product generation requests.
 
@@ -108,15 +131,5 @@ The code that contains the plugin, should be bundled in a .jar file that resides
 plugin directory (<prefix>/plugins). The bean should implement the interface
 eu.baltrad.beast.pgfwk.IGeneratorPlugin.
 
-\section groovysupport "Groovy"
-Beast comes delievered with support for creating scriptable rules by using the
-groovy language. Groovy is very similar to java so most of the things you can do
-in java you will be able to do in groovy as well. There are a few caveats to this
-as usual. One of them is that it is not possible to create arrays by writing
-new String[]{"a", "b"} which might cause some problems when creating the
-\ref eu.baltrad.beast.message.mo.BltGenerateMessage. Instead, write ["a", "b"] as String[].
-
-You will find some examples on how rules written in groovy might look like in the
-directory <beast install prefix>/examples.
 
 */
