@@ -25,7 +25,7 @@ components delivered are defined for that specific purpose.
 
 1) Database
 This library requires database access (postgresql), where it can define four tables 
-for keeping track on the routing information.
+for keeping track on the routing information. 
 
 The tables needed are defined in the script: etc/create_db.sql
 
