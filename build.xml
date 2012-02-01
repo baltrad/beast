@@ -49,7 +49,6 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="baltraddb.path" value="/opt/baltrad/db-devel"/>
   <property name="baltraddb.bin.path" value="${baltraddb.path}/bin"/>
 
-  <echo message="baltraddb.bin.path=${baltraddb.bin.path}"/>
   <available file="${baltraddb.path}" type="dir" property="baltraddb.available"/>
   <available file="${baltraddb.path}/share/baltrad-bdb/java/baltrad-bdb-client.jar" property="baltrad-bdb-client.jar.available"/>
   <available file="${baltraddb.bin.path}/baltrad-bdb-server" property="baltrad-bdb-server.available"/>
@@ -306,17 +305,22 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   </target>
 
   <target name="start-baltrad-bdb-server">
-    <exec executable="${baltraddb.bin.path}/baltrad-bdb-drop">
+    <exec executable="${baltraddb.bin.path}/baltrad-bdb-drop"
+          failonerror="true">
       <arg value="--conf=${etc.dir}/testdb.properties"/>
     </exec>
-    <exec executable="${baltraddb.bin.path}/baltrad-bdb-create">
+    <exec executable="${baltraddb.bin.path}/baltrad-bdb-create"
+          failonerror="true">
       <arg value="--conf=${etc.dir}/testdb.properties"/>
     </exec>
-    <exec executable="${baltraddb.bin.path}/baltrad-bdb-server">
+    <exec executable="${baltraddb.bin.path}/baltrad-bdb-server"
+          failonerror="true">
       <arg value="--conf=${etc.dir}/testdb.properties"/>
-      <arg value="--pidfile=${basedir}/baltrad-bdb-server.pid"/>
+      <arg value="--pidfile=${build.dir}/baltrad-bdb-server.pid"/>
+      <arg value="--logfile=${build.dir}/baltrad-bdb-server.log"/>
     </exec>
-    <exec executable="${baltraddb.bin.path}/baltrad-bdb-client">
+    <exec executable="${baltraddb.bin.path}/baltrad-bdb-client"
+          failonerror="true">
       <arg value="import_sources"/>
       <arg value="--url=${blt.db.uri}"/>
       <arg value="${basedir}/etc/itest_sources.xml"/>
@@ -326,7 +330,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 
   <target name="stop-baltrad-bdb-server">
     <exec executable="cat" outputproperty="baltraddb.server.pid">
-      <arg value="${basedir}/baltrad-bdb-server.pid"/>
+      <arg value="${build.dir}/baltrad-bdb-server.pid"/>
     </exec>
     <exec executable="kill">
       <arg value="${baltraddb.server.pid}"/>
