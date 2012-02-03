@@ -383,7 +383,7 @@ public class FTPFileUploadHandlerTest extends TestCase {
     listResult[0].setType(FTPFile.DIRECTORY_TYPE);
     listResult[0].setName("dir");
 
-    client.listFiles("/path/to/");
+    client.listFiles("/path/to");
     clientControl.setReturnValue(listResult);
     replay();
 
@@ -398,7 +398,7 @@ public class FTPFileUploadHandlerTest extends TestCase {
     listResult[0].setType(FTPFile.FILE_TYPE);
     listResult[0].setName("dir");
 
-    client.listFiles("/path/to/");
+    client.listFiles("/path/to");
     clientControl.setReturnValue(listResult);
     replay();
 
