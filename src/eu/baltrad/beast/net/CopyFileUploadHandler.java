@@ -25,14 +25,32 @@ import java.net.URI;
 import org.apache.commons.io.FileUtils;
 
 public class CopyFileUploadHandler implements FileUploadHandler {
+  @Override
   public void upload(File src, URI dst) throws IOException {
-    FileUtils.copyFileToDirectory(src, getPath(dst));
+    File dstPath = getPath(dst);
+    if (isDirectory(dstPath)) {
+      copyFileToDirectory(src, dstPath);
+    } else {
+      copyFile(src, dstPath);
+    }
   }
 
   protected File getPath(URI uri) {
     String path = uri.getPath();
     if (path == null || path.isEmpty())
-      path = "/";
+      throw new IllegalArgumentException("no path in URI: " + uri);
     return new File(path);
+  }
+
+  protected boolean isDirectory(File path) {
+    return path.isDirectory();
+  }
+
+  protected void copyFileToDirectory(File src, File dst) throws IOException {
+    FileUtils.copyFileToDirectory(src, dst);
+  }
+
+  protected void copyFile(File src, File dst) throws IOException {
+    FileUtils.copyFile(src, dst);
   }
 }

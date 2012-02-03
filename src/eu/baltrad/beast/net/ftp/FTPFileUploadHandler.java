@@ -25,11 +25,17 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import eu.baltrad.beast.net.FileUploadHandler;
 
 public class FTPFileUploadHandler implements FileUploadHandler {
+  protected static final int DEFAULT_CONNECT_TIMEOUT = 10000;
+  protected static final int DEFAULT_SOCKET_TIMEOUT = 60000;
+
+  private FTPClient client;
+
   public FTPFileUploadHandler() {
     this(new FTPClient());
   }
@@ -67,12 +73,30 @@ public class FTPFileUploadHandler implements FileUploadHandler {
   }
 
   protected void store(File src, URI dst) throws IOException {
-    if (!client.changeWorkingDirectory(getPath(dst)))
-      throw new IOException("Failed to cwd: " + getPath(dst));
+    File dstPath = getPath(dst);
+    String dstFilename = src.getName();
+    if (!isDirectory(dstPath)) {
+      dstFilename = dstPath.getName();
+      dstPath = dstPath.getParentFile();
+    }
+    if (!client.changeWorkingDirectory(dstPath.toString()))
+      throw new IOException("Failed to cwd: " + dstPath);
     if (!client.setFileType(client.BINARY_FILE_TYPE))
       throw new IOException("Failed to set binary transfer mode");
-    if (!client.storeFile(src.getName(), openStream(src)))
+    if (!client.storeFile(dstFilename, openStream(src)))
       throw new IOException("Failed to store " + src.toString());
+  }
+
+  protected boolean isDirectory(File path) throws IOException {
+    if ("/".equals(path.toString()))
+      return true;
+
+    FTPFile[] dirs = client.listFiles(path.getParent());
+    for (FTPFile dir: dirs) {
+      if (dir.isDirectory() && dir.getName().equals(path.getName()))
+        return true;
+    }
+    return false;
   }
 
   protected InputStream openStream(File f) throws IOException {
@@ -106,14 +130,10 @@ public class FTPFileUploadHandler implements FileUploadHandler {
     return result;
   }
 
-  protected String getPath(URI uri) {
+  protected File getPath(URI uri) {
     String result = uri.getPath();
     if (result == null || result.isEmpty())
-      result = "/";
-    return result;
+      throw new IllegalArgumentException("no path in URI: " + uri);
+    return new File(result);
   }
-
-  private FTPClient client;
-  protected static final int DEFAULT_CONNECT_TIMEOUT = 10000;
-  protected static final int DEFAULT_SOCKET_TIMEOUT = 60000;
 }

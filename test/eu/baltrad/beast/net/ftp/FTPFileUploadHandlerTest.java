@@ -28,6 +28,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
@@ -36,6 +37,7 @@ public class FTPFileUploadHandlerTest extends TestCase {
   private static interface MockMethods {
     void connect(URI u) throws IOException;
     void store(File s, URI d) throws IOException;
+    boolean isDirectory(File path) throws IOException;
     InputStream openStream(File f) throws IOException;
   };
 
@@ -224,7 +226,7 @@ public class FTPFileUploadHandlerTest extends TestCase {
     verify();
   }
 
-  public void testStore() throws Exception {
+  public void testStore_dstDirectory() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
     InputStream stream = new InputStream() {
@@ -235,8 +237,14 @@ public class FTPFileUploadHandlerTest extends TestCase {
       protected InputStream openStream(File f) throws IOException {
         return methods.openStream(f);
       }
+
+      protected boolean isDirectory(File path) throws IOException {
+        return methods.isDirectory(path);
+      }
     };
 
+    methods.isDirectory(new File("/remote/path"));
+    methodsControl.setReturnValue(true);
     client.changeWorkingDirectory("/remote/path");
     clientControl.setReturnValue(true);
     client.setFileType(client.BINARY_FILE_TYPE);
@@ -251,10 +259,51 @@ public class FTPFileUploadHandlerTest extends TestCase {
     verify();
   }
 
+  public void testStore_dstFile() throws Exception {
+    URI dst = URI.create("ftp://user:passwd@host/remote/path/newfilename");
+    File src = new File("/path/to/file");
+    InputStream stream = new InputStream() {
+      @Override public int read() { return -1; } 
+    };
+
+    classUnderTest = new FTPFileUploadHandler(client) {
+      protected InputStream openStream(File f) throws IOException {
+        return methods.openStream(f);
+      }
+
+      protected boolean isDirectory(File path) throws IOException {
+        return methods.isDirectory(path);
+      }
+    };
+
+    methods.isDirectory(new File("/remote/path/newfilename"));
+    methodsControl.setReturnValue(false);
+    client.changeWorkingDirectory("/remote/path");
+    clientControl.setReturnValue(true);
+    client.setFileType(client.BINARY_FILE_TYPE);
+    clientControl.setReturnValue(true);
+    methods.openStream(src);
+    methodsControl.setReturnValue(stream);
+    client.storeFile("newfilename", stream);
+    clientControl.setReturnValue(true);
+    replay();
+
+    classUnderTest.store(src, dst);
+    verify();
+  }
+
   public void testStore_cwdFailure() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
 
+    classUnderTest = new FTPFileUploadHandler(client) {
+      protected boolean isDirectory(File path) throws IOException {
+        return methods.isDirectory(path);
+      }
+    };
+
+    methods.isDirectory(new File("/remote/path"));
+    methodsControl.setReturnValue(true);
     client.changeWorkingDirectory("/remote/path");
     clientControl.setReturnValue(false);
     replay();
@@ -270,6 +319,14 @@ public class FTPFileUploadHandlerTest extends TestCase {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
 
+    classUnderTest = new FTPFileUploadHandler(client) {
+      protected boolean isDirectory(File path) throws IOException {
+        return methods.isDirectory(path);
+      }
+    };
+    
+    methods.isDirectory(new File("/remote/path"));
+    methodsControl.setReturnValue(true);
     client.changeWorkingDirectory("/remote/path");
     clientControl.setReturnValue(true);
     client.setFileType(client.BINARY_FILE_TYPE);
@@ -294,8 +351,14 @@ public class FTPFileUploadHandlerTest extends TestCase {
       protected InputStream openStream(File f) throws IOException {
         return methods.openStream(f);
       }
+
+      protected boolean isDirectory(File path) throws IOException {
+        return methods.isDirectory(path);
+      }
     };
 
+    methods.isDirectory(new File("/remote/path"));
+    methodsControl.setReturnValue(true);
     client.changeWorkingDirectory("/remote/path");
     clientControl.setReturnValue(true);
     client.setFileType(client.BINARY_FILE_TYPE);
@@ -313,6 +376,43 @@ public class FTPFileUploadHandlerTest extends TestCase {
     verify();
   }
 
+  public void testIsDirectory() throws Exception {
+    FTPFile[] listResult = new FTPFile[]{
+      new FTPFile()
+    };
+    listResult[0].setType(FTPFile.DIRECTORY_TYPE);
+    listResult[0].setName("dir");
+
+    client.listFiles("/path/to/");
+    clientControl.setReturnValue(listResult);
+    replay();
+
+    assertTrue(classUnderTest.isDirectory(new File("/path/to/dir")));
+    verify();
+  }
+
+  public void testIsDirectory_file() throws Exception {
+    FTPFile[] listResult = new FTPFile[]{
+      new FTPFile()
+    };
+    listResult[0].setType(FTPFile.FILE_TYPE);
+    listResult[0].setName("dir");
+
+    client.listFiles("/path/to/");
+    clientControl.setReturnValue(listResult);
+    replay();
+
+    assertFalse(classUnderTest.isDirectory(new File("/path/to/dir")));
+    verify();
+  }
+
+
+  public void testIsDirectory_root() throws Exception {
+    replay();
+    assertTrue(classUnderTest.isDirectory(new File("/")));
+    verify();
+  }
+
   public void testGetUser() {
     URI uri = URI.create("ftp://user:passwd@host");
     assertEquals("user", classUnderTest.getUser(uri));
@@ -325,12 +425,15 @@ public class FTPFileUploadHandlerTest extends TestCase {
 
   public void testGetPath() {
     URI uri = URI.create("ftp://host/path/to/dir");
-    assertEquals("/path/to/dir", classUnderTest.getPath(uri));
+    assertEquals(new File("/path/to/dir"), classUnderTest.getPath(uri));
   }
 
   public void testGetPath_missing() {
     URI uri = URI.create("ftp://host");
-    assertEquals("/", classUnderTest.getPath(uri));
+    try {
+      classUnderTest.getPath(uri);
+      fail("excpected IllegalArgumentException");
+    } catch (IllegalArgumentException e) { }
   }
 
   public void testSetClient_null() {
