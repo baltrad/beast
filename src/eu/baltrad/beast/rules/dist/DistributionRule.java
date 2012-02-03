@@ -34,9 +34,9 @@ import eu.baltrad.beast.net.FileUploader;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 
-import eu.baltrad.bdb.util.DefaultFileNamer;
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.oh5.MetadataMatcher;
+import eu.baltrad.bdb.storage.LocalStorage;
 
 /**
  * Distribute incoming data to remote destinations. Incoming files that match
@@ -52,6 +52,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   private MetadataMatcher matcher;
   private URI destination;
   private FileUploader uploader;
+  private LocalStorage localStorage;
 
   /**
    * The logger
@@ -59,11 +60,12 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   private static Logger logger = LogManager.getLogger(DistributionRule.class);
   
   /**
-   * Default constructor.
+   * Constructor.
    */
-  protected DistributionRule() {
-    this.uploader = FileUploader.createDefault();
+  protected DistributionRule(LocalStorage localStorage) {
     this.matcher = new MetadataMatcher();
+    this.uploader = FileUploader.createDefault();
+    this.localStorage = localStorage;
   }
 
   protected void setMatcher(MetadataMatcher matcher) {
@@ -88,6 +90,10 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
 
   public void setDestination(String destination) {
     this.destination = URI.create(destination);
+  }
+
+  protected LocalStorage getLocalStorage() {
+    return this.localStorage;
   }
 
   /**
@@ -145,25 +151,11 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   }
 
   protected void upload(FileEntry entry) {
-    File src = entryToFile(entry);
+    File src = localStorage.store(entry);
     try {
       uploader.upload(src, destination);
     } catch (IOException e) {
       logger.error("upload failed", e);
-    } finally {
-      src.delete();
     }
-  }
-
-  @SuppressWarnings("deprecation")
-  protected File entryToFile(FileEntry entry) {
-    File f = new File(TEMPDIR, name(entry));
-    entry.writeToFile(f); // XXX: deprecated
-    return f;
-  }
-
-  protected String name(FileEntry entry) {
-    DefaultFileNamer namer = new DefaultFileNamer();
-    return namer.name(entry);
   }
 }

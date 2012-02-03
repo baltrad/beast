@@ -21,6 +21,11 @@ package eu.baltrad.beast.rules.dist;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
+import eu.baltrad.bdb.storage.LocalStorage;
+
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
@@ -29,16 +34,22 @@ import eu.baltrad.beast.rules.RuleFilterManager;
 
 /**
  */
-public class DistributionRuleManager implements IRuleManager {
+public class DistributionRuleManager implements IRuleManager,
+                                                InitializingBean {
   /**
    * property manager
    */
-  private PropertyManager propManager = null;
+  private PropertyManager propManager;
   
   /**
    * filter manager
    */
-  private RuleFilterManager filterManager = null;
+  private RuleFilterManager filterManager;
+  
+  /**
+   * LocalStorage to associate with created rules
+   */
+  private LocalStorage localStorage;
   
   /**
    * @param manager the manager to set
@@ -52,6 +63,13 @@ public class DistributionRuleManager implements IRuleManager {
    */
   public void setRuleFilterManager(RuleFilterManager manager) {
     filterManager = manager;
+  }
+
+  /**
+   * @param localStorage the storage to set
+   */
+  public void setLocalStorage(LocalStorage localStorage) {
+    this.localStorage = localStorage;
   }
 
   /**
@@ -81,7 +99,7 @@ public class DistributionRuleManager implements IRuleManager {
    */
   @Override
   public DistributionRule createRule() {
-    DistributionRule result = new DistributionRule();
+    DistributionRule result = new DistributionRule(localStorage);
     return result;
   }
 
@@ -109,5 +127,12 @@ public class DistributionRuleManager implements IRuleManager {
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
     filters.put("match", rule.getFilter());
     filterManager.updateFilters(ruleId, filters);
+  }
+
+  @Override
+  public void afterPropertiesSet() {
+    if (localStorage == null) {
+      throw new BeanInitializationException("missing LocalStorage");
+    }
   }
 }

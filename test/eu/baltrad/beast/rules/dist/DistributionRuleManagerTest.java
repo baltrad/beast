@@ -26,6 +26,10 @@ import junit.framework.TestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
+import org.springframework.beans.factory.BeanInitializationException;
+
+import eu.baltrad.bdb.storage.LocalStorage;
+
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.PropertyManager;
@@ -37,6 +41,8 @@ public class DistributionRuleManagerTest extends TestCase {
   private RuleFilterManager filterManager;
   private MockControl filterControl;
   private IFilter filter;
+  private MockControl localStorageControl;
+  private LocalStorage localStorage;
   private DistributionRuleManager classUnderTest;
 
   public void setUp() {
@@ -46,19 +52,24 @@ public class DistributionRuleManagerTest extends TestCase {
     filterManager = (RuleFilterManager)filterManagerControl.getMock();
     filterControl = MockControl.createControl(IFilter.class);
     IFilter filter = (IFilter)filterControl.getMock();
+    localStorageControl = MockControl.createControl(LocalStorage.class);
+    localStorage = (LocalStorage)localStorageControl.getMock();
     classUnderTest = new DistributionRuleManager();
     classUnderTest.setPropertyManager(propertyManager);
     classUnderTest.setRuleFilterManager(filterManager);
+    classUnderTest.setLocalStorage(localStorage);
   }
 
   private void replay() {
     propertyManagerControl.replay();
     filterManagerControl.replay();
+    localStorageControl.replay();
   }
 
   private void verify() {
     propertyManagerControl.verify();
     filterManagerControl.verify();
+    localStorageControl.verify();
   }
 
   public void testDelete() {
@@ -85,6 +96,7 @@ public class DistributionRuleManagerTest extends TestCase {
     DistributionRule rule = (DistributionRule)classUnderTest.load(1);
     assertEquals("ftp://u:p@h/d", rule.getDestination().toString());
     assertSame(filter, rule.getFilter());
+    assertSame(localStorage, rule.getLocalStorage());
     verify();
   }
 
@@ -93,7 +105,7 @@ public class DistributionRuleManagerTest extends TestCase {
     props.put("destination", "ftp://u:p@h/d");
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
     filters.put("match", filter);
-    DistributionRule rule = new DistributionRule();
+    DistributionRule rule = new DistributionRule(localStorage);
     rule.setDestination("ftp://u:p@h/d");
     rule.setFilter(filter);
     propertyManager.storeProperties(1, props);
@@ -109,7 +121,7 @@ public class DistributionRuleManagerTest extends TestCase {
     props.put("destination", "ftp://u:p@h/d");
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
     filters.put("match", filter);
-    DistributionRule rule = new DistributionRule();
+    DistributionRule rule = new DistributionRule(localStorage);
     rule.setDestination("ftp://u:p@h/d");
     rule.setFilter(filter);
     propertyManager.updateProperties(1, props);
@@ -118,5 +130,21 @@ public class DistributionRuleManagerTest extends TestCase {
 
     classUnderTest.update(1, rule);
     verify();
+  }
+
+  public void testAfterPropertiesSet() {
+    classUnderTest = new DistributionRuleManager();
+    classUnderTest.setLocalStorage(localStorage);
+    classUnderTest.afterPropertiesSet();
+  }
+  
+  public void testAfterPropertiesSet_missingCatalog() {
+    classUnderTest = new DistributionRuleManager();
+    try {
+      classUnderTest.afterPropertiesSet();
+      fail("Expected BeanInitializationException");
+    } catch (BeanInitializationException e) {
+      // pass
+    }
   }
 }

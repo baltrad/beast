@@ -35,13 +35,12 @@ import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.oh5.Metadata;
 import eu.baltrad.bdb.oh5.MetadataMatcher;
+import eu.baltrad.bdb.storage.LocalStorage;
 
 public class DistributionRuleTest extends TestCase {
   private static interface DistributionRuleMethods {
     boolean match(FileEntry entry);
     void upload(FileEntry entry);
-    File entryToFile(FileEntry entry);
-    String name(FileEntry entry);
   };
 
   private MockControl methodsControl;
@@ -54,10 +53,10 @@ public class DistributionRuleTest extends TestCase {
   private Metadata metadata;
   private MockControl matcherControl;
   private MetadataMatcher matcher;
+  private MockControl localStorageControl;
+  private LocalStorage localStorage;
   private MockControl filterControl;
   private IFilter filter;
-  private MockControl fileControl;
-  private File file;
   private MockControl uploaderControl;
   private FileUploader uploader;
 
@@ -74,13 +73,13 @@ public class DistributionRuleTest extends TestCase {
     metadata = (Metadata)metadataControl.getMock();
     matcherControl = MockClassControl.createControl(MetadataMatcher.class);
     matcher = (MetadataMatcher)matcherControl.getMock();
+    localStorageControl = MockControl.createControl(LocalStorage.class);
+    localStorage = (LocalStorage)localStorageControl.getMock();
     filterControl = MockControl.createControl(IFilter.class);
     filter = (IFilter)filterControl.getMock();
-    fileControl = MockClassControl.createControl(File.class);
-    file = (File)fileControl.getMock();
     uploaderControl = MockClassControl.createControl(FileUploader.class);
     uploader = (FileUploader)uploaderControl.getMock();
-    classUnderTest = new DistributionRule();
+    classUnderTest = new DistributionRule(localStorage);
     classUnderTest.setMatcher(matcher);
     classUnderTest.setFilter(filter);
   }
@@ -93,8 +92,8 @@ public class DistributionRuleTest extends TestCase {
     methodsControl.replay();
     entryControl.replay();
     matcherControl.replay();
+    localStorageControl.replay();
     filterControl.replay();
-    fileControl.replay();
     metadataControl.replay();
     uploaderControl.replay();
   }
@@ -103,8 +102,8 @@ public class DistributionRuleTest extends TestCase {
     methodsControl.verify();
     entryControl.verify();
     matcherControl.verify();
+    localStorageControl.verify();
     filterControl.verify();
-    fileControl.verify();
     metadataControl.verify();
     uploaderControl.verify();
   }
@@ -113,7 +112,7 @@ public class DistributionRuleTest extends TestCase {
     BltDataMessage msg = new BltDataMessage();
     msg.setFileEntry(entry);
 
-    classUnderTest = new DistributionRule() {
+    classUnderTest = new DistributionRule(localStorage) {
       @Override
       protected boolean match(FileEntry entry) {
         return methods.match(entry);
@@ -138,7 +137,7 @@ public class DistributionRuleTest extends TestCase {
     BltDataMessage msg = new BltDataMessage();
     msg.setFileEntry(entry);
 
-    classUnderTest = new DistributionRule() {
+    classUnderTest = new DistributionRule(localStorage) {
       @Override
       protected boolean match(FileEntry entry) {
         return methods.match(entry);
@@ -172,44 +171,16 @@ public class DistributionRuleTest extends TestCase {
   }
 
   public void testUpload() throws IOException {
-    classUnderTest = new DistributionRule() {
-      @Override
-      protected File entryToFile(FileEntry entry) {
-        return methods.entryToFile(entry);
-      }
-    };
+    File file = new File("/path/to/file");
     classUnderTest.setUploader(uploader);
     classUnderTest.setDestination("ftp://u:p@h/d");
 
-    methods.entryToFile(entry);
-    methodsControl.setReturnValue(file);
+    localStorage.store(entry);
+    localStorageControl.setReturnValue(file);
     uploader.upload(file, URI.create("ftp://u:p@h/d"));
-    file.delete();
-    fileControl.setReturnValue(true);
     replay();
 
     classUnderTest.upload(entry);
     verify();
-  }
-  
-  @SuppressWarnings("deprecation")
-  public void testEntryToFile() {
-    classUnderTest = new DistributionRule() {
-      @Override
-      protected String name(FileEntry entry) {
-        return methods.name(entry);
-      }
-    };
-
-    File f = new File(System.getProperty("java.io.tmpdir"), "name");
-
-    methods.name(entry);
-    methodsControl.setReturnValue("name");
-    entry.writeToFile(f); // XXX: deprecated
-    replay();
-
-    File result = classUnderTest.entryToFile(entry);
-    assertEquals(result, f);
-    verify();
-  }
+  }  
 }
