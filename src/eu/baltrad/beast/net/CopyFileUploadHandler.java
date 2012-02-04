@@ -24,7 +24,7 @@ import java.net.URI;
 
 import org.apache.commons.io.FileUtils;
 
-public class CopyFileUploadHandler implements FileUploadHandler {
+public class CopyFileUploadHandler extends FileUploadHandlerBase {
   @Override
   public void upload(File src, URI dst) throws IOException {
     File dstPath = getPath(dst);

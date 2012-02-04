@@ -25,7 +25,7 @@ import java.net.URI;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
-import eu.baltrad.beast.net.FileUploadHandler;
+import eu.baltrad.beast.net.FileUploadHandlerBase;
 
 /**
  * Upload files using SCP.
@@ -36,7 +36,7 @@ import eu.baltrad.beast.net.FileUploadHandler;
  * More thorough configuration could be provided through query arguments in
  * the future.
  */
-public class SCPFileUploadHandler implements FileUploadHandler {
+public class SCPFileUploadHandler extends FileUploadHandlerBase {
   /**
    * Default constructor.
    */

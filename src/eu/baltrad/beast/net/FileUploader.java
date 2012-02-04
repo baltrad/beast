@@ -78,12 +78,28 @@ public class FileUploader {
    */
   public void upload(File src, URI dst)
       throws IOException, UnknownServiceException {
-    FileUploadHandler h = getHandlerByScheme(dst.getScheme());
     if (!src.isAbsolute())
       throw new IllegalArgumentException("source path must be absolute");
-    if (h == null)
+    FileUploadHandler handler = getHandlerByScheme(dst.getScheme());
+    if (handler == null)
       throw new UnknownServiceException(dst.getScheme());
-    h.upload(src, dst);
+    handler.upload(src, dst);
+  }
+
+  /**
+   * Append a path to an URI.
+   * 
+   * @param uri the URI to append to
+   * @param path the path to append
+   * @return a new URI with the path appended
+   * @throws UnknownServiceException if no handler is found for the scheme
+   */
+  public URI appendPath(URI uri, String path)
+      throws UnknownServiceException {
+    FileUploadHandler handler = getHandlerByScheme(uri.getScheme());
+    if (handler == null)
+      throw new UnknownServiceException(uri.getScheme());
+    return handler.appendPath(uri, path);
   }
 
   protected FileUploadHandler getHandlerByScheme(String scheme) {

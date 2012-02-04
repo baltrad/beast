@@ -28,9 +28,9 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
-import eu.baltrad.beast.net.FileUploadHandler;
+import eu.baltrad.beast.net.FileUploadHandlerBase;
 
-public class FTPFileUploadHandler implements FileUploadHandler {
+public class FTPFileUploadHandler extends FileUploadHandlerBase {
   protected static final int DEFAULT_CONNECT_TIMEOUT = 10000;
   protected static final int DEFAULT_SOCKET_TIMEOUT = 60000;
 

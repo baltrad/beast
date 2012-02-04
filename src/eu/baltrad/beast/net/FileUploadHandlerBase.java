@@ -19,28 +19,34 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.net;
 
-import java.net.URI;
 import java.io.File;
-import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-public interface FileUploadHandler {
+public abstract class FileUploadHandlerBase implements FileUploadHandler {
   /**
-   * Upload a file. The implementations should determine if the
-   * `dst` refers to a file or a directory and in case of the former
-   * rename the file.
+   * append a path to an URI.
    *
-   * @param src the file to copy
-   * @param dst the destination URI.
-   * @throws IOException when copying fails
+   * Handles appending to hierarchical URIs.
    */
-  void upload(File src, URI dst) throws IOException;
-  
-  /**
-   * Append a path to an URI.
-   *
-   * @param uri the uri to append to
-   * @param path the path to append
-   * @return a new URI with the path appended.
-   */
-  URI appendPath(URI uri, String path);
+  @Override
+  public URI appendPath(URI uri, String path) {
+    String uriPathString = uri.getPath();
+    if (uriPathString == null)
+      throw new IllegalArgumentException(uri + " has no path");
+    File uriPath = new File(uriPathString, path);
+    try {
+      return new URI(
+        uri.getScheme(),
+        uri.getAuthority(),
+        uriPath.toString(),
+        uri.getQuery(),
+        uri.getFragment()
+      );
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(
+        "could not append '" + path + "' to " + uri, e
+      );
+    }
+  }
 }

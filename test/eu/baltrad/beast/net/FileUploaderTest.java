@@ -82,9 +82,28 @@ public class FileUploaderTest extends TestCase {
     try {
       classUnderTest.upload("input", "test:///");
       fail("expected IllegalArgumentException");
-    } catch (IllegalArgumentException e) {
-      // pass
-    }
+    } catch (IllegalArgumentException e) { }
+  }
+
+  public void testAppendPath() throws Exception {
+    URI uri = URI.create("test:///");
+    URI uriAppended = URI.create("test:///path");
+
+    handler.appendPath(uri, "path");
+    handlerControl.setReturnValue(uriAppended);
+    replay();
+
+    URI result = classUnderTest.appendPath(uri, "path");    
+    assertSame(uriAppended, result);
+    verify();
+  }
+
+  public void testAppendPath_unknownScheme() throws Exception {
+    URI uri = URI.create("unknown:///");
+    try {
+      classUnderTest.appendPath(uri, "path");
+      fail("expected UnknownServiceException");
+    } catch (java.net.UnknownServiceException e) { }
   }
 
   public void testSetHandlers_null() {
