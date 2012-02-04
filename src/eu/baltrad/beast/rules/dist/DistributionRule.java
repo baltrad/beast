@@ -36,7 +36,11 @@ import eu.baltrad.beast.rules.IRulePropertyAccess;
 
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.oh5.MetadataMatcher;
+import eu.baltrad.bdb.oh5.TemplateMetadataNamer;
 import eu.baltrad.bdb.storage.LocalStorage;
+import eu.baltrad.bdb.util.FileEntryNamer;
+import eu.baltrad.bdb.util.MetadataFileEntryNamer;
+import eu.baltrad.bdb.util.UuidFileEntryNamer;
 
 /**
  * Distribute incoming data to remote destinations. Incoming files that match
@@ -46,13 +50,12 @@ import eu.baltrad.bdb.storage.LocalStorage;
 public class DistributionRule implements IRule, IRulePropertyAccess {
   public final static String TYPE = "distribution";
 
-  private final static File TEMPDIR = new File(System.getProperty("java.io.tmpdir"));
-
   private IFilter filter;
   private MetadataMatcher matcher;
   private URI destination;
   private FileUploader uploader;
   private LocalStorage localStorage;
+  private FileEntryNamer namer;
 
   /**
    * The logger
@@ -92,6 +95,37 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     this.destination = URI.create(destination);
   }
 
+  public void setNamer(FileEntryNamer namer) {
+    this.namer = namer;
+  }
+
+  /**
+   * Set metadata naming template.
+   */
+  public void setMetadataNamingTemplate(String tmpl) {
+    this.namer = new MetadataFileEntryNamer(
+      new TemplateMetadataNamer(tmpl)
+    );
+  }
+
+  /**
+   * Get metadata naming template.
+   *
+   * @return the template or null of some other namer is used.
+   */
+  public String getMetadataNamingTemplate() {
+    if (namer == null)
+      return null;
+
+    try {
+      MetadataFileEntryNamer metadataNamer = (MetadataFileEntryNamer)namer;
+      TemplateMetadataNamer templateNamer = (TemplateMetadataNamer)metadataNamer.getMetadataNamer();
+      return templateNamer.getTemplate();
+    } catch (ClassCastException e) {
+      return null;
+    }
+  }
+
   protected LocalStorage getLocalStorage() {
     return this.localStorage;
   }
@@ -103,8 +137,13 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   public Map<String, String> getProperties() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("destination", destination.toString());
+    String metadataNamingTemplate = getMetadataNamingTemplate();
+    if (metadataNamingTemplate != null) {
+      props.put("metadataNamingTemplate", metadataNamingTemplate);
+    }
     return props;
   }
+
   /**
    * @see eu.baltrad.beast.rules.IRulePropertyAccess#setProperties(Map)
    */
@@ -112,6 +151,11 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   public void setProperties(Map<String, String> props) {
     if (props.containsKey("destination")) {
       this.destination = URI.create(props.get("destination"));
+    }
+    if (props.containsKey("metadataNamingTemplate")) {
+      setMetadataNamingTemplate(props.get("metadataNamingTemplate"));
+    } else {
+      setNamer(new UuidFileEntryNamer());
     }
   }
 
@@ -152,8 +196,10 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
 
   protected void upload(FileEntry entry) {
     File src = localStorage.store(entry);
+    String entryName = namer.name(entry);
     try {
-      uploader.upload(src, destination);
+      URI fullDestination = uploader.appendPath(destination, entryName);
+      uploader.upload(src, fullDestination);
     } catch (IOException e) {
       logger.error("upload failed", e);
     }
