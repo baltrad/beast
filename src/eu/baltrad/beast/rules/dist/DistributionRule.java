@@ -126,6 +126,10 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     }
   }
 
+  public void setUuidNamer() {
+    this.namer = new UuidFileEntryNamer();
+  }
+
   protected LocalStorage getLocalStorage() {
     return this.localStorage;
   }
@@ -155,7 +159,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     if (props.containsKey("metadataNamingTemplate")) {
       setMetadataNamingTemplate(props.get("metadataNamingTemplate"));
     } else {
-      setNamer(new UuidFileEntryNamer());
+      setUuidNamer();
     }
   }
 
