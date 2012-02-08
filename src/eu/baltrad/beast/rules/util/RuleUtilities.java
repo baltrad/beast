@@ -109,7 +109,7 @@ public class RuleUtilities implements IRuleUtilities {
 
     ExpressionFactory xpr = new ExpressionFactory();
     Expression dtAttr = xpr.combinedDateTime("what/date", "what/time");
-    Expression srcAttr = xpr.attribute("what/source:_name");
+    Expression srcAttr = xpr.attribute("_bdb/source_name");
     
     List<Expression> srcExpr = new ArrayList<Expression>();
     for (String srcStr : sources) {

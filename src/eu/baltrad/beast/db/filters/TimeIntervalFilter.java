@@ -87,7 +87,7 @@ public class TimeIntervalFilter implements ICatalogFilter {
     List<Expression> filters = new ArrayList<Expression>();
     filters.add(xpr.eq(xpr.attribute("what/object"), xpr.literal(object)));
     if (source != null) {
-      filters.add(xpr.eq(xpr.attribute("what/source:_name"), xpr.literal(source)));
+      filters.add(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal(source)));
     }
 
     if (startDT != null) {

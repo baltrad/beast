@@ -81,7 +81,7 @@ public class PolarScanAngleFilter implements ICatalogFilter {
     List<Expression> filters = new ArrayList<Expression>();
 
     filters.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
-    filters.add(xpr.eq(xpr.attribute("what/source:_name"), xpr.literal(source)));
+    filters.add(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal(source)));
 
     filters.add(xpr.eq(xpr.attribute("what/date"), xpr.literal(dt.getDate())));
     filters.add(xpr.eq(xpr.attribute("what/time"), xpr.literal(dt.getTime())));

@@ -62,7 +62,7 @@ public class LowestAngleFilter implements ICatalogFilter {
     List<Expression> filters = new ArrayList<Expression>();
 
     filters.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
-    filters.add(xpr.eq(xpr.attribute("what/source:_name"), xpr.literal(source)));
+    filters.add(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal(source)));
     
     if (startDT != null) {
       filters.add(xpr.ge(dtAttr, xpr.literal(this.startDT)));

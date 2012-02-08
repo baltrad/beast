@@ -98,8 +98,8 @@ public class BaltradDBITest extends TestCase {
   public void test_find_seang() throws Exception {
     AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
-    q.fetch("uuid", xpr.attribute("file:uuid"));
-    q.setFilter(xpr.eq(xpr.attribute("what/source:_name"), xpr.literal("seang")));
+    q.fetch("uuid", xpr.attribute("_bdb/uuid"));
+    q.setFilter(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal("seang")));
     AttributeResult rs = db.execute(q);
     assertEquals(1, rs.size());
     rs.next();
@@ -114,7 +114,7 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
-    q.fetch("uuid", xpr.attribute("what/source:_name"));
+    q.fetch("uuid", xpr.attribute("_bdb/source_name"));
 
     AttributeResult rs = db.execute(q);
     assertEquals(12, rs.size());
@@ -140,9 +140,9 @@ public class BaltradDBITest extends TestCase {
     AttributeQuery q = new AttributeQuery();
     ExpressionFactory xpr = new ExpressionFactory();
     
-    q.fetch("source", xpr.attribute("what/source:_name"));
-    Expression e1 = xpr.eq(xpr.attribute("what/source:_name"), xpr.literal("sekir"));
-    Expression e2 = xpr.eq(xpr.attribute("what/source:_name"), xpr.literal("selul"));
+    q.fetch("source", xpr.attribute("_bdb/source_name"));
+    Expression e1 = xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal("sekir"));
+    Expression e2 = xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal("selul"));
     q.setFilter(xpr.or(e1, e2));
     AttributeResult rs = db.execute(q);
     assertEquals(2, rs.size());
@@ -165,8 +165,8 @@ public class BaltradDBITest extends TestCase {
     ExpressionFactory xpr = new ExpressionFactory();
     Set<String> result = new HashSet<String>();
     
-    q.fetch("source", xpr.attribute("what/source:_name"));
-    q.setFilter(xpr.ne(xpr.attribute("what/source:_name"), xpr.literal("sekir")));
+    q.fetch("source", xpr.attribute("_bdb/source_name"));
+    q.setFilter(xpr.ne(xpr.attribute("_bdb/source_name"), xpr.literal("sekir")));
     AttributeResult rs = db.execute(q);
     assertEquals(11, rs.size());
     while (rs.next()) {

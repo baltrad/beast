@@ -199,7 +199,7 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
     FileQuery qry = new FileQuery();
     qry.appendOrderClause(
       xpr.asc(
-        xpr.combinedDateTime("file:stored_date", "file:stored_time")
+        xpr.combinedDateTime("_bdb/stored_date", "_bdb/stored_time")
       )
     );
     qry.setLimit(fileCount - fileCountLimit);
