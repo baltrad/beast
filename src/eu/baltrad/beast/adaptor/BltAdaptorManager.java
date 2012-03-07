@@ -344,7 +344,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     String destination = message.getDestination();
     IAdaptor adaptor = adaptors.get(destination);
     if (adaptor == null) {
-      throw new AdaptorException("No adaptor able to handle the route");
+      throw new Adaptor Exception("No adaptor able to handle the route");
     }
     IBltMessage msg = message.getMessage();
     if (msg != null) {
