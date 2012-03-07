@@ -320,19 +320,21 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   @Override
   public void handle(IMultiRoutedMessage message) {
     logger.debug("handle(IMultiRoutedMessage)");
-    Iterator<String> i = message.getDestinations().iterator();
     IBltMessage msg = message.getMessage();
+    if (msg != null) {
+      Iterator<String> i = message.getDestinations().iterator();
     
-    while (i.hasNext()) {
-      String key = i.next();
-      try {
-        IAdaptor adaptor = adaptors.get(key);
-        if (adaptor != null) {
-          logger.debug("handle(IMultiRoutedMessage): Forwarding to " + key);
-          adaptor.handle(msg);
+      while (i.hasNext()) {
+        String key = i.next();
+        try {
+          IAdaptor adaptor = adaptors.get(key);
+          if (adaptor != null) {
+            logger.debug("handle(IMultiRoutedMessage): Forwarding to " + key);
+            adaptor.handle(msg);
+          }
+        } catch (RuntimeException t) {
+          t.printStackTrace();
         }
-      } catch (RuntimeException t) {
-        t.printStackTrace();
       }
     }
   }
@@ -340,12 +342,15 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   @Override
   public void handle(IRoutedMessage message) {
     String destination = message.getDestination();
-    logger.debug("handle(IRoutedMessage) Forwarding to " + destination);
     IAdaptor adaptor = adaptors.get(destination);
     if (adaptor == null) {
       throw new AdaptorException("No adaptor able to handle the route");
     }
-    adaptor.handle(message.getMessage());
+    IBltMessage msg = message.getMessage();
+    if (msg != null) {
+      logger.debug("handle(IRoutedMessage) Forwarding to " + destination);
+      adaptor.handle(msg);
+    }
   }
   
   /**
@@ -354,12 +359,15 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   @Override
   public void handle(IRoutedMessage message, IAdaptorCallback callback) {
     String destination = message.getDestination();
-    logger.debug("handle(IRoutedMessage,IAdaptorCallback) Forwarding to " + destination);
     IAdaptor adaptor = adaptors.get(destination);
     if (adaptor == null) {
       throw new AdaptorException("No adaptor able to handle the route");
     }
-    adaptor.handle(message.getMessage(), callback);    
+    IBltMessage msg = message.getMessage();
+    if (msg != null) {
+      logger.debug("handle(IRoutedMessage,IAdaptorCallback) Forwarding to " + destination);
+      adaptor.handle(msg, callback);
+    }
   }  
   
   /**

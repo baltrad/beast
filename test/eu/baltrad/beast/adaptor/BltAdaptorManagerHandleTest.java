@@ -95,6 +95,26 @@ public class BltAdaptorManagerHandleTest extends TestCase {
     messageControl.verify();
   }
   
+  public void testHandle_MultiRouted_nullMessage() {
+    MockControl messageControl = MockControl.createControl(IMultiRoutedMessage.class);
+    IMultiRoutedMessage message = (IMultiRoutedMessage)messageControl.getMock();
+    List<String> destinations = new ArrayList<String>();
+    destinations.add("A2");
+    
+    // Mock setup
+    message.getMessage();
+    messageControl.setReturnValue(null);
+
+    replay();
+    messageControl.replay();
+    
+    classUnderTest.handle(message);
+    
+    verify();
+    messageControl.verify();
+
+  }
+  
   public void testHandle_MultiRouted_noAdaptor() throws Exception {
     MockControl messageControl = MockControl.createControl(IMultiRoutedMessage.class);
     IMultiRoutedMessage message = (IMultiRoutedMessage)messageControl.getMock();
@@ -166,6 +186,26 @@ public class BltAdaptorManagerHandleTest extends TestCase {
     routedMessageControl.verify();
   }
   
+  public void testHandle_nullMessage() throws Exception {
+    MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
+    IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
+    routedMessage.getDestination();
+    routedMessageControl.setReturnValue("A2");
+    
+    routedMessage.getMessage();
+    routedMessageControl.setReturnValue(null);
+
+    replay();
+    routedMessageControl.replay();
+    
+    // execute test
+    classUnderTest.handle(routedMessage);
+    
+    // verify
+    verify();
+    routedMessageControl.verify();
+  }
+  
   public void testHandle_noMatchingAdaptor() throws Exception {
     MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
     IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
@@ -218,6 +258,32 @@ public class BltAdaptorManagerHandleTest extends TestCase {
     routedMessageControl.verify();
   }
 
+  public void testHandle_withCallback_nullMessage() throws Exception {
+    MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
+    IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
+    
+    IAdaptorCallback cb = new IAdaptorCallback(){
+      public void error(IBltMessage message, Throwable t) {}
+      public void success(IBltMessage message, Object result) {}
+      public void timeout(IBltMessage message) {}
+    };
+
+    routedMessage.getDestination();
+    routedMessageControl.setReturnValue("A2");
+    routedMessage.getMessage();
+    routedMessageControl.setReturnValue(null);
+   
+    replay();
+    routedMessageControl.replay();
+    
+    // execute test
+    classUnderTest.handle(routedMessage, cb);
+    
+    // verify
+    verify();
+    routedMessageControl.verify();
+  }
+  
   public void testHandle_withCallback_noMatchingAdaptor() throws Exception {
     MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
     IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
