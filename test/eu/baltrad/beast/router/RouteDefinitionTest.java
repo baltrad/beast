@@ -18,19 +18,27 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.router;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.rules.IRule;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  */
-public class RouteDefinitionTest extends TestCase {
+public class RouteDefinitionTest extends EasyMockSupport {
+  @Test
   public void testSetGetRule() {
     RouteDefinition classUnderTest = new RouteDefinition();
     IRule rule = new IRule() {
@@ -45,6 +53,7 @@ public class RouteDefinitionTest extends TestCase {
     assertSame(rule, result);
   }
   
+  @Test
   public void testSetGetAuthor() {
     RouteDefinition classUnderTest = new RouteDefinition();
     assertNull(classUnderTest.getAuthor());
@@ -52,6 +61,7 @@ public class RouteDefinitionTest extends TestCase {
     assertEquals("nisse", classUnderTest.getAuthor());
   }
   
+  @Test
   public void testSetIsActive() {
     RouteDefinition classUnderTest = new RouteDefinition();
     assertEquals(true, classUnderTest.isActive());
@@ -59,6 +69,7 @@ public class RouteDefinitionTest extends TestCase {
     assertEquals(false, classUnderTest.isActive());
   }
   
+  @Test
   public void testSetGetRecipients() {
     RouteDefinition classUnderTest = new RouteDefinition();
     List<String> recipients = new ArrayList<String>();
@@ -68,12 +79,14 @@ public class RouteDefinitionTest extends TestCase {
     assertSame(recipients, result);
   }
 
+  @Test
   public void testSetGetRecipients_null() {
     RouteDefinition classUnderTest = new RouteDefinition();
     classUnderTest.setRecipients(null);
     assertNotNull(classUnderTest.getRecipients());
   }
   
+  @Test
   public void testSetGetName() {
     RouteDefinition classUnderTest = new RouteDefinition();
     assertNull(classUnderTest.getName());
@@ -81,54 +94,54 @@ public class RouteDefinitionTest extends TestCase {
     assertEquals("nisse", classUnderTest.getName());
   }
   
+  @Test
   public void testHandle() {
-    MockControl iruleControl = MockControl.createControl(IRule.class);
-    IRule irule = (IRule)iruleControl.getMock();
+    IRule irule = createMock(IRule.class);
     
     IBltMessage msg = new IBltMessage() {};
     IBltMessage resmsg = new IBltMessage() {};
-    irule.handle(msg);
-    iruleControl.setReturnValue(resmsg);
+    
+    expect(irule.handle(msg)).andReturn(resmsg);
     RouteDefinition classUnderTest = new RouteDefinition();
     classUnderTest.setRule(irule);
     
-    iruleControl.replay();
+    replayAll();
     
     // Execute test
     IBltMessage result = classUnderTest.handle(msg);
     
     // Verify
-    iruleControl.verify();
+    verifyAll();
     assertSame(resmsg, result);
   }
 
+  @Test
   public void testHandle_inactive() {
-    MockControl iruleControl = MockControl.createControl(IRule.class);
-    IRule irule = (IRule)iruleControl.getMock();
+    IRule irule = createMock(IRule.class);
     
     IBltMessage msg = new IBltMessage() {};
     RouteDefinition classUnderTest = new RouteDefinition();
     classUnderTest.setRule(irule);
     classUnderTest.setActive(false);
     
-    iruleControl.replay();
+    replayAll();
     
     // Execute test
     IBltMessage result = classUnderTest.handle(msg);
     
     // Verify
-    iruleControl.verify();
+    verifyAll();
     assertNull(result);
   }
 
+  @Test
   public void testHandle_nullMessage() {
-    MockControl iruleControl = MockControl.createControl(IRule.class);
-    IRule irule = (IRule)iruleControl.getMock();
+    IRule irule = createMock(IRule.class);
     
     RouteDefinition classUnderTest = new RouteDefinition();
     classUnderTest.setRule(irule);
     
-    iruleControl.replay();
+    replayAll();
     
     // Execute test
     try {
@@ -139,27 +152,27 @@ public class RouteDefinitionTest extends TestCase {
     }
     
     // Verify
-    iruleControl.verify();
+    verifyAll();
   }
   
+  @Test
   public void testGetRuleType() throws Exception {
-    MockControl iruleControl = MockControl.createControl(IRule.class);
-    IRule irule = (IRule)iruleControl.getMock();
+    IRule irule = createMock(IRule.class);
     
-    irule.getType();
-    iruleControl.setReturnValue("atype");
+    expect(irule.getType()).andReturn("atype");
     
     RouteDefinition classUnderTest = new RouteDefinition();
     classUnderTest.setRule(irule);
     
-    iruleControl.replay();
+    replayAll();
 
     String result = classUnderTest.getRuleType();
     
-    iruleControl.verify();
+    verifyAll();
     assertEquals("atype", result);
   }
 
+  @Test
   public void testGetRuleType_noRule() throws Exception {
     
     RouteDefinition classUnderTest = new RouteDefinition();

@@ -25,7 +25,6 @@ import java.util.UUID;
 
 import junit.framework.TestCase;
 
-import org.easymock.MockControl;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.bdb.FileCatalog;
@@ -33,9 +32,9 @@ import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.db.FileQuery;
 import eu.baltrad.bdb.db.FileResult;
 import eu.baltrad.bdb.util.DateTime;
-
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
+import static org.easymock.EasyMock.*;
 
 public class BdbTrimAgeRuleITest extends TestCase {
   private AbstractApplicationContext context = null;
@@ -43,7 +42,6 @@ public class BdbTrimAgeRuleITest extends TestCase {
   private BeastDBTestHelper helper = null;
   private BdbTrimAgeRule classUnderTest = null;
 
-  private MockControl methodsControl = null;
   private BdbTrimAgeRuleMethods methods = null;
 
   private static interface BdbTrimAgeRuleMethods {
@@ -70,8 +68,7 @@ public class BdbTrimAgeRuleITest extends TestCase {
     classUnderTest = new BdbTrimAgeRule();
     classUnderTest.setFileCatalog(catalog);
 
-    methodsControl = MockControl.createControl(BdbTrimAgeRuleMethods.class);
-    methods = (BdbTrimAgeRuleMethods)methodsControl.getMock();
+    methods = createMock(BdbTrimAgeRuleMethods.class);
 
     fileUuidMap = new HashMap<String, UUID>();
 
@@ -85,7 +82,6 @@ public class BdbTrimAgeRuleITest extends TestCase {
     catalog = null;
     helper = null;
     classUnderTest = null;
-    methodsControl = null;
     methods = null;
     fileUuidMap = null;
     context.close();
@@ -105,11 +101,13 @@ public class BdbTrimAgeRuleITest extends TestCase {
     classUnderTest.setFileCatalog(catalog);
     classUnderTest.setFileAgeLimit(300);
     
-    methods.getCurrentDateTime();
-    methodsControl.setReturnValue(new DateTime(2010, 10, 16, 8, 6, 0));
-    methodsControl.replay();
+    expect(methods.getCurrentDateTime()).andReturn(new DateTime(2010, 10, 16, 8, 6, 0));
+
+    replay(methods);
 
     classUnderTest.handle(new BltTriggerJobMessage());
+    
+    verify(methods);
     UUID uuid = fileUuidMap.get("fixtures/Z_SCAN_C_ESWI_20101016080500_seang_000000.h5");
     FileResult rset = catalog.getDatabase().execute(new FileQuery());
     try {

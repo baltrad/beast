@@ -19,6 +19,9 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +29,7 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
-
-import org.easymock.MockControl;
-
+import org.easymock.EasyMock;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -39,11 +40,8 @@ public class CombinedFilterManagerDBTest extends TestCase {
   private AbstractApplicationContext context;
   private BeastDBTestHelper helper;
 
-  private MockControl filter1Control;
   private IFilter filter1;
-  private MockControl filter2Control;
   private IFilter filter2;
-  private MockControl childManagerControl;
   private IFilterManager childManager;
 
   public void setUp() throws Exception {
@@ -51,12 +49,9 @@ public class CombinedFilterManagerDBTest extends TestCase {
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.cleanInsert(this);
 
-    filter1Control = MockControl.createControl(IFilter.class);
-    filter1 = (IFilter)filter1Control.getMock();
-    filter2Control = MockControl.createControl(IFilter.class);
-    filter2 = (IFilter)filter2Control.getMock();
-    childManagerControl = MockControl.createControl(IFilterManager.class);
-    childManager = (IFilterManager)childManagerControl.getMock();
+    filter1 = createMock(IFilter.class);
+    filter2 = createMock(IFilter.class);
+    childManager = createMock(IFilterManager.class);
 
     classUnderTest = new CombinedFilterManager();
     SimpleJdbcOperations template = (SimpleJdbcOperations)context.getBean("jdbcTemplate");
@@ -79,15 +74,11 @@ public class CombinedFilterManagerDBTest extends TestCase {
   }
 
   private void replay() {
-    filter1Control.replay();
-    filter2Control.replay();
-    childManagerControl.replay();
+    EasyMock.replay(filter1, filter2, childManager);
   }
   
   private void verify() {
-    filter1Control.verify();
-    filter2Control.verify();
-    childManagerControl.verify();
+    EasyMock.verify(filter1, filter2, childManager);
   }
 
   public void testStore() throws Exception {
@@ -99,27 +90,26 @@ public class CombinedFilterManagerDBTest extends TestCase {
     f.setId(8);
     f.setMatchType(CombinedFilter.MatchType.ANY);
 
-    filter1.getId();
-    filter1Control.setReturnValue(new Integer(1));
+    expect(filter1.getId()).andReturn(new Integer(1));
     childManager.store(filter1);
-    filter2.getId();
-    filter2Control.setReturnValue(new Integer(2));
+    expect(filter2.getId()).andReturn(new Integer(2));
     childManager.store(filter2);
     replay();
     
     classUnderTest.store(f);
+    
     verify();
     verifyDatabaseTables("store");
   }
 
   public void testLoad() {
-    childManager.load(1);
-    childManagerControl.setReturnValue(filter1);
-    childManager.load(2);
-    childManagerControl.setReturnValue(filter2);
+    expect(childManager.load(1)).andReturn(filter1);
+    expect(childManager.load(2)).andReturn(filter2);
+
     replay();
 
     CombinedFilter f = classUnderTest.load(6);
+    
     verify();
     assertEquals(CombinedFilter.MatchType.ALL, f.getMatchType());
     assertTrue(f.getChildFilters().contains(filter1));
@@ -135,10 +125,9 @@ public class CombinedFilterManagerDBTest extends TestCase {
     children.add(filter2);
     f.setChildFilters(children);
 
-    filter1.getId();
-    filter1Control.setReturnValue(new Integer(4));
-    filter2.getId();
-    filter2Control.setReturnValue(new Integer(5));
+    expect(filter1.getId()).andReturn(new Integer(4));
+    expect(filter2.getId()).andReturn(new Integer(5));
+
     replay();
 
     classUnderTest.update(f);

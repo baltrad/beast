@@ -18,14 +18,20 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.volume;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -36,9 +42,8 @@ import eu.baltrad.beast.rules.util.RuleUtilities;
 
 /**
  * @author Anders Henja
- * 
  */
-public class VolumeRuleManagerTest extends TestCase {
+public class VolumeRuleManagerTest extends EasyMockSupport {
   private static interface ManagerMethods {
     public void storeSources(int rule_id, List<String> sources);
     public List<String> getSources(int rule_id);    
@@ -48,34 +53,24 @@ public class VolumeRuleManagerTest extends TestCase {
   };
   
   private VolumeRuleManager classUnderTest = null;
-  private MockControl jdbcControl = null;
   private SimpleJdbcOperations jdbc = null;
 
-  protected void setUp() throws Exception {
-    jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    jdbc = (SimpleJdbcOperations) jdbcControl.getMock();
-
+  @Before
+  public void setUp() throws Exception {
+    jdbc = createMock(SimpleJdbcOperations.class);
     classUnderTest = new VolumeRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
   }
 
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     jdbc = null;
-    jdbcControl = null;
     classUnderTest = null;
   }
 
-  protected void replay() {
-    jdbcControl.replay();
-  }
-
-  protected void verify() {
-    jdbcControl.verify();
-  }
-
+  @Test
   public void testDelete() throws Exception {
-    MockControl methodsControl = MockControl.createControl(ManagerMethods.class);
-    final ManagerMethods methods = (ManagerMethods)methodsControl.getMock();
+    final ManagerMethods methods = createMock(ManagerMethods.class);
     
     classUnderTest = new VolumeRuleManager() {
       protected void storeSources(int rule_id, List<String> sources) {
@@ -89,20 +84,17 @@ public class VolumeRuleManagerTest extends TestCase {
     
     methods.storeSources(13, null);
     methods.storeDetectors(13, null);
-    jdbc.update("delete from beast_volume_rules where rule_id=?",
-        new Object[] { 13 });
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("delete from beast_volume_rules where rule_id=?",
+        new Object[] { 13 })).andReturn(1);
 
-    replay();
-    methodsControl.replay();
+    replayAll();
     
     classUnderTest.delete(13);
 
-    verify();
-    methodsControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testLoad() throws Exception {
     VolumeRule rule = new VolumeRule();
     final ParameterizedRowMapper<VolumeRule> mapper = new ParameterizedRowMapper<VolumeRule>() {
@@ -117,20 +109,20 @@ public class VolumeRuleManagerTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbc);
 
-    jdbc.queryForObject("select * from beast_volume_rules where rule_id=?",
-        mapper, new Object[] { 13 });
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(rule);
+    expect(jdbc.queryForObject("select * from beast_volume_rules where rule_id=?",
+        mapper, new Object[] { 13 })).andReturn(rule);
 
-    replay();
+    replayAll();
+    
     VolumeRule result = (VolumeRule) classUnderTest.load(13);
-    verify();
+    
+    verifyAll();
     assertSame(rule, result);
   }
   
+  @Test
   public void testStore() throws Exception {
-    MockControl methodsControl = MockControl.createControl(ManagerMethods.class);
-    final ManagerMethods methods = (ManagerMethods)methodsControl.getMock();
+    final ManagerMethods methods = createMock(ManagerMethods.class);
     
     List<String> sources = new ArrayList<String>();
     List<String> detectors = new ArrayList<String>();
@@ -144,10 +136,9 @@ public class VolumeRuleManagerTest extends TestCase {
     rule.setSources(sources);
     rule.setDetectors(detectors);
     
-    jdbc.update("insert into beast_volume_rules (rule_id, interval, timeout, " +
-        "ascending, minelev, maxelev) values (?,?,?,?,?,?)", new Object[]{13, 6, 20, false, 2.0, 10.0});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("insert into beast_volume_rules (rule_id, interval, timeout, " +
+        "ascending, minelev, maxelev) values (?,?,?,?,?,?)", new Object[]{13, 6, 20, false, 2.0, 10.0})).andReturn(0);
+
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
     
@@ -161,18 +152,16 @@ public class VolumeRuleManagerTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbc);
     
-    replay();
-    methodsControl.replay();
+    replayAll();
     
     classUnderTest.store(13, rule);
     
-    verify();
-    methodsControl.verify();
+    verifyAll();
   }
-  
+
+  @Test
   public void testUpdate() throws Exception {
-    MockControl methodsControl = MockControl.createControl(ManagerMethods.class);
-    final ManagerMethods methods = (ManagerMethods)methodsControl.getMock();
+    final ManagerMethods methods = createMock(ManagerMethods.class);
     
     List<String> sources = new ArrayList<String>();
     List<String> detectors = new ArrayList<String>();
@@ -186,10 +175,9 @@ public class VolumeRuleManagerTest extends TestCase {
     rule.setSources(sources);
     rule.setDetectors(detectors);
     
-    jdbc.update("update beast_volume_rules set interval=?, timeout=?, " +
-        "ascending=?, minelev=?, maxelev=? where rule_id=?", new Object[]{6, 20, false, 2.0, 10.0, 13});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("update beast_volume_rules set interval=?, timeout=?, " +
+        "ascending=?, minelev=?, maxelev=? where rule_id=?", new Object[]{6, 20, false, 2.0, 10.0, 13}))
+        .andReturn(1);
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
     
@@ -203,56 +191,50 @@ public class VolumeRuleManagerTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbc);
     
-    replay();
-    methodsControl.replay();
+    replayAll();
     
     classUnderTest.update(13, rule);
     
-    verify();
-    methodsControl.verify();
-    
+    verifyAll();
   }
   
+  @Test
   public void testStoreSources() throws Exception {
     List<String> sources = new ArrayList<String>();
     sources.add("A");
     sources.add("B");
     
-    jdbc.update("delete from beast_volume_sources where rule_id=?",
-        new Object[]{13});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("delete from beast_volume_sources where rule_id=?",
+        new Object[]{13})).andReturn(1);
     
-    jdbc.update(
+    expect(jdbc.update(
         "insert into beast_volume_sources (rule_id, source)"+
-        " values (?,?)", new Object[]{13, "A"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+        " values (?,?)", new Object[]{13, "A"})).andReturn(1);
 
-    jdbc.update(
+    expect(jdbc.update(
         "insert into beast_volume_sources (rule_id, source)"+
-        " values (?,?)", new Object[]{13, "B"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+        " values (?,?)", new Object[]{13, "B"})).andReturn(1);
     
-    replay();
+    replayAll();
     
     classUnderTest.storeSources(13, sources);
     
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testStoreSources_nullSources() throws Exception {
-    jdbc.update("delete from beast_volume_sources where rule_id=?",
-        new Object[]{13});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("delete from beast_volume_sources where rule_id=?",
+        new Object[]{13})).andReturn(1);
     
-    replay();
+    replayAll();
+    
     classUnderTest.storeSources(13, null);
-    verify();
+    
+    verifyAll();
   }
   
+  @Test
   public void testGetSources() throws Exception {
     List<String> sources = new ArrayList<String>();
     
@@ -268,47 +250,35 @@ public class VolumeRuleManagerTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbc);
     
-    jdbc.query("select source from beast_volume_sources where rule_id=?",
+    expect(jdbc.query("select source from beast_volume_sources where rule_id=?",
         mapper,
-        new Object[]{13});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(sources);
+        new Object[]{13})).andReturn(sources);
     
-    replay();
+    replayAll();
     
     List<String> result = classUnderTest.getSources(13);
     
-    verify();
+    verifyAll();
     assertSame(sources, result);
   }
   
+  @Test
   public void testGetVolumeRuleMapper() throws Exception {
-    MockControl rsControl = MockControl.createControl(ResultSet.class);
-    ResultSet rs = (ResultSet)rsControl.getMock();
+    ResultSet rs = createMock(ResultSet.class);
     List<String> sources = new ArrayList<String>();
     List<String> detectors = new ArrayList<String>();
-    MockControl methodControl = MockControl.createControl(ManagerMethods.class);
-    final ManagerMethods method = (ManagerMethods)methodControl.getMock();
+    final ManagerMethods method = createMock(ManagerMethods.class);
     VolumeRule volumeRule = new VolumeRule();
     
-    method.createRule();
-    methodControl.setReturnValue(volumeRule);
-    rs.getInt("rule_id");
-    rsControl.setReturnValue(10);
-    rs.getInt("interval");
-    rsControl.setReturnValue(6);
-    rs.getInt("timeout");
-    rsControl.setReturnValue(15);
-    rs.getBoolean("ascending");
-    rsControl.setReturnValue(false);
-    rs.getDouble("minelev");
-    rsControl.setReturnValue(2.0);
-    rs.getDouble("maxelev");
-    rsControl.setReturnValue(10.0);
-    method.getSources(10);
-    methodControl.setReturnValue(sources);
-    method.getDetectors(10);
-    methodControl.setReturnValue(detectors);
+    expect(method.createRule()).andReturn(volumeRule);
+    expect(rs.getInt("rule_id")).andReturn(10);
+    expect(rs.getInt("interval")).andReturn(6);
+    expect(rs.getInt("timeout")).andReturn(15);
+    expect(rs.getBoolean("ascending")).andReturn(false);
+    expect(rs.getDouble("minelev")).andReturn(2.0);
+    expect(rs.getDouble("maxelev")).andReturn(10.0);
+    expect(method.getSources(10)).andReturn(sources);
+    expect(method.getDetectors(10)).andReturn(detectors);
     
     classUnderTest = new VolumeRuleManager() {
       protected List<String> getSources(int rule_id) {
@@ -324,22 +294,21 @@ public class VolumeRuleManagerTest extends TestCase {
     
     ParameterizedRowMapper<VolumeRule> mapper = classUnderTest.getVolumeRuleMapper();
     
-    rsControl.replay();
-    methodControl.replay();
+    replayAll();
     
     VolumeRule result = mapper.mapRow(rs, 1);
-    
-    rsControl.verify();
-    methodControl.verify();
+
+    verifyAll();
     assertEquals(10, result.getRuleId());
     assertEquals(6, result.getInterval());
     assertEquals(15, result.getTimeout());
     assertEquals(false, result.isAscending());
-    assertEquals(2.0, result.getElevationMin());
-    assertEquals(10.0, result.getElevationMax());
+    assertEquals(2.0, result.getElevationMin(), 4);
+    assertEquals(10.0, result.getElevationMax(), 4);
     assertSame(sources, result.getSources());
   }
   
+  @Test
   public void testCreateRule() throws Exception {
     Catalog catalog = new Catalog();
     RuleUtilities utilities = new RuleUtilities();
@@ -357,6 +326,7 @@ public class VolumeRuleManagerTest extends TestCase {
     assertSame(result.getTimeoutManager(), manager);
   }
   
+  @Test
   public void testCreateRule_missingCatalog() throws Exception {
     RuleUtilities utilities = new RuleUtilities();
     TimeoutManager manager = new TimeoutManager();

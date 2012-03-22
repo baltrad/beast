@@ -18,89 +18,80 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules;
 
+import static org.easymock.EasyMock.expect;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
-public class PropertyManagerTest extends TestCase {
+public class PropertyManagerTest extends EasyMockSupport {
   private PropertyManager classUnderTest = null;
-  private MockControl jdbcControl = null;
   private SimpleJdbcOperations jdbc = null;
 
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     classUnderTest = new PropertyManager();
-    jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    jdbc = createMock(SimpleJdbcOperations.class);
     classUnderTest.setJdbcTemplate(jdbc);
   }
 
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     jdbc = null;
-    jdbcControl = null;
     classUnderTest = null;
   }
 
-  protected void replay() {
-    jdbcControl.replay();
-  }
-
-  protected void verify() {
-    jdbcControl.verify();
-  }
-
+  @Test
   public void testDeleteProperties() throws Exception {
-    jdbc.update("delete from beast_rule_properties where rule_id=?", new Object[]{0});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
-    replay();
+    expect(jdbc.update("delete from beast_rule_properties where rule_id=?", new Object[]{0}))
+      .andReturn(0);
+
+    replayAll();
 
     classUnderTest.deleteProperties(0);
 
-    verify();
+    verifyAll();
   }
-  
-  // XXX: loadProperties() not tested!
 
+  @Test
   public void testStoreProperties() throws Exception {
     Map<String, String> props = new HashMap<String, String>();
     props.put("a", "aval");
     props.put("b", "bval");
     String qry = "insert into beast_rule_properties (rule_id, key, value) values (?, ?, ?)";
 
-    jdbc.update(qry, new Object[]{0, "a", "aval"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(1);
-    jdbc.update(qry, new Object[]{0, "b", "bval"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(1);
-    replay();
+    expect(jdbc.update(qry, new Object[]{0, "a", "aval"})).andReturn(1);
+    expect(jdbc.update(qry, new Object[]{0, "b", "bval"})).andReturn(1);
+    
+    replayAll();
 
     classUnderTest.storeProperties(0, props);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpdateProperties() throws Exception {
     Map<String, String> props = new HashMap<String, String>();
     props.put("a", "aval");
     props.put("b", "bval");
     String qry = "insert into beast_rule_properties (rule_id, key, value) values (?, ?, ?)";
 
-    jdbc.update("delete from beast_rule_properties where rule_id=?", new Object[]{0});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
-    jdbc.update(qry, new Object[]{0, "a", "aval"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(1);
-    jdbc.update(qry, new Object[]{0, "b", "bval"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(1);
-    replay();
+    expect(jdbc.update("delete from beast_rule_properties where rule_id=?", new Object[]{0}))
+      .andReturn(0);
+    
+    expect(jdbc.update(qry, new Object[]{0, "a", "aval"})).andReturn(1);
+    expect(jdbc.update(qry, new Object[]{0, "b", "bval"})).andReturn(1);
+
+    replayAll();
 
     classUnderTest.updateProperties(0, props);
-    verify();
+    
+    verifyAll();
   }
 }

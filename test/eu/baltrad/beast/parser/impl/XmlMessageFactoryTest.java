@@ -18,20 +18,24 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.parser.impl;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.Test;
 
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.parser.XmlMessageFactoryException;
-import junit.framework.TestCase;
 
 /**
  * Tests the xml message factory
  * @author Anders Henja
  */
-public class XmlMessageFactoryTest extends TestCase {
-  
+public class XmlMessageFactoryTest {
+  @Test
   public void testCreateMessage() {
     Map<String,String> map = new HashMap<String, String>();
     map.put(BltAlertMessage.BLT_ALERT, BltAlertMessage.class.getName());
@@ -45,6 +49,7 @@ public class XmlMessageFactoryTest extends TestCase {
     assertNotNull(b);
   }
 
+  @Test
   public void testCreateMessage_unreckognizedTag() {
     Map<String,String> map = new HashMap<String, String>();
     map.put(BltAlertMessage.BLT_ALERT, BltAlertMessage.class.getName());
@@ -60,6 +65,7 @@ public class XmlMessageFactoryTest extends TestCase {
     }
   }  
 
+  @Test
   public void testCreateMessage_null() {
     Map<String,String> map = new HashMap<String, String>();
     map.put(BltAlertMessage.BLT_ALERT, BltAlertMessage.class.getName());
@@ -75,6 +81,7 @@ public class XmlMessageFactoryTest extends TestCase {
     }
   }  
 
+  @Test
   public void testCreateMessage_noSuchClass() {
     Map<String,String> map = new HashMap<String, String>();
     map.put(BltAlertMessage.BLT_ALERT, "no.such.class.COM");

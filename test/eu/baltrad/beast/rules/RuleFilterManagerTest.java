@@ -18,21 +18,24 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertSame;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
-
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.db.IFilterManager;
 
-public class RuleFilterManagerTest extends TestCase {
+public class RuleFilterManagerTest extends EasyMockSupport {
   private static interface RuleFilterManagerMethods {
     List<Integer> getRuleFilterIds(int ruleId);
     Map<String, Integer> getRuleFilterKeyIdMap(int ruleId);
@@ -40,22 +43,16 @@ public class RuleFilterManagerTest extends TestCase {
     void storeFilters(int ruleId, Map<String, IFilter> filters);
   };
 
-  private MockControl methodsControl;
   private RuleFilterManagerMethods methods;
-  private MockControl jdbcControl;
   private SimpleJdbcOperations jdbc;
-  private MockControl filterManagerControl;
   private IFilterManager filterManager;
   private RuleFilterManager classUnderTest;
 
-  protected void setUp() throws Exception {
-    methodsControl = MockControl.createControl(RuleFilterManagerMethods.class);
-    methods = (RuleFilterManagerMethods)methodsControl.getMock();
-    jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    jdbcControl.setDefaultMatcher(MockControl.ARRAY_MATCHER);
-    jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
-    filterManagerControl = MockControl.createControl(IFilterManager.class);
-    filterManager = (IFilterManager)filterManagerControl.getMock();
+  @Before
+  public void setUp() throws Exception {
+    methods = createMock(RuleFilterManagerMethods.class);
+    jdbc = createMock(SimpleJdbcOperations.class);
+    filterManager = createMock(IFilterManager.class);
     classUnderTest = new RuleFilterManager() {
       @Override
       protected List<Integer> getRuleFilterIds(int ruleId) {
@@ -70,94 +67,88 @@ public class RuleFilterManagerTest extends TestCase {
     classUnderTest.setFilterManager(filterManager);
   }
 
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
   }
 
-  protected void replay() {
-    methodsControl.replay();
-    jdbcControl.replay();
-    filterManagerControl.replay();
-  }
-
-  protected void verify() {
-    methodsControl.verify();
-    jdbcControl.verify();
-    filterManagerControl.verify();
-  }
-
+  @Test
   public void testDeleteFilters() {
-    IFilter filter1 = createFakeFilter(10);
-    IFilter filter2 = createFakeFilter(20);
+    IFilter filter1 = createMock(IFilter.class);
+    IFilter filter2 = createMock(IFilter.class);
     List<Integer> filterIds = new ArrayList<Integer>();
-    filterIds.add(filter1.getId());
-    filterIds.add(filter2.getId());
+    filterIds.add(10);
+    filterIds.add(20);
     
-    methods.getRuleFilterIds(1);
-    methodsControl.setReturnValue(filterIds);
-    jdbc.update(
+    expect(methods.getRuleFilterIds(1)).andReturn(filterIds);
+    
+    expect(jdbc.update(
       "delete from beast_rule_filters where rule_id=?",
       new Object[]{1}
-    );
-    jdbcControl.setReturnValue(1);
-    filterManager.load(10);
-    filterManagerControl.setReturnValue(filter1);
+    )).andReturn(1);
+    expect(filterManager.load(10)).andReturn(filter1);
     filterManager.remove(filter1);
-    filterManager.load(20);
-    filterManagerControl.setReturnValue(filter2);
+    expect(filterManager.load(20)).andReturn(filter2);
     filterManager.remove(filter2);
-    replay();
+    
+    replayAll();
     
     classUnderTest.deleteFilters(1);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testLoadFilters() {
-    IFilter filter1 = createFakeFilter(10);
-    IFilter filter2 = createFakeFilter(20);
+    IFilter filter1 = createMock(IFilter.class);
+    IFilter filter2 = createMock(IFilter.class);
     HashMap<String, Integer> filterKeyIdMap = new HashMap<String, Integer>();
-    filterKeyIdMap.put("key1", filter1.getId());
-    filterKeyIdMap.put("key2", filter2.getId());
+    filterKeyIdMap.put("key1", new Integer(10));
+    filterKeyIdMap.put("key2", new Integer(20));
 
-    methods.getRuleFilterKeyIdMap(1);
-    methodsControl.setReturnValue(filterKeyIdMap);
-    filterManager.load(10);
-    filterManagerControl.setReturnValue(filter1);
-    filterManager.load(20);
-    filterManagerControl.setReturnValue(filter2);
-    replay();
+    expect(methods.getRuleFilterKeyIdMap(1)).andReturn(filterKeyIdMap);
+    expect(filterManager.load(10)).andReturn(filter1);
+    expect(filterManager.load(20)).andReturn(filter2);
+
+    replayAll();
 
     Map<String, IFilter> filters = classUnderTest.loadFilters(1);
     assertSame(filter1, filters.get("key1"));
     assertSame(filter2, filters.get("key2"));
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testStoreFilters() {
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
-    IFilter filter1 = createFakeFilter(1);
-    IFilter filter2 = createFakeFilter(2);
+    IFilter filter1 = createMock(IFilter.class);
+    IFilter filter2 = createMock(IFilter.class);
     filters.put("key1", filter1);
     filters.put("key2", filter2);
 
+    expect(filter1.getId()).andReturn(new Integer(1));
+    expect(filter2.getId()).andReturn(new Integer(2));
     filterManager.store(filter1);
-    jdbc.update(
+    expect(jdbc.update(
         "insert into beast_rule_filters " +
         "(rule_id, key, filter_id) values (?, ?, ?)",
         new Object[]{1, "key1", 1}
-    );
-    jdbcControl.setReturnValue(1);
+    )).andReturn(1);
     filterManager.store(filter2);
-    jdbc.update(
+    expect(jdbc.update(
         "insert into beast_rule_filters " +
         "(rule_id, key, filter_id) values (?, ?, ?)",
         new Object[]{1, "key2", 2}
-    );
-    jdbcControl.setReturnValue(1);
-    replay();
+    )).andReturn(1);
+
+    replayAll();
 
     classUnderTest.storeFilters(1, filters);
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpdateFilters() {
     classUnderTest = new RuleFilterManager() {
       @Override
@@ -172,25 +163,18 @@ public class RuleFilterManagerTest extends TestCase {
     };
 
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
-    IFilter filter1 = createFakeFilter(1);
-    IFilter filter2 = createFakeFilter(2);
+    IFilter filter1 = createMock(IFilter.class);
+    IFilter filter2 = createMock(IFilter.class);
     filters.put("key1", filter1);
     filters.put("key2", filter2);
 
     methods.deleteFilters(1);
     methods.storeFilters(1, filters);
-    replay();
+    
+    replayAll();
 
     classUnderTest.updateFilters(1, filters);
-    verify();
-  }
-
-  private IFilter createFakeFilter(Integer id) {
-    MockControl filterControl = MockControl.createControl(IFilter.class);
-    IFilter filter = (IFilter)filterControl.getMock();
-    filter.getId();
-    filterControl.setReturnValue(id);
-    filterControl.replay();
-    return filter;
+    
+    verifyAll();
   }
 }

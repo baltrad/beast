@@ -18,20 +18,27 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.composite;
 
-import eu.baltrad.bdb.util.DateTime;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import eu.baltrad.bdb.util.DateTime;
 
 /**
  * @author Anders Henja
  */
-public class CompositeTimerDataTest extends TestCase {
+public class CompositeTimerDataTest {
+  @Test
   public void testConstructor() {
     DateTime dt = new DateTime(2010,1,1,1,10,10);
     CompositeTimerData o = new CompositeTimerData(1,dt);
     assertEquals(dt, o.getDateTime());
   }
 
+  @Test
   public void testConstructor_null() {
     try {
       new CompositeTimerData(1, null);
@@ -41,6 +48,7 @@ public class CompositeTimerDataTest extends TestCase {
     }
   }
   
+  @Test
   public void testEquals() throws Exception {
     CompositeTimerData o1 = new CompositeTimerData(1, new DateTime(2010,1,1,1,10,10));
     CompositeTimerData o2 = new CompositeTimerData(1, new DateTime(2010,1,1,1,10,10));
@@ -50,6 +58,7 @@ public class CompositeTimerDataTest extends TestCase {
     assertTrue(o2.equals(o2));
   }
 
+  @Test
   public void testEquals_differentRuleId() throws Exception {
     CompositeTimerData o1 = new CompositeTimerData(1, new DateTime(2010,1,1,1,10,10));
     CompositeTimerData o2 = new CompositeTimerData(2, new DateTime(2010,1,1,1,10,10));
@@ -57,15 +66,16 @@ public class CompositeTimerDataTest extends TestCase {
     assertFalse(o2.equals(o1));
   }
   
+  @Test
   public void testEquals_notSameClass() throws Exception {
     CompositeTimerData o1 = new CompositeTimerData(1, new DateTime(2010,1,1,1,10,10));
     Object o2 = new Object();
     assertFalse(o1.equals(o2));
   }
 
+  @Test
   public void testEquals_null() throws Exception {
     CompositeTimerData o1 = new CompositeTimerData(1, new DateTime(2010,1,1,1,10,10));
     assertFalse(o1.equals(null));
   }
-  
 }

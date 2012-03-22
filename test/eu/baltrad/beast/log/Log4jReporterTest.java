@@ -19,41 +19,35 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.log;
 
-import org.apache.log4j.Logger;
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.TestCase;
+import org.apache.log4j.Logger;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
  * @author Anders Henja
  * @date Dec 17, 2011
  */
-public class Log4jReporterTest extends TestCase {
+public class Log4jReporterTest extends EasyMockSupport {
   interface Methods {
     public String getMessage(String code, String message, Object... args);
   }
   
   private Log4jReporter classUnderTest = null;
-  private MockControl loggerControl = null;
   private Logger logger = null;
-  private MockControl repositoryControl = null;
   private ILogMessageRepository repository = null;
-  private MockControl methodsControl = null;
   private Methods methods = null;
   
-  /**
-   * @see junit.framework.TestCase#setUp()
-   */
-  protected void setUp() throws Exception {
-    super.setUp();
-    loggerControl = MockClassControl.createControl(Logger.class);
-    logger = (Logger)loggerControl.getMock();
-    repositoryControl = MockControl.createControl(ILogMessageRepository.class);
-    repository = (ILogMessageRepository)repositoryControl.getMock();
-    methodsControl = MockControl.createControl(Methods.class);
-    methods = (Methods)methodsControl.getMock();
+  @Before
+  public void setUp() throws Exception {
+    logger = createMock(Logger.class);
+    repository = createMock(ILogMessageRepository.class);
+    methods = createMock(Methods.class);
     
     classUnderTest = new Log4jReporter() {
       protected String getMessage(String code, String message, Object... args) {
@@ -64,94 +58,78 @@ public class Log4jReporterTest extends TestCase {
     classUnderTest.setRepository(repository);
   }
 
-  /**
-   * @see junit.framework.TestCase#tearDown()
-   */
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    loggerControl = null;
+  @After
+  public void tearDown() throws Exception {
     logger = null;
-    repositoryControl = null;
     repository = null;
-    methodsControl = null;
     methods = null;
     classUnderTest = null;
   }
 
-  protected void replay() throws Exception {
-    loggerControl.replay();
-    repositoryControl.replay();
-    methodsControl.replay();
-  }
-  
-  protected void verify() throws Exception {
-    loggerControl.verify();
-    repositoryControl.verify();
-    methodsControl.verify();
-  }  
-  
+  @Test
   public void testInfo_onlyMessage() throws Exception {
     logger.info("IXXXXX: My message");
     
-    replay();
+    replayAll();
     
     classUnderTest.info("My message");
     
-    verify();
+    verifyAll();
   }
-  
+
+  @Test
   public void testInfo() throws Exception {
     Object[] args = new Object[0];
-    methods.getMessage("00032", "my message", args);
-    methodsControl.setReturnValue("MY message");
+    expect(methods.getMessage("00032", "my message", args)).andReturn("MY message");
     logger.info("I00032: MY message");
     
-    replay();
+    replayAll();
     
     classUnderTest.info("00032", "my message", args);
     
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testWarning() throws Exception {
     Object[] args = new Object[0];
-    methods.getMessage("00032", "my message", args);
-    methodsControl.setReturnValue("MY message");
+    expect(methods.getMessage("00032", "my message", args)).andReturn("MY message");
     logger.warn("W00032: MY message");
     
-    replay();
+    replayAll();
     
     classUnderTest.warn("00032", "my message", args);
     
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testError() throws Exception {
     Object[] args = new Object[0];
-    methods.getMessage("00032", "my message", args);
-    methodsControl.setReturnValue("MY message");
+    expect(methods.getMessage("00032", "my message", args)).andReturn("MY message");
     logger.error("E00032: MY message");
     
-    replay();
+    replayAll();
     
     classUnderTest.error("00032", "my message", args);
     
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testFatal() throws Exception {
     Object[] args = new Object[0];
-    methods.getMessage("00032", "my message", args);
-    methodsControl.setReturnValue("MY message");
+    expect(methods.getMessage("00032", "my message", args)).andReturn("MY message");
     logger.fatal("F00032: MY message");
     
-    replay();
+    replayAll();
     
     classUnderTest.fatal("00032", "my message", args);
     
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testGetMessage() throws Exception {
     LogMessage msg = new LogMessage("00032", "Message");
     
@@ -159,42 +137,42 @@ public class Log4jReporterTest extends TestCase {
     classUnderTest.logger = logger;
     classUnderTest.setRepository(repository);    
     
-    repository.getMessage("BEAST", "00032");
-    repositoryControl.setReturnValue(msg);
+    expect(repository.getMessage("BEAST", "00032")).andReturn(msg);
     
-    replay();
+    replayAll();
     
     String result = classUnderTest.getMessage("00032", "My message");
     
-    verify();
+    verifyAll();
     assertEquals("Message", result);
   }
 
+  @Test
   public void testGetMessage_notFound() throws Exception {
     classUnderTest = new Log4jReporter();
     classUnderTest.logger = logger;
     classUnderTest.setRepository(repository);
     
-    repository.getMessage("BEAST", "00032");
-    repositoryControl.setReturnValue(null);
+    expect(repository.getMessage("BEAST", "00032")).andReturn(null);
     
-    replay();
+    replayAll();
     
     String result = classUnderTest.getMessage("00032", "My message");
     
-    verify();
+    verifyAll();
     assertEquals("My message", result);
   }
 
+  @Test
   public void testGetMessage_noRepository() throws Exception {
     classUnderTest = new Log4jReporter();
     classUnderTest.logger = logger;
     
-    replay();
+    replayAll();
     
     String result = classUnderTest.getMessage("00032", "My message");
     
-    verify();
+    verifyAll();
     assertEquals("My message", result);
   }  
 }

@@ -18,58 +18,65 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.db;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.util.UUID;
 
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.FileCatalog;
 
-import junit.framework.TestCase;
-
 /**
  * @author Anders Henja
  */
-public class CatalogTest extends TestCase {
+public class CatalogTest extends EasyMockSupport {
   private Catalog classUnderTest = null;
   
+  @Before
   public void setUp() throws Exception {
     classUnderTest = new Catalog();
   }
   
+  @After
   public void tearDown() throws Exception {
     classUnderTest = null;
   }
   
+  @Test
   public void testAfterPropertiesSet() throws Exception {
-    MockControl fcControl = MockControl.createControl(FileCatalog.class);
-    FileCatalog fc = (FileCatalog)fcControl.getMock();
+    FileCatalog fc = createMock(FileCatalog.class);
     classUnderTest.setCatalog(fc);
     
-    fcControl.replay();
+    replayAll();
     
     classUnderTest.afterPropertiesSet();
     
-    fcControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testGetFileCatalogPath() throws Exception {
-    MockControl fcControl = MockControl.createControl(FileCatalog.class);
-    FileCatalog fc = (FileCatalog)fcControl.getMock();
+    FileCatalog fc = createMock(FileCatalog.class);
     classUnderTest.setCatalog(fc);
     
     UUID entryUuid = UUID.randomUUID();
-    fc.getLocalPathForUuid(entryUuid);
-    fcControl.setReturnValue(new File("/some/path"));
+    expect(fc.getLocalPathForUuid(entryUuid)).andReturn(new File("/some/path"));
     
-    fcControl.replay();
+    replayAll();
+    
     String result = classUnderTest.getFileCatalogPath(entryUuid.toString());
-    fcControl.verify();
+    
+    verifyAll();
     assertEquals("/some/path", result);
   }
   
+  @Test
   public void testAfterPropertiesSet_noFc() throws Exception {
     try {
       classUnderTest.afterPropertiesSet();

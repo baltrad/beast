@@ -18,20 +18,23 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
-import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcCommand;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
+import org.junit.Test;
 
 /**
  * @author Anders Henja
- *
  */
-public class XmlRpcCommandTest extends TestCase {
+public class XmlRpcCommandTest {
+  @Test
   public void testMethod() {
     XmlRpcCommand classUnderTest = new XmlRpcCommand();
     classUnderTest.setMethod("xyz");
     assertEquals("xyz", classUnderTest.getMethod());
   }
   
+  @Test
   public void testObjects() {
     Object[] objs = new Object[]{};
     XmlRpcCommand classUnderTest = new XmlRpcCommand();

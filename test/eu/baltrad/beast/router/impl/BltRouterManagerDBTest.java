@@ -18,6 +18,10 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.router.impl;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,9 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -40,29 +45,22 @@ import eu.baltrad.beast.rules.IRuleManager;
  * @author Anders Henja
  *
  */
-public class BltRouterManagerDBTest extends TestCase {
+public class BltRouterManagerDBTest extends EasyMockSupport {
   private static interface IMethods {
     void storeRecipients(int rule_id, List<String> recipients);
   };
   
   private BltRouter classUnderTest = null;
-  private MockControl jdbcControl = null;
   private SimpleJdbcOperations jdbc = null;
-  
-  private MockControl ruleManagerControl = null;
   private IRuleManager ruleManager = null;
   private Map<String,IRuleManager> ruleManagerMap = null;
-  
-  private MockControl methodsControl = null;
   private IMethods methods = null;
   
-  protected void setUp() throws Exception {
-    jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
-    ruleManagerControl = MockControl.createControl(IRuleManager.class);
-    ruleManager = (IRuleManager)ruleManagerControl.getMock();
-    methodsControl = MockControl.createControl(IMethods.class);
-    methods = (IMethods)methodsControl.getMock();
+  @Before
+  public void setUp() throws Exception {
+    jdbc = createMock(SimpleJdbcOperations.class);
+    ruleManager = createMock(IRuleManager.class);
+    methods = createMock(IMethods.class);
     
     classUnderTest = new BltRouter() {
       protected void storeRecipients(int rule_id, List<String> recipients) {
@@ -74,29 +72,16 @@ public class BltRouterManagerDBTest extends TestCase {
     ruleManagerMap = new HashMap<String,IRuleManager>();
     ruleManagerMap.put("sometype", ruleManager);
     classUnderTest.setRuleManagers(ruleManagerMap);
-    
   }
-  
-  protected void tearDown() throws Exception {
-    jdbcControl = null;
+
+  @After
+  public void tearDown() throws Exception {
     jdbc = null;
-    ruleManagerControl = null;
     ruleManager = null;
     classUnderTest = null;
   }
-  
-  protected void replay() {
-    jdbcControl.replay();
-    ruleManagerControl.replay();
-    methodsControl.replay();
-  }
-  
-  protected void verify() {
-    jdbcControl.verify();
-    ruleManagerControl.verify();
-    methodsControl.verify();
-  }
-  
+
+  @Test
   public void testDeleteDefinition() throws Exception {
     List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
     RouteDefinition d = new RouteDefinition();
@@ -108,30 +93,26 @@ public class BltRouterManagerDBTest extends TestCase {
     values.put("rule_id", 3);
     values.put("type", "sometype");
     
-    jdbc.queryForMap("select rule_id, type from beast_router_rules where name=?",
-        new Object[]{"KALLE"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(values);
+    expect(jdbc.queryForMap("select rule_id, type from beast_router_rules where name=?",
+        new Object[]{"KALLE"})).andReturn(values);
     
     ruleManager.delete(3);
-    jdbc.update("delete from beast_router_dest where rule_id=?",
-        new Object[]{3});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
     
-    jdbc.update("delete from beast_router_rules where rule_id=?",
-        new Object[]{3});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("delete from beast_router_dest where rule_id=?",
+        new Object[]{3})).andReturn(0);
     
-    replay();
+    expect(jdbc.update("delete from beast_router_rules where rule_id=?",
+        new Object[]{3})).andReturn(0);
+    
+    replayAll();
     
     classUnderTest.deleteDefinition("KALLE");
     
-    verify();
+    verifyAll();
     assertNull(classUnderTest.getDefinition("KALLE"));
   }
 
+  @Test
   public void testStoreDefinition() {
     List<String> recipients = new ArrayList<String>();
     IRule rule = new IRule() {
@@ -153,28 +134,25 @@ public class BltRouterManagerDBTest extends TestCase {
     def.setRecipients(recipients);
     def.setRule(rule);
     
-    jdbc.update("insert into beast_router_rules (name,type,author,description,active)"+
+    expect(jdbc.update("insert into beast_router_rules (name,type,author,description,active)"+
         " values (?,?,?,?,?)",
-        new Object[]{"some name", "sometype", "nisse", "some description", true});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+        new Object[]{"some name", "sometype", "nisse", "some description", true})).andReturn(0);
     
-    jdbc.queryForInt("select rule_id from beast_router_rules where name=?",
-        new Object[]{"some name"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(13);
+    expect(jdbc.queryForInt("select rule_id from beast_router_rules where name=?",
+        new Object[]{"some name"})).andReturn(13);
 
     ruleManager.store(13, rule);
     methods.storeRecipients(13, recipients);
     
-    replay();
+    replayAll();
     
     classUnderTest.storeDefinition(def);
     
-    verify();
+    verifyAll();
     assertSame(def, classUnderTest.getDefinition("some name"));
   }
   
+  @Test
   public void testUpdateDefinition() throws Exception {
     List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
     RouteDefinition d = new RouteDefinition();
@@ -183,8 +161,7 @@ public class BltRouterManagerDBTest extends TestCase {
     classUnderTest.setDefinitions(defs);
     
     // add another rule manager for update
-    MockControl newRuleManagerControl = MockControl.createControl(IRuleManager.class);
-    IRuleManager newRuleManager = (IRuleManager)newRuleManagerControl.getMock();
+    IRuleManager newRuleManager = createMock(IRuleManager.class);
     ruleManagerMap.put("newtype", newRuleManager);
     
     List<String> recipients = new ArrayList<String>();
@@ -211,29 +188,26 @@ public class BltRouterManagerDBTest extends TestCase {
     values.put("rule_id", 3);
     values.put("type", "sometype");
     
-    jdbc.queryForMap("select rule_id, type from beast_router_rules where name=?",
-        new Object[]{"some name"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(values);
+    expect(jdbc.queryForMap("select rule_id, type from beast_router_rules where name=?",
+        new Object[]{"some name"})).andReturn(values);
     ruleManager.delete(3);
     
-    jdbc.update("update beast_router_rules set type=?, author=?, description=?, active=? where rule_id=?",
-        new Object[]{"newtype", "nisse", "some description", true, 3});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("update beast_router_rules set type=?, author=?, description=?, active=? where rule_id=?",
+        new Object[]{"newtype", "nisse", "some description", true, 3})).andReturn(0);
     
     newRuleManager.store(3, rule);
     
     methods.storeRecipients(3, recipients);
     
-    replay();
+    replayAll();
     
     classUnderTest.updateDefinition(def);
     
-    verify();
+    verifyAll();
     assertSame(def, classUnderTest.getDefinition("some name"));
   }
   
+  @Test
   public void testAfterPropertiesSet() throws Exception {
     List<RouteDefinition> definitions = new ArrayList<RouteDefinition>();
     
@@ -250,46 +224,39 @@ public class BltRouterManagerDBTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbc);
 
-    jdbc.query("select rule_id, name,type,author,description,active from beast_router_rules",
-        mapper);
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(definitions);
+    expect(jdbc.query("select rule_id, name,type,author,description,active from beast_router_rules",
+        mapper)).andReturn(definitions);
     
-    replay();
+    replayAll();
     
     classUnderTest.afterPropertiesSet();
     
-    verify();
+    verifyAll();
     assertSame(definitions, classUnderTest.getDefinitions());
   }
   
+  @Test
   public void testStoreRecipients() throws Exception {
     List<String> recipients = new ArrayList<String>();
     recipients.add("A");
     recipients.add("B");
     
-    jdbc.update("delete from beast_router_dest where rule_id=?",
-        new Object[]{13});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("delete from beast_router_dest where rule_id=?",
+        new Object[]{13})).andReturn(0);
     
-    jdbc.update("insert into beast_router_dest (rule_id, recipient) values (?,?)",
-        new Object[]{13, "A"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("insert into beast_router_dest (rule_id, recipient) values (?,?)",
+        new Object[]{13, "A"})).andReturn(0);
 
-    jdbc.update("insert into beast_router_dest (rule_id, recipient) values (?,?)",
-        new Object[]{13, "B"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("insert into beast_router_dest (rule_id, recipient) values (?,?)",
+        new Object[]{13, "B"})).andReturn(0);
     
     classUnderTest = new BltRouter();
     classUnderTest.setJdbcTemplate(jdbc);
     
-    replay();
+    replayAll();
     
     classUnderTest.storeRecipients(13, recipients);
     
-    verify();
+    verifyAll();
   }
 }

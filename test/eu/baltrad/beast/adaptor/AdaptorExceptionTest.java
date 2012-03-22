@@ -18,28 +18,33 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 /**
  * @author Anders Henja
  */
-public class AdaptorExceptionTest extends TestCase {
+public class AdaptorExceptionTest {
+  @Test
   public void testConstructor() {
     AdaptorException classUnderTest = new AdaptorException();
     assertTrue(classUnderTest instanceof RuntimeException);
   }
   
+  @Test
   public void testStringConstructor() {
     AdaptorException classUnderTest = new AdaptorException("something");
     assertEquals("something", classUnderTest.getMessage());
   }
   
+  @Test
   public void testThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     AdaptorException classUnderTest = new AdaptorException(x);
     assertEquals("something", classUnderTest.getCause().getMessage());
   }
   
+  @Test
   public void testStringThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     AdaptorException classUnderTest = new AdaptorException("else", x);

@@ -18,29 +18,34 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Tests the Message Parser Exception
  * @author Anders Henja
  */
-public class MessageParserExceptionTest extends TestCase {
+public class MessageParserExceptionTest {
+  @Test
   public void testConstructor() {
     MessageParserException classUnderTest = new MessageParserException();
     assertTrue(classUnderTest instanceof RuntimeException);
   }
   
+  @Test
   public void testStringConstructor() {
     MessageParserException classUnderTest = new MessageParserException("something");
     assertEquals("something", classUnderTest.getMessage());
   }
   
+  @Test
   public void testThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     MessageParserException classUnderTest = new MessageParserException(x);
     assertEquals("something", classUnderTest.getCause().getMessage());
   }
   
+  @Test
   public void testStringThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     MessageParserException classUnderTest = new MessageParserException("else", x);

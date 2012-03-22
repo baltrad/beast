@@ -18,28 +18,35 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.timer;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author Anders Henja
  */
-public class TimeoutRuleExceptionTest extends TestCase {
+public class TimeoutRuleExceptionTest {
+  @Test
   public void testConstructor() {
     TimeoutRuleException classUnderTest = new TimeoutRuleException();
     assertTrue(classUnderTest instanceof RuntimeException);
   }
   
+  @Test
   public void testStringConstructor() {
     TimeoutRuleException classUnderTest = new TimeoutRuleException("something");
     assertEquals("something", classUnderTest.getMessage());
   }
   
+  @Test
   public void testThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     TimeoutRuleException classUnderTest = new TimeoutRuleException(x);
     assertEquals("something", classUnderTest.getCause().getMessage());
   }
   
+  @Test
   public void testStringThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     TimeoutRuleException classUnderTest = new TimeoutRuleException("else", x);

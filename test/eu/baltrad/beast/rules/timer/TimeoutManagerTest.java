@@ -18,39 +18,38 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.timer;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+
 import java.util.List;
 import java.util.Timer;
 
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.rules.IRule;
-import junit.framework.TestCase;
-
 
 /**
  * @author Anders Henja
  */
-public class TimeoutManagerTest extends TestCase {
-  private MockControl factoryControl = null;
+public class TimeoutManagerTest extends EasyMockSupport {
   private ITimeoutTaskFactory factory = null;
-  private MockControl timerControl = null;
   private Timer timer = null;
-  private MockControl managerControl = null;
   private IBltMessageManager manager = null;
   
   private TimeoutManager classUnderTest = null;
-  
+
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
-    factoryControl = MockControl.createControl(ITimeoutTaskFactory.class);
-    factory = (ITimeoutTaskFactory)factoryControl.getMock();
-    timerControl = MockClassControl.createControl(Timer.class);
-    timer = (Timer)timerControl.getMock();
-    managerControl = MockControl.createControl(IBltMessageManager.class);
-    manager = (IBltMessageManager)managerControl.getMock();
+    factory = createMock(ITimeoutTaskFactory.class);
+    timer = createMock(Timer.class);
+    manager = createMock(IBltMessageManager.class);
     
     classUnderTest = new TimeoutManager() {
       protected synchronized long newID() {
@@ -62,23 +61,12 @@ public class TimeoutManagerTest extends TestCase {
     classUnderTest.setMessageManager(manager);
   }
   
+  @After
   public void tearDown() throws Exception {
     classUnderTest = null;
-    super.tearDown();
   }
   
-  protected void replay() {
-    factoryControl.replay();
-    timerControl.replay();
-    managerControl.replay();
-  }
-  
-  protected void verify() {
-    factoryControl.verify();
-    timerControl.verify();
-    managerControl.verify();
-  }
-  
+  @Test
   public void testIsRegistered() throws Exception {
     TimeoutTask t1 = new TimeoutTask();
     t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
@@ -95,6 +83,7 @@ public class TimeoutManagerTest extends TestCase {
     assertEquals(true, classUnderTest.isRegistered(new String("GHI")));
   }
 
+  @Test
   public void testIsRegistered_nullData() throws Exception {
     TimeoutTask t1 = new TimeoutTask();
     t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
@@ -109,6 +98,7 @@ public class TimeoutManagerTest extends TestCase {
     assertEquals(false, classUnderTest.isRegistered(new String("ADE")));
   }
 
+  @Test
   public void testIsRegistered_nullTest() throws Exception {
     TimeoutTask t1 = new TimeoutTask();
     t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
@@ -123,6 +113,7 @@ public class TimeoutManagerTest extends TestCase {
     assertEquals(false, classUnderTest.isRegistered(null));
   }
   
+  @Test
   public void testGetRegisteredTask() throws Exception {
     TimeoutTask t1 = new TimeoutTask();
     t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
@@ -145,6 +136,7 @@ public class TimeoutManagerTest extends TestCase {
     assertEquals(null, r4);
   }
 
+  @Test
   public void testGetRegisteredTask_nullData() throws Exception {
     TimeoutTask t1 = new TimeoutTask();
     t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
@@ -166,6 +158,7 @@ public class TimeoutManagerTest extends TestCase {
     assertEquals(null, r4);
   }
 
+  @Test
   public void testGetRegisteredTask_null() throws Exception {
     TimeoutTask t1 = new TimeoutTask();
     t1.setData(new String("ABC"));  // By using new String().. We know that == wont say equal since string caching will not be used
@@ -180,6 +173,7 @@ public class TimeoutManagerTest extends TestCase {
     assertSame(null, r1);
   }
   
+  @Test
   public void testRegister() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
@@ -187,69 +181,61 @@ public class TimeoutManagerTest extends TestCase {
     };
     TimeoutTask task = new TimeoutTask();
     
-    factory.create(rule, 0, null, classUnderTest);
-    factoryControl.setReturnValue(task);
+    expect(factory.create(rule, 0, null, classUnderTest)).andReturn(task);
     timer.schedule(task, 1000);
     
-    replay();
+    replayAll();
     
     long result = classUnderTest.register(rule, 1000, null);
     
-    verify();
+    verifyAll();
     assertSame(task, classUnderTest.tasks.get(result));
   }
   
+  @Test
   public void testCancel() throws Exception {
-    MockControl taskControl = MockClassControl.createControl(TimeoutTask.class);
-    TimeoutTask task = (TimeoutTask)taskControl.getMock();
+    TimeoutTask task = createMock(TimeoutTask.class);
 
-    task.cancel();
-    taskControl.setReturnValue(false);
+    expect(task.cancel()).andReturn(false);
     
     classUnderTest.tasks.put((long)0, task);
     
-    replay();
-    taskControl.replay();
+    replayAll();
     
     classUnderTest.cancel(0);
     
-    verify();
-    taskControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testCancel_noSuchId() throws Exception {
-    MockControl taskControl = MockClassControl.createControl(TimeoutTask.class);
-    TimeoutTask task = (TimeoutTask)taskControl.getMock();
+    TimeoutTask task = createMock(TimeoutTask.class);
 
     classUnderTest.tasks.put((long)0, task);
     
-    replay();
-    taskControl.replay();
+    replayAll();
     
     classUnderTest.cancel(1);
     
-    verify();
-    taskControl.verify();
+    verifyAll();
   }
  
+  @Test
   public void testUnregister() throws Exception {
-    MockControl taskControl = MockClassControl.createControl(TimeoutTask.class);
-    TimeoutTask task = (TimeoutTask)taskControl.getMock();
+    TimeoutTask task = createMock(TimeoutTask.class);
 
     classUnderTest.tasks.put((long)0, task);
     
-    task.stop();
-    taskControl.setReturnValue(true);
+    expect(task.stop()).andReturn(true);
     
-    replay();
-    taskControl.replay();
+    replayAll();
 
     classUnderTest.unregister(0);
     
-    verify();
-    taskControl.verify();
+    verifyAll();
   }
   
+  @Test
   public void testNewId() {
     classUnderTest = new TimeoutManager();
     classUnderTest.setStartID(10);
@@ -259,9 +245,9 @@ public class TimeoutManagerTest extends TestCase {
     assertEquals((long)13, classUnderTest.newID());
   }
   
+  @Test
   public void testCancelNotification() {
-    MockControl ruleControl = MockControl.createControl(ITimeoutRule.class);
-    ITimeoutRule rule = (ITimeoutRule)ruleControl.getMock();
+    ITimeoutRule rule = createMock(ITimeoutRule.class);
     
     IBltMessage msg = new IBltMessage() {
     };
@@ -269,24 +255,21 @@ public class TimeoutManagerTest extends TestCase {
     TimeoutTask task = new TimeoutTask();
     classUnderTest.tasks.put((long)1, task);
     
-    rule.timeout(1, ITimeoutRule.CANCELLED, null);
-    ruleControl.setReturnValue(msg);
+    expect(rule.timeout(1, ITimeoutRule.CANCELLED, null)).andReturn(msg);
     
     manager.manage(msg);
     
-    replay();
-    ruleControl.replay();
+    replayAll();
     
     classUnderTest.cancelNotification(1, rule, null);
    
-    verify();
-    ruleControl.verify();
+    verifyAll();
     assertEquals(null, classUnderTest.tasks.get((long)1));
   }
 
+  @Test
   public void testTimeoutNotification() {
-    MockControl ruleControl = MockControl.createControl(ITimeoutRule.class);
-    ITimeoutRule rule = (ITimeoutRule)ruleControl.getMock();
+    ITimeoutRule rule = createMock(ITimeoutRule.class);
 
     IBltMessage msg = new IBltMessage() {
     };
@@ -294,18 +277,15 @@ public class TimeoutManagerTest extends TestCase {
     TimeoutTask task = new TimeoutTask();
     classUnderTest.tasks.put((long)1, task);
     
-    rule.timeout(1, ITimeoutRule.TIMEOUT, null);
-    ruleControl.setReturnValue(msg);
+    expect(rule.timeout(1, ITimeoutRule.TIMEOUT, null)).andReturn(msg);
     
     manager.manage(msg);
     
-    replay();
-    ruleControl.replay();
+    replayAll();
     
     classUnderTest.timeoutNotification(1, rule, null);
    
-    verify();
-    ruleControl.verify();
+    verifyAll();
     assertEquals(null, classUnderTest.tasks.get((long)1));
   }
   
@@ -410,6 +390,7 @@ public class TimeoutManagerTest extends TestCase {
     }
   }
   
+  @Test
   public void testDeadlock() throws Exception {
     // Setup
     TimeoutManager mgr = new TimeoutManager();

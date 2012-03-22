@@ -18,29 +18,35 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.parser;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author Anders Henja
- *
  */
-public class XmlMessageFactoryExceptionTest extends TestCase {
+public class XmlMessageFactoryExceptionTest {
+  @Test
   public void testConstructor() {
     XmlMessageFactoryException classUnderTest = new XmlMessageFactoryException();
     assertTrue(classUnderTest instanceof RuntimeException);
   }
   
+  @Test
   public void testStringConstructor() {
     XmlMessageFactoryException classUnderTest = new XmlMessageFactoryException("something");
     assertEquals("something", classUnderTest.getMessage());
   }
   
+  @Test
   public void testThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     XmlMessageFactoryException classUnderTest = new XmlMessageFactoryException(x);
     assertEquals("something", classUnderTest.getCause().getMessage());
   }
   
+  @Test
   public void testStringThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     XmlMessageFactoryException classUnderTest = new XmlMessageFactoryException("else", x);

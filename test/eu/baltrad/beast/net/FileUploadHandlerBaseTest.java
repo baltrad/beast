@@ -18,14 +18,20 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 */
 package eu.baltrad.beast.net;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.net.URI;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class FileUploadHandlerBaseTest extends TestCase {
+public class FileUploadHandlerBaseTest {
   private FileUploadHandlerBase classUnderTest;
 
+  @Before
   public void setUp() {
     classUnderTest = new FileUploadHandlerBase() {
       @Override
@@ -33,6 +39,7 @@ public class FileUploadHandlerBaseTest extends TestCase {
     };
   }
 
+  @Test
   public void testAppendPath() {
     URI uri = URI.create(
       "scheme://user:pass@host:123/path?query#fragment"
@@ -46,6 +53,7 @@ public class FileUploadHandlerBaseTest extends TestCase {
     assertNotSame(uri, result);
   }
 
+  @Test
   public void testAppendPath_nonHierarchical() {
     URI uri = URI.create("scheme:path");
 

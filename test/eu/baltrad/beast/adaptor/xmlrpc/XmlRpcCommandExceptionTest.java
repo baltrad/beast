@@ -18,29 +18,35 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Anders Henja
  *
  */
-public class XmlRpcCommandExceptionTest extends TestCase {
+public class XmlRpcCommandExceptionTest {
+  @Test
   public void testConstructor() {
     XmlRpcCommandException classUnderTest = new XmlRpcCommandException();
     assertTrue(classUnderTest instanceof RuntimeException);
   }
   
+  @Test
   public void testStringConstructor() {
     XmlRpcCommandException classUnderTest = new XmlRpcCommandException("something");
     assertEquals("something", classUnderTest.getMessage());
   }
   
+  @Test
   public void testThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     XmlRpcCommandException classUnderTest = new XmlRpcCommandException(x);
     assertEquals("something", classUnderTest.getCause().getMessage());
   }
   
+  @Test
   public void testStringThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     XmlRpcCommandException classUnderTest = new XmlRpcCommandException("else", x);

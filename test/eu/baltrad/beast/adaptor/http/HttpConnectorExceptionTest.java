@@ -18,28 +18,34 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.http;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Anders Henja
  */
-public class HttpConnectorExceptionTest extends TestCase {
+public class HttpConnectorExceptionTest {
+  @Test
   public void testConstructor() {
     HttpConnectorException classUnderTest = new HttpConnectorException();
     assertTrue(classUnderTest instanceof HttpConnectorException);
   }
   
+  @Test
   public void testStringConstructor() {
     HttpConnectorException classUnderTest = new HttpConnectorException("something");
     assertEquals("something", classUnderTest.getMessage());
   }
   
+  @Test
   public void testThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     HttpConnectorException classUnderTest = new HttpConnectorException(x);
     assertEquals("something", classUnderTest.getCause().getMessage());
   }
   
+  @Test
   public void testStringThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     HttpConnectorException classUnderTest = new HttpConnectorException("else", x);

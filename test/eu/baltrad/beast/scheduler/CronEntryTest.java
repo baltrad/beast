@@ -18,29 +18,37 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.scheduler;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Anders Henja
  *
  */
-public class CronEntryTest extends TestCase {
+public class CronEntryTest {
   private CronEntry classUnderTest = null;
-  
+
+  @Before
   public void setUp() throws Exception {
     classUnderTest = new CronEntry();
   }
   
+  @After
   public void tearDown() throws Exception {
     classUnderTest = null;
   }
   
+  @Test
   public void testId() {
     assertEquals(0, classUnderTest.getId());
     classUnderTest.setId(1);
     assertEquals(1, classUnderTest.getId());
   }
   
+  @Test
   public void testExpression() {
     assertEquals(null, classUnderTest.getExpression());
     classUnderTest.setExpression("a");

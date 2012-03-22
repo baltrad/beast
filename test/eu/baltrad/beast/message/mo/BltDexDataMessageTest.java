@@ -18,10 +18,12 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message.mo;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.MessageParserException;
 
@@ -29,7 +31,8 @@ import eu.baltrad.beast.message.MessageParserException;
  * Tests the Dex Data Message
  * @author Anders Henja
  */
-public class BltDexDataMessageTest extends TestCase {
+public class BltDexDataMessageTest {
+  @Test
   public void testSetFilename() {
     BltDexDataMessage classUnderTest = new BltDexDataMessage();
     assertEquals(null, classUnderTest.getFilename());
@@ -37,6 +40,7 @@ public class BltDexDataMessageTest extends TestCase {
     assertEquals("/this/filename.h5", classUnderTest.getFilename());
   }
   
+  @Test
   public void testToDocument() {
     String expected =
       "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"+
@@ -50,6 +54,7 @@ public class BltDexDataMessageTest extends TestCase {
     assertEquals(expected, xml);
   }  
   
+  @Test
   public void testFromDocument() {
     Document document = DocumentHelper.createDocument();
     document.addElement("bltdexdata");
@@ -58,6 +63,7 @@ public class BltDexDataMessageTest extends TestCase {
     classUnderTest.fromDocument(document);
   }  
   
+  @Test
   public void testFromDocument_invalidTag() {
     Document document = DocumentHelper.createDocument();
     document.addElement("bltdata");
@@ -70,5 +76,4 @@ public class BltDexDataMessageTest extends TestCase {
       // pass
     }
   }  
-  
 }

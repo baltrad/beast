@@ -18,18 +18,21 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message.mo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.MessageParserException;
-
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  */
-public class BltCommandMessageTest extends TestCase {
+public class BltCommandMessageTest {
+  @Test
   public void testSetCommand() {
     BltCommandMessage classUnderTest = new BltCommandMessage();
     assertEquals(null, classUnderTest.getCommand());
@@ -37,6 +40,7 @@ public class BltCommandMessageTest extends TestCase {
     assertEquals("ls", classUnderTest.getCommand());
   }
   
+  @Test
   public void testToDocument() {
     BltCommandMessage classUnderTest = new BltCommandMessage();
     classUnderTest.setCommand("ls -la");
@@ -45,6 +49,7 @@ public class BltCommandMessageTest extends TestCase {
     assertEquals("ls -la", result.valueOf("//bltcommand/command"));
   }
 
+  @Test
   public void testToDocument_noCmdString() {
     BltCommandMessage classUnderTest = new BltCommandMessage();
     Document result = classUnderTest.toDocument();
@@ -52,6 +57,7 @@ public class BltCommandMessageTest extends TestCase {
     assertEquals("", result.valueOf("//bltcommand/command"));
   }
   
+  @Test
   public void testFromDocument() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltcommand");
@@ -61,6 +67,7 @@ public class BltCommandMessageTest extends TestCase {
     assertEquals("ls -la", classUnderTest.getCommand());
   }
   
+  @Test
   public void testFromDocument_notBltCommand() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltxcommand");

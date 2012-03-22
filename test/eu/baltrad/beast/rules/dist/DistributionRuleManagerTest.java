@@ -18,88 +18,74 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 */
 package eu.baltrad.beast.rules.dist;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
-
+import org.easymock.EasyMockSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.storage.LocalStorage;
-
 import eu.baltrad.beast.db.IFilter;
-import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.PropertyManager;
+import eu.baltrad.beast.rules.RuleFilterManager;
 
-public class DistributionRuleManagerTest extends TestCase {
-  private MockControl propertyManagerControl;
+public class DistributionRuleManagerTest extends EasyMockSupport {
   private PropertyManager propertyManager;
-  private MockControl filterManagerControl;
   private RuleFilterManager filterManager;
-  private MockControl filterControl;
   private IFilter filter;
-  private MockControl localStorageControl;
   private LocalStorage localStorage;
   private DistributionRuleManager classUnderTest;
 
+  @Before
   public void setUp() {
-    propertyManagerControl = MockClassControl.createControl(PropertyManager.class);
-    propertyManager = (PropertyManager)propertyManagerControl.getMock();
-    filterManagerControl = MockClassControl.createControl(RuleFilterManager.class);
-    filterManager = (RuleFilterManager)filterManagerControl.getMock();
-    filterControl = MockControl.createControl(IFilter.class);
-    IFilter filter = (IFilter)filterControl.getMock();
-    localStorageControl = MockControl.createControl(LocalStorage.class);
-    localStorage = (LocalStorage)localStorageControl.getMock();
+    propertyManager = createMock(PropertyManager.class);
+    filterManager = createMock(RuleFilterManager.class);
+    filter = createMock(IFilter.class);
+    localStorage = createMock(LocalStorage.class);
     classUnderTest = new DistributionRuleManager();
     classUnderTest.setPropertyManager(propertyManager);
     classUnderTest.setRuleFilterManager(filterManager);
     classUnderTest.setLocalStorage(localStorage);
   }
 
-  private void replay() {
-    propertyManagerControl.replay();
-    filterManagerControl.replay();
-    localStorageControl.replay();
-  }
-
-  private void verify() {
-    propertyManagerControl.verify();
-    filterManagerControl.verify();
-    localStorageControl.verify();
-  }
-
+  @Test
   public void testDelete() {
     propertyManager.deleteProperties(1);
     filterManager.deleteFilters(1);
-    replay();
+    replayAll();
 
     classUnderTest.delete(1);
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testLoad() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("destination", "ftp://u:p@h/d");
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
     filters.put("match", filter);
 
-    propertyManager.loadProperties(1);
-    propertyManagerControl.setReturnValue(props);
-    filterManager.loadFilters(1);
-    filterManagerControl.setReturnValue(filters);
-    replay();
+    expect(propertyManager.loadProperties(1)).andReturn(props);
+    expect(filterManager.loadFilters(1)).andReturn(filters);
+
+    replayAll();
 
     DistributionRule rule = (DistributionRule)classUnderTest.load(1);
+    
+    verifyAll();
     assertEquals("ftp://u:p@h/d", rule.getDestination().toString());
     assertSame(filter, rule.getFilter());
     assertSame(localStorage, rule.getLocalStorage());
-    verify();
   }
 
+  @Test
   public void testStore() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("destination", "ftp://u:p@h/d");
@@ -108,14 +94,18 @@ public class DistributionRuleManagerTest extends TestCase {
     DistributionRule rule = new DistributionRule(localStorage);
     rule.setDestination("ftp://u:p@h/d");
     rule.setFilter(filter);
+    
     propertyManager.storeProperties(1, props);
     filterManager.storeFilters(1, filters);
-    replay();
+    
+    replayAll();
 
     classUnderTest.store(1, rule);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpdate() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("destination", "ftp://u:p@h/d");
@@ -126,18 +116,22 @@ public class DistributionRuleManagerTest extends TestCase {
     rule.setFilter(filter);
     propertyManager.updateProperties(1, props);
     filterManager.updateFilters(1, filters);
-    replay();
+    
+    replayAll();
 
     classUnderTest.update(1, rule);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testAfterPropertiesSet() {
     classUnderTest = new DistributionRuleManager();
     classUnderTest.setLocalStorage(localStorage);
     classUnderTest.afterPropertiesSet();
   }
   
+  @Test
   public void testAfterPropertiesSet_missingCatalog() {
     classUnderTest = new DistributionRuleManager();
     try {

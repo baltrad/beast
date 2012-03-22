@@ -18,19 +18,24 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.volume;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
-
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
@@ -43,15 +48,11 @@ import eu.baltrad.beast.rules.util.IRuleUtilities;
  * @author Anders Henja
  * 
  */
-public class VolumeRuleTest extends TestCase {
+public class VolumeRuleTest extends EasyMockSupport {
   private VolumeRule classUnderTest = null;
-  private MockControl methodsControl = null;
   private VolumeRuleMethods methods = null;
-  private MockControl catalogControl = null;
   private Catalog catalog = null;
-  private MockControl timeoutControl = null;
   private TimeoutManager timeoutManager = null;
-  private MockControl utilitiesControl = null;
   private IRuleUtilities utilities = null;
   
   private static interface VolumeRuleMethods {
@@ -66,15 +67,12 @@ public class VolumeRuleTest extends TestCase {
     public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
   };
 
+  @Before
   public void setUp() throws Exception {
-    methodsControl = MockControl.createControl(VolumeRuleMethods.class);
-    methods = (VolumeRuleMethods)methodsControl.getMock();
-    catalogControl = MockClassControl.createControl(Catalog.class);
-    catalog = (Catalog)catalogControl.getMock();
-    timeoutControl = MockClassControl.createControl(TimeoutManager.class);
-    timeoutManager = (TimeoutManager)timeoutControl.getMock();
-    utilitiesControl = MockControl.createControl(IRuleUtilities.class);
-    utilities = (IRuleUtilities)utilitiesControl.getMock();
+    methods = createMock(VolumeRuleMethods.class);
+    catalog = createMock(Catalog.class);
+    timeoutManager = createMock(TimeoutManager.class);
+    utilities = createMock(IRuleUtilities.class);
     classUnderTest = new VolumeRule();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setTimeoutManager(timeoutManager);
@@ -82,28 +80,16 @@ public class VolumeRuleTest extends TestCase {
     classUnderTest.setTimeout(0); // No timeout initially
   }
 
+  @After
   public void tearDown() throws Exception {
     classUnderTest = null;
   }
-
-  protected void replay() {
-    methodsControl.replay();
-    catalogControl.replay();
-    timeoutControl.replay();
-    utilitiesControl.replay();
-  }
-
-  protected void verify() {
-    methodsControl.verify();
-    catalogControl.verify();
-    timeoutControl.verify();
-    utilitiesControl.verify();
-  }
-  
+ 
+  @Test
   public void testHandle_noScanData() throws Exception {
     IBltMessage msg = new IBltMessage() {};
-    methods.createTimerData(msg);
-    methodsControl.setReturnValue(null);
+    
+    expect(methods.createTimerData(msg)).andReturn(null);
     
     VolumeRule classUnderTest = new VolumeRule() {
       public VolumeTimerData createTimerData(IBltMessage msg) {
@@ -111,22 +97,21 @@ public class VolumeRuleTest extends TestCase {
       }
     };
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
   
+  @Test
   public void testHandle_alreadyHandled() throws Exception {
     IBltMessage msg = new IBltMessage() {};
     VolumeTimerData data = new VolumeTimerData(1, new DateTime(), "some");
     
-    methods.createTimerData(msg);
-    methodsControl.setReturnValue(data);
-    methods.isHandled(data);
-    methodsControl.setReturnValue(true);
+    expect(methods.createTimerData(msg)).andReturn(data);
+    expect(methods.isHandled(data)).andReturn(true);
     
     VolumeRule classUnderTest = new VolumeRule() {
       public VolumeTimerData createTimerData(IBltMessage msg) {
@@ -137,14 +122,15 @@ public class VolumeRuleTest extends TestCase {
       }
     };
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
   
+  @Test
   public void testHandle() throws Exception {
     IBltMessage msg = new IBltMessage() {};
     DateTime nominalTime = new DateTime();
@@ -153,20 +139,13 @@ public class VolumeRuleTest extends TestCase {
     List<CatalogEntry> newentries = new ArrayList<CatalogEntry>();
     BltGenerateMessage message = new BltGenerateMessage();
     
-    methods.createTimerData(msg);
-    methodsControl.setReturnValue(data);
-    methods.isHandled(data);
-    methodsControl.setReturnValue(false);
-    methods.fetchAllCurrentEntries(nominalTime, "some");
-    methodsControl.setReturnValue(entries);
-    timeoutManager.getRegisteredTask(data);
-    timeoutControl.setReturnValue(null);
-    methods.areCriteriasMet(entries, nominalTime, "some");
-    methodsControl.setReturnValue(true);
-    methods.filterEntries(entries, nominalTime.getTime());
-    methodsControl.setReturnValue(newentries);
-    methods.createMessage(nominalTime, newentries);
-    methodsControl.setReturnValue(message);
+    expect(methods.createTimerData(msg)).andReturn(data);
+    expect(methods.isHandled(data)).andReturn(false);
+    expect(methods.fetchAllCurrentEntries(nominalTime, "some")).andReturn(entries);
+    expect(timeoutManager.getRegisteredTask(data)).andReturn(null);
+    expect(methods.areCriteriasMet(entries, nominalTime, "some")).andReturn(true);
+    expect(methods.filterEntries(entries, nominalTime.getTime())).andReturn(newentries);
+    expect(methods.createMessage(nominalTime, newentries)).andReturn(message);
     
     VolumeRule classUnderTest = new VolumeRule() {
       public VolumeTimerData createTimerData(IBltMessage msg) {
@@ -190,15 +169,15 @@ public class VolumeRuleTest extends TestCase {
     };
     classUnderTest.setTimeoutManager(timeoutManager);
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertSame(message, result);
-    
   }
   
+  @Test
   public void testAreCriteriasMet_noHit() throws Exception {
     DateTime now = new DateTime();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
@@ -209,14 +188,15 @@ public class VolumeRuleTest extends TestCase {
     classUnderTest.setElevationMax(11.0);
     classUnderTest.setAscending(true);
     
-    replay();
+    replayAll();
     
     boolean result = classUnderTest.areCriteriasMet(entries, now, "seang");
     
-    verify();
+    verifyAll();
     assertEquals(false, result);
   }
 
+  @Test
   public void testAreCriteriasMet_hit() throws Exception {
     DateTime now = new DateTime();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
@@ -227,14 +207,15 @@ public class VolumeRuleTest extends TestCase {
     classUnderTest.setElevationMax(11.0);
     classUnderTest.setAscending(true);
     
-    replay();
+    replayAll();
     
     boolean result = classUnderTest.areCriteriasMet(entries, now, "seang");
     
-    verify();
+    verifyAll();
     assertEquals(true, result);
   }
 
+  @Test
   public void testCreateMessage() throws Exception {
     Date date = new Date(2010, 2, 1);
     Time time = new Time(1, 0, 0);
@@ -256,14 +237,13 @@ public class VolumeRuleTest extends TestCase {
     
     classUnderTest.setDetectors(detectors);
     
-    utilities.getFilesFromEntries(entries);
-    utilitiesControl.setReturnValue(fileEntries);
+    expect(utilities.getFilesFromEntries(entries)).andReturn(fileEntries);
 
-    replay();
+    replayAll();
 
     BltGenerateMessage result = (BltGenerateMessage)classUnderTest.createMessage(nt, entries);
 
-    verify();
+    verifyAll();
     assertEquals("eu.baltrad.beast.GenerateVolume", result.getAlgorithm());
     String[] files = result.getFiles();
     assertEquals(3, files.length);
@@ -278,6 +258,7 @@ public class VolumeRuleTest extends TestCase {
     assertEquals("--anomaly-qc=ropo,nisse", arguments[3]);
   }
 
+  @Test
   public void testCreateMessage_noDetectors() throws Exception {
     Date date = new Date(2010, 2, 1);
     Time time = new Time(1, 0, 0);
@@ -293,14 +274,13 @@ public class VolumeRuleTest extends TestCase {
     fileEntries.add("/tmp/searl_2.h5");
     fileEntries.add("/tmp/searl_3.h5");
     
-    utilities.getFilesFromEntries(entries);
-    utilitiesControl.setReturnValue(fileEntries);
+    expect(utilities.getFilesFromEntries(entries)).andReturn(fileEntries);
 
-    replay();
+    replayAll();
 
     BltGenerateMessage result = (BltGenerateMessage)classUnderTest.createMessage(nt, entries);
 
-    verify();
+    verifyAll();
     assertEquals("eu.baltrad.beast.GenerateVolume", result.getAlgorithm());
     String[] files = result.getFiles();
     assertEquals(3, files.length);
@@ -314,6 +294,7 @@ public class VolumeRuleTest extends TestCase {
     assertEquals("--time=010000", arguments[2]);
   }
   
+  @Test
   public void testCreateMessage_noEntries() throws Exception {
     DateTime nt = new DateTime(2010, 2, 1, 1, 0, 0);
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
@@ -321,21 +302,21 @@ public class VolumeRuleTest extends TestCase {
     assertEquals(null, result);
   }
 
+  @Test
   public void testCreateMessage_nullEntries() throws Exception {
     DateTime nt = new DateTime(2010, 2, 1, 1, 0, 0);
     BltGenerateMessage result = (BltGenerateMessage)classUnderTest.createMessage(nt, null);
     assertEquals(null, result);
   }
   
+  @Test
   public void testFetchAllCurrentEntries() throws Exception {
     DateTime nominalTime = new DateTime(2010,1,1,0,0,0);
     TimeIntervalFilter filter = new TimeIntervalFilter();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     
-    methods.createFilter(nominalTime, "seang");
-    methodsControl.setReturnValue(filter);
-    catalog.fetch(filter);
-    catalogControl.setReturnValue(entries);
+    expect(methods.createFilter(nominalTime, "seang")).andReturn(filter);
+    expect(catalog.fetch(filter)).andReturn(entries);
     
     classUnderTest = new VolumeRule() {
       protected TimeIntervalFilter createFilter(DateTime nominalTime, String source) {
@@ -344,14 +325,15 @@ public class VolumeRuleTest extends TestCase {
     };
     classUnderTest.setCatalog(catalog);
     
-    replay();
+    replayAll();
     
     List<CatalogEntry> result = classUnderTest.fetchAllCurrentEntries(nominalTime, "seang");
     
-    verify();
+    verifyAll();
     assertSame(entries, result);
   }
   
+  @Test
   public void testCreateFilter() {
     DateTime nt = new DateTime(2010,1,1,12,0,0);
     DateTime nextNt = new DateTime(2010,1,1,12,15,0);
@@ -360,14 +342,13 @@ public class VolumeRuleTest extends TestCase {
     classUnderTest.setElevationMin(2.0);
     classUnderTest.setInterval(15*60);
 
-    utilities.createNextNominalTime(nt, 15*60);
-    utilitiesControl.setReturnValue(nextNt);
+    expect(utilities.createNextNominalTime(nt, 15*60)).andReturn(nextNt);
     
-    replay();
+    replayAll();
     
     TimeIntervalFilter result = classUnderTest.createFilter(nt, "searl");
     
-    verify();
+    verifyAll();
     
     assertEquals("searl", result.getSource());
     assertEquals(nt, result.getStartDateTime());
@@ -375,19 +356,13 @@ public class VolumeRuleTest extends TestCase {
     assertEquals("SCAN", result.getObject());
   }
 
+  @Test
   public void testReplaceScanElevation() throws Exception {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    MockControl e1Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e1 = (CatalogEntry)e1Control.getMock();
-    
-    MockControl e2Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e2 = (CatalogEntry)e2Control.getMock();
-    
-    MockControl e3Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e3 = (CatalogEntry)e3Control.getMock();
-    
-    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    CatalogEntry e1 = createMock(CatalogEntry.class);
+    CatalogEntry e2 = createMock(CatalogEntry.class);
+    CatalogEntry e3 = createMock(CatalogEntry.class);
+    CatalogEntry entry = createMock(CatalogEntry.class);
     
     Time nominalTime = new Time(10, 0, 0);
     
@@ -395,47 +370,28 @@ public class VolumeRuleTest extends TestCase {
     entries.add(e2);
     entries.add(e3);
     
-    entry.getAttribute("/dataset1/what/starttime");
-    entryControl.setReturnValue("100005");
-    entry.getAttribute("/dataset1/where/elangle");
-    entryControl.setReturnValue(new Double(0.5));
-    
-    e1.getAttribute("/dataset1/where/elangle");
-    e1Control.setReturnValue(new Double(1.0));
-    e2.getAttribute("/dataset1/where/elangle");
-    e2Control.setReturnValue(new Double(0.5));
-    e2.getAttribute("/dataset1/what/starttime");
-    e2Control.setReturnValue("100006");
-    
-    e1Control.replay();
-    e2Control.replay();
-    e3Control.replay();
-    entryControl.replay();
+    expect(entry.getAttribute("/dataset1/what/starttime")).andReturn("100005");
+    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
+    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(e2.getAttribute("/dataset1/what/starttime")).andReturn("100006");
+
+    replayAll();
     
     boolean result = classUnderTest.replaceScanElevation(entries, entry, nominalTime);
     
-    e1Control.verify();
-    e2Control.verify();
-    e3Control.verify();
-    entryControl.verify();
-
+    verifyAll();
     assertEquals(true, result);
     assertSame(entry, entries.get(1));
   }
 
+  @Test
   public void testReplaceScanElevation_noReplacement() throws Exception {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    MockControl e1Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e1 = (CatalogEntry)e1Control.getMock();
-    
-    MockControl e2Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e2 = (CatalogEntry)e2Control.getMock();
-    
-    MockControl e3Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e3 = (CatalogEntry)e3Control.getMock();
-    
-    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    CatalogEntry e1 = createMock(CatalogEntry.class);
+    CatalogEntry e2 = createMock(CatalogEntry.class);
+    CatalogEntry e3 = createMock(CatalogEntry.class);
+    CatalogEntry entry = createMock(CatalogEntry.class);
     
     Time nominalTime = new Time(10, 0, 0);
     
@@ -443,47 +399,28 @@ public class VolumeRuleTest extends TestCase {
     entries.add(e2);
     entries.add(e3);
     
-    entry.getAttribute("/dataset1/what/starttime");
-    entryControl.setReturnValue("100005");
-    entry.getAttribute("/dataset1/where/elangle");
-    entryControl.setReturnValue(new Double(0.5));
+    expect(entry.getAttribute("/dataset1/what/starttime")).andReturn("100005");
+    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
+    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(e2.getAttribute("/dataset1/what/starttime")).andReturn("100004");
     
-    e1.getAttribute("/dataset1/where/elangle");
-    e1Control.setReturnValue(new Double(1.0));
-    e2.getAttribute("/dataset1/where/elangle");
-    e2Control.setReturnValue(new Double(0.5));
-    e2.getAttribute("/dataset1/what/starttime");
-    e2Control.setReturnValue("100004");
-    
-    e1Control.replay();
-    e2Control.replay();
-    e3Control.replay();
-    entryControl.replay();
+    replayAll();
     
     boolean result = classUnderTest.replaceScanElevation(entries, entry, nominalTime);
     
-    e1Control.verify();
-    e2Control.verify();
-    e3Control.verify();
-    entryControl.verify();
-
+    verifyAll();
     assertEquals(true, result);
     assertSame(e2, entries.get(1));
   }
 
+  @Test
   public void testReplaceScanElevation_noMatchingElevation() throws Exception {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    MockControl e1Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e1 = (CatalogEntry)e1Control.getMock();
-    
-    MockControl e2Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e2 = (CatalogEntry)e2Control.getMock();
-    
-    MockControl e3Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e3 = (CatalogEntry)e3Control.getMock();
-    
-    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
+    CatalogEntry e1 = createMock(CatalogEntry.class);
+    CatalogEntry e2 = createMock(CatalogEntry.class);
+    CatalogEntry e3 = createMock(CatalogEntry.class);
+    CatalogEntry entry = createMock(CatalogEntry.class);
     
     Time nominalTime = new Time(10, 0, 0);
     
@@ -491,54 +428,33 @@ public class VolumeRuleTest extends TestCase {
     entries.add(e2);
     entries.add(e3);
     
-    entry.getAttribute("/dataset1/what/starttime");
-    entryControl.setReturnValue("100005");
-    entry.getAttribute("/dataset1/where/elangle");
-    entryControl.setReturnValue(new Double(0.5));
+    expect(entry.getAttribute("/dataset1/what/starttime")).andReturn("100005");
+    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
+    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.5));
+    expect(e3.getAttribute("/dataset1/where/elangle")).andReturn(new Double(2.5));
     
-    e1.getAttribute("/dataset1/where/elangle");
-    e1Control.setReturnValue(new Double(1.0));
-    e2.getAttribute("/dataset1/where/elangle");
-    e2Control.setReturnValue(new Double(1.5));
-    e3.getAttribute("/dataset1/where/elangle");
-    e3Control.setReturnValue(new Double(2.5));
-    
-    e1Control.replay();
-    e2Control.replay();
-    e3Control.replay();
-    entryControl.replay();
+    replayAll();
     
     boolean result = classUnderTest.replaceScanElevation(entries, entry, nominalTime);
-    
-    e1Control.verify();
-    e2Control.verify();
-    e3Control.verify();
-    entryControl.verify();
 
-    assertEquals(false, result);
+    verifyAll();
     
+    assertEquals(false, result);
     assertSame(e1, entries.get(0));
     assertSame(e2, entries.get(1));
     assertSame(e3, entries.get(2));
   }
-  
+
+  @Test
   public void testFilterEntries() throws Exception {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     List<CatalogEntry> filtered = new ArrayList<CatalogEntry>();
-    MockControl e1Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e1 = (CatalogEntry)e1Control.getMock();
-    
-    MockControl e2Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e2 = (CatalogEntry)e2Control.getMock();
-    
-    MockControl e3Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e3 = (CatalogEntry)e3Control.getMock();
-
-    MockControl e4Control = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry e4 = (CatalogEntry)e4Control.getMock();
-
-    MockControl methodsControl = MockControl.createControl(VolumeRuleMethods.class);
-    methods = (VolumeRuleMethods)methodsControl.getMock();
+    CatalogEntry e1 = createMock(CatalogEntry.class);
+    CatalogEntry e2 = createMock(CatalogEntry.class);
+    CatalogEntry e3 = createMock(CatalogEntry.class);
+    CatalogEntry e4 = createMock(CatalogEntry.class);
+    methods = createMock(VolumeRuleMethods.class);
 
     Time nominalTime = new Time(10,0,0);
     entries.add(e1);
@@ -546,26 +462,15 @@ public class VolumeRuleTest extends TestCase {
     entries.add(e3);
     entries.add(e4);
 
-    methods.createCatalogEntryList();
-    methodsControl.setReturnValue(filtered);
-    e1.getAttribute("/dataset1/where/elangle");
-    e1Control.setReturnValue(new Double(0.5));
-    e2.getAttribute("/dataset1/where/elangle");
-    e2Control.setReturnValue(new Double(1.0));
-    methods.replaceScanElevation(filtered, e2, nominalTime);
-    methodsControl.setReturnValue(false);
-    e3.getAttribute("/dataset1/where/elangle");
-    e3Control.setReturnValue(new Double(2.0));
-    e4.getAttribute("/dataset1/where/elangle");
-    e4Control.setReturnValue(new Double(1.0));
-    methods.replaceScanElevation(filtered, e4, nominalTime);
-    methodsControl.setReturnValue(true);
+    expect(methods.createCatalogEntryList()).andReturn(filtered);
+    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
+    expect(methods.replaceScanElevation(filtered, e2, nominalTime)).andReturn(false);
+    expect(e3.getAttribute("/dataset1/where/elangle")).andReturn(new Double(2.0));
+    expect(e4.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
+    expect(methods.replaceScanElevation(filtered, e4, nominalTime)).andReturn(true);
     
-    e1Control.replay();
-    e2Control.replay();
-    e3Control.replay();
-    e4Control.replay();
-    methodsControl.replay();
+    replayAll();
     
     classUnderTest = new VolumeRule() {
       protected boolean replaceScanElevation(List<CatalogEntry> entries, CatalogEntry entry, Time nominalTime) {
@@ -580,15 +485,13 @@ public class VolumeRuleTest extends TestCase {
     
     List<CatalogEntry> result = classUnderTest.filterEntries(entries, nominalTime);
 
-    e1Control.verify();
-    e2Control.verify();
-    e3Control.verify();
-    e4Control.verify();
-    methodsControl.verify();
+    verifyAll();
+    
     assertSame(filtered, result);
     assertEquals(1, result.size());
   }
 
+  @Test
   public void testAfterPropertiesSet() throws Exception {
     VolumeRule classUnderTest = new VolumeRule();
     classUnderTest.setCatalog(catalog);
@@ -598,6 +501,7 @@ public class VolumeRuleTest extends TestCase {
     classUnderTest.afterPropertiesSet();
   }
 
+  @Test
   public void testAfterPropertiesSet_missingCatalog() throws Exception {
     VolumeRule classUnderTest = new VolumeRule();
     classUnderTest.setRuleUtilities(utilities);
@@ -611,6 +515,7 @@ public class VolumeRuleTest extends TestCase {
     }
   }
   
+  @Test
   public void testAfterPropertiesSet_missingRuleUtilities() throws Exception {
     VolumeRule classUnderTest = new VolumeRule();
     classUnderTest.setCatalog(catalog);
@@ -624,6 +529,7 @@ public class VolumeRuleTest extends TestCase {
     }
   }
 
+  @Test
   public void testAfterPropertiesSet_missingTimeoutManager() throws Exception {
     VolumeRule classUnderTest = new VolumeRule();
     classUnderTest.setCatalog(catalog);
@@ -639,20 +545,14 @@ public class VolumeRuleTest extends TestCase {
   
   
   protected CatalogEntry createCatalogEntry(Double elangle) {
-    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
-    entry.getAttribute("/dataset1/where/elangle");
-    entryControl.setReturnValue(elangle, MockControl.ZERO_OR_MORE);
-    entryControl.replay();
+    CatalogEntry entry = createMock(CatalogEntry.class);
+    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(elangle).times(0,99);
     return entry;
   }
   
   protected CatalogEntry createCatalogEntry(String source) {
-    MockControl entryControl = MockClassControl.createControl(CatalogEntry.class);
-    CatalogEntry entry = (CatalogEntry)entryControl.getMock();
-    entry.getSource();
-    entryControl.setReturnValue(source, MockControl.ZERO_OR_MORE);
-    entryControl.replay();
+    CatalogEntry entry = createMock(CatalogEntry.class);
+    expect(entry.getSource()).andReturn(source).times(0,99);
     return entry;
   }
 }

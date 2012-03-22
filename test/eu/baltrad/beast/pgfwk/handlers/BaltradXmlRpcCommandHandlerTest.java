@@ -18,71 +18,72 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.pgfwk.handlers;
 
-import junit.framework.TestCase;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.xmlrpc.XmlRpcRequest;
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.Test;
 
 /**
  * @author Anders Henja
  *
  */
-public class BaltradXmlRpcCommandHandlerTest extends TestCase {
+public class BaltradXmlRpcCommandHandlerTest extends EasyMockSupport {
+  @Test
   public void testExecute() throws Exception {
     BaltradXmlRpcCommandHandler classUnderTest = new BaltradXmlRpcCommandHandler();
-    MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
-    XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
+    XmlRpcRequest request = createMock(XmlRpcRequest.class);
     
-    request.getParameter(0);
-    requestControl.setReturnValue("ls -la");
+    expect(request.getParameter(0)).andReturn("ls -la");
     
-    requestControl.replay();
+    replayAll();
     
     // Execute
     Object[] result = (Object[])classUnderTest.execute(request);
 
     // Verify
-    requestControl.verify();
+    verifyAll();
     assertEquals(0, result[0]);
     assertFalse(result[1].equals(""));
     assertTrue(result[2].equals(""));
   }
   
+  @Test
   public void testExecute_errStream() throws Exception {
     BaltradXmlRpcCommandHandler classUnderTest = new BaltradXmlRpcCommandHandler();
-    MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
-    XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
+    XmlRpcRequest request = createMock(XmlRpcRequest.class);
     
-    request.getParameter(0);
-    requestControl.setReturnValue("ls -la 1>&2");
+    expect(request.getParameter(0)).andReturn("ls -la 1>&2");
     
-    requestControl.replay();
+    replayAll();
     
     // Execute
     Object[] result = (Object[])classUnderTest.execute(request);
 
     // Verify
-    requestControl.verify();
+    verifyAll();
     assertTrue(0 != (Integer)result[0]);
     assertTrue(result[1].equals(""));
     assertFalse(result[2].equals(""));
   }
   
+  @Test
   public void testExecute_cmdNotFound() throws Exception {
     BaltradXmlRpcCommandHandler classUnderTest = new BaltradXmlRpcCommandHandler();
-    MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
-    XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
+    XmlRpcRequest request = createMock(XmlRpcRequest.class);
     
-    request.getParameter(0);
-    requestControl.setReturnValue("abcDEFghiJKL");
+    expect(request.getParameter(0)).andReturn("abcDEFghiJKL");
     
-    requestControl.replay();
+    replayAll();
     
     // Execute
     Object[] result = (Object[])classUnderTest.execute(request);
 
     // Verify
-    requestControl.verify();
+    verifyAll();
     assertTrue(0 != (Integer)result[0]);
     assertTrue(result[1].equals(""));
     assertFalse(result[2].equals(""));

@@ -18,6 +18,12 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.scheduler;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,10 +31,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.quartz.CronTrigger;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
@@ -50,7 +56,7 @@ import eu.baltrad.beast.manager.IBltMessageManager;
  * @author Anders Henja
  *
  */
-public class BeastSchedulerTest extends TestCase {
+public class BeastSchedulerTest extends EasyMockSupport {
   private static interface MockMethods {
     public CronEntry createCronEntry(String expression, String name);
     public NamedParameterJdbcTemplate getNamedParameterTemplate();
@@ -64,22 +70,16 @@ public class BeastSchedulerTest extends TestCase {
     public ParameterizedRowMapper<CronEntry> getScheduleMapper();
   };
   
-  private MockControl sfControl = null;
   private SchedulerFactoryBean sfBean = null;
-  private MockControl methodsControl = null;
   private MockMethods methods = null;
-  private MockControl jdbcControl = null;
   private SimpleJdbcOperations jdbc = null;
   private BeastScheduler classUnderTest = null;
-  
+
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
-    sfControl = MockClassControl.createControl(SchedulerFactoryBean.class);
-    sfBean = (SchedulerFactoryBean)sfControl.getMock();
-    methodsControl = MockControl.createControl(MockMethods.class);
-    methods = (MockMethods)methodsControl.getMock();
-    jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    sfBean = createMock(SchedulerFactoryBean.class);
+    methods = createMock(MockMethods.class);
+    jdbc = createMock(SimpleJdbcOperations.class);
     
     classUnderTest = new BeastScheduler() {
       protected CronEntry createCronEntry(String expression, String name) {
@@ -113,30 +113,16 @@ public class BeastSchedulerTest extends TestCase {
     classUnderTest.setSchedulerFactoryBean(sfBean);
     classUnderTest.setJdbcTemplate(jdbc);
   }
-  
+
+  @After
   public void tearDown() throws Exception {
-    super.tearDown();
     sfBean = null;
-    sfControl = null;
     methods = null;
-    methodsControl = null;
     jdbc = null;
-    jdbcControl = null;
     classUnderTest = null;
   }
-  
-  protected void replay() {
-    sfControl.replay();
-    methodsControl.replay();
-    jdbcControl.replay();
-  }
-  
-  public void verify() {
-    sfControl.verify();
-    methodsControl.verify();
-    jdbcControl.verify();
-  }
-  
+
+  @Test
   public void testAfterPropertiesSet() throws Exception {
     List<CronEntry> entries = new ArrayList<CronEntry>();
     CronEntry e1 = new CronEntry(1, "1 * * * * ?", "A");
@@ -152,84 +138,68 @@ public class BeastSchedulerTest extends TestCase {
       }
     };
     
-    methods.getScheduleMapper();
-    methodsControl.setReturnValue(mapper);
+    expect(methods.getScheduleMapper()).andReturn(mapper);
     
-    jdbc.query("select id, expression, name from beast_scheduled_jobs order by id",
-        mapper, new Object[]{});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(entries);
+    expect(jdbc.query("select id, expression, name from beast_scheduled_jobs order by id",
+        mapper, new Object[]{})).andReturn(entries);
 
     methods.scheduleJob(e1);
     methods.scheduleJob(e2);
     methods.scheduleJob(e3);
     
-    replay();
+    replayAll();
     
     classUnderTest.afterPropertiesSet();
     
-    verify();
+    verifyAll();
   }
   
   @SuppressWarnings({ "unchecked"})
+  @Test
   public void testRegister() throws Exception {
-    MockControl nptControl = MockClassControl.createControl(NamedParameterJdbcTemplate.class);
-    NamedParameterJdbcTemplate namedParameterTemplate = (NamedParameterJdbcTemplate)nptControl.getMock();
+    NamedParameterJdbcTemplate namedParameterTemplate = createMock(NamedParameterJdbcTemplate.class);
     CronEntry entry = new CronEntry();
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     keyHolder.getKeyList().add(new HashMap());
     keyHolder.getKeys().put("id", new Integer(10));
     BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(entry);
     
-    methods.createCronEntry("0 * * * * ?", "ABC");
-    methodsControl.setReturnValue(entry);
-    methods.createKeyHolder();
-    methodsControl.setReturnValue(keyHolder);
-    methods.getParameterSource(entry);
-    methodsControl.setReturnValue(parameterSource);
-    methods.getNamedParameterTemplate();
-    methodsControl.setReturnValue(namedParameterTemplate);
-    namedParameterTemplate.update("insert into beast_scheduled_jobs (expression, name) values (:expression,:name)",
+    expect(methods.createCronEntry("0 * * * * ?", "ABC")).andReturn(entry);
+    expect(methods.createKeyHolder()).andReturn(keyHolder);
+    expect(methods.getParameterSource(entry)).andReturn(parameterSource);
+    expect(methods.getNamedParameterTemplate()).andReturn(namedParameterTemplate);
+    expect(namedParameterTemplate.update("insert into beast_scheduled_jobs (expression, name) values (:expression,:name)",
         parameterSource,
-        keyHolder);
-    nptControl.setReturnValue(0);
+        keyHolder)).andReturn(1);
     
     methods.scheduleJob(entry);
     
-    replay();
-    nptControl.replay();
+    replayAll();
     
     classUnderTest.register("0 * * * * ?", "ABC");
     
-    verify();
-    nptControl.verify();
+    verifyAll();
   }
 
   @SuppressWarnings({ "unchecked"})
+  @Test
   public void testRegister_updateThrowsException() throws Exception {
-    MockControl nptControl = MockClassControl.createControl(NamedParameterJdbcTemplate.class);
-    NamedParameterJdbcTemplate namedParameterTemplate = (NamedParameterJdbcTemplate)nptControl.getMock();
+    NamedParameterJdbcTemplate namedParameterTemplate = createMock(NamedParameterJdbcTemplate.class);
     CronEntry entry = new CronEntry();
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     keyHolder.getKeyList().add(new HashMap());
     keyHolder.getKeys().put("id", new Integer(10));
     BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(entry);
     
-    methods.createCronEntry("0 * * * * ?", "ABC");
-    methodsControl.setReturnValue(entry);
-    methods.createKeyHolder();
-    methodsControl.setReturnValue(keyHolder);
-    methods.getParameterSource(entry);
-    methodsControl.setReturnValue(parameterSource);
-    methods.getNamedParameterTemplate();
-    methodsControl.setReturnValue(namedParameterTemplate);
-    namedParameterTemplate.update("insert into beast_scheduled_jobs (expression, name) values (:expression,:name)",
+    expect(methods.createCronEntry("0 * * * * ?", "ABC")).andReturn(entry);
+    expect(methods.createKeyHolder()).andReturn(keyHolder);
+    expect(methods.getParameterSource(entry)).andReturn(parameterSource);
+    expect(methods.getNamedParameterTemplate()).andReturn(namedParameterTemplate);
+    expect(namedParameterTemplate.update("insert into beast_scheduled_jobs (expression, name) values (:expression,:name)",
         parameterSource,
-        keyHolder);
-    nptControl.setThrowable(new DataRetrievalFailureException("x"));
+        keyHolder)).andThrow(new DataRetrievalFailureException("x"));
     
-    replay();
-    nptControl.replay();
+    replayAll();
 
     try {
       classUnderTest.register("0 * * * * ?", "ABC");
@@ -238,14 +208,13 @@ public class BeastSchedulerTest extends TestCase {
       // pass
     }
     
-    verify();
-    nptControl.verify();
+    verifyAll();
   }
   
   @SuppressWarnings({ "unchecked"})
+  @Test
   public void testRegister_scheduleJobThrowsException() throws Exception {
-    MockControl nptControl = MockClassControl.createControl(NamedParameterJdbcTemplate.class);
-    NamedParameterJdbcTemplate namedParameterTemplate = (NamedParameterJdbcTemplate)nptControl.getMock();
+    NamedParameterJdbcTemplate namedParameterTemplate = createMock(NamedParameterJdbcTemplate.class);
     CronEntry entry = new CronEntry();
     SchedulerException schedulerException = new SchedulerException();
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
@@ -253,23 +222,19 @@ public class BeastSchedulerTest extends TestCase {
     keyHolder.getKeys().put("id", new Integer(10));
     BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(entry);
     
-    methods.createCronEntry("0 * * * * ?", "ABC");
-    methodsControl.setReturnValue(entry);
-    methods.createKeyHolder();
-    methodsControl.setReturnValue(keyHolder);
-    methods.getParameterSource(entry);
-    methodsControl.setReturnValue(parameterSource);
-    methods.getNamedParameterTemplate();
-    methodsControl.setReturnValue(namedParameterTemplate);
+    expect(methods.createCronEntry("0 * * * * ?", "ABC")).andReturn(entry);
+    expect(methods.createKeyHolder()).andReturn(keyHolder);
+    expect(methods.getParameterSource(entry)).andReturn(parameterSource);
+    expect(methods.getNamedParameterTemplate()).andReturn(namedParameterTemplate);
 
-    namedParameterTemplate.update("insert into beast_scheduled_jobs (expression, name) values (:expression,:name)",
+    expect(namedParameterTemplate.update("insert into beast_scheduled_jobs (expression, name) values (:expression,:name)",
         parameterSource,
-        keyHolder);
-    nptControl.setReturnValue(0);
+        keyHolder)).andReturn(1);
+
     methods.scheduleJob(entry);
-    methodsControl.setThrowable(schedulerException);
-    replay();
-    nptControl.replay();
+    expectLastCall().andThrow(schedulerException);
+
+    replayAll();
 
     try {
       classUnderTest.register("0 * * * * ?", "ABC");
@@ -278,65 +243,51 @@ public class BeastSchedulerTest extends TestCase {
       assertSame(schedulerException, se);
     }
     
-    verify();
-    nptControl.verify();    
+    verifyAll();
   }
 
+  @Test
   public void testReregister() throws Exception {
     CronEntry entry = new CronEntry();
     
-    methods.createCronEntry("0 * * * * ?", "ABC");
-    methodsControl.setReturnValue(entry);
-    jdbc.update("update beast_scheduled_jobs set expression=?, name=? where id=?",
-        new Object[]{"0 * * * * ?", "ABC", 10});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(methods.createCronEntry("0 * * * * ?", "ABC")).andReturn(entry);
+    expect(jdbc.update("update beast_scheduled_jobs set expression=?, name=? where id=?",
+        new Object[]{"0 * * * * ?", "ABC", 10})).andReturn(1);
     
     methods.rescheduleJob(10, entry);
     
-    replay();
+    replayAll();
     
     classUnderTest.reregister(10, "0 * * * * ?", "ABC");
     
-    verify();
+    verifyAll();
   }
   
-  
+  @Test
   public void testUnregister() throws Exception {
-    MockControl schedControl = MockControl.createControl(Scheduler.class);
-    Scheduler scheduler = (Scheduler)schedControl.getMock();
+    Scheduler scheduler = createMock(Scheduler.class);
     
-    sfBean.getScheduler();
-    sfControl.setReturnValue(scheduler);
-    jdbc.update("delete from beast_scheduled_jobs where id=?",
-        new Object[]{2});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
-    scheduler.unscheduleJob("2", "beast");
-    schedControl.setReturnValue(true);
+    expect(sfBean.getScheduler()).andReturn(scheduler);
+    expect(jdbc.update("delete from beast_scheduled_jobs where id=?",
+        new Object[]{2})).andReturn(1);
+    expect(scheduler.unscheduleJob("2", "beast")).andReturn(true);
     
-    replay();
-    schedControl.replay();
+    replayAll();
     
     classUnderTest.unregister(2);
     
-    verify();
-    schedControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testUnregister_jdbcUpdateThrowsException() throws Exception {
-    MockControl schedControl = MockControl.createControl(Scheduler.class);
-    Scheduler scheduler = (Scheduler)schedControl.getMock();
-    sfBean.getScheduler();
-    sfControl.setReturnValue(scheduler);
+    Scheduler scheduler = createMock(Scheduler.class);
+    expect(sfBean.getScheduler()).andReturn(scheduler);
     
-    jdbc.update("delete from beast_scheduled_jobs where id=?",
-        new Object[]{2});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
+    expect(jdbc.update("delete from beast_scheduled_jobs where id=?",
+        new Object[]{2})).andThrow(new DataRetrievalFailureException("x"));
     
-    replay();
-    schedControl.replay();
+    replayAll();
     
     try {
       classUnderTest.unregister(2);
@@ -345,27 +296,21 @@ public class BeastSchedulerTest extends TestCase {
       // pass
     }
     
-    verify();
-    schedControl.verify();
+    verifyAll();
   }
-  
+
+  @Test
   public void testUnregister_unscheduleThrowsException() throws Exception {
-    MockControl schedControl = MockControl.createControl(Scheduler.class);
-    Scheduler scheduler = (Scheduler)schedControl.getMock();
+    Scheduler scheduler = createMock(Scheduler.class);
     org.quartz.SchedulerException schedulerException = new org.quartz.SchedulerException();
 
-    sfBean.getScheduler();
-    sfControl.setReturnValue(scheduler);
+    expect(sfBean.getScheduler()).andReturn(scheduler);
     
-    jdbc.update("delete from beast_scheduled_jobs where id=?",
-        new Object[]{2});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
-    scheduler.unscheduleJob("2", "beast");
-    schedControl.setThrowable(schedulerException);
+    expect(jdbc.update("delete from beast_scheduled_jobs where id=?",
+        new Object[]{2})).andReturn(1);
+    expect(scheduler.unscheduleJob("2", "beast")).andThrow(schedulerException);
     
-    replay();
-    schedControl.replay();
+    replayAll();
     
     try {
       classUnderTest.unregister(2);
@@ -374,13 +319,12 @@ public class BeastSchedulerTest extends TestCase {
       // pass
     }
     
-    verify();
-    schedControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testGetSchedule() throws Exception {
-    MockControl schedControl = MockControl.createControl(Scheduler.class);
-    Scheduler scheduler = (Scheduler)schedControl.getMock();
+    Scheduler scheduler = createMock(Scheduler.class);
     CronTrigger t1 = new CronTrigger();
     t1.setName("1");
     t1.setJobName("A");
@@ -397,23 +341,17 @@ public class BeastSchedulerTest extends TestCase {
     Trigger[] tg1 = new Trigger[]{t1, t2};
     Trigger[] tg2 = new Trigger[]{t3, t4};
     
-    sfBean.getScheduler();
-    sfControl.setReturnValue(scheduler);
-
-    scheduler.getJobNames("beast");
-    schedControl.setReturnValue(new String[]{"A", "B", "C"});
-    scheduler.getTriggersOfJob("A", "beast");
-    schedControl.setReturnValue(new Trigger[]{});
-    scheduler.getTriggersOfJob("B", "beast");
-    schedControl.setReturnValue(tg1);
-    scheduler.getTriggersOfJob("C", "beast");
-    schedControl.setReturnValue(tg2);
+    expect(sfBean.getScheduler()).andReturn(scheduler);
+    expect(scheduler.getJobNames("beast")).andReturn(new String[]{"A", "B", "C"});
+    expect(scheduler.getTriggersOfJob("A", "beast")).andReturn(new Trigger[]{});
+    expect(scheduler.getTriggersOfJob("B", "beast")).andReturn(tg1);
+    expect(scheduler.getTriggersOfJob("C", "beast")).andReturn(tg2);
     
-    replay();
-    schedControl.replay();
+    replayAll();
     
     List<CronEntry> entries = classUnderTest.getSchedule();
-    
+
+    verifyAll();
     assertEquals(3, entries.size());
     assertEquals(1, entries.get(0).getId());
     assertEquals("1 * * * * ?", entries.get(0).getExpression());
@@ -425,10 +363,9 @@ public class BeastSchedulerTest extends TestCase {
     assertEquals("3 * * * * ?", entries.get(2).getExpression());
     assertEquals("C", entries.get(2).getName());
     
-    verify();
-    schedControl.verify();
   }
   
+  @Test
   public void testCreateTrigger() throws Exception {
     CronEntry entry = new CronEntry();
     entry.setId(10);
@@ -446,6 +383,7 @@ public class BeastSchedulerTest extends TestCase {
     assertEquals("0 * * * * ?", result.getCronExpression());
   }
  
+  @Test
   public void testCreateTrigger_badExpression() throws Exception {
     CronEntry entry = new CronEntry();
     entry.setId(10);
@@ -462,19 +400,16 @@ public class BeastSchedulerTest extends TestCase {
     }
   }
   
+  @Test
   public void testScheduleJob() throws Exception {
-    MockControl schedControl = MockControl.createControl(Scheduler.class);
-    Scheduler scheduler = (Scheduler)schedControl.getMock();
+    Scheduler scheduler = createMock(Scheduler.class);
     CronTriggerBean triggerBean = new CronTriggerBean();
     CronEntry entry = new CronEntry(1, "0 * * * * ?", "A");
     
-    methods.createTrigger(entry);
-    methodsControl.setReturnValue(triggerBean);
+    expect(methods.createTrigger(entry)).andReturn(triggerBean);
     methods.registerJob("A");
-    sfBean.getScheduler();
-    sfControl.setReturnValue(scheduler);
-    scheduler.scheduleJob(triggerBean);
-    schedControl.setReturnValue(new Date(0));
+    expect(sfBean.getScheduler()).andReturn(scheduler);
+    expect(scheduler.scheduleJob(triggerBean)).andReturn(new Date(0));
     
     classUnderTest = new BeastScheduler() {
       protected CronTriggerBean createTrigger(CronEntry entry) {
@@ -487,31 +422,25 @@ public class BeastSchedulerTest extends TestCase {
     classUnderTest.setSchedulerFactoryBean(sfBean);
     
     
-    replay();
-    schedControl.replay();
+    replayAll();
     
     classUnderTest.scheduleJob(entry);
     
-    verify();
-    schedControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testRescheduleJob() throws Exception {
-    MockControl schedControl = MockControl.createControl(Scheduler.class);
-    Scheduler scheduler = (Scheduler)schedControl.getMock();
+    Scheduler scheduler = createMock(Scheduler.class);
     CronTriggerBean triggerBean = new CronTriggerBean();
     CronEntry entry = new CronEntry(1, "0 * * * * ?", "A");
     
-    methods.createTrigger(entry);
-    methodsControl.setReturnValue(triggerBean);
+    expect(methods.createTrigger(entry)).andReturn(triggerBean);
     methods.registerJob("A");
-    sfBean.getScheduler();
-    sfControl.setReturnValue(scheduler);
+    expect(sfBean.getScheduler()).andReturn(scheduler);
     
-    scheduler.unscheduleJob("1", "beast");
-    schedControl.setReturnValue(true);
-    scheduler.scheduleJob(triggerBean);
-    schedControl.setReturnValue(new Date());
+    expect(scheduler.unscheduleJob("1", "beast")).andReturn(true);
+    expect(scheduler.scheduleJob(triggerBean)).andReturn(new Date());
     
     classUnderTest = new BeastScheduler() {
       protected CronTriggerBean createTrigger(CronEntry entry) {
@@ -524,18 +453,16 @@ public class BeastSchedulerTest extends TestCase {
     classUnderTest.setSchedulerFactoryBean(sfBean);
     
     
-    replay();
-    schedControl.replay();
+    replayAll();
     
     classUnderTest.rescheduleJob(1, entry);
     
-    verify();
-    schedControl.verify();
+    verifyAll();
   }
   
+  @Test
   public void testRegisterJob() throws Exception {
-    MockControl schedControl = MockControl.createControl(Scheduler.class);
-    Scheduler scheduler = (Scheduler)schedControl.getMock();
+    Scheduler scheduler = createMock(Scheduler.class);
 
     JobDetailBean detail = new JobDetailBean();
     classUnderTest = new BeastScheduler() {
@@ -545,24 +472,20 @@ public class BeastSchedulerTest extends TestCase {
     };
     classUnderTest.setSchedulerFactoryBean(sfBean);
     
-    methods.createJob("ABC");
-    methodsControl.setReturnValue(detail);
-    sfBean.getScheduler();
-    sfControl.setReturnValue(scheduler);
+    expect(methods.createJob("ABC")).andReturn(detail);
+    expect(sfBean.getScheduler()).andReturn(scheduler);
     scheduler.addJob(detail, true);
     
-    replay();
-    schedControl.replay();
+    replayAll();
 
     classUnderTest.registerJob("ABC");
     
-    verify();
-    schedControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testRegisterJob_addJobThrowsException() throws Exception {
-    MockControl schedControl = MockControl.createControl(Scheduler.class);
-    Scheduler scheduler = (Scheduler)schedControl.getMock();
+    Scheduler scheduler = createMock(Scheduler.class);
 
     JobDetailBean detail = new JobDetailBean();
     org.quartz.SchedulerException exc = new org.quartz.SchedulerException();
@@ -573,14 +496,12 @@ public class BeastSchedulerTest extends TestCase {
     };
     classUnderTest.setSchedulerFactoryBean(sfBean);
     
-    methods.createJob("ABC");
-    methodsControl.setReturnValue(detail);
-    sfBean.getScheduler();
-    sfControl.setReturnValue(scheduler);
+    expect(methods.createJob("ABC")).andReturn(detail);
+    expect(sfBean.getScheduler()).andReturn(scheduler);
     scheduler.addJob(detail, true);
-    schedControl.setThrowable(exc);
-    replay();
-    schedControl.replay();
+    expectLastCall().andThrow(exc);
+
+    replayAll();
 
     try {
       classUnderTest.registerJob("ABC");
@@ -589,10 +510,10 @@ public class BeastSchedulerTest extends TestCase {
       assertSame(exc, e);
     }
     
-    verify();
-    schedControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testCreateCronEntry() throws Exception {
     classUnderTest = new BeastScheduler();
     
@@ -601,70 +522,75 @@ public class BeastSchedulerTest extends TestCase {
     assertEquals("a b c", result.getExpression());
   }
   
+  @Test
   public void testGetNamedParameterTemplate() throws Exception {
-    MockControl templateControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations template = (SimpleJdbcOperations)templateControl.getMock();
-    MockControl operationsControl = MockControl.createControl(JdbcOperations.class);
-    JdbcOperations operations = (JdbcOperations)operationsControl.getMock();
+    SimpleJdbcOperations template = createMock(SimpleJdbcOperations.class);
+    JdbcOperations operations = createMock(JdbcOperations.class);
     
-    template.getJdbcOperations();
-    templateControl.setReturnValue(operations);
+    expect(template.getJdbcOperations()).andReturn(operations);
     
     classUnderTest = new BeastScheduler();
     classUnderTest.setJdbcTemplate(template);
     
-    templateControl.replay();
-    operationsControl.replay();
+    replayAll();
     
     NamedParameterJdbcTemplate result = classUnderTest.getNamedParameterTemplate();
     assertSame(operations, result.getJdbcOperations());
 
-    templateControl.verify();
-    operationsControl.verify();
+    verifyAll();
   }
-  
+
+  @Test
   public void testCreateJob() throws Exception {
-    MockControl mgrControl = MockControl.createControl(IBltMessageManager.class);
-    IBltMessageManager mgr = (IBltMessageManager)mgrControl.getMock();
+    IBltMessageManager mgr = createMock(IBltMessageManager.class);
     
     classUnderTest = new BeastScheduler();
     classUnderTest.setMessageManager(mgr);
     
+    replayAll();
+    
     JobDetailBean result = classUnderTest.createJob("abc");
     
+    verifyAll();
     assertEquals("abc", result.getName());
     assertEquals("beast", result.getGroup());
     assertSame(BeastJobInvoker.class, result.getJobClass());
     assertSame(mgr, result.getJobDataMap().get("messageManager"));
   }
   
+  @Test
   public void testCreateJob_nullName() throws Exception {
-    MockControl mgrControl = MockControl.createControl(IBltMessageManager.class);
-    IBltMessageManager mgr = (IBltMessageManager)mgrControl.getMock();
+    IBltMessageManager mgr = createMock(IBltMessageManager.class);
     
     classUnderTest = new BeastScheduler();
     classUnderTest.setMessageManager(mgr);
 
+    replayAll();
+    
     try {
       classUnderTest.createJob(null);
       fail("Expected NullPointerException");
     } catch (NullPointerException npe) {
       // pass
     }
+    verifyAll();
   }
   
+  @Test
   public void testCreateJob_nullId() throws Exception {
-    MockControl mgrControl = MockControl.createControl(IBltMessageManager.class);
-    IBltMessageManager mgr = (IBltMessageManager)mgrControl.getMock();
+    IBltMessageManager mgr = createMock(IBltMessageManager.class);
     
     classUnderTest = new BeastScheduler();
     classUnderTest.setMessageManager(mgr);
 
+    replayAll();
+    
     try {
       classUnderTest.createJob(null);
       fail("Expected NullPointerException");
     } catch (NullPointerException npe) {
       // pass
     }
+    verifyAll();
   }
 }

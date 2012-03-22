@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
-import org.easymock.MockControl;
+import org.easymock.EasyMock;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor;
@@ -139,8 +139,7 @@ public class BltAdaptorManagerDBTest extends TestCase {
 
   public void testReregister_differentType() throws Exception {
     // Just create a phony http manager...
-    MockControl httpAdaptorControl = MockControl.createControl(IAdaptorConfigurationManager.class);
-    IAdaptorConfigurationManager httpAdaptorManager = (IAdaptorConfigurationManager)httpAdaptorControl.getMock();
+    IAdaptorConfigurationManager httpAdaptorManager = EasyMock.createMock(IAdaptorConfigurationManager.class);
     
     XmlRpcAdaptorConfiguration config = (XmlRpcAdaptorConfiguration)classUnderTest.createConfiguration("XMLRPC", "A1");
     config.setURL("http://someone/somewhere/somewhereelse");
@@ -149,14 +148,15 @@ public class BltAdaptorManagerDBTest extends TestCase {
     classUnderTest.getTypeRegistry().put("HTTP", httpAdaptorManager);
     
     httpAdaptorManager.remove(1);
-    
-    httpAdaptorControl.replay();
+
+    EasyMock.replay(httpAdaptorManager);
     
     // Execute test
     IAdaptor result = classUnderTest.reregister(config);
     
     // verify
-    httpAdaptorControl.verify();
+    EasyMock.verify(httpAdaptorManager);
+    
     verifyDatabaseTables("reregister-differenttype");
     assertTrue(result.getClass() == XmlRpcAdaptor.class);
     assertEquals("A1", result.getName());

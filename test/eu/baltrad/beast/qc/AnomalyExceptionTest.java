@@ -18,29 +18,35 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.qc;
 
-import junit.framework.TestCase;
-import eu.baltrad.beast.qc.AnomalyException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author Anders Henja
  */
-public class AnomalyExceptionTest extends TestCase {
+public class AnomalyExceptionTest {
+  @Test
   public void testConstructor() {
     AnomalyException classUnderTest = new AnomalyException();
     assertTrue(classUnderTest instanceof RuntimeException);
   }
   
+  @Test
   public void testStringConstructor() {
     AnomalyException classUnderTest = new AnomalyException("something");
     assertEquals("something", classUnderTest.getMessage());
   }
   
+  @Test
   public void testThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     AnomalyException classUnderTest = new AnomalyException(x);
     assertEquals("something", classUnderTest.getCause().getMessage());
   }
   
+  @Test
   public void testStringThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     AnomalyException classUnderTest = new AnomalyException("else", x);

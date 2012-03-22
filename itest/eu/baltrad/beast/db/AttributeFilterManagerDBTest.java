@@ -19,13 +19,10 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
-import java.util.Map;
-
 import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
-
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 

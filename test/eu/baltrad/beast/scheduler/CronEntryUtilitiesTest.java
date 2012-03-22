@@ -19,82 +19,99 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.scheduler;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
  * @author Anders Henja
  * @date Jan 12, 2011
  */
-public class CronEntryUtilitiesTest extends TestCase {
+public class CronEntryUtilitiesTest extends EasyMockSupport {
   private static interface MockMethods {
     public String createBasePattern(List<String> values);
     public List<String> parseBasePattern(String value);
   };
   
   private CronEntryUtilities classUnderTest = null;
-  
+
+  @Before
   public void setUp() throws Exception {
     classUnderTest = new CronEntryUtilities();
   }
   
+  @After
   public void tearDown() throws Exception {
     classUnderTest = null;
   }
   
+  @Test
   public void testCreateBasePattern() throws Exception {
     List<String> values = Arrays.asList(new String[]{"1","2","3","10"});
     String result = classUnderTest.createBasePattern(values);
     assertEquals("1,2,3,10", result);
   }
 
+  @Test
   public void testCreateBasePattern_2() throws Exception {
     List<String> values = Arrays.asList(new String[]{"*/2"});
     String result = classUnderTest.createBasePattern(values);
     assertEquals("*/2", result);
   }
 
+  @Test
   public void testCreateBasePattern_3() throws Exception {
     List<String> values = Arrays.asList(new String[]{"*/2","*/3"});
     String result = classUnderTest.createBasePattern(values);
     assertEquals("*/2,*/3", result);
   }
 
+  @Test
   public void testCreateBasePattern_4() throws Exception {
     List<String> values = Arrays.asList(new String[]{"*/2","1","31"});
     String result = classUnderTest.createBasePattern(values);
     assertEquals("*/2,1,31", result);
   }
   
+  @Test
   public void testParseBasePattern() throws Exception {
     List<String> result = classUnderTest.parseBasePattern("1,2,3,10");
     assertTrue(validateList(Arrays.asList(new String[]{"1","2","3","10"}), result));
   }
 
+  @Test
   public void testParseBasePattern_2() throws Exception {
     List<String> result = classUnderTest.parseBasePattern("*/2");
     assertTrue(validateList(Arrays.asList(new String[]{"*/2"}), result));
   }  
 
+  @Test
   public void testParseBasePattern_3() throws Exception {
     List<String> result = classUnderTest.parseBasePattern("*/2,*/3");
     assertTrue(validateList(Arrays.asList(new String[]{"*/2","*/3"}), result));
   }  
 
+  @Test
   public void testParseBasePattern_4() throws Exception {
     List<String> result = classUnderTest.parseBasePattern("*/2,1,31");
     assertTrue(validateList(Arrays.asList(new String[]{"*/2","1","31"}), result));
   }    
   
+  @Test
   public void testCreateSecondPattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -103,20 +120,19 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.createBasePattern(strings);
-    methodsControl.setReturnValue("nisse");
+    expect(methods.createBasePattern(strings)).andReturn("nisse");
     
-    methodsControl.replay();
+    replayAll();
     
     String result = classUnderTest.createSecondPattern(strings);
     
-    methodsControl.verify();
+    verifyAll();
     assertEquals("nisse", result);
   }
 
+  @Test
   public void testParseSecondPattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -125,21 +141,19 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.parseBasePattern("nisse");
-    methodsControl.setReturnValue(strings);
+    expect(methods.parseBasePattern("nisse")).andReturn(strings);
     
-    methodsControl.replay();
+    replayAll();
     
     List<String> result = classUnderTest.parseSecondPattern("nisse");
     
-    methodsControl.verify();
+    verifyAll();
     assertSame(strings, result);
   }
-
   
+  @Test
   public void testCreateMinutePattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -148,20 +162,19 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.createBasePattern(strings);
-    methodsControl.setReturnValue("nisse");
+    expect(methods.createBasePattern(strings)).andReturn("nisse");
     
-    methodsControl.replay();
+    replayAll();
     
     String result = classUnderTest.createMinutePattern(strings);
     
-    methodsControl.verify();
+    verifyAll();
     assertEquals("nisse", result);
   }
 
+  @Test
   public void testParseMinutePattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -170,20 +183,19 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.parseBasePattern("nisse");
-    methodsControl.setReturnValue(strings);
+    expect(methods.parseBasePattern("nisse")).andReturn(strings);
     
-    methodsControl.replay();
+    replayAll();
     
     List<String> result = classUnderTest.parseMinutePattern("nisse");
     
-    methodsControl.verify();
+    verifyAll();
     assertSame(strings, result);
   }
   
+  @Test
   public void testCreateHourPattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -192,20 +204,19 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.createBasePattern(strings);
-    methodsControl.setReturnValue("nisse");
+    expect(methods.createBasePattern(strings)).andReturn("nisse");
     
-    methodsControl.replay();
+    replayAll();
     
     String result = classUnderTest.createHourPattern(strings);
     
-    methodsControl.verify();
+    verifyAll();
     assertEquals("nisse", result);
   }
 
+  @Test
   public void testParseHourPattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -214,17 +225,17 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.parseBasePattern("nisse");
-    methodsControl.setReturnValue(strings);
+    expect(methods.parseBasePattern("nisse")).andReturn(strings);
     
-    methodsControl.replay();
+    replayAll();
     
     List<String> result = classUnderTest.parseHourPattern("nisse");
     
-    methodsControl.verify();
+    verifyAll();
     assertSame(strings, result);
   }
 
+  @Test
   public void testCreateDayOfMonthPattern() throws Exception {
     String[][][] values = { 
      {{"1,2,3,10"},{"1","2","3","10"}},
@@ -240,6 +251,7 @@ public class CronEntryUtilitiesTest extends TestCase {
     }
   }
   
+  @Test
   public void testParseDayOfMonthPattern() throws Exception {
     String[][][] values = { 
         {{"1,2,3,10"},{"1","2","3","10"}},
@@ -255,9 +267,9 @@ public class CronEntryUtilitiesTest extends TestCase {
     }    
   }
   
+  @Test
   public void testCreateMonthPattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -266,20 +278,19 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.createBasePattern(strings);
-    methodsControl.setReturnValue("nisse");
+    expect(methods.createBasePattern(strings)).andReturn("nisse");
     
-    methodsControl.replay();
+    replayAll();
     
     String result = classUnderTest.createMonthPattern(strings);
     
-    methodsControl.verify();
+    verifyAll();
     assertEquals("nisse", result);
   }
 
+  @Test
   public void testParseMonthPattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -288,17 +299,17 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.parseBasePattern("nisse");
-    methodsControl.setReturnValue(strings);
+    expect(methods.parseBasePattern("nisse")).andReturn(strings);
     
-    methodsControl.replay();
+    replayAll();
     
     List<String> result = classUnderTest.parseMonthPattern("nisse");
     
-    methodsControl.verify();
+    verifyAll();
     assertSame(strings, result);
   }
 
+  @Test
   public void testCreateDayOfWeekPattern() throws Exception {
     String[][][] values = { 
      {{"1,2,3,10"},{"1","2","3","10"}},
@@ -314,6 +325,7 @@ public class CronEntryUtilitiesTest extends TestCase {
     }
   }
   
+  @Test
   public void testParseDayOfWeekPattern() throws Exception {
     String[][][] values = { 
         {{"1,2,3,10"},{"1","2","3","10"}},
@@ -329,9 +341,9 @@ public class CronEntryUtilitiesTest extends TestCase {
     }    
   }
 
+  @Test
   public void testCreateYearPattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -340,20 +352,19 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.createBasePattern(strings);
-    methodsControl.setReturnValue("nisse");
+    expect(methods.createBasePattern(strings)).andReturn("nisse");
     
-    methodsControl.replay();
+    replayAll();
     
     String result = classUnderTest.createYearPattern(strings);
     
-    methodsControl.verify();
+    verifyAll();
     assertEquals("nisse", result);
   }
 
+  @Test
   public void testParseYearPattern() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     List<String> strings = new ArrayList<String>();
     
     classUnderTest = new CronEntryUtilities() {
@@ -362,18 +373,18 @@ public class CronEntryUtilitiesTest extends TestCase {
       }
     };
     
-    methods.parseBasePattern("nisse");
-    methodsControl.setReturnValue(strings);
+    expect(methods.parseBasePattern("nisse")).andReturn(strings);
     
-    methodsControl.replay();
+    replayAll();
     
     List<String> result = classUnderTest.parseYearPattern("nisse");
     
-    methodsControl.verify();
+    verifyAll();
     assertSame(strings, result);
   }
   
   
+  @Test
   public void testParseAllInExpression() throws Exception {
     String expression = "1,*/2 0 23 LW 1,5,9 ?";
     List<String>[] result = classUnderTest.parseAllInExpression(expression);
@@ -400,6 +411,7 @@ public class CronEntryUtilitiesTest extends TestCase {
     assertEquals("?", result[CronEntryUtilities.DAYSOFWEEK_INDEX].get(0));
   }
 
+  @Test
   public void testParseAllInExpression_withYear() throws Exception {
     String expression = "1,*/2 0 23 LW 1,5,9 ? 1979,1980,1981";
     List<String>[] result = classUnderTest.parseAllInExpression(expression);
@@ -431,6 +443,7 @@ public class CronEntryUtilitiesTest extends TestCase {
     assertEquals("1981", result[CronEntryUtilities.YEARS_INDEX].get(2));
   }
 
+  @Test
   public void testParseAllInExpression_badExpressions() throws Exception {
     String[] expressions = {
       "0 * * ? * ?",

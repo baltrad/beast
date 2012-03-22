@@ -19,51 +19,43 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
-
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.codehaus.jackson.node.ObjectNode;
+import org.easymock.EasyMockSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.bdb.expr.ExpressionFactory;
 
-public class CombinedFilterTest extends TestCase {
+public class CombinedFilterTest extends EasyMockSupport {
   private ObjectMapper jsonMapper;
-  private MockControl filter1Control;
   private IFilter filter1;
-  private MockControl filter2Control;
   private IFilter filter2;
   private ExpressionFactory xpr;
   private CombinedFilter classUnderTest;
 
+  @Before
   public void setUp() {
-    filter1Control = MockControl.createControl(IFilter.class);
-    filter1 = (IFilter)filter1Control.getMock();
-    filter2Control = MockControl.createControl(IFilter.class);
-    filter2 = (IFilter)filter2Control.getMock();
+    filter1 = createMock(IFilter.class);
+    filter2 = createMock(IFilter.class);
     xpr = new ExpressionFactory();
     jsonMapper = new ObjectMapper();
     classUnderTest = new CombinedFilter();
   }
 
-  private void replay() {
-    filter1Control.replay();
-    filter2Control.replay();
-  }
-  
-  private void verify() {
-    filter1Control.verify();
-    filter2Control.verify();
-  }
-
+  @Test
   public void testGetExpression_ANY() {
     List<IFilter> children = new ArrayList<IFilter>();
     children.add(filter1);
@@ -71,18 +63,19 @@ public class CombinedFilterTest extends TestCase {
     classUnderTest.setChildFilters(children);
     classUnderTest.setMatchType(CombinedFilter.MatchType.ANY);
 
-    filter1.getExpression();
-    filter1Control.setReturnValue(xpr.literal(1));
-    filter2.getExpression();
-    filter2Control.setReturnValue(xpr.literal(2));
-    replay();
+    expect(filter1.getExpression()).andReturn(xpr.literal(1));
+    expect(filter2.getExpression()).andReturn(xpr.literal(2));
+
+    replayAll();
 
     Expression expected = xpr.or(xpr.literal(1), xpr.literal(2));
     Expression e = classUnderTest.getExpression();
-    verify();
+    
+    verifyAll();
     assertTrue(e.equals(expected));
   }
 
+  @Test
   public void testGetExpression_ALL() {
     List<IFilter> children = new ArrayList<IFilter>();
     children.add(filter1);
@@ -90,23 +83,25 @@ public class CombinedFilterTest extends TestCase {
     classUnderTest.setChildFilters(children);
     classUnderTest.setMatchType(CombinedFilter.MatchType.ALL);
 
-    filter1.getExpression();
-    filter1Control.setReturnValue(xpr.literal(1));
-    filter2.getExpression();
-    filter2Control.setReturnValue(xpr.literal(2));
-    replay();
+    expect(filter1.getExpression()).andReturn(xpr.literal(1));
+    expect(filter2.getExpression()).andReturn(xpr.literal(2));
+
+    replayAll();
 
     Expression expected = xpr.and(xpr.literal(1), xpr.literal(2));
     Expression e = classUnderTest.getExpression();
-    verify();
+    
+    verifyAll();
     assertEquals(expected, e);
   }
 
+  @Test
   public void testAddChildFilter() {
     classUnderTest.addChildFilter(filter1);
     assertTrue(classUnderTest.getChildFilters().contains(filter1));
   }
 
+  @Test
   public void testIsValid() {
     List<IFilter> children = new ArrayList<IFilter>();
     children.add(filter1);
@@ -114,36 +109,45 @@ public class CombinedFilterTest extends TestCase {
     classUnderTest.setChildFilters(children);
     classUnderTest.setMatchType(CombinedFilter.MatchType.ALL);
 
-    filter1.getExpression();
-    filter1Control.setReturnValue(xpr.literal(1));
-    filter2.getExpression();
-    filter2Control.setReturnValue(xpr.literal(2));
-    replay();
+    expect(filter1.getExpression()).andReturn(xpr.literal(1));
+    expect(filter2.getExpression()).andReturn(xpr.literal(2));
+
+    replayAll();
     
     assertTrue(classUnderTest.isValid());
+    
+    verifyAll();
   }
 
+  @Test
   public void testIsValid_noChild() {
     classUnderTest.setMatchType(CombinedFilter.MatchType.ALL);
-
-    assertFalse(classUnderTest.isValid()); 
+    
+    replayAll();
+    
+    assertFalse(classUnderTest.isValid());
+    
+    verifyAll();
   }
 
+  @Test
   public void testIsValid_noMatchType() {
     List<IFilter> children = new ArrayList<IFilter>();
     children.add(filter1);
     children.add(filter2);
     classUnderTest.setChildFilters(children);
 
-    filter1.getExpression();
-    filter1Control.setReturnValue(xpr.literal(1), MockControl.ZERO_OR_MORE);
-    filter2.getExpression();
-    filter2Control.setReturnValue(xpr.literal(2), MockControl.ZERO_OR_MORE);
-    replay();
+    expect(filter1.getExpression()).andReturn(xpr.literal(1));
+    expect(filter2.getExpression()).andReturn(xpr.literal(2));
+
+    replayAll();
 
     assertFalse(classUnderTest.isValid());
+    
+    verifyAll();
   } 
 
+  @Test
   public void testJackson_toJson() {
     CombinedFilter child1 = new CombinedFilter();
     child1.setId(1);
@@ -177,6 +181,7 @@ public class CombinedFilterTest extends TestCase {
     assertEquals(0, json.get("childFilters").size());
   }
 
+  @Test
   public void testJackson_fromJson() throws java.io.IOException {
     ObjectNode child = JsonNodeFactory.instance.objectNode();
     child.put("type", "combined");

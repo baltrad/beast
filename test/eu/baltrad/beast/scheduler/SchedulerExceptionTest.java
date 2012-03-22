@@ -18,29 +18,36 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.scheduler;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author Anders Henja
  *
  */
-public class SchedulerExceptionTest extends TestCase {
+public class SchedulerExceptionTest {
+  @Test
   public void testConstructor() {
     SchedulerException classUnderTest = new SchedulerException();
     assertTrue(classUnderTest instanceof SchedulerException);
   }
   
+  @Test
   public void testStringConstructor() {
     SchedulerException classUnderTest = new SchedulerException("something");
     assertEquals("something", classUnderTest.getMessage());
   }
   
+  @Test
   public void testThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     SchedulerException classUnderTest = new SchedulerException(x);
     assertEquals("something", classUnderTest.getCause().getMessage());
   }
   
+  @Test
   public void testStringThrowableConstructor() {
     RuntimeException x = new RuntimeException("something");
     SchedulerException classUnderTest = new SchedulerException("else", x);

@@ -18,27 +18,36 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.timer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import eu.baltrad.beast.message.IBltMessage;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  */
-public class TimeoutTaskFactoryTest extends TestCase {
+public class TimeoutTaskFactoryTest {
   private TimeoutTaskFactory classUnderTest = null;
   
-  protected void setUp() throws Exception {
-    super.setUp();
+  @Before
+  public void setUp() throws Exception {
     classUnderTest = new TimeoutTaskFactory();
   }
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @After
+  public void tearDown() throws Exception {
     classUnderTest = null;
   }
-  
+
+  @Test
   public void testCreate_noListener() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
@@ -52,6 +61,7 @@ public class TimeoutTaskFactoryTest extends TestCase {
     }
   }
 
+  @Test
   public void testCreate_2() throws Exception {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
@@ -69,6 +79,7 @@ public class TimeoutTaskFactoryTest extends TestCase {
     assertSame(listener, result.getListener());
   }
 
+  @Test
   public void testCreate_noRule() throws Exception {
     try {
       classUnderTest.create(null, 1, null, null);

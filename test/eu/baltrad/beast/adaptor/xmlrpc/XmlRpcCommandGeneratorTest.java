@@ -18,37 +18,36 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  */
-public class XmlRpcCommandGeneratorTest extends TestCase {
+public class XmlRpcCommandGeneratorTest{
   private XmlRpcCommandGenerator classUnderTest = null;
-  
-  /**
-   * @see junit.framework.TestCase#setUp()
-   */
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+
+  @Before
+  public void setUp() throws Exception {
     classUnderTest = new XmlRpcCommandGenerator();
   }
 
-  /**
-   * @see junit.framework.TestCase#tearDown()
-   */
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @After
+  public void tearDown() throws Exception {
     classUnderTest = null;
   }
   
+  @Test
   public void testGenerateBltCommand() throws Exception {
     BltCommandMessage msg = new BltCommandMessage();
     msg.setCommand("ls -l");
@@ -59,6 +58,7 @@ public class XmlRpcCommandGeneratorTest extends TestCase {
     assertEquals(objs[0], "ls -l");
   }
   
+  @Test
   public void testGenerateBltAlert() throws Exception {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setCode("ABC");
@@ -72,6 +72,7 @@ public class XmlRpcCommandGeneratorTest extends TestCase {
     assertEquals("A message", objs[1]);
   }
 
+  @Test
   public void testGenerateBltGenerate() throws Exception {
     BltGenerateMessage msg = new BltGenerateMessage();
     msg.setAlgorithm("x.C");
@@ -89,6 +90,7 @@ public class XmlRpcCommandGeneratorTest extends TestCase {
     assertEquals("a", ((Object[])objs[2])[1]);
   }
 
+  @Test
   public void testGenerateBltTriggerJob() throws Exception {
     BltTriggerJobMessage msg = new BltTriggerJobMessage();
     msg.setId("a.id");
@@ -105,6 +107,7 @@ public class XmlRpcCommandGeneratorTest extends TestCase {
     assertEquals("a", ((Object[])objs[2])[1]);
   }
   
+  @Test
   public void testGenerate_unknownMessage() throws Exception {
     IBltMessage message = new IBltMessage(){};
     try {

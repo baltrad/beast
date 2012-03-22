@@ -18,34 +18,36 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor;
 
+import static org.easymock.EasyMock.expect;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.easymock.MockControl;
+import org.easymock.EasyMock;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRoutedMessage;
 
-import junit.framework.TestCase;
-
 /**
  * @author Anders Henja
  */
-public class BltAdaptorManagerHandleTest extends TestCase {
-  private MockControl adaptor1Control = MockControl.createControl(IAdaptor.class);
-  private IAdaptor adaptor1 = (IAdaptor)adaptor1Control.getMock();
-  private MockControl adaptor2Control = MockControl.createControl(IAdaptor.class);
-  private IAdaptor adaptor2 = (IAdaptor)adaptor2Control.getMock();
+public class BltAdaptorManagerHandleTest extends EasyMockSupport {
+  private IAdaptor adaptor1 = null;
+  private IAdaptor adaptor2 = null;
   private BltAdaptorManager classUnderTest = null;
-
-  protected void setUp() throws Exception {
-    adaptor1Control = MockControl.createControl(IAdaptor.class);
-    adaptor1 = (IAdaptor)adaptor1Control.getMock();
-    adaptor2Control = MockControl.createControl(IAdaptor.class);
-    adaptor2 = (IAdaptor)adaptor2Control.getMock();
+  
+  @Before
+  public void setUp() throws Exception {
+    adaptor1 = createMock(IAdaptor.class);
+    adaptor2 = createMock(IAdaptor.class);
     Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
     adaptors.put("A1", adaptor1);
     adaptors.put("A2", adaptor2);
@@ -53,185 +55,145 @@ public class BltAdaptorManagerHandleTest extends TestCase {
     classUnderTest.setAdaptors(adaptors);
   }
   
-  protected void tearDown() throws Exception {
-    adaptor1Control = null;
+  @After
+  public void tearDown() throws Exception {
     adaptor1 = null;
-    adaptor2Control = null;
     adaptor2 = null;
     classUnderTest = null;
   }
-  
-  protected void replay() {
-    adaptor1Control.replay();
-    adaptor2Control.replay();
-  }
-  
-  protected void verify() {
-    adaptor1Control.verify();
-    adaptor2Control.verify();
-  }
-  
+
+  @Test
   public void testHandle_MultiRouted() throws Exception {
-    MockControl messageControl = MockControl.createControl(IMultiRoutedMessage.class);
-    IMultiRoutedMessage message = (IMultiRoutedMessage)messageControl.getMock();
+    IMultiRoutedMessage message = createMock(IMultiRoutedMessage.class);
     List<String> destinations = new ArrayList<String>();
     destinations.add("A2");
     IBltMessage msg = new IBltMessage() {};
     
     // Mock setup
-    message.getDestinations();
-    messageControl.setReturnValue(destinations);
-    message.getMessage();
-    messageControl.setReturnValue(msg);
-
+    expect(message.getDestinations()).andReturn(destinations);
+    expect(message.getMessage()).andReturn(msg);
     adaptor2.handle(msg);
 
-    replay();
-    messageControl.replay();
+    replayAll();
     
     classUnderTest.handle(message);
     
-    verify();
-    messageControl.verify();
+    verifyAll();
   }
-  
+
+  @Test
   public void testHandle_MultiRouted_nullMessage() {
-    MockControl messageControl = MockControl.createControl(IMultiRoutedMessage.class);
-    IMultiRoutedMessage message = (IMultiRoutedMessage)messageControl.getMock();
-    List<String> destinations = new ArrayList<String>();
-    destinations.add("A2");
+    IMultiRoutedMessage message = createMock(IMultiRoutedMessage.class);
     
     // Mock setup
-    message.getMessage();
-    messageControl.setReturnValue(null);
-
-    replay();
-    messageControl.replay();
+    expect(message.getMessage()).andReturn(null);
+    
+    replayAll();
     
     classUnderTest.handle(message);
     
-    verify();
-    messageControl.verify();
-
+    verifyAll();
   }
   
+  @Test
   public void testHandle_MultiRouted_noAdaptor() throws Exception {
-    MockControl messageControl = MockControl.createControl(IMultiRoutedMessage.class);
-    IMultiRoutedMessage message = (IMultiRoutedMessage)messageControl.getMock();
+    IMultiRoutedMessage message = createMock(IMultiRoutedMessage.class);
+
     List<String> destinations = new ArrayList<String>();
     destinations.add("A3");
     IBltMessage msg = new IBltMessage() {};
     
     // Mock setup
-    message.getDestinations();
-    messageControl.setReturnValue(destinations);
-    message.getMessage();
-    messageControl.setReturnValue(msg);
+    expect(message.getDestinations()).andReturn(destinations);
+    expect(message.getMessage()).andReturn(msg);
 
-    replay();
-    messageControl.replay();
+    replayAll();
     
     classUnderTest.handle(message);
     
-    verify();
-    messageControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testHandle_MultiRouted_adaptorThrowsException() throws Exception {
-    MockControl messageControl = MockControl.createControl(IMultiRoutedMessage.class);
-    IMultiRoutedMessage message = (IMultiRoutedMessage)messageControl.getMock();
+    IMultiRoutedMessage message = createMock(IMultiRoutedMessage.class);
+
     List<String> destinations = new ArrayList<String>();
     destinations.add("A1");
     destinations.add("A2");
     IBltMessage msg = new IBltMessage() {};
     
     // Mock setup
-    message.getDestinations();
-    messageControl.setReturnValue(destinations);
-    message.getMessage();
-    messageControl.setReturnValue(msg);
+    expect(message.getDestinations()).andReturn(destinations);
+    expect(message.getMessage()).andReturn(msg);
     adaptor1.handle(msg);
     adaptor2.handle(msg);
-    adaptor2Control.setThrowable(new AdaptorException());
+    EasyMock.expectLastCall().andThrow(new AdaptorException());
 
-    replay();
-    messageControl.replay();
+    replayAll();
     
     classUnderTest.handle(message);
     
-    verify();
-    messageControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testHandle() throws Exception {
-    MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
-    IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
+    IRoutedMessage routedMessage = createMock(IRoutedMessage.class);
     
     IBltMessage msg = new IBltMessage() {};
     
-    routedMessage.getDestination();
-    routedMessageControl.setReturnValue("A2");
-    routedMessage.getMessage();
-    routedMessageControl.setReturnValue(msg);
+    expect(routedMessage.getDestination()).andReturn("A2");
+    expect(routedMessage.getMessage()).andReturn(msg);
     adaptor2.handle(msg);
 
-    replay();
-    routedMessageControl.replay();
+    replayAll();
     
     // execute test
     classUnderTest.handle(routedMessage);
     
     // verify
-    verify();
-    routedMessageControl.verify();
+    verifyAll();
   }
   
+  @Test
   public void testHandle_nullMessage() throws Exception {
-    MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
-    IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
-    routedMessage.getDestination();
-    routedMessageControl.setReturnValue("A2");
+    IRoutedMessage routedMessage = createMock(IRoutedMessage.class);
     
-    routedMessage.getMessage();
-    routedMessageControl.setReturnValue(null);
+    expect(routedMessage.getDestination()).andReturn("A2");
+    expect(routedMessage.getMessage()).andReturn(null);
 
-    replay();
-    routedMessageControl.replay();
+    replayAll();
     
     // execute test
     classUnderTest.handle(routedMessage);
     
     // verify
-    verify();
-    routedMessageControl.verify();
+    verifyAll();
   }
-  
-  public void testHandle_noMatchingAdaptor() throws Exception {
-    MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
-    IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
-    routedMessage.getDestination();
-    routedMessageControl.setReturnValue("A3");
 
-    replay();
-    routedMessageControl.replay();
+  @Test
+  public void testHandle_noMatchingAdaptor() throws Exception {
+    IRoutedMessage routedMessage = createMock(IRoutedMessage.class);
+    expect(routedMessage.getDestination()).andReturn("A3");
+
+    replayAll();
     
     // execute test
     try {
       classUnderTest.handle(routedMessage);
-      fail("Expected AdaptorException");
+      Assert.fail("Expected AdaptorException");
     } catch (AdaptorException e) {
       // pass
     }
     
     // verify
-    verify();
-    routedMessageControl.verify();
+    verifyAll();
   }
   
-  
+  @Test
   public void testHandle_withCallback() throws Exception {
-    MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
-    IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
+    IRoutedMessage routedMessage = createMock(IRoutedMessage.class);
     
     IAdaptorCallback cb = new IAdaptorCallback(){
       public void error(IBltMessage message, Throwable t) {}
@@ -241,26 +203,22 @@ public class BltAdaptorManagerHandleTest extends TestCase {
 
     IBltMessage msg = new IBltMessage() {};
     
-    routedMessage.getDestination();
-    routedMessageControl.setReturnValue("A2");
-    routedMessage.getMessage();
-    routedMessageControl.setReturnValue(msg);
+    expect(routedMessage.getDestination()).andReturn("A2");
+    expect(routedMessage.getMessage()).andReturn(msg);
     adaptor2.handle(msg, cb);
 
-    replay();
-    routedMessageControl.replay();
+    replayAll();
     
     // execute test
     classUnderTest.handle(routedMessage, cb);
     
     // verify
-    verify();
-    routedMessageControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testHandle_withCallback_nullMessage() throws Exception {
-    MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
-    IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
+    IRoutedMessage routedMessage = createMock(IRoutedMessage.class);
     
     IAdaptorCallback cb = new IAdaptorCallback(){
       public void error(IBltMessage message, Throwable t) {}
@@ -268,25 +226,21 @@ public class BltAdaptorManagerHandleTest extends TestCase {
       public void timeout(IBltMessage message) {}
     };
 
-    routedMessage.getDestination();
-    routedMessageControl.setReturnValue("A2");
-    routedMessage.getMessage();
-    routedMessageControl.setReturnValue(null);
+    expect(routedMessage.getDestination()).andReturn("A2");
+    expect(routedMessage.getMessage()).andReturn(null);
    
-    replay();
-    routedMessageControl.replay();
+    replayAll();
     
     // execute test
     classUnderTest.handle(routedMessage, cb);
     
     // verify
-    verify();
-    routedMessageControl.verify();
+    verifyAll();
   }
   
+  @Test
   public void testHandle_withCallback_noMatchingAdaptor() throws Exception {
-    MockControl routedMessageControl = MockControl.createControl(IRoutedMessage.class);
-    IRoutedMessage routedMessage = (IRoutedMessage)routedMessageControl.getMock();
+    IRoutedMessage routedMessage = createMock(IRoutedMessage.class);
     
     IAdaptorCallback cb = new IAdaptorCallback(){
       public void error(IBltMessage message, Throwable t) {}
@@ -294,22 +248,19 @@ public class BltAdaptorManagerHandleTest extends TestCase {
       public void timeout(IBltMessage message) {}
     };
 
-    routedMessage.getDestination();
-    routedMessageControl.setReturnValue("A3");
+    expect(routedMessage.getDestination()).andReturn("A3");
 
-    replay();
-    routedMessageControl.replay();
+    replayAll();
     
     // execute test
     try {
       classUnderTest.handle(routedMessage, cb);
-      fail("Expected AdaptorException");
+      Assert.fail("Expected AdaptorException");
     } catch (AdaptorException e) {
       // pass
     }
     
     // verify
-    verify();
-    routedMessageControl.verify();
+    verifyAll();
   }
 }

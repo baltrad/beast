@@ -18,16 +18,23 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
-import java.net.URL;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import java.net.URL;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.TimingOutCallback;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMock;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.beast.adaptor.AdaptorAddressException;
 import eu.baltrad.beast.adaptor.AdaptorException;
@@ -37,33 +44,22 @@ import eu.baltrad.beast.message.IBltMessage;
 /**
  * @author Anders Henja
  */
-public class XmlRpcAdaptorTest extends TestCase {
+public class XmlRpcAdaptorTest extends EasyMockSupport {
   private static interface HandleMethodMock {
     public void handle(IBltMessage message, IAdaptorCallback callback);
   };
   
-  
-  private MockControl generatorControl = null;
   private IXmlRpcCommandGenerator generator = null;
-  private MockControl rpcClientControl = null;
   private XmlRpcClient rpcClient = null;
-  private MockControl timeoutCBControl = null;
   private TimingOutCallback timeoutCB = null;
   private XmlRpcAdaptor classUnderTest = null;
   
   
-  /**
-   * @see junit.framework.TestCase#setUp()
-   */
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    generatorControl = MockControl.createControl(IXmlRpcCommandGenerator.class);
-    generator = (IXmlRpcCommandGenerator)generatorControl.getMock();
-    rpcClientControl = MockClassControl.createControl(XmlRpcClient.class);
-    rpcClient = (XmlRpcClient)rpcClientControl.getMock();
-    timeoutCBControl = MockClassControl.createControl(TimingOutCallback.class);
-    timeoutCB = (TimingOutCallback)timeoutCBControl.getMock();
+  @Before
+  public void setUp() throws Exception {
+    generator = createMock(IXmlRpcCommandGenerator.class);
+    rpcClient = createMock(XmlRpcClient.class);
+    timeoutCB = createMock(TimingOutCallback.class);
     
     classUnderTest = new XmlRpcAdaptor() {
       protected TimingOutCallback createTimeout(long timeout) {
@@ -74,51 +70,25 @@ public class XmlRpcAdaptorTest extends TestCase {
     classUnderTest.setRpcClient(rpcClient);
   }
 
-  /**
-   * @see junit.framework.TestCase#tearDown()
-   */
-  @Override
-  protected void tearDown() throws Exception {
-    // TODO Auto-generated method stub
-    super.tearDown();
-    generatorControl = null;
+  @After
+  public void tearDown() throws Exception {
     generator = null;
-    rpcClientControl = null;
     rpcClient = null;
-    timeoutCBControl = null;
     timeoutCB = null;
     classUnderTest = null;
   }
-
-  /**
-   * replays the mock controllers
-   */
-  protected void replay() {
-    generatorControl.replay();
-    rpcClientControl.replay();
-    timeoutCBControl.replay();
-  }
   
-  /**
-   * verifies the mock controllers
-   */
-  protected void verify() {
-    generatorControl.verify();
-    rpcClientControl.verify();
-    timeoutCBControl.verify();
-  }
-  
+  @Test
   public void testGetType() throws Throwable {
-    replay();
+    replayAll();
     assertEquals(XmlRpcAdaptorConfiguration.TYPE, classUnderTest.getType());
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testHandle() throws Throwable {
-    MockControl handleControl = MockControl.createControl(HandleMethodMock.class);
-    final HandleMethodMock handleMock = (HandleMethodMock)handleControl.getMock();
-    MockControl adaptorCbControl = MockControl.createControl(IAdaptorCallback.class);
-    IAdaptorCallback adaptorCb = (IAdaptorCallback)adaptorCbControl.getMock();
+    final HandleMethodMock handleMock = createMock(HandleMethodMock.class);
+    IAdaptorCallback adaptorCb = createMock(IAdaptorCallback.class);
 
     IBltMessage message = new IBltMessage(){};
     handleMock.handle(message, adaptorCb);
@@ -130,24 +100,19 @@ public class XmlRpcAdaptorTest extends TestCase {
     };
     classUnderTest.setCallback(adaptorCb);
     
-    replay();
-    adaptorCbControl.replay();
-    handleControl.replay();
+    replayAll();
     
     // Execute test
     classUnderTest.handle(message);
 
     // Verify
-    verify();
-    handleControl.verify();
-    adaptorCbControl.verify();
+    verifyAll();
   }
-  
+
+  @Test
   public void testHandle_withCb() throws Throwable {
-    MockControl handleControl = MockControl.createControl(HandleMethodMock.class);
-    final HandleMethodMock handleMock = (HandleMethodMock)handleControl.getMock();
-    MockControl adaptorCbControl = MockControl.createControl(IAdaptorCallback.class);
-    IAdaptorCallback adaptorCb = (IAdaptorCallback)adaptorCbControl.getMock();
+    final HandleMethodMock handleMock = createMock(HandleMethodMock.class);
+    IAdaptorCallback adaptorCb = createMock(IAdaptorCallback.class);
 
     IBltMessage message = new IBltMessage(){};
     
@@ -159,47 +124,40 @@ public class XmlRpcAdaptorTest extends TestCase {
       }
     };
     
-    replay();
-    adaptorCbControl.replay();
-    handleControl.replay();
+    replayAll();
     
     // Execute test
     classUnderTest.handle(message, adaptorCb);
 
     // Verify
-    verify();
-    handleControl.verify();
-    adaptorCbControl.verify();
+    verifyAll();
   }
   
+  @Test
   public void testHandleMessage_withCb_success() throws Throwable {
     IBltMessage message = new IBltMessage(){};
     XmlRpcCommand cmd = new XmlRpcCommand();
-    MockControl callbackControl = MockControl.createControl(IAdaptorCallback.class);
-    IAdaptorCallback callback = (IAdaptorCallback)callbackControl.getMock();
+    IAdaptorCallback callback = createMock(IAdaptorCallback.class);
     Object[] rpcArgs = new Object[]{};
     cmd.setMethod("command");
     cmd.setObjects(rpcArgs);
     
     Integer cbReturnCode = new Integer(0);
-    generator.generate(message);
-    generatorControl.setReturnValue(cmd);
+    expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", rpcArgs, timeoutCB);
-    timeoutCB.waitForResponse();
-    timeoutCBControl.setReturnValue(cbReturnCode);
+    expect(timeoutCB.waitForResponse()).andReturn(cbReturnCode);
     callback.success(message, cbReturnCode);
-    replay();
-    callbackControl.replay();
+    
+    replayAll();
     
     // Execute test
-    //Route route = new Route("XYZ", message);
     classUnderTest.handle(message,callback);
 
     // verify
-    verify();
-    callbackControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testHandleMessage_withCb_success_nullCb() throws Throwable {
     IBltMessage message = new IBltMessage(){};
     XmlRpcCommand cmd = new XmlRpcCommand();
@@ -208,49 +166,42 @@ public class XmlRpcAdaptorTest extends TestCase {
     cmd.setObjects(rpcArgs);
     
     Integer cbReturnCode = new Integer(0);
-    generator.generate(message);
-    generatorControl.setReturnValue(cmd);
+    expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", rpcArgs, timeoutCB);
-    timeoutCB.waitForResponse();
-    timeoutCBControl.setReturnValue(cbReturnCode);
-    replay();
+    expect(timeoutCB.waitForResponse()).andReturn(cbReturnCode);
+    
+    replayAll();
     
     // Execute test
-    //Route route = new Route("XYZ", message);
     classUnderTest.handle(message, null);
 
     // verify
-    verify();
+    verifyAll();
   }
   
-  
+  @Test
   public void testHandleMessage_withCb_timeout() throws Throwable {
     IBltMessage message = new IBltMessage(){};
     XmlRpcCommand cmd = new XmlRpcCommand();
-    MockControl callbackControl = MockControl.createControl(IAdaptorCallback.class);
-    IAdaptorCallback callback = (IAdaptorCallback)callbackControl.getMock();
+    IAdaptorCallback callback = createMock(IAdaptorCallback.class);
     Object[] rpcArgs = new Object[]{};
     cmd.setMethod("command");
     cmd.setObjects(rpcArgs);
 
-    generator.generate(message);
-    generatorControl.setReturnValue(cmd);
+    expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", rpcArgs, timeoutCB);
-    timeoutCB.waitForResponse();
-    timeoutCBControl.setThrowable(new TimingOutCallback.TimeoutException(0, "x"));
+    expect(timeoutCB.waitForResponse()).andThrow(new TimingOutCallback.TimeoutException(0, "x"));
     callback.timeout(message);
-    replay();
-    callbackControl.replay();
+    replayAll();
     
     // Execute test
-    //Route route = new Route("XYZ", message);
     classUnderTest.handle(message,callback);
 
     // verify
-    verify();
-    callbackControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testHandleMessage_withCb_timeout_nullCb() throws Throwable {
     IBltMessage message = new IBltMessage(){};
     XmlRpcCommand cmd = new XmlRpcCommand();
@@ -258,49 +209,44 @@ public class XmlRpcAdaptorTest extends TestCase {
     cmd.setMethod("command");
     cmd.setObjects(rpcArgs);
 
-    generator.generate(message);
-    generatorControl.setReturnValue(cmd);
+    expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", rpcArgs, timeoutCB);
-    timeoutCB.waitForResponse();
-    timeoutCBControl.setThrowable(new TimingOutCallback.TimeoutException(0, "x"));
-    replay();
+    expect(timeoutCB.waitForResponse()).andThrow(new TimingOutCallback.TimeoutException(0, "x"));
+    
+    replayAll();
     
     // Execute test
-    //Route route = new Route("XYZ", message);
     classUnderTest.handle(message, null);
 
     // verify
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testHandleMessage_withCb_error() throws Throwable {
     IBltMessage message = new IBltMessage(){};
     XmlRpcCommand cmd = new XmlRpcCommand();
-    MockControl callbackControl = MockControl.createControl(IAdaptorCallback.class);
-    IAdaptorCallback callback = (IAdaptorCallback)callbackControl.getMock();
+    IAdaptorCallback callback = createMock(IAdaptorCallback.class);
     Object[] rpcArgs = new Object[]{};
     cmd.setMethod("command");
     cmd.setObjects(rpcArgs);
 
-    generator.generate(message);
-    generatorControl.setReturnValue(cmd);
+    expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", rpcArgs, timeoutCB);
-    timeoutCB.waitForResponse();
     Throwable t = new NullPointerException();
-    timeoutCBControl.setThrowable(t);
+    expect(timeoutCB.waitForResponse()).andThrow(t);
     callback.error(message, t);
-    replay();
-    callbackControl.replay();
+    
+    replayAll();
     
     // Execute test
-    //Route route = new Route("XYZ", message);
     classUnderTest.handle(message,callback);
 
     // verify
-    verify();
-    callbackControl.verify();
+    verifyAll();
   }
 
+  @Test
   public void testHandleMessage_withCb_error_nullCb() throws Throwable {
     IBltMessage message = new IBltMessage(){};
     XmlRpcCommand cmd = new XmlRpcCommand();
@@ -308,41 +254,36 @@ public class XmlRpcAdaptorTest extends TestCase {
     cmd.setMethod("command");
     cmd.setObjects(rpcArgs);
 
-    generator.generate(message);
-    generatorControl.setReturnValue(cmd);
+    expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", rpcArgs, timeoutCB);
-    timeoutCB.waitForResponse();
     Throwable t = new NullPointerException();
-    timeoutCBControl.setThrowable(t);
-    replay();
+    expect(timeoutCB.waitForResponse()).andThrow(t);
+
+    replayAll();
     
     // Execute test
-    //Route route = new Route("XYZ", message);
     classUnderTest.handle(message, null);
 
     // verify
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testHandleMessage_withCb_executeThrowsXmlRpcException() throws Exception {
     IBltMessage message = new IBltMessage(){};
     XmlRpcCommand cmd = new XmlRpcCommand();
-    MockControl callbackControl = MockControl.createControl(IAdaptorCallback.class);
-    IAdaptorCallback callback = (IAdaptorCallback)callbackControl.getMock();
+    IAdaptorCallback callback = createMock(IAdaptorCallback.class);
     Object[] args = new Object[]{};
     cmd.setMethod("command");
     cmd.setObjects(args);
     
-    generator.generate(message);
-    generatorControl.setReturnValue(cmd);
+    expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", args, timeoutCB);
-    rpcClientControl.setThrowable(new XmlRpcException("xys"));
+    EasyMock.expectLastCall().andThrow(new XmlRpcException("xys"));
 
-    replay();
-    callbackControl.replay();
+    replayAll();
     
     // Execute test
-    //Route route = new Route("XYZ", message);
     try {
       classUnderTest.handle(message, callback);
       fail("Expected AdaptorException");
@@ -351,21 +292,19 @@ public class XmlRpcAdaptorTest extends TestCase {
     }
 
     // verify
-    verify();
-    callbackControl.verify();
+    verifyAll();
   }  
   
+  @Test
   public void testSetUrl() throws Exception {
-    MockControl xmlRpcConfigControl = MockClassControl.createControl(XmlRpcClientConfigImpl.class);
-    final XmlRpcClientConfigImpl xmlRpcConfig = (XmlRpcClientConfigImpl)xmlRpcConfigControl.getMock();
+    final XmlRpcClientConfigImpl xmlRpcConfig = createMock(XmlRpcClientConfigImpl.class);
     final URL url = new URL("http://localhost");
     
     XmlRpcClient client = new XmlRpcClient();
     
     xmlRpcConfig.setServerURL(url);
     
-    xmlRpcConfigControl.replay();
-    
+    replayAll();
     
     classUnderTest = new XmlRpcAdaptor() {
       protected XmlRpcClientConfigImpl createConfig() {
@@ -382,19 +321,18 @@ public class XmlRpcAdaptorTest extends TestCase {
     XmlRpcClientConfigImpl result = (XmlRpcClientConfigImpl)client.getConfig();
     
     // verify
-    xmlRpcConfigControl.verify();
+    verifyAll();
     assertSame(result, xmlRpcConfig);
     assertEquals("http://localhost", classUnderTest.getUrl());
   }
   
+  @Test
   public void testSetUrl_malformed() throws Exception {
-    MockControl xmlRpcConfigControl = MockClassControl.createControl(XmlRpcClientConfigImpl.class);
-    final XmlRpcClientConfigImpl xmlRpcConfig = (XmlRpcClientConfigImpl)xmlRpcConfigControl.getMock();
+    final XmlRpcClientConfigImpl xmlRpcConfig = createMock(XmlRpcClientConfigImpl.class);
     
     XmlRpcClient client = new XmlRpcClient();
     
-    xmlRpcConfigControl.replay();
-    
+    replayAll();
     
     classUnderTest = new XmlRpcAdaptor() {
       protected XmlRpcClientConfigImpl createConfig() {
@@ -412,9 +350,10 @@ public class XmlRpcAdaptorTest extends TestCase {
     }
     
     // verify
-    xmlRpcConfigControl.verify();
+    verifyAll();
   }
   
+  @Test
   public void testCreateUrl() throws Exception {
     String[] LEGAL_URLS = {"http://localhost", "http://localhost:1010",
         "http://localhost/something", "http://localhost:1010/something"};
@@ -424,6 +363,7 @@ public class XmlRpcAdaptorTest extends TestCase {
     }
   }
   
+  @Test
   public void testCreateUrl_illegal() throws Exception {
     String[] ILLEGAL_URLS = {"hXtp://localhost", "http",
         "localhost/something", "1234"};

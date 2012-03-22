@@ -18,12 +18,15 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Anders Henja
  */
-public class XmlRpcAdaptorConfigurationTest extends TestCase {
+public class XmlRpcAdaptorConfigurationTest {
+  @Test
   public void testConstructor() throws Exception {
     XmlRpcAdaptorConfiguration classUnderTest = new XmlRpcAdaptorConfiguration();
     assertEquals(null, classUnderTest.getName());
@@ -31,6 +34,7 @@ public class XmlRpcAdaptorConfigurationTest extends TestCase {
     assertEquals(5000, classUnderTest.getTimeout());
   }
   
+  @Test
   public void testConstructor_2() throws Exception {
     XmlRpcAdaptorConfiguration classUnderTest = new XmlRpcAdaptorConfiguration("NAME");
     assertEquals("NAME", classUnderTest.getName());
@@ -38,18 +42,21 @@ public class XmlRpcAdaptorConfigurationTest extends TestCase {
     assertEquals(5000, classUnderTest.getTimeout());
   }
 
+  @Test
   public void testName() throws Exception {
     XmlRpcAdaptorConfiguration classUnderTest = new XmlRpcAdaptorConfiguration();
     classUnderTest.setName("NAME");
     assertEquals("NAME", classUnderTest.getName());
   }
 
+  @Test
   public void testURL() throws Exception {
     XmlRpcAdaptorConfiguration classUnderTest = new XmlRpcAdaptorConfiguration();
     classUnderTest.setURL("http://something");
     assertEquals("http://something", classUnderTest.getURL());
   }
 
+  @Test
   public void testTimeout() throws Exception {
     XmlRpcAdaptorConfiguration classUnderTest = new XmlRpcAdaptorConfiguration();
     classUnderTest.setTimeout(6000);

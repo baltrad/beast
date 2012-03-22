@@ -18,13 +18,20 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.bdb;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.anyObject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.FileCatalog;
@@ -32,23 +39,16 @@ import eu.baltrad.bdb.db.Database;
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.db.FileQuery;
 import eu.baltrad.bdb.db.FileResult;
-
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 
-public class BdbTrimCountRuleTest extends TestCase {
+public class BdbTrimCountRuleTest extends EasyMockSupport {
   private BdbTrimCountRule classUnderTest = null;
-  private MockControl methodsControl = null;
   private BdbTrimCountRuleMethods methods = null;
-  private MockControl dbControl = null;
   private Database db = null;
-  private MockControl catalogControl = null;
   private FileCatalog catalog = null;
-  private MockControl queryControl = null;
   private FileQuery query = null;
-  private MockControl resultControl = null;
   private FileResult result = null;
-  private MockControl entryControl = null;
   private FileEntry entry = null;
 
   private static interface BdbTrimCountRuleMethods {
@@ -57,51 +57,31 @@ public class BdbTrimCountRuleTest extends TestCase {
     public int getFileCount();
   }
 
+  @Before
   public void setUp() throws Exception {
     catalog = null;
-    methodsControl = MockControl.createControl(BdbTrimCountRuleMethods.class);
-    methods = (BdbTrimCountRuleMethods)methodsControl.getMock();
+    methods = createMock(BdbTrimCountRuleMethods.class);
+    db = createMock(Database.class);
+    catalog = createMock(FileCatalog.class);
+    query = createMock(FileQuery.class);
+    result = createMock(FileResult.class);
+    entry = createMock(FileEntry.class);
     classUnderTest = new BdbTrimCountRule();
-    dbControl = MockClassControl.createControl(Database.class);
-    db = (Database)dbControl.getMock();
-    catalogControl = MockControl.createControl(FileCatalog.class);
-    catalog = (FileCatalog)catalogControl.getMock();
-    queryControl = MockClassControl.createControl(FileQuery.class);
-    query = (FileQuery)queryControl.getMock();
-    resultControl = MockClassControl.createControl(FileResult.class);
-    result = (FileResult)resultControl.getMock();
-    entryControl = MockClassControl.createControl(FileEntry.class);
-    entry = (FileEntry)entryControl.getMock();
   }
 
+  @After
   public void tearDown() throws Exception {
     classUnderTest = null;
   }
 
-  protected void replay() {
-    methodsControl.replay();
-    dbControl.replay();
-    catalogControl.replay();
-    queryControl.replay();
-    resultControl.replay();
-    entryControl.replay();
-  }
-
-  protected void verify() {
-    methodsControl.verify();
-    dbControl.verify();
-    catalogControl.verify();
-    queryControl.verify();
-    resultControl.verify();
-    entryControl.verify();
-  }
-  
+  @Test
   public void testGetProperties() {
     classUnderTest.setFileCountLimit(1);
     Map<String, String> props = classUnderTest.getProperties();
     assertEquals("1", props.get("fileCountLimit"));
   }
 
+  @Test
   public void testSetProperties() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("fileCountLimit", "1");
@@ -109,6 +89,7 @@ public class BdbTrimCountRuleTest extends TestCase {
     assertEquals(1, classUnderTest.getFileCountLimit());
   }
 
+  @Test
   public void testSetProperties_invalidType() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("fileCountLimit", "invalid");
@@ -116,31 +97,37 @@ public class BdbTrimCountRuleTest extends TestCase {
     assertEquals(0, classUnderTest.getFileCountLimit());
   }
 
+  @Test
   public void testSetProperties_missingProps() {
     Map<String, String> props = new HashMap<String, String>();
     classUnderTest.setProperties(props);
     assertEquals(0, classUnderTest.getFileCountLimit());
   }
 
+  @Test
   public void testHandle_noLimitSet() {
     IBltMessage msg = new BltTriggerJobMessage();
 
-    replay();
+    replayAll();
 
     classUnderTest.handle(msg);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testHandle_wrongMessageType() {
     classUnderTest.setFileCountLimit(1);
     IBltMessage msg = new IBltMessage() {};
 
-    replay();
+    replayAll();
 
     classUnderTest.handle(msg);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testHandle() {
     classUnderTest = new BdbTrimCountRule() {
       protected void execute() {
@@ -152,12 +139,14 @@ public class BdbTrimCountRuleTest extends TestCase {
     IBltMessage msg = new BltTriggerJobMessage();
 
     methods.execute();
-    replay();
+    replayAll();
 
     classUnderTest.handle(msg);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testExecute() {
     classUnderTest = new BdbTrimCountRule() {
       protected FileQuery getExcessiveFileQuery() {
@@ -167,29 +156,24 @@ public class BdbTrimCountRuleTest extends TestCase {
     classUnderTest.setFileCatalog(catalog);
     classUnderTest.setFileCountLimit(1);
 
-    methods.getExcessiveFileQuery();
-    methodsControl.setReturnValue(query);
-    catalog.getDatabase();
-    catalogControl.setReturnValue(db);
-    db.execute(query);
-    dbControl.setReturnValue(result);
-    result.size();
-    resultControl.setReturnValue(1);
-    result.next();
-    resultControl.setReturnValue(true);
-    result.getFileEntry();
-    resultControl.setReturnValue(entry);
+    expect(methods.getExcessiveFileQuery()).andReturn(query);
+    expect(catalog.getDatabase()).andReturn(db);
+    expect(db.execute(query)).andReturn(result);
+    expect(result.size()).andReturn(1);
+    expect(result.next()).andReturn(true);
+    expect(result.getFileEntry()).andReturn(entry);
     catalog.remove(entry);
-    result.next();
-    resultControl.setReturnValue(false);
+    expect(result.next()).andReturn(false);
     result.close();
-    replay();
+    
+    replayAll();
   
     classUnderTest.execute();
   
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testExecuteNullQuery() {
     classUnderTest = new BdbTrimCountRule() {
       protected FileQuery getExcessiveFileQuery() {
@@ -199,15 +183,16 @@ public class BdbTrimCountRuleTest extends TestCase {
     classUnderTest.setFileCatalog(catalog);
     classUnderTest.setFileCountLimit(1);
 
-    methods.getExcessiveFileQuery();
-    methodsControl.setReturnValue(null);
-    replay();
+    expect(methods.getExcessiveFileQuery()).andReturn(null);
+
+    replayAll();
     
     classUnderTest.execute();
 
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testGetExcessiveFileQuery() {
     classUnderTest = new BdbTrimCountRule() {
       protected int getFileCount() {
@@ -217,17 +202,18 @@ public class BdbTrimCountRuleTest extends TestCase {
     classUnderTest.setFileCountLimit(100);
     classUnderTest.setFileCatalog(catalog);
     
-    methods.getFileCount();
-    methodsControl.setReturnValue(110);
-    replay();
+    expect(methods.getFileCount()).andReturn(110);
+
+    replayAll();
 
     FileQuery q = classUnderTest.getExcessiveFileQuery();
-    verify();
+    
+    verifyAll();
     assertNotNull(q);
     assertEquals(new Integer(10), q.getLimit());
-    // XXX: test for filter, order
   }
 
+  @Test
   public void testGetExcessiveFileQueryLimitNotMet() {
     classUnderTest = new BdbTrimCountRule() {
       protected int getFileCount() {
@@ -237,41 +223,43 @@ public class BdbTrimCountRuleTest extends TestCase {
     classUnderTest.setFileCountLimit(100);
     classUnderTest.setFileCatalog(catalog);
 
-    methods.getFileCount();
-    methodsControl.setReturnValue(100);
-    replay();
+    expect(methods.getFileCount()).andReturn(100);
+
+    replayAll();
     
     FileQuery q = classUnderTest.getExcessiveFileQuery();
-    verify();
+    
+    verifyAll();
     assertNull(q);
   }
 
+  @Test
   public void testGetFileCount() {
     classUnderTest.setFileCatalog(catalog);
 
 
-    catalog.getDatabase();
-    catalogControl.setReturnValue(db);
-    db.execute(new FileQuery());
-    dbControl.setMatcher(MockControl.ALWAYS_MATCHER);
-    dbControl.setReturnValue(result); 
-    result.size();
-    resultControl.setReturnValue(10);
+    expect(catalog.getDatabase()).andReturn(db);
+    expect(db.execute(anyObject(FileQuery.class))).andReturn(result);
+    expect(result.size()).andReturn(10);
     result.close();
-    replay();
+    
+    replayAll();
 
     int result = classUnderTest.getFileCount();
-    verify();
+    
+    verifyAll();
 
     assertEquals(10, result);
   }
   
+  @Test
   public void testAfterPropertiesSet() {
     classUnderTest = new BdbTrimCountRule();
     classUnderTest.setFileCatalog(catalog);
     classUnderTest.afterPropertiesSet();
   }
   
+  @Test
   public void testAfterPropertiesSet_missingCatalog() {
     classUnderTest = new BdbTrimCountRule();
     try {

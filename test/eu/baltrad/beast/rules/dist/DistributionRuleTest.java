@@ -18,103 +18,71 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.dist;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import junit.framework.TestCase;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
-
-import eu.baltrad.beast.db.IFilter;
-import eu.baltrad.beast.message.mo.BltDataMessage;
-import eu.baltrad.beast.net.FileUploader;
-
-import eu.baltrad.bdb.expr.Expression;
-import eu.baltrad.bdb.expr.BooleanExpression;
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.expr.BooleanExpression;
+import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.bdb.oh5.Metadata;
 import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.FileEntryNamer;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.message.mo.BltDataMessage;
+import eu.baltrad.beast.net.FileUploader;
 
-public class DistributionRuleTest extends TestCase {
+public class DistributionRuleTest extends EasyMockSupport {
   private static interface DistributionRuleMethods {
     boolean match(FileEntry entry);
     void upload(FileEntry entry);
   };
 
-  private MockControl methodsControl;
   private DistributionRuleMethods methods;
-  private MockControl entryControl;
   private FileEntry entry;
-  private MockControl metadataControl;
   private Metadata metadata;
-  private MockControl matcherControl;
   private MetadataMatcher matcher;
-  private MockControl namerControl;
   private FileEntryNamer namer;
-  private MockControl localStorageControl;
   private LocalStorage localStorage;
-  private MockControl filterControl;
   private IFilter filter;
-  private MockControl uploaderControl;
   private FileUploader uploader;
 
   private DistributionRule classUnderTest;
 
+  @Before
   public void setUp() {
-    methodsControl = MockControl.createControl(DistributionRuleMethods.class);
-    methods = (DistributionRuleMethods)methodsControl.getMock();
-    entryControl = MockControl.createControl(FileEntry.class);
-    entry = (FileEntry)entryControl.getMock();
-    metadataControl = MockClassControl.createControl(Metadata.class);
-    metadata = (Metadata)metadataControl.getMock();
-    matcherControl = MockClassControl.createControl(MetadataMatcher.class);
-    matcher = (MetadataMatcher)matcherControl.getMock();
-    namerControl = MockControl.createControl(FileEntryNamer.class);
-    namer = (FileEntryNamer)namerControl.getMock();
-    localStorageControl = MockControl.createControl(LocalStorage.class);
-    localStorage = (LocalStorage)localStorageControl.getMock();
-    filterControl = MockControl.createControl(IFilter.class);
-    filter = (IFilter)filterControl.getMock();
-    uploaderControl = MockClassControl.createControl(FileUploader.class);
-    uploader = (FileUploader)uploaderControl.getMock();
+    methods = createMock(DistributionRuleMethods.class);
+    entry = createMock(FileEntry.class);
+    metadata = createMock(Metadata.class);
+    matcher = createMock(MetadataMatcher.class);
+    namer = createMock(FileEntryNamer.class);
+    localStorage = createMock(LocalStorage.class);
+    filter = createMock(IFilter.class);
+    uploader = createMock(FileUploader.class);
     classUnderTest = new DistributionRule(localStorage);
     classUnderTest.setMatcher(matcher);
     classUnderTest.setFilter(filter);
     classUnderTest.setNamer(namer);
   }
 
+  @After
   public void tearDown() {
-
   }
 
-  protected void replay() {
-    methodsControl.replay();
-    entryControl.replay();
-    matcherControl.replay();
-    namerControl.replay();
-    localStorageControl.replay();
-    filterControl.replay();
-    metadataControl.replay();
-    uploaderControl.replay();
-  }
-
-  protected void verify() {
-    methodsControl.verify();
-    entryControl.verify();
-    matcherControl.verify();
-    namerControl.verify();
-    localStorageControl.verify();
-    filterControl.verify();
-    metadataControl.verify();
-    uploaderControl.verify();
-  }
-
+  @Test
   public void testHandle_match() {
     BltDataMessage msg = new BltDataMessage();
     msg.setFileEntry(entry);
@@ -131,15 +99,17 @@ public class DistributionRuleTest extends TestCase {
       }
     };
     
-    methods.match(entry);
-    methodsControl.setReturnValue(true);
+    expect(methods.match(entry)).andReturn(true);
     methods.upload(entry);
 
-    replay();
+    replayAll();
+    
     classUnderTest.handle(msg);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testHandle_noMatch() {
     BltDataMessage msg = new BltDataMessage();
     msg.setFileEntry(entry);
@@ -156,45 +126,46 @@ public class DistributionRuleTest extends TestCase {
       }
     };
     
-    methods.match(entry);
-    methodsControl.setReturnValue(false);
+    expect(methods.match(entry)).andReturn(false);
 
-    replay();
+    replayAll();
+    
     classUnderTest.handle(msg);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testMatch() {
     Expression expression = new BooleanExpression(true);
 
-    filter.getExpression();
-    filterControl.setReturnValue(expression);
-    entry.getMetadata();
-    entryControl.setReturnValue(metadata);
-    matcher.match(metadata, expression);
-    matcherControl.setReturnValue(true);
-    replay();
+    expect(filter.getExpression()).andReturn(expression);
+    expect(entry.getMetadata()).andReturn(metadata);
+    expect(matcher.match(metadata, expression)).andReturn(true);
+    replayAll();
 
     assertTrue(classUnderTest.match(entry));
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload() throws IOException {
     File file = new File("/path/to/file");
     classUnderTest.setUploader(uploader);
     classUnderTest.setDestination("ftp://u:p@h/d");
 
-    localStorage.store(entry);
-    localStorageControl.setReturnValue(file);
-    namer.name(entry);
-    namerControl.setReturnValue("entryName");
-    uploader.appendPath(URI.create("ftp://u:p@h/d"), "entryName");
-    uploaderControl.setReturnValue(URI.create("ftp://u:p@h/d/entryName"));
+    expect(localStorage.store(entry)).andReturn(file);
+    expect(namer.name(entry)).andReturn("entryName");
+    expect(uploader.appendPath(URI.create("ftp://u:p@h/d"), "entryName"))
+      .andReturn(URI.create("ftp://u:p@h/d/entryName"));
     uploader.upload(file, URI.create("ftp://u:p@h/d/entryName"));
-    replay();
+    
+    replayAll();
 
     classUnderTest.upload(entry);
-    verify();
+    
+    verifyAll();
   }
 
   public void testGetProperties() {

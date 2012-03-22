@@ -19,36 +19,34 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertSame;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.easymock.EasyMockSupport;
+import org.junit.Before;
+import org.junit.Test;
 
-import org.easymock.MockControl;
-
-public class CoreFilterManagerTest extends TestCase {
+public class CoreFilterManagerTest extends EasyMockSupport {
   private static interface IMethods {
     Map<String, Object> sqlSelectFilter(int id);
     int sqlInsertFilter(String filterType);
     void sqlDeleteFilter(int id);
   };
 
-  private MockControl methodsControl;
   private IMethods methods;
-  private MockControl filterManagerControl;
   private IFilterManager filterManager;
-  private MockControl filterControl;
   private IFilter filter;
   private Map<String, IFilterManager> filterManagerMap;
   private CoreFilterManager classUnderTest;
 
+  @Before
   public void setUp() throws Exception {
-    methodsControl = MockControl.createControl(IMethods.class);
-    methods = (IMethods)methodsControl.getMock();
-    filterManagerControl = MockControl.createControl(IFilterManager.class);
-    filterManager = (IFilterManager)filterManagerControl.getMock();
-    filterControl = MockControl.createControl(IFilter.class);
-    filter = (IFilter)filterControl.getMock();
+    methods = createMock(IMethods.class);
+    filterManager = createMock(IFilterManager.class);
+    filter = createMock(IFilter.class);
 
     filterManagerMap = new HashMap<String, IFilterManager>();
     filterManagerMap.put("mock", filterManager);
@@ -57,72 +55,56 @@ public class CoreFilterManagerTest extends TestCase {
       public Map<String, Object> sqlSelectFilter(int id) {
         return methods.sqlSelectFilter(id);
       }
-
       public int sqlInsertFilter(String filterType) {
         return methods.sqlInsertFilter(filterType);
       }
-
       public void sqlDeleteFilter(int id) {
         methods.sqlDeleteFilter(id);
       }
     };
     classUnderTest.setSubManagers(filterManagerMap);
- 
   }
 
-  private void replay() {
-    methodsControl.replay();
-    filterManagerControl.replay();
-    filterControl.replay();
-  }
-
-  private void verify() {
-    methodsControl.verify();
-    filterManagerControl.verify();
-    filterControl.verify();
-  }
-
-  public void testStore() {
-    
-  }
-
+  @Test
   public void testLoad() {
     Map<String, Object> values = new HashMap<String, Object>();
     values.put("type", "mock");
     
-    methods.sqlSelectFilter(1);
-    methodsControl.setReturnValue(values);
-    filterManager.load(1);
-    filterManagerControl.setReturnValue(filter);
+    expect(methods.sqlSelectFilter(1)).andReturn(values);
+    expect(filterManager.load(1)).andReturn(filter);
     filter.setId(1);
-    replay();
+    
+    replayAll();
 
     IFilter f = classUnderTest.load(1);
-    verify();
+    verifyAll();
     assertSame(f, filter);
   }
 
+  @Test
   public void testUpdate() {
-    filter.getType();
-    filterControl.setReturnValue("mock");
+    expect(filter.getType()).andReturn("mock");
     filterManager.update(filter);
-    replay();
+    
+    replayAll();
     
     classUnderTest.update(filter);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testRemove() {
-    filter.getType();
-    filterControl.setReturnValue("mock", MockControl.ONE_OR_MORE);
-    filter.getId();
-    filterControl.setReturnValue(new Integer(1), MockControl.ONE_OR_MORE);
+    expect(filter.getType()).andReturn("mock");
+    expect(filter.getId()).andReturn(new Integer(1));
     filterManager.remove(filter);
     methods.sqlDeleteFilter(1);
     filter.setId(null);
-    replay();
+    
+    replayAll();
     
     classUnderTest.remove(filter);
-    verify();
+    
+    verifyAll();
   }
 }

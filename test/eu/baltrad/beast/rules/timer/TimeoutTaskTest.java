@@ -20,44 +20,34 @@ package eu.baltrad.beast.rules.timer;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.IBltMessage;
 
 /**
  * @author Anders Henja
  */
-public class TimeoutTaskTest extends TestCase {
-  private MockControl listenerControl = null;
+public class TimeoutTaskTest extends EasyMockSupport {
   private ITimeoutTaskListener listener = null;
-  
   private TimeoutTask classUnderTest = null;
   
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
-    listenerControl = MockControl.createControl(ITimeoutTaskListener.class);
-    listener = (ITimeoutTaskListener)listenerControl.getMock();
+    listener = createMock(ITimeoutTaskListener.class);
     classUnderTest = new TimeoutTask();
     classUnderTest.setListener(listener);
   }
-  
+
+  @After
   public void tearDown() throws Exception {
-    listenerControl = null;
     listener = null;
     classUnderTest = null;
-    super.tearDown();
   }
-  
-  protected void replay() {
-    listenerControl.replay();
-  }
-  
-  protected void verify() {
-    listenerControl.verify();
-  }
-  
+
+  @Test
   public void testRun() {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
@@ -67,11 +57,14 @@ public class TimeoutTaskTest extends TestCase {
     classUnderTest.setRule(rule);
     listener.timeoutNotification(10, rule, null);
     
-    replay();
+    replayAll();
+    
     classUnderTest.run();
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testCancel() {
     ITimeoutRule rule = new ITimeoutRule() {
       public IBltMessage timeout(long id, int why, Object data) {return null;}
@@ -80,8 +73,11 @@ public class TimeoutTaskTest extends TestCase {
     classUnderTest.setId(10);
     classUnderTest.setRule(rule);
     listener.cancelNotification(10, rule, null);
-    replay();
+    
+    replayAll();
+    
     classUnderTest.cancel();
-    verify();
+    
+    verifyAll();
   }  
 }

@@ -19,24 +19,33 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.scheduler;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
  * @author Anders Henja
  * @date Jan 11, 2011
  */
-public class CronEntryFactoryTest extends TestCase {
+public class CronEntryFactoryTest {
   private CronEntryFactory classUnderTest = null;
-  
+
+  @Before
   public void setUp() throws Exception {
     classUnderTest = new CronEntryFactory();
   }
   
+  @After
   public void tearDown() throws Exception {
     classUnderTest = null;
   }
   
+  @Test
   public void testCreateExpressionAndJob() throws Exception {
     String[] expressions = {"* * * * * ?", 
         "0 */10 * ? * *",
@@ -52,6 +61,7 @@ public class CronEntryFactoryTest extends TestCase {
     }
   }
 
+  @Test
   public void testCreateExpressionAndJob_badExpressions() throws Exception {
     String[] expressions = {"* * * * * *", 
         "60 * * * * ?",
@@ -70,12 +80,14 @@ public class CronEntryFactoryTest extends TestCase {
     }
   }
 
+  @Test
   public void testCreateSMHDMDJ() throws Exception {
     CronEntry result = classUnderTest.create("49", "59", "12", "3", "1", "?", "MyJob");
     assertEquals("49 59 12 3 1 ?", result.getExpression());
     assertEquals("MyJob", result.getName());
   }
 
+  @Test
   public void testCreateSMHDMDJI() throws Exception {
     CronEntry result = classUnderTest.create("49", "59", "12", "3", "1", "?", "MyJob", 10);
     assertEquals("49 59 12 3 1 ?", result.getExpression());
@@ -83,26 +95,29 @@ public class CronEntryFactoryTest extends TestCase {
     assertEquals(10, result.getId());
   }
 
+  @Test
   public void testCreateMHDMDJ() throws Exception {
     CronEntry result = classUnderTest.create("59", "12", "3", "1", "?", "MyJob");
     assertEquals("0 59 12 3 1 ?", result.getExpression());
     assertEquals("MyJob", result.getName());
   }
 
+  @Test
   public void testCreateMHDMDJI() throws Exception {
     CronEntry result = classUnderTest.create("59", "12", "3", "1", "?", "MyJob", 11);
     assertEquals("0 59 12 3 1 ?", result.getExpression());
     assertEquals("MyJob", result.getName());
     assertEquals(11, result.getId());
   }
-
-  
+ 
+  @Test
   public void testCreateHDMDJ() throws Exception {
     CronEntry result = classUnderTest.create("12", "3", "1", "?", "MyJob");
     assertEquals("0 0 12 3 1 ?", result.getExpression());
     assertEquals("MyJob", result.getName());
   }
 
+  @Test
   public void testCreateHDMDJI() throws Exception {
     CronEntry result = classUnderTest.create("12", "3", "1", "?", "MyJob", 12);
     assertEquals("0 0 12 3 1 ?", result.getExpression());
@@ -110,12 +125,14 @@ public class CronEntryFactoryTest extends TestCase {
     assertEquals(12, result.getId());
   }
   
+  @Test
   public void testCreateDMDJ() throws Exception {
     CronEntry result = classUnderTest.create("3", "1", "?", "MyJob");
     assertEquals("0 0 0 3 1 ?", result.getExpression());
     assertEquals("MyJob", result.getName());
   }
   
+  @Test
   public void testCreateDMDJI() throws Exception {
     CronEntry result = classUnderTest.create("3", "1", "?", "MyJob", 13);
     assertEquals("0 0 0 3 1 ?", result.getExpression());

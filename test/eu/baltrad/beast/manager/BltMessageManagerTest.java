@@ -18,13 +18,16 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.manager;
 
+import static org.easymock.EasyMock.expect;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.message.IBltMessage;
@@ -32,55 +35,36 @@ import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.router.IRouter;
 
-
 /**
  * @author Anders Henja
  */
-public class BltMessageManagerTest extends TestCase {
-  private MockControl routerControl = null;
+public class BltMessageManagerTest extends EasyMockSupport {
   private IRouter router = null;
-  private MockControl managerControl = null;
   private IBltAdaptorManager manager = null;
-  private MockControl executorControl = null;
   private ExecutorService executor = null;
   private BltMessageManager classUnderTest = null;
-  
-  protected void setUp() throws Exception {
-    routerControl = MockControl.createControl(IRouter.class);
-    router = (IRouter)routerControl.getMock();
-    managerControl = MockControl.createControl(IBltAdaptorManager.class);
-    manager = (IBltAdaptorManager)managerControl.getMock();
-    executorControl = MockControl.createControl(ExecutorService.class);
-    executor = (ExecutorService)executorControl.getMock();
+
+  @Before
+  public void setUp() throws Exception {
+    router = createMock(IRouter.class);
+    manager = createMock(IBltAdaptorManager.class);
+    executor = createMock(ExecutorService.class);
     
     classUnderTest = new BltMessageManager();
     classUnderTest.setRouter(router);
     classUnderTest.setManager(manager);
     classUnderTest.setExecutor(executor);
   }
-  
-  protected void tearDown() throws Exception {
-    routerControl = null;
+
+  @After
+  public void tearDown() throws Exception {
     router = null;
-    managerControl = null;
     manager = null;
-    executorControl = null;
     executor = null;
     classUnderTest = null;
   }
-  
-  protected void replay() {
-    routerControl.replay();
-    managerControl.replay();
-    executorControl.replay();
-  }
-  
-  protected void verify() {
-    routerControl.verify();
-    managerControl.verify();
-    executorControl.verify();
-  }
-  
+ 
+  @Test
   public void testManage() throws Exception {
     IBltMessage message = new IBltMessage() {};
     final Runnable r = new Runnable() {
@@ -98,13 +82,14 @@ public class BltMessageManagerTest extends TestCase {
     };
     classUnderTest.setExecutor(executor);
     
-    replay();
+    replayAll();
     
     classUnderTest.manage(message);
     
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testCreateRunnable() throws Exception {
     IBltMessage message = new IBltMessage() {};
     List<IMultiRoutedMessage> messages = new ArrayList<IMultiRoutedMessage>();
@@ -113,16 +98,15 @@ public class BltMessageManagerTest extends TestCase {
     messages.add(m1);
     messages.add(m2);
     
-    router.getMultiRoutedMessages(message);
-    routerControl.setReturnValue(messages);
+    expect(router.getMultiRoutedMessages(message)).andReturn(messages);
     manager.handle(m1);
     manager.handle(m2);
     
-    replay();
+    replayAll();
     
     Runnable r = classUnderTest.createRunnable(message);
     r.run();
     
-    verify();
+    verifyAll();
   }
 }

@@ -19,7 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.db;
 
 import java.io.FileInputStream;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,14 +28,13 @@ import junit.framework.TestCase;
 
 import org.springframework.context.support.AbstractApplicationContext;
 
-import eu.baltrad.bdb.db.Database;
 import eu.baltrad.bdb.db.AttributeQuery;
 import eu.baltrad.bdb.db.AttributeResult;
+import eu.baltrad.bdb.db.Database;
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.db.rest.RestfulDatabase;
 import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.bdb.expr.ExpressionFactory;
-
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 
 /**
@@ -47,7 +45,6 @@ public class BaltradDBITest extends TestCase {
   private AbstractApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   private Database db = null;
-  private String baltradDbPath = null;
   private Map<String, String> uuidMap = null;
   
   private static String[] FIXTURES = {
@@ -73,7 +70,6 @@ public class BaltradDBITest extends TestCase {
   public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("helper");
-    baltradDbPath = helper.getBaltradDbPth();
     db = new RestfulDatabase(helper.getBaltradDbUri());
     uuidMap = new HashMap<String, String>();
     helper.purgeBaltradDB();
@@ -91,7 +87,6 @@ public class BaltradDBITest extends TestCase {
     db.close();
     helper = null;
     uuidMap = null;
-    baltradDbPath = null;
     context.close();
   }
   

@@ -18,25 +18,29 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message.mo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.MessageParserException;
-
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  */
-public class BltGenerateMessageTest extends TestCase {
+public class BltGenerateMessageTest {
+  @Test
   public void testSetAlgorithm() {
     BltGenerateMessage classUnderTest = new BltGenerateMessage();
     assertEquals(null, classUnderTest.getAlgorithm());
     classUnderTest.setAlgorithm("a.b");
     assertEquals("a.b", classUnderTest.getAlgorithm());
   }
-  
+
+  @Test
   public void testSetFiles() {
     BltGenerateMessage classUnderTest = new BltGenerateMessage();
     String[] result = classUnderTest.getFiles();
@@ -48,6 +52,7 @@ public class BltGenerateMessageTest extends TestCase {
     assertEquals("b", result[1]);
   }
 
+  @Test
   public void testSetFiles_null() {
     BltGenerateMessage classUnderTest = new BltGenerateMessage();
     try {
@@ -58,6 +63,7 @@ public class BltGenerateMessageTest extends TestCase {
     }
   }
 
+  @Test
   public void testSetArguments() {
     BltGenerateMessage classUnderTest = new BltGenerateMessage();
     String[] result = classUnderTest.getArguments();
@@ -69,6 +75,7 @@ public class BltGenerateMessageTest extends TestCase {
     assertEquals("b", result[1]);
   }
   
+  @Test
   public void testSetArguments_null() {
     BltGenerateMessage classUnderTest = new BltGenerateMessage();
     try {
@@ -79,6 +86,7 @@ public class BltGenerateMessageTest extends TestCase {
     }
   }
 
+  @Test
   public void testFromDocument() throws Exception {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltgenerate");
@@ -107,6 +115,7 @@ public class BltGenerateMessageTest extends TestCase {
     assertEquals("arg2", args[1]);
   }
 
+  @Test
   public void testFromDocument_notBltGenerate() throws Exception {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltadm");
@@ -123,6 +132,7 @@ public class BltGenerateMessageTest extends TestCase {
     }
   }   
   
+  @Test
   public void testFromDocument_nofiles() throws Exception {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltgenerate");
@@ -146,6 +156,7 @@ public class BltGenerateMessageTest extends TestCase {
     assertEquals("arg2", args[1]);
   }  
   
+  @Test
   public void testFromDocument_noArguments() throws Exception {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltgenerate");
@@ -168,6 +179,7 @@ public class BltGenerateMessageTest extends TestCase {
     assertEquals(0, args.length);
   }
   
+  @Test
   public void testToDocument() throws Exception {
     BltGenerateMessage classUnderTest = new BltGenerateMessage();
     classUnderTest.setAlgorithm("some.Algorithm");

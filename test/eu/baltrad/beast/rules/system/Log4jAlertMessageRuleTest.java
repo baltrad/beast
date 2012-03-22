@@ -19,40 +19,36 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.system;
 
-import junit.framework.TestCase;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.apache.log4j.Logger;
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 
 /**
- *
  * @author Anders Henja
  * @date Dec 19, 2011
  */
-public class Log4jAlertMessageRuleTest extends TestCase {
+public class Log4jAlertMessageRuleTest extends EasyMockSupport {
   interface Methods {
     public Logger getLogger(String logname);
   };
   
-  private MockControl loggerControl = null;
   private Logger logger = null;
-  private MockControl methodsControl = null;
   private Methods methods = null;
   private Log4jAlertMessageRule classUnderTest = null;
-  
-  /**
-   * @see junit.framework.TestCase#setUp()
-   */
-  protected void setUp() throws Exception {
-    super.setUp();
-    loggerControl = MockClassControl.createControl(Logger.class);
-    logger = (Logger)loggerControl.getMock();
-    methodsControl = MockControl.createControl(Methods.class);
-    methods = (Methods)methodsControl.getMock();
+
+  @Before
+  public void setUp() throws Exception {
+    logger = createMock(Logger.class);
+    methods = createMock(Methods.class);
     classUnderTest = new Log4jAlertMessageRule() {
       protected Logger getLogger(String logname) {
         return methods.getLogger(logname);
@@ -60,49 +56,38 @@ public class Log4jAlertMessageRuleTest extends TestCase {
     };
   }
 
-  /**
-   * @see junit.framework.TestCase#tearDown()
-   */
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    loggerControl = null;
+  @After
+  public void tearDown() throws Exception {
     logger = null;
-    methodsControl = null;
     methods = null;
     classUnderTest = null;
   }
 
-  protected void replay() throws Exception {
-    loggerControl.replay();
-    methodsControl.replay();
-  }
-  
-  protected void verify() throws Exception {
-    loggerControl.verify();
-    methodsControl.verify();
-  }  
-  
+  @Test
   public void testGetType() throws Exception {
     String result = classUnderTest.getType();
     assertEquals("log4j_system_alert", result);
   }
   
+  @Test
   public void testIsValid() throws Exception {
     boolean result = classUnderTest.isValid();
     assertEquals(true, result);
   }
 
+  @Test
   public void testHandle_notAlertMessage() throws Exception {
     IBltMessage msg = new IBltMessage() { };
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
   
+  @Test
   public void testHandle_noSeverity() throws Exception {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setSeverity(null);
@@ -111,18 +96,18 @@ public class Log4jAlertMessageRuleTest extends TestCase {
     msg.setMessage("We are having problems");
     
     
-    methods.getLogger("MYMODULE");
-    methodsControl.setReturnValue(logger);
+    expect(methods.getLogger("MYMODULE")).andReturn(logger);
     logger.info("I00001: We are having problems");
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
 
+  @Test
   public void testHandle_info() throws Exception {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setSeverity(BltAlertMessage.INFO);
@@ -130,18 +115,18 @@ public class Log4jAlertMessageRuleTest extends TestCase {
     msg.setMessage("We are having problems");
     msg.setModule("MYMODULE");
     
-    methods.getLogger("MYMODULE");
-    methodsControl.setReturnValue(logger);
+    expect(methods.getLogger("MYMODULE")).andReturn(logger);
     logger.info("I00001: We are having problems");
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
 
+  @Test
   public void testHandle_warning() throws Exception {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setSeverity(BltAlertMessage.WARNING);
@@ -149,18 +134,18 @@ public class Log4jAlertMessageRuleTest extends TestCase {
     msg.setMessage("We are having problems");
     msg.setModule("MYMODULE");
     
-    methods.getLogger("MYMODULE");
-    methodsControl.setReturnValue(logger);
+    expect(methods.getLogger("MYMODULE")).andReturn(logger);
     logger.warn("W00001: We are having problems");
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
 
+  @Test
   public void testHandle_error() throws Exception {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setSeverity(BltAlertMessage.ERROR);
@@ -168,18 +153,18 @@ public class Log4jAlertMessageRuleTest extends TestCase {
     msg.setMessage("We are having problems");
     msg.setModule("MYMODULE");
     
-    methods.getLogger("MYMODULE");
-    methodsControl.setReturnValue(logger);
+    expect(methods.getLogger("MYMODULE")).andReturn(logger);
     logger.error("E00001: We are having problems");
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
 
+  @Test
   public void testHandle_fatal() throws Exception {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setSeverity(BltAlertMessage.FATAL);
@@ -187,18 +172,18 @@ public class Log4jAlertMessageRuleTest extends TestCase {
     msg.setMessage("We are having problems");
     msg.setModule("MYMODULE");
     
-    methods.getLogger("MYMODULE");
-    methodsControl.setReturnValue(logger);
+    expect(methods.getLogger("MYMODULE")).andReturn(logger);
     logger.fatal("F00001: We are having problems");
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
 
+  @Test
   public void testHandle_unknownSeverity() throws Exception {
     BltAlertMessage msg = new BltAlertMessage();
     msg.setSeverity("NISSE");
@@ -206,15 +191,14 @@ public class Log4jAlertMessageRuleTest extends TestCase {
     msg.setMessage("We are having problems");
     msg.setModule("MYMODULE");
     
-    methods.getLogger("MYMODULE");
-    methodsControl.setReturnValue(logger);
+    expect(methods.getLogger("MYMODULE")).andReturn(logger);
     logger.fatal("X00001: We are having problems");
     
-    replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.handle(msg);
     
-    verify();
+    verifyAll();
     assertNull(result);
   }
 }

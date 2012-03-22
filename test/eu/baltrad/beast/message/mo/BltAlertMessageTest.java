@@ -19,18 +19,20 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.message.mo;
 
 import org.dom4j.Document;
+
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.MessageParserException;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 /**
  * @author Anders Henja
- *
  */
-public class BltAlertMessageTest extends TestCase {
+public class BltAlertMessageTest {
+  @Test
   public void testSetCode() {
     BltAlertMessage classUnderTest = new BltAlertMessage();
     assertEquals(null, classUnderTest.getCode());
@@ -38,6 +40,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("XYZ", classUnderTest.getCode());
   }
   
+  @Test
   public void testSetMessage() {
     BltAlertMessage classUnderTest = new BltAlertMessage();
     assertEquals(null, classUnderTest.getMessage());
@@ -45,6 +48,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("howdy", classUnderTest.getMessage());
   }
   
+  @Test
   public void testToDocument() {
     BltAlertMessage classUnderTest = new BltAlertMessage();
     classUnderTest.setCode("ABC");
@@ -59,6 +63,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("INFO", result.valueOf("//bltalert/severity"));
   }
 
+  @Test
   public void testToDocument_emptyNodes() {
     BltAlertMessage classUnderTest = new BltAlertMessage();
     Document result = classUnderTest.toDocument();
@@ -69,6 +74,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("INFO", result.valueOf("//bltalert/severity"));
   }
 
+  @Test
   public void testFromDocument() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltalert");
@@ -85,6 +91,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("INFO", classUnderTest.getSeverity());
   }
 
+  @Test
   public void testFromDocument_noModule() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltalert");
@@ -99,6 +106,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("", classUnderTest.getModule());
   }
   
+  @Test
   public void testFromDocument_noSeverity() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltalert");
@@ -114,6 +122,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("INFO", classUnderTest.getSeverity());
   }
   
+  @Test
   public void testFromDocument_emptyNodes() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltalert");
@@ -126,6 +135,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("", classUnderTest.getMessage());
   }
   
+  @Test
   public void testFromDocument_missingNodes() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltalert");
@@ -137,6 +147,7 @@ public class BltAlertMessageTest extends TestCase {
     assertEquals("severe", classUnderTest.getMessage());
   }
   
+  @Test
   public void testFromDocument_notBltAlert() {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltxalert");
@@ -150,5 +161,4 @@ public class BltAlertMessageTest extends TestCase {
       // pass
     }
   }
-
 }

@@ -18,14 +18,20 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.qc;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -34,39 +40,29 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 /**
  * @author Anders Henja
  */
-public class AnomalyDetectorManagerTest extends TestCase {
+public class AnomalyDetectorManagerTest extends EasyMockSupport {
   interface MethodMock {
     public void validateName(String name);
   };
 
   private AnomalyDetectorManager classUnderTest = null;
-  private MockControl jdbcControl = null;
   private SimpleJdbcOperations jdbcTemplate = null;
-  
+
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
-    jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    jdbcTemplate = (SimpleJdbcOperations)jdbcControl.getMock();
+    jdbcTemplate = createMock(SimpleJdbcOperations.class);
     classUnderTest = new AnomalyDetectorManager();
     classUnderTest.setJdbcTemplate(jdbcTemplate);
   }
   
+  @After
   public void tearDown() throws Exception {
-    super.tearDown();
     classUnderTest = null;
   }
-  
-  protected void replay() {
-    jdbcControl.replay();
-  }
 
-  protected void verify() {
-    jdbcControl.verify();
-  }
-  
+  @Test
   public void testAdd() throws Exception {
-    MockControl methodControl = MockControl.createControl(MethodMock.class);
-    final MethodMock method = (MethodMock)methodControl.getMock();
+    final MethodMock method = createMock(MethodMock.class);
 
     AnomalyDetector detector = new AnomalyDetector();
     detector.setName("uggh");
@@ -74,10 +70,8 @@ public class AnomalyDetectorManagerTest extends TestCase {
 
     method.validateName("uggh");
     
-    jdbcTemplate.update("insert into beast_anomaly_detectors (name, description) values (?,?)",
-        new Object[]{"uggh", "uggh it"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbcTemplate.update("insert into beast_anomaly_detectors (name, description) values (?,?)",
+        new Object[]{"uggh", "uggh it"})).andReturn(0);
 
     classUnderTest = new AnomalyDetectorManager() {
       protected void validateName(String name) {
@@ -86,67 +80,64 @@ public class AnomalyDetectorManagerTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbcTemplate);
     
-    replay();
-    methodControl.replay();
+    replayAll();
     
     classUnderTest.add(detector);
     
-    verify();
-    methodControl.verify();
+    verifyAll();
   }
-  
+
+  @Test
   public void testAdd_exception() throws Exception {
     AnomalyDetector detector = new AnomalyDetector();
     detector.setName("uggh");
     detector.setDescription("uggh it");
 
-    jdbcTemplate.update("insert into beast_anomaly_detectors (name, description) values (?,?)",
-        new Object[]{"uggh", "uggh it"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setThrowable(new DataAccessException(null){
-      private static final long serialVersionUID = 1L;
-    });
+    expect(jdbcTemplate.update("insert into beast_anomaly_detectors (name, description) values (?,?)",
+        new Object[]{"uggh", "uggh it"})).andThrow(new DataAccessException(null) {
+          private static final long serialVersionUID = 1L;
+        });
     
-    replay();
+    replayAll();
+    
     try {
       classUnderTest.add(detector);
       fail("Expected AnomalyException");
     } catch (AnomalyException e) {
       // pass
     }
-    verify();
+    
+    verifyAll();
   }
   
+  @Test
   public void testUpdate() throws Exception {
     AnomalyDetector detector = new AnomalyDetector();
     detector.setName("uggh");
     detector.setDescription("uggh it");
     
-    jdbcTemplate.update("update beast_anomaly_detectors set description=? where name=?",
-        new Object[]{"uggh it", "uggh"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(1);
+    expect(jdbcTemplate.update("update beast_anomaly_detectors set description=? where name=?",
+        new Object[]{"uggh it", "uggh"})).andReturn(1);
     
-    replay();
+    replayAll();
    
     classUnderTest.update(detector);
     
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testUpdate_exception() throws Exception {
     AnomalyDetector detector = new AnomalyDetector();
     detector.setName("uggh");
     detector.setDescription("uggh it");
     
-    jdbcTemplate.update("update beast_anomaly_detectors set description=? where name=?",
-        new Object[]{"uggh it", "uggh"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setThrowable(new DataAccessException(null){
-      private static final long serialVersionUID = 1L;
-    });
+    expect(jdbcTemplate.update("update beast_anomaly_detectors set description=? where name=?",
+        new Object[]{"uggh it", "uggh"})).andThrow(new DataAccessException(null) {
+          private static final long serialVersionUID = 1L;
+        });
     
-    replay();
+    replayAll();
 
     try {
       classUnderTest.update(detector);
@@ -155,20 +146,19 @@ public class AnomalyDetectorManagerTest extends TestCase {
       // pass
     }
     
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testUpdate_noRowsAffected() throws Exception {
     AnomalyDetector detector = new AnomalyDetector();
     detector.setName("uggh");
     detector.setDescription("uggh it");
     
-    jdbcTemplate.update("update beast_anomaly_detectors set description=? where name=?",
-        new Object[]{"uggh it", "uggh"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbcTemplate.update("update beast_anomaly_detectors set description=? where name=?",
+        new Object[]{"uggh it", "uggh"})).andReturn(0);
     
-    replay();
+    replayAll();
 
     try {
       classUnderTest.update(detector);
@@ -177,8 +167,10 @@ public class AnomalyDetectorManagerTest extends TestCase {
       // pass
     }
     
-    verify();
+    verifyAll();
   }  
+  
+  @Test
   public void testList() throws Exception {
     final ParameterizedRowMapper<AnomalyDetector> mapper = new ParameterizedRowMapper<AnomalyDetector>() {
       @Override
@@ -186,13 +178,11 @@ public class AnomalyDetectorManagerTest extends TestCase {
         return null;
       }
     };
-    List<String> actual = new ArrayList<String>();
+    List<AnomalyDetector> actual = new ArrayList<AnomalyDetector>();
     
-    jdbcTemplate.query("select name,description from beast_anomaly_detectors order by name", 
+    expect(jdbcTemplate.query("select name,description from beast_anomaly_detectors order by name", 
         mapper, 
-        (Object[])null);
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(actual);
+        (Object[])null)).andReturn(actual);
     
     classUnderTest = new AnomalyDetectorManager() {
       protected ParameterizedRowMapper<AnomalyDetector> getMapper() {
@@ -201,14 +191,15 @@ public class AnomalyDetectorManagerTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbcTemplate);
     
-    replay();
+    replayAll();
     
     List<AnomalyDetector> result = classUnderTest.list();
     
-    verify();
+    verifyAll();
     assertSame(actual, result);
   }
   
+  @Test
   public void testGet() throws Exception {
     AnomalyDetector detector = new AnomalyDetector();
     
@@ -219,11 +210,9 @@ public class AnomalyDetectorManagerTest extends TestCase {
       }
     };
     
-    jdbcTemplate.queryForObject("select name,description from beast_anomaly_detectors where name=?", 
+    expect(jdbcTemplate.queryForObject("select name,description from beast_anomaly_detectors where name=?", 
         mapper,
-        new Object[]{"nisse"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(detector);
+        new Object[]{"nisse"})).andReturn(detector);
     
     classUnderTest = new AnomalyDetectorManager() {
       protected ParameterizedRowMapper<AnomalyDetector> getMapper() {
@@ -232,14 +221,15 @@ public class AnomalyDetectorManagerTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbcTemplate);
     
-    replay();
+    replayAll();
     
     AnomalyDetector result = classUnderTest.get("nisse");
     
-    verify();
+    verifyAll();
     assertSame(detector, result);
   }
 
+  @Test
   public void testGet_notFound() throws Exception {
     final ParameterizedRowMapper<AnomalyDetector> mapper = new ParameterizedRowMapper<AnomalyDetector>() {
       @Override
@@ -248,13 +238,11 @@ public class AnomalyDetectorManagerTest extends TestCase {
       }
     };
     
-    jdbcTemplate.queryForObject("select name,description from beast_anomaly_detectors where name=?", 
+    expect(jdbcTemplate.queryForObject("select name,description from beast_anomaly_detectors where name=?", 
         mapper,
-        new Object[]{"nisse"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setThrowable(new DataAccessException(null) {
-      private static final long serialVersionUID = 1L;
-    });
+        new Object[]{"nisse"})).andThrow(new DataAccessException(null) {
+          private static final long serialVersionUID = 1L;
+        });
     
     classUnderTest = new AnomalyDetectorManager() {
       protected ParameterizedRowMapper<AnomalyDetector> getMapper() {
@@ -263,7 +251,7 @@ public class AnomalyDetectorManagerTest extends TestCase {
     };
     classUnderTest.setJdbcTemplate(jdbcTemplate);
     
-    replay();
+    replayAll();
     
     try {
       classUnderTest.get("nisse");
@@ -272,32 +260,29 @@ public class AnomalyDetectorManagerTest extends TestCase {
       // pass
     }
     
-    verify();
+    verifyAll();
   }
   
-  
+  @Test
   public void testRemove() throws Exception {
-    jdbcTemplate.update("delete from beast_anomaly_detectors where name=?",
-        new Object[]{"uggh"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbcTemplate.update("delete from beast_anomaly_detectors where name=?",
+        new Object[]{"uggh"})).andReturn(0);
     
-    replay();
+    replayAll();
    
     classUnderTest.remove("uggh");
     
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testRemove_exception() throws Exception {
-    jdbcTemplate.update("delete from beast_anomaly_detectors where name=?",
-        new Object[]{"uggh"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setThrowable(new DataAccessException(null){
-      private static final long serialVersionUID = 1L;
-    });
+    expect(jdbcTemplate.update("delete from beast_anomaly_detectors where name=?",
+        new Object[]{"uggh"})).andThrow(new DataAccessException(null){
+          private static final long serialVersionUID = 1L;
+        });
     
-    replay();
+    replayAll();
 
     try {
       classUnderTest.remove("uggh");
@@ -306,9 +291,10 @@ public class AnomalyDetectorManagerTest extends TestCase {
       // pass
     }
     
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testValidateName() throws Exception {
     String[] validNames = new String[]{
       "abc.123", "abc_123", "ABCabc123___..."  
@@ -322,6 +308,7 @@ public class AnomalyDetectorManagerTest extends TestCase {
     }
   }
  
+  @Test
   public void testValidateName_invalid() throws Exception {
     String[] validNames = new String[]{
       "abc£123", "abc _123", "!@,$&*+", "abcABZ?\\_-!*+:;%"  
@@ -336,20 +323,18 @@ public class AnomalyDetectorManagerTest extends TestCase {
     }
   }
   
+  @Test
   public void testGetMapper() throws Exception {
-    MockControl resultSetControl = MockControl.createControl(ResultSet.class);
-    ResultSet resultSet = (ResultSet)resultSetControl.getMock();
+    ResultSet resultSet = createMock(ResultSet.class);
     
-    resultSet.getString("name");
-    resultSetControl.setReturnValue("nisse");
-    resultSet.getString("description");
-    resultSetControl.setReturnValue("the description");
-    resultSetControl.replay();
+    expect(resultSet.getString("name")).andReturn("nisse");
+    expect(resultSet.getString("description")).andReturn("the description");
+    replayAll();
     
     ParameterizedRowMapper<AnomalyDetector> mapper = classUnderTest.getMapper();
     AnomalyDetector result = mapper.mapRow(resultSet, 1);
 
-    resultSetControl.verify();
+    verifyAll();
     assertEquals("nisse", result.getName());
     assertEquals("the description", result.getDescription());
   }

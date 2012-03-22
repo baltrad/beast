@@ -18,20 +18,22 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message.mo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
+import org.easymock.EasyMockSupport;
+import org.junit.Test;
+
 import eu.baltrad.bdb.db.FileEntry;
-
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
 
 /**
  * @author Anders Henja
  *
  */
-public class BltDataMessageTest extends TestCase {
+public class BltDataMessageTest extends EasyMockSupport {
+  @Test
   public void testSetFile() {
-    MockControl mockEntryControl = MockControl.createControl(FileEntry.class);
-    FileEntry mockEntry = (FileEntry)mockEntryControl.getMock();
+    FileEntry mockEntry = createMock(FileEntry.class);
     BltDataMessage classUnderTest = new BltDataMessage();
     assertEquals(null, classUnderTest.getFileEntry());
     classUnderTest.setFileEntry(mockEntry);

@@ -18,22 +18,25 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 */
 package eu.baltrad.beast.net.ftp;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.easymock.EasyMockSupport;
+import org.junit.Before;
+import org.junit.Test;
 
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
-
-public class FTPFileUploadHandlerTest extends TestCase {
+public class FTPFileUploadHandlerTest extends EasyMockSupport {
   private static interface MockMethods {
     void connect(URI u) throws IOException;
     void store(File s, URI d) throws IOException;
@@ -41,31 +44,19 @@ public class FTPFileUploadHandlerTest extends TestCase {
     InputStream openStream(File f) throws IOException;
   };
 
-  private MockControl clientControl;
   private FTPClient client;
-  private MockControl methodsControl;
   private MockMethods methods;
   private FTPFileUploadHandler classUnderTest;
   
-  protected void setUp() {
+  @Before
+  public void setUp() {
     // client call order is important
-    clientControl = MockClassControl.createStrictControl(FTPClient.class);
-    client = (FTPClient)clientControl.getMock();
-    methodsControl = MockControl.createControl(MockMethods.class);
-    methods = (MockMethods)methodsControl.getMock();
+    client = createMock(FTPClient.class);
+    methods = createMock(MockMethods.class);
     classUnderTest = new FTPFileUploadHandler(client);
   }
 
-  protected void replay() {
-    clientControl.replay();
-    methodsControl.replay();
-  }
-
-  protected void verify() {
-    clientControl.verify();
-    methodsControl.verify();
-  }
-
+  @Test
   public void testUpload() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
@@ -81,16 +72,17 @@ public class FTPFileUploadHandlerTest extends TestCase {
     };
     
     methods.connect(dst);
-    client.login("user", "passwd");
-    clientControl.setReturnValue(true);
+    expect(client.login("user", "passwd")).andReturn(true);
     methods.store(src, dst);
     client.disconnect();
-    replay();
+    replayAll();
 
     classUnderTest.upload(src, dst);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_connectFailure() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
@@ -102,16 +94,19 @@ public class FTPFileUploadHandlerTest extends TestCase {
     };
     
     methods.connect(dst);
-    methodsControl.setThrowable(new IOException());
-    replay();
+    expectLastCall().andThrow(new IOException());
+
+    replayAll();
     
     try {
       classUnderTest.upload(src, dst);
       fail("expected IOException");
     } catch (IOException e) { }
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_loginFailure() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
@@ -123,18 +118,20 @@ public class FTPFileUploadHandlerTest extends TestCase {
     };
     
     methods.connect(dst);
-    client.login("user", "passwd");
-    clientControl.setReturnValue(false);
+    expect(client.login("user", "passwd")).andReturn(false);
     client.disconnect();
-    replay();
+
+    replayAll();
     
     try {
       classUnderTest.upload(src, dst);
       fail("expected IOException");
     } catch (IOException e) { }
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_storeFailure() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
@@ -150,82 +147,92 @@ public class FTPFileUploadHandlerTest extends TestCase {
     };
     
     methods.connect(dst);
-    client.login("user", "passwd");
-    clientControl.setReturnValue(true);
+    expect(client.login("user", "passwd")).andReturn(true);
     methods.store(src, dst);
-    methodsControl.setThrowable(new IOException());
+    expectLastCall().andThrow(new IOException());
     client.disconnect();
-    replay();
+
+    replayAll();
 
     try {
       classUnderTest.upload(src, dst);
       fail("expected IOException");
     } catch (IOException e) { }
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testConnect() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host");
     
-    client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
+    client.setConnectTimeout(FTPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
     client.connect("host", 21);
-    client.getReplyCode();
-    clientControl.setReturnValue(200);
-    client.setSoTimeout(classUnderTest.DEFAULT_SOCKET_TIMEOUT);
+    expect(client.getReplyCode()).andReturn(200);
+    client.setSoTimeout(FTPFileUploadHandler.DEFAULT_SOCKET_TIMEOUT);
     client.enterLocalPassiveMode();
-    replay();
+    
+    replayAll();
 
     classUnderTest.connect(dst);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testConnect_negativeReplyCode() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host");
     
-    client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
+    client.setConnectTimeout(FTPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
     client.connect("host", 21);
-    client.getReplyCode();
-    clientControl.setReturnValue(500);
-    replay();
+    expect(client.getReplyCode()).andReturn(500);
+
+    replayAll();
 
     try {
       classUnderTest.connect(dst);
       fail("expected IOException");
     } catch (IOException e) { }
-    verify();    
+
+    verifyAll();    
   }
 
+  @Test
   public void testConnect_Failure() throws Exception {
      URI dst = URI.create("ftp://user:passwd@host");
     
-    client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
+    client.setConnectTimeout(FTPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
     client.connect("host", 21);
-    client.getReplyCode();
-    clientControl.setReturnValue(500);
-    replay();
+    expect(client.getReplyCode()).andReturn(500);
+
+    replayAll();
 
     try {
       classUnderTest.connect(dst);
       fail("expected IOException");
     } catch (IOException e) { }
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testConnect_customPort() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host:1234");
     
-    client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
+    client.setConnectTimeout(FTPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
     client.connect("host", 1234);
-    client.getReplyCode();
-    clientControl.setReturnValue(200);
-    client.setSoTimeout(classUnderTest.DEFAULT_SOCKET_TIMEOUT);
+    expect(client.getReplyCode()).andReturn(200);
+    client.setSoTimeout(FTPFileUploadHandler.DEFAULT_SOCKET_TIMEOUT);
     client.enterLocalPassiveMode();
-    replay();
+    
+    replayAll();
 
     classUnderTest.connect(dst);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testStore_dstDirectory() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
@@ -243,22 +250,20 @@ public class FTPFileUploadHandlerTest extends TestCase {
       }
     };
 
-    methods.isDirectory(new File("/remote/path"));
-    methodsControl.setReturnValue(true);
-    client.changeWorkingDirectory("/remote/path");
-    clientControl.setReturnValue(true);
-    client.setFileType(client.BINARY_FILE_TYPE);
-    clientControl.setReturnValue(true);
-    methods.openStream(src);
-    methodsControl.setReturnValue(stream);
-    client.storeFile("file", stream);
-    clientControl.setReturnValue(true);
-    replay();
+    expect(methods.isDirectory(new File("/remote/path"))).andReturn(true);
+    expect(client.changeWorkingDirectory("/remote/path")).andReturn(true);
+    expect(client.setFileType(FTPClient.BINARY_FILE_TYPE)).andReturn(true);
+    expect(methods.openStream(src)).andReturn(stream);
+    expect(client.storeFile("file", stream)).andReturn(true);
+
+    replayAll();
 
     classUnderTest.store(src, dst);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testStore_dstFile() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path/newfilename");
     File src = new File("/path/to/file");
@@ -276,22 +281,20 @@ public class FTPFileUploadHandlerTest extends TestCase {
       }
     };
 
-    methods.isDirectory(new File("/remote/path/newfilename"));
-    methodsControl.setReturnValue(false);
-    client.changeWorkingDirectory("/remote/path");
-    clientControl.setReturnValue(true);
-    client.setFileType(client.BINARY_FILE_TYPE);
-    clientControl.setReturnValue(true);
-    methods.openStream(src);
-    methodsControl.setReturnValue(stream);
-    client.storeFile("newfilename", stream);
-    clientControl.setReturnValue(true);
-    replay();
+    expect(methods.isDirectory(new File("/remote/path/newfilename"))).andReturn(false);
+    expect(client.changeWorkingDirectory("/remote/path")).andReturn(true);
+    expect(client.setFileType(FTPClient.BINARY_FILE_TYPE)).andReturn(true);
+    expect(methods.openStream(src)).andReturn(stream);
+    expect(client.storeFile("newfilename", stream)).andReturn(true);
+
+    replayAll();
 
     classUnderTest.store(src, dst);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testStore_cwdFailure() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
@@ -302,19 +305,20 @@ public class FTPFileUploadHandlerTest extends TestCase {
       }
     };
 
-    methods.isDirectory(new File("/remote/path"));
-    methodsControl.setReturnValue(true);
-    client.changeWorkingDirectory("/remote/path");
-    clientControl.setReturnValue(false);
-    replay();
+    expect(methods.isDirectory(new File("/remote/path"))).andReturn(true);
+    expect(client.changeWorkingDirectory("/remote/path")).andReturn(false);
+
+    replayAll();
   
     try {
       classUnderTest.store(src, dst);
       fail("expected IOException");
     } catch (IOException e) { }
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testStore_setBinaryFailure() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
@@ -325,21 +329,21 @@ public class FTPFileUploadHandlerTest extends TestCase {
       }
     };
     
-    methods.isDirectory(new File("/remote/path"));
-    methodsControl.setReturnValue(true);
-    client.changeWorkingDirectory("/remote/path");
-    clientControl.setReturnValue(true);
-    client.setFileType(client.BINARY_FILE_TYPE);
-    clientControl.setReturnValue(false);
-    replay();
+    expect(methods.isDirectory(new File("/remote/path"))).andReturn(true);
+    expect(client.changeWorkingDirectory("/remote/path")).andReturn(true);
+    expect(client.setFileType(FTPClient.BINARY_FILE_TYPE)).andReturn(false);
+    
+    replayAll();
 
     try {
       classUnderTest.store(src, dst);
       fail("expected IOException");
     } catch (IOException e) { }
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testStore_storeFailure() throws Exception {
     URI dst = URI.create("ftp://user:passwd@host/remote/path");
     File src = new File("/path/to/file");
@@ -357,25 +361,23 @@ public class FTPFileUploadHandlerTest extends TestCase {
       }
     };
 
-    methods.isDirectory(new File("/remote/path"));
-    methodsControl.setReturnValue(true);
-    client.changeWorkingDirectory("/remote/path");
-    clientControl.setReturnValue(true);
-    client.setFileType(client.BINARY_FILE_TYPE);
-    clientControl.setReturnValue(true);
-    methods.openStream(src);
-    methodsControl.setReturnValue(stream);
-    client.storeFile("file", stream);
-    clientControl.setReturnValue(false);
-    replay();
+    expect(methods.isDirectory(new File("/remote/path"))).andReturn(true);
+    expect(client.changeWorkingDirectory("/remote/path")).andReturn(true);
+    expect(client.setFileType(FTPClient.BINARY_FILE_TYPE)).andReturn(true);
+    expect(methods.openStream(src)).andReturn(stream);
+    expect(client.storeFile("file", stream)).andReturn(false);
+
+    replayAll();
 
     try {
       classUnderTest.store(src, dst);
       fail("expected IOException");
     } catch (IOException e) { }
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testIsDirectory() throws Exception {
     FTPFile[] listResult = new FTPFile[]{
       new FTPFile()
@@ -383,14 +385,16 @@ public class FTPFileUploadHandlerTest extends TestCase {
     listResult[0].setType(FTPFile.DIRECTORY_TYPE);
     listResult[0].setName("dir");
 
-    client.listFiles("/path/to");
-    clientControl.setReturnValue(listResult);
-    replay();
+    expect(client.listFiles("/path/to")).andReturn(listResult);
+
+    replayAll();
 
     assertTrue(classUnderTest.isDirectory(new File("/path/to/dir")));
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testIsDirectory_file() throws Exception {
     FTPFile[] listResult = new FTPFile[]{
       new FTPFile()
@@ -398,36 +402,41 @@ public class FTPFileUploadHandlerTest extends TestCase {
     listResult[0].setType(FTPFile.FILE_TYPE);
     listResult[0].setName("dir");
 
-    client.listFiles("/path/to");
-    clientControl.setReturnValue(listResult);
-    replay();
+    expect(client.listFiles("/path/to")).andReturn(listResult);
+
+    replayAll();
 
     assertFalse(classUnderTest.isDirectory(new File("/path/to/dir")));
-    verify();
+    
+    verifyAll();
   }
 
-
+  @Test
   public void testIsDirectory_root() throws Exception {
-    replay();
+    replayAll();
     assertTrue(classUnderTest.isDirectory(new File("/")));
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testGetUser() {
     URI uri = URI.create("ftp://user:passwd@host");
     assertEquals("user", classUnderTest.getUser(uri));
   }
 
+  @Test
   public void testGetPassword() {
     URI uri = URI.create("ftp://user:passwd@host");
     assertEquals("passwd", classUnderTest.getPassword(uri));
   }
 
+  @Test
   public void testGetPath() {
     URI uri = URI.create("ftp://host/path/to/dir");
     assertEquals(new File("/path/to/dir"), classUnderTest.getPath(uri));
   }
 
+  @Test
   public void testGetPath_missing() {
     URI uri = URI.create("ftp://host");
     try {
@@ -436,6 +445,7 @@ public class FTPFileUploadHandlerTest extends TestCase {
     } catch (IllegalArgumentException e) { }
   }
 
+  @Test
   public void testSetClient_null() {
     try {
       classUnderTest.setClient(null);

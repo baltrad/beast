@@ -18,8 +18,12 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 
 package eu.baltrad.beast;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 
 import eu.baltrad.beast.db.Catalog;
@@ -29,38 +33,43 @@ import eu.baltrad.beast.rules.util.RuleUtilities;
 /**
  * @author Anders Henja
  */
-public class ManagerContextTest extends TestCase {
-  
+public class ManagerContextTest {
+  @Before
   public void setUp() throws Exception {
     new ManagerContext().setTimeoutManager(null);
     new ManagerContext().setCatalog(null);
     new ManagerContext().setUtilities(null);
   }
 
+  @After
   public void tearDown() throws Exception {
     new ManagerContext().setTimeoutManager(null);
     new ManagerContext().setCatalog(null);
     new ManagerContext().setUtilities(null);
   }
   
+  @Test
   public void testTimeoutManager() {
     TimeoutManager manager = new TimeoutManager();
     new ManagerContext().setTimeoutManager(manager);
     assertSame(manager, ManagerContext.getTimeoutManager());
   }
-  
+
+  @Test
   public void testCatalog() {
     Catalog c = new Catalog();
     new ManagerContext().setCatalog(c);
     assertSame(c, ManagerContext.getCatalog());
   }
 
+  @Test
   public void testUtilities() {
     RuleUtilities c = new RuleUtilities();
     new ManagerContext().setUtilities(c);
     assertSame(c, ManagerContext.getUtilities());
   }
 
+  @Test
   public void testAfterPropertiesSet() throws Exception {
     TimeoutManager manager = new TimeoutManager();
     Catalog c = new Catalog();
@@ -73,6 +82,7 @@ public class ManagerContextTest extends TestCase {
     context.afterPropertiesSet();
   }
   
+  @Test
   public void testAfterPropertiesSet_noTimeoutManager() throws Exception {
     ManagerContext context = new ManagerContext();
     Catalog c = new Catalog();
@@ -87,6 +97,7 @@ public class ManagerContextTest extends TestCase {
     }
   }
 
+  @Test
   public void testAfterPropertiesSet_noCatalog() throws Exception {
     ManagerContext context = new ManagerContext();
     TimeoutManager m = new TimeoutManager();
@@ -101,6 +112,7 @@ public class ManagerContextTest extends TestCase {
     }
   }
 
+  @Test
   public void testAfterPropertiesSet_noUtilities() throws Exception {
     TimeoutManager manager = new TimeoutManager();
     Catalog c = new Catalog();
@@ -115,5 +127,4 @@ public class ManagerContextTest extends TestCase {
       //pass
     }
   }
-
 }

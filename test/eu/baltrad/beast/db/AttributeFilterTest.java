@@ -19,27 +19,41 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
-
-import junit.framework.TestCase;
+import org.codehaus.jackson.node.ObjectNode;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.bdb.expr.ExpressionFactory;
 
-public class AttributeFilterTest extends TestCase {
+public class AttributeFilterTest {
   private AttributeFilter classUnderTest;
   private ExpressionFactory xpr;
   private ObjectMapper jsonMapper;
 
+  @Before
   public void setUp() {
     xpr = new ExpressionFactory();
     jsonMapper = new ObjectMapper();
     classUnderTest = new AttributeFilter();
   }
 
+  @After
+  public void tearDown() {
+    xpr = null;
+    jsonMapper = null;
+    classUnderTest = null;
+  }
+  
+  @Test
   public void testGetExpression_singleValuedDouble() {
     Expression expected = xpr.lt(
       xpr.attribute("where/elangle"),
@@ -52,6 +66,7 @@ public class AttributeFilterTest extends TestCase {
     assertEquals(expected, classUnderTest.getExpression());
   }
 
+  @Test
   public void testGetExpression_multiValuedString() {
     Expression expected = xpr.in(
       xpr.attribute("what/object"),
@@ -64,6 +79,7 @@ public class AttributeFilterTest extends TestCase {
     assertEquals(expected, classUnderTest.getExpression());
   }
 
+  @Test
   public void testGetExpression_negated() {
     Expression expected = xpr.not(
       xpr.eq(
@@ -79,6 +95,7 @@ public class AttributeFilterTest extends TestCase {
     assertTrue(classUnderTest.getExpression().equals(expected));
   }
 
+  @Test
   public void testGetValueExpression_multiValuedString() {
     Expression expected = xpr.list(xpr.literal("PVOL"), xpr.literal("SCAN"));
 
@@ -89,6 +106,7 @@ public class AttributeFilterTest extends TestCase {
     assertEquals(expected, classUnderTest.getValueExpression());
   }
 
+  @Test
   public void testIsValid() {
     classUnderTest.setAttribute("where/elangle");
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
@@ -98,6 +116,7 @@ public class AttributeFilterTest extends TestCase {
     assertTrue(classUnderTest.isValid());
   }
 
+  @Test
   public void testIsValid_noAttribute() {
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
@@ -106,6 +125,7 @@ public class AttributeFilterTest extends TestCase {
     assertFalse(classUnderTest.isValid());
   }
 
+  @Test
   public void testIsValid_noOperator() {
     classUnderTest.setAttribute("where/elangle");
     classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
@@ -114,6 +134,7 @@ public class AttributeFilterTest extends TestCase {
     assertFalse(classUnderTest.isValid());
   }
 
+  @Test
   public void testIsValid_noValueType() {
     classUnderTest.setAttribute("where/elangle");
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
@@ -122,6 +143,7 @@ public class AttributeFilterTest extends TestCase {
     assertFalse(classUnderTest.isValid());
   }
 
+  @Test
   public void testIsValid_noValue() {
     classUnderTest.setAttribute("where/elangle");
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
@@ -130,6 +152,7 @@ public class AttributeFilterTest extends TestCase {
     assertFalse(classUnderTest.isValid());
   }
   
+  @Test
   public void testIsValid_invalidValue() {
     classUnderTest.setAttribute("where/elangle");
     classUnderTest.setOperator(AttributeFilter.Operator.IN);
@@ -139,6 +162,7 @@ public class AttributeFilterTest extends TestCase {
     assertFalse(classUnderTest.isValid());
   }
 
+  @Test
   public void testJackson_toJson() {
     classUnderTest.setId(5);
     classUnderTest.setAttribute("where/object");
@@ -159,6 +183,7 @@ public class AttributeFilterTest extends TestCase {
     assertFalse(json.has("xpr"));
   }
 
+  @Test
   public void testJackson_fromJson() throws java.io.IOException {
     ObjectNode json = JsonNodeFactory.instance.objectNode();
     json.put("type", "attr");

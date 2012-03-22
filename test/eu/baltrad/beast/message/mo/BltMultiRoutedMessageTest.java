@@ -18,40 +18,49 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message.mo;
 
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.IMultiRoutedMessage;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  *
  */
-public class BltMultiRoutedMessageTest extends TestCase {
+public class BltMultiRoutedMessageTest {
   private BltMultiRoutedMessage classUnderTest = null;
   
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     classUnderTest = new BltMultiRoutedMessage();
   }
-  
+
+  @After
   public void tearDown() throws Exception {
-    super.tearDown();
     classUnderTest = null;
   }
 
+  @Test
   public void testIsRoutedMessage() throws Exception {
     assertTrue(classUnderTest instanceof IMultiRoutedMessage);
   }
   
+  @Test
   public void testMessage() {
     IBltMessage msg = new IBltMessage() { };
     classUnderTest.setMessage(msg);
     assertSame(msg, classUnderTest.getMessage());
   }
   
+  @Test
   public void testDestinations() {
     List<String> destinations = new ArrayList<String>();
     classUnderTest.setDestinations(destinations);

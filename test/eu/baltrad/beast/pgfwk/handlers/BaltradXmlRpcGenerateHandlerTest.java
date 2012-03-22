@@ -18,25 +18,28 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.pgfwk.handlers;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+
 import org.apache.xmlrpc.XmlRpcRequest;
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.adaptor.http.IHttpConnector;
 import eu.baltrad.beast.message.mo.BltDataFrameMessage;
 import eu.baltrad.beast.pgfwk.IGeneratorPlugin;
 
-import junit.framework.TestCase;
-
 /**
  * @author Anders Henja
  */
-public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
+public class BaltradXmlRpcGenerateHandlerTest extends EasyMockSupport {
   static interface MockMethods {
     public String[] createStringArray(Object[] arr);
     public BltDataFrameMessage createMessage(String file);
   };
-  
+
+  @Test
   public void testCreateStringArray() {
     BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     Object[] strs = new String[]{"a", "b"};
@@ -46,33 +49,31 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     assertEquals("b", result[1]);
   }
   
+  @Test
   public void testCreateStringArray_null() {
     BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     String[] result = classUnderTest.createStringArray(null);
     assertEquals(0,result.length);
   }
 
+  @Test
   public void testCreateStringArray_empty() {
     BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     String[] result = classUnderTest.createStringArray(new Object[]{});
     assertEquals(0,result.length);
   }
   
+  @Test
   public void testExecute() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
     
-    MockControl contextControl = MockControl.createControl(ApplicationContext.class);
-    ApplicationContext context = (ApplicationContext)contextControl.getMock();
+    ApplicationContext context = createMock(ApplicationContext.class);
     
-    MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
-    XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
+    XmlRpcRequest request = createMock(XmlRpcRequest.class);
     
-    MockControl pluginControl = MockControl.createControl(IGeneratorPlugin.class);
-    IGeneratorPlugin pluginMock = (IGeneratorPlugin)pluginControl.getMock();
+    IGeneratorPlugin pluginMock = createMock(IGeneratorPlugin.class);
     
-    MockControl connectorControl = MockControl.createControl(IHttpConnector.class);
-    IHttpConnector connector = (IHttpConnector)connectorControl.getMock();
+    IHttpConnector connector = createMock(IHttpConnector.class);
     
     
     Object[] ofiles = new Object[0];
@@ -92,52 +93,34 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     classUnderTest.setApplicationContext(context);
     classUnderTest.setConnector(connector);
 
-    request.getParameter(0);
-    requestControl.setReturnValue("somemethod");
-    request.getParameter(1);
-    requestControl.setReturnValue(ofiles);
-    request.getParameter(2);
-    requestControl.setReturnValue(oargs);
+    expect(request.getParameter(0)).andReturn("somemethod");
+    expect(request.getParameter(1)).andReturn(ofiles);
+    expect(request.getParameter(2)).andReturn(oargs);
     
-    methods.createStringArray(ofiles);
-    methodsControl.setReturnValue(files);
-    methods.createStringArray(oargs);
-    methodsControl.setReturnValue(args);
+    expect(methods.createStringArray(ofiles)).andReturn(files);
+    expect(methods.createStringArray(oargs)).andReturn(args);
     
-    context.getBean("somemethod");
-    contextControl.setReturnValue(pluginMock);
+    expect(context.getBean("somemethod")).andReturn(pluginMock);
     
-    pluginMock.generate("somemethod", files, args);
-    pluginControl.setReturnValue("filename");
-    methods.createMessage("filename");
-    methodsControl.setReturnValue(bltmessage);
+    expect(pluginMock.generate("somemethod", files, args)).andReturn("filename");
+    expect(methods.createMessage("filename")).andReturn(bltmessage);
     connector.send(bltmessage);
     
-    methodsControl.replay();
-    contextControl.replay();
-    requestControl.replay();
-    pluginControl.replay();
+    replayAll();
     
     // Execute
     Object result = classUnderTest.execute(request);
     
     // verify
-    methodsControl.verify();
-    contextControl.verify();
-    requestControl.verify();
-    pluginControl.verify();
+    verifyAll();
     assertEquals(0, result);
   }
   
+  @Test
   public void testExecute_pluginNotFound() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
-    
-    MockControl contextControl = MockControl.createControl(ApplicationContext.class);
-    ApplicationContext context = (ApplicationContext)contextControl.getMock();
-    
-    MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
-    XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
+    ApplicationContext context = createMock(ApplicationContext.class);
+    XmlRpcRequest request = createMock(XmlRpcRequest.class);
     
     Object[] ofiles = new Object[0];
     Object[] oargs = new Object[0];
@@ -151,44 +134,30 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     };
     classUnderTest.setApplicationContext(context);
     
-    request.getParameter(0);
-    requestControl.setReturnValue("somemethod");
-    request.getParameter(1);
-    requestControl.setReturnValue(ofiles);
-    request.getParameter(2);
-    requestControl.setReturnValue(oargs);
+    expect(request.getParameter(0)).andReturn("somemethod");
+    expect(request.getParameter(1)).andReturn(ofiles);
+    expect(request.getParameter(2)).andReturn(oargs);
     
-    methods.createStringArray(ofiles);
-    methodsControl.setReturnValue(files);
-    methods.createStringArray(oargs);
-    methodsControl.setReturnValue(args);
+    expect(methods.createStringArray(ofiles)).andReturn(files);
+    expect(methods.createStringArray(oargs)).andReturn(args);
     
-    context.getBean("somemethod");
-    contextControl.setReturnValue(null);
+    expect(context.getBean("somemethod")).andReturn(null);
 
-    methodsControl.replay();
-    contextControl.replay();
-    requestControl.replay();
+    replayAll();
     
     // Execute
     Object result = classUnderTest.execute(request);
     
     // verify
-    methodsControl.verify();
-    contextControl.verify();
-    requestControl.verify();
+    verifyAll();
     assertEquals(-1, result);
   }
   
+  @Test
   public void testExecute_pluginNotIGenerator() throws Exception {
-    MockControl methodsControl = MockControl.createControl(MockMethods.class);
-    final MockMethods methods = (MockMethods)methodsControl.getMock();
-    
-    MockControl contextControl = MockControl.createControl(ApplicationContext.class);
-    ApplicationContext context = (ApplicationContext)contextControl.getMock();
-    
-    MockControl requestControl = MockControl.createControl(XmlRpcRequest.class);
-    XmlRpcRequest request = (XmlRpcRequest)requestControl.getMock();
+    final MockMethods methods = createMock(MockMethods.class);
+    ApplicationContext context = createMock(ApplicationContext.class);
+    XmlRpcRequest request = createMock(XmlRpcRequest.class);
     
     Object[] ofiles = new Object[0];
     Object[] oargs = new Object[0];
@@ -204,35 +173,26 @@ public class BaltradXmlRpcGenerateHandlerTest extends TestCase {
     };
     classUnderTest.setApplicationContext(context);
     
-    request.getParameter(0);
-    requestControl.setReturnValue("somemethod");
-    request.getParameter(1);
-    requestControl.setReturnValue(ofiles);
-    request.getParameter(2);
-    requestControl.setReturnValue(oargs);
+    expect(request.getParameter(0)).andReturn("somemethod");
+    expect(request.getParameter(1)).andReturn(ofiles);
+    expect(request.getParameter(2)).andReturn(oargs);
     
-    methods.createStringArray(ofiles);
-    methodsControl.setReturnValue(files);
-    methods.createStringArray(oargs);
-    methodsControl.setReturnValue(args);
+    expect(methods.createStringArray(ofiles)).andReturn(files);
+    expect(methods.createStringArray(oargs)).andReturn(args);
     
-    context.getBean("somemethod");
-    contextControl.setReturnValue(plugin);
+    expect(context.getBean("somemethod")).andReturn(plugin);
 
-    methodsControl.replay();
-    contextControl.replay();
-    requestControl.replay();
+    replayAll();
     
     // Execute
     Object result = classUnderTest.execute(request);
     
     // verify
-    methodsControl.verify();
-    contextControl.verify();
-    requestControl.verify();
+    verifyAll();
     assertEquals(-1, result);
   }  
   
+  @Test
   public void testCreateMessage() throws Exception {
     BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     classUnderTest.setChannel("se_channel");

@@ -18,12 +18,15 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.pgfwk;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
 
 /**
  * @author Anders Henja
  */
-public class BaltradXmlRpcServerTest extends TestCase {
+public class BaltradXmlRpcServerTest {
+  @Test
   public void testCreateServerFromArguments_illegalArgument() {
     try {
       String args[] = new String[]{"--notsupported=xyz", "--port=1234"};
@@ -34,6 +37,7 @@ public class BaltradXmlRpcServerTest extends TestCase {
     }
   }
   
+  @Test
   public void testCreateServerFromArguments_badPort() {
     try {
       String args[] = new String[]{"--port=10"};

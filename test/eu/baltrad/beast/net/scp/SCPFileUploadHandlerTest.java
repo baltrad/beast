@@ -18,21 +18,22 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 */
 package eu.baltrad.beast.net.scp;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMockSupport;
+import org.junit.Before;
+import org.junit.Test;
 
-public class SCPFileUploadHandlerTest extends TestCase {
+public class SCPFileUploadHandlerTest extends EasyMockSupport {
   private static interface MockMethods {
     SSHClient acquireSSHClient();
     void connect(URI u) throws IOException;
@@ -40,36 +41,20 @@ public class SCPFileUploadHandlerTest extends TestCase {
     void store(File s, URI d) throws IOException;
   };
 
-  private MockControl clientControl;
   private SSHClient client;
-  private MockControl xferControl;
   private SCPFileTransfer xfer;
-  private MockControl methodsControl;
   private MockMethods methods;
   private SCPFileUploadHandler classUnderTest;
 
-  protected void setUp() {
-    clientControl = MockClassControl.createControl(SSHClient.class);
-    client = (SSHClient)clientControl.getMock();
-    xferControl = MockClassControl.createControl(SCPFileTransfer.class);
-    xfer = (SCPFileTransfer)xferControl.getMock();
-    methodsControl = MockControl.createControl(MockMethods.class);
-    methods = (MockMethods)methodsControl.getMock();
+  @Before
+  public void setUp() {
+    client = createMock(SSHClient.class);
+    xfer = createMock(SCPFileTransfer.class);
+    methods = createMock(MockMethods.class);
     classUnderTest = new SCPFileUploadHandler();
   }
 
-  protected void replay() {
-    clientControl.replay();
-    methodsControl.replay();
-    xferControl.replay();
-  }
-
-  protected void verify() {
-    clientControl.verify();
-    methodsControl.verify();
-    xferControl.verify();
-  }
-  
+  @Test
   public void testUpload() throws Exception {
     File src = new File("/path/to/file");
     URI dst = URI.create("scp://user:pass@host/path");
@@ -85,18 +70,20 @@ public class SCPFileUploadHandlerTest extends TestCase {
       public void store(File s, URI d) throws IOException { methods.store(s, d); }
     };
   
-    methods.acquireSSHClient();
-    methodsControl.setReturnValue(client);
+    expect(methods.acquireSSHClient()).andReturn(client);
     methods.connect(dst);
     methods.auth(dst);
     methods.store(src, dst);
     client.disconnect();
-    replay();
+    
+    replayAll();
 
     classUnderTest.upload(src, dst);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_connectFailure() throws Exception {
     File src = new File("/path/to/file");
     URI dst = URI.create("scp://user:pass@host/path");
@@ -108,19 +95,21 @@ public class SCPFileUploadHandlerTest extends TestCase {
       public void connect(URI u) throws IOException { methods.connect(u); }
     };
 
-    methods.acquireSSHClient();
-    methodsControl.setReturnValue(client);
+    expect(methods.acquireSSHClient()).andReturn(client);
     methods.connect(dst);
-    methodsControl.setThrowable(new IOException());
-    replay();
+    expectLastCall().andThrow(new IOException());
+    
+    replayAll();
     
     try {
       classUnderTest.upload(src, dst);
       fail("expected IOException");
     } catch (IOException e) {}
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_authFailure() throws Exception {
     File src = new File("/path/to/file");
     URI dst = URI.create("scp://user:pass@host/path");
@@ -134,21 +123,23 @@ public class SCPFileUploadHandlerTest extends TestCase {
       public void auth(URI u) throws IOException { methods.auth(u); }
     };
 
-    methods.acquireSSHClient();
-    methodsControl.setReturnValue(client);
+    expect(methods.acquireSSHClient()).andReturn(client);
     methods.connect(dst);
     methods.auth(dst);
-    methodsControl.setThrowable(new IOException());
+    expectLastCall().andThrow(new IOException());
     client.disconnect();
-    replay();
+    
+    replayAll();
 
     try {
       classUnderTest.upload(src, dst);
       fail("expected IOException");
     } catch (IOException e) {}
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_storeFailure() throws Exception {
     File src = new File("/path/to/file");
     URI dst = URI.create("scp://user:pass@host/path");
@@ -164,79 +155,90 @@ public class SCPFileUploadHandlerTest extends TestCase {
       public void store(File s, URI d) throws IOException { methods.store(s, d); }
     };
 
-    methods.acquireSSHClient();
-    methodsControl.setReturnValue(client);
+    expect(methods.acquireSSHClient()).andReturn(client);
     methods.connect(dst);
     methods.auth(dst);
     methods.store(src, dst);
-    methodsControl.setThrowable(new IOException());
+    expectLastCall().andThrow(new IOException());
     client.disconnect();
-    replay();
+    
+    replayAll();
 
     try {
       classUnderTest.upload(src, dst);
       fail("expected IOException");
     } catch (IOException e) {}
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testConnect() throws Exception {
     classUnderTest.setSSHClient(client);
-    client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
-    client.setTimeout(classUnderTest.DEFAULT_SOCKET_TIMEOUT);
+    client.setConnectTimeout(SCPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
+    client.setTimeout(SCPFileUploadHandler.DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
     client.connect("host", 1234);
-    replay();
+    
+    replayAll();
     
     classUnderTest.connect(URI.create("scp://user:pass@host:1234/path"));
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testConnect_defaultPort() throws Exception {
     classUnderTest.setSSHClient(client);
-    client.setConnectTimeout(classUnderTest.DEFAULT_CONNECT_TIMEOUT);
-    client.setTimeout(classUnderTest.DEFAULT_SOCKET_TIMEOUT);
+    client.setConnectTimeout(SCPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
+    client.setTimeout(SCPFileUploadHandler.DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
     client.connect("host", 22);
-    replay();
+    
+    replayAll();
     
     classUnderTest.connect(URI.create("scp://user:pass@host/path"));
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testAuth_pubkey() throws Exception {
     classUnderTest.setSSHClient(client);
     client.authPublickey("user");
-    replay();
+    
+    replayAll();
 
     classUnderTest.auth(URI.create("scp://user@host/path"));
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testAuth_password() throws Exception {
     classUnderTest.setSSHClient(client);
     client.authPassword("user", "pass");
-    replay();
+    
+    replayAll();
 
     classUnderTest.auth(URI.create("scp://user:pass@host/path"));
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testStore() throws Exception {
     classUnderTest.setSSHClient(client);
-    File src = new File("/path/to/file");
 
-    client.newSCPFileTransfer();
-    clientControl.setReturnValue(xfer);
+    expect(client.newSCPFileTransfer()).andReturn(xfer);
     xfer.upload("/path/to/file", "/path");
   }
 
+  @Test
   public void testStore_missingPath() throws Exception {
     classUnderTest.setSSHClient(client);
-    File src = new File("/path/to/file");
 
-    client.newSCPFileTransfer();
-    clientControl.setReturnValue(xfer);
+    expect(client.newSCPFileTransfer()).andReturn(xfer);
     xfer.upload("/path/to/file", "/");
   }
 }

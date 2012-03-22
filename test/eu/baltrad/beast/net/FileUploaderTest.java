@@ -18,38 +18,35 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 */
 package eu.baltrad.beast.net;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.easymock.EasyMockSupport;
+import org.junit.Before;
+import org.junit.Test;
 
-import org.easymock.MockControl;
-
-public class FileUploaderTest extends TestCase {
+public class FileUploaderTest extends EasyMockSupport {
   private Map<String, FileUploadHandler> handlers;
-  private MockControl handlerControl;
   private FileUploadHandler handler;
   private FileUploader classUnderTest;
 
-  protected void setUp() {
+  @Before
+  public void setUp() {
     handlers = new HashMap<String, FileUploadHandler>();
-    handlerControl = MockControl.createControl(FileUploadHandler.class);
-    handler = (FileUploadHandler)handlerControl.getMock();
+    handler = createMock(FileUploadHandler.class);
     handlers.put("test", handler);
 
     classUnderTest = new FileUploader(handlers);
   }
 
-  protected void replay() {
-    handlerControl.replay();
-  }
-
-  protected void verify() {
-    handlerControl.verify();
-  }
-
+  @Test
   public void testCreateDefault() {
     FileUploader u = FileUploader.createDefault();
     assertNotNull(u);
@@ -58,17 +55,21 @@ public class FileUploaderTest extends TestCase {
     assertNotNull(u.getHandlerByScheme("copy"));
   }
 
+  @Test
   public void testUpload() throws Exception {
     File src = new File("/input");
     URI dst = URI.create("test:///");
 
     handler.upload(src, dst);
-    replay();
+    
+    replayAll();
 
     classUnderTest.upload(src, dst);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_unknownScheme() throws Exception {
     try {
       classUnderTest.upload("/input", "unknown:///");
@@ -78,6 +79,7 @@ public class FileUploaderTest extends TestCase {
     }
   }
 
+  @Test
   public void testUpload_relativeSrc() throws Exception {
     try {
       classUnderTest.upload("input", "test:///");
@@ -85,19 +87,22 @@ public class FileUploaderTest extends TestCase {
     } catch (IllegalArgumentException e) { }
   }
 
+  @Test
   public void testAppendPath() throws Exception {
     URI uri = URI.create("test:///");
     URI uriAppended = URI.create("test:///path");
 
-    handler.appendPath(uri, "path");
-    handlerControl.setReturnValue(uriAppended);
-    replay();
+    expect(handler.appendPath(uri, "path")).andReturn(uriAppended);
+    
+    replayAll();
 
     URI result = classUnderTest.appendPath(uri, "path");    
     assertSame(uriAppended, result);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testAppendPath_unknownScheme() throws Exception {
     URI uri = URI.create("unknown:///");
     try {
@@ -106,6 +111,7 @@ public class FileUploaderTest extends TestCase {
     } catch (java.net.UnknownServiceException e) { }
   }
 
+  @Test
   public void testSetHandlers_null() {
    try {
       classUnderTest.setHandlers(null);

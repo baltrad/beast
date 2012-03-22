@@ -18,13 +18,19 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.bdb;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.FileCatalog;
@@ -33,23 +39,16 @@ import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.db.FileQuery;
 import eu.baltrad.bdb.db.FileResult;
 import eu.baltrad.bdb.util.DateTime;
-
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 
-public class BdbTrimAgeRuleTest extends TestCase {
+public class BdbTrimAgeRuleTest extends EasyMockSupport {
   private BdbTrimAgeRule classUnderTest = null;
-  private MockControl methodsControl = null;
   private BdbTrimAgeRuleMethods methods = null;
-  private MockControl dbControl = null;
   private Database db = null;
-  private MockControl catalogControl = null;
   private FileCatalog catalog = null;
-  private MockControl queryControl = null;
   private FileQuery query = null;
-  private MockControl resultControl = null;
   private FileResult result = null;
-  private MockControl entryControl = null;
   private FileEntry entry = null;
 
   private static interface BdbTrimAgeRuleMethods {
@@ -59,50 +58,30 @@ public class BdbTrimAgeRuleTest extends TestCase {
     public DateTime getCurrentDateTime();
   }
 
+  @Before
   public void setUp() throws Exception {
     classUnderTest = new BdbTrimAgeRule();
-    methodsControl = MockControl.createControl(BdbTrimAgeRuleMethods.class);
-    methods = (BdbTrimAgeRuleMethods)methodsControl.getMock();
-    dbControl = MockClassControl.createControl(Database.class);
-    db = (Database)dbControl.getMock();
-    catalogControl = MockControl.createControl(FileCatalog.class);
-    catalog = (FileCatalog)catalogControl.getMock();
-    queryControl = MockClassControl.createControl(FileQuery.class);
-    query = (FileQuery)queryControl.getMock();
-    resultControl = MockClassControl.createControl(FileResult.class);
-    result = (FileResult)resultControl.getMock();
-    entryControl = MockClassControl.createControl(FileEntry.class);
-    entry = (FileEntry)entryControl.getMock();
+    methods = createMock(BdbTrimAgeRuleMethods.class);
+    db = createMock(Database.class);
+    catalog = createMock(FileCatalog.class);
+    query = createMock(FileQuery.class);
+    result = createMock(FileResult.class);
+    entry = createMock(FileEntry.class);
   }
 
+  @After
   public void tearDown() throws Exception {
     classUnderTest = null;
   }
 
-  protected void replay() {
-    methodsControl.replay();
-    dbControl.replay();
-    catalogControl.replay();
-    queryControl.replay();
-    resultControl.replay();
-    entryControl.replay();
-  }
-
-  protected void verify() {
-    methodsControl.verify();
-    dbControl.verify();
-    catalogControl.verify();
-    queryControl.verify();
-    resultControl.verify();
-    entryControl.verify();
-  }
-  
+  @Test
   public void testGetProperties() {
     classUnderTest.setFileAgeLimit(1);
     Map<String, String> props = classUnderTest.getProperties();
     assertEquals("1", props.get("fileAgeLimit"));
   }
 
+  @Test
   public void testSetProperties() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("fileAgeLimit", "1");
@@ -110,6 +89,7 @@ public class BdbTrimAgeRuleTest extends TestCase {
     assertEquals(1, classUnderTest.getFileAgeLimit());
   }
 
+  @Test
   public void testSetProperties_invalidType() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("fileAgeLimit", "invalid");
@@ -117,31 +97,37 @@ public class BdbTrimAgeRuleTest extends TestCase {
     assertEquals(0, classUnderTest.getFileAgeLimit());
   }
 
+  @Test
   public void testSetProperties_missingProps() {
     Map<String, String> props = new HashMap<String, String>();
     classUnderTest.setProperties(props);
     assertEquals(0, classUnderTest.getFileAgeLimit());
   }
 
+  @Test
   public void testHandle_noLimitSet() {
     IBltMessage msg = new BltTriggerJobMessage();
 
-    replay();
+    replayAll();
 
     classUnderTest.handle(msg);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testHandle_wrongMessageType() {
     classUnderTest.setFileAgeLimit(1);
     IBltMessage msg = new IBltMessage() {};
 
-    replay();
+    replayAll();
 
     classUnderTest.handle(msg);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testHandle() {
     classUnderTest = new BdbTrimAgeRule() {
       protected void execute() {
@@ -153,12 +139,14 @@ public class BdbTrimAgeRuleTest extends TestCase {
     IBltMessage msg = new BltTriggerJobMessage();
 
     methods.execute();
-    replay();
+    replayAll();
 
     classUnderTest.handle(msg);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testExecute() {
     classUnderTest = new BdbTrimAgeRule() {
       protected FileQuery getExcessiveFileQuery() {
@@ -168,29 +156,24 @@ public class BdbTrimAgeRuleTest extends TestCase {
     classUnderTest.setFileCatalog(catalog);
     classUnderTest.setFileAgeLimit(1);
 
-    methods.getExcessiveFileQuery();
-    methodsControl.setReturnValue(query);
-    catalog.getDatabase();
-    catalogControl.setReturnValue(db);
-    db.execute(query);
-    dbControl.setReturnValue(result);
-    result.size();
-    resultControl.setReturnValue(1);
-    result.next();
-    resultControl.setReturnValue(true);
-    result.getFileEntry();
-    resultControl.setReturnValue(entry);
+    expect(methods.getExcessiveFileQuery()).andReturn(query);
+    expect(catalog.getDatabase()).andReturn(db);
+    expect(db.execute(query)).andReturn(result);
+    expect(result.size()).andReturn(1);
+    expect(result.next()).andReturn(true);
+    expect(result.getFileEntry()).andReturn(entry);
     catalog.remove(entry);
-    result.next();
-    resultControl.setReturnValue(false);
+    expect(result.next()).andReturn(false);
     result.close();
-    replay();
+    
+    replayAll();
   
     classUnderTest.execute();
   
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testGetExcessiveFileQuery() {
     classUnderTest = new BdbTrimAgeRule() {
       protected DateTime getAgeLimitDateTime() {
@@ -200,16 +183,17 @@ public class BdbTrimAgeRuleTest extends TestCase {
     classUnderTest.setFileCatalog(catalog);
     DateTime dt = new DateTime(2011, 1, 7, 11, 0, 0);
     
-    methods.getAgeLimitDateTime();
-    methodsControl.setReturnValue(dt);
-    replay();
+    expect(methods.getAgeLimitDateTime()).andReturn(dt);
+
+    replayAll();
   
     FileQuery q = classUnderTest.getExcessiveFileQuery();
-    verify();
+    
+    verifyAll();
     assertNotNull(q);
-    // XXX: assert valid filter
   }
 
+  @Test
   public void testGetAgeLimitDateTime() {
     classUnderTest = new BdbTrimAgeRule() {
       protected DateTime getCurrentDateTime() {
@@ -220,15 +204,17 @@ public class BdbTrimAgeRuleTest extends TestCase {
     DateTime dt = new DateTime(2011, 1, 7, 11, 0, 0);
     DateTime expected = new DateTime(2011, 1, 6, 9, 59, 0);
 
-    methods.getCurrentDateTime();
-    methodsControl.setReturnValue(dt);
-    replay();
+    expect(methods.getCurrentDateTime()).andReturn(dt);
+
+    replayAll();
 
     DateTime result = classUnderTest.getAgeLimitDateTime();
-    verify();
+    
+    verifyAll();
     assertTrue(result.equals(expected));
   }
 
+  @Test
   public void testGetAgeLimitDateTimeLargeLimit() {
     classUnderTest = new BdbTrimAgeRule() {
       protected DateTime getCurrentDateTime() {
@@ -239,21 +225,24 @@ public class BdbTrimAgeRuleTest extends TestCase {
     DateTime now = new DateTime(2011, 1, 7, 11, 0);
     DateTime expected = new DateTime(2010, 11, 23, 11, 0);
 
-    methods.getCurrentDateTime();
-    methodsControl.setReturnValue(now);
-    replay();
+    expect(methods.getCurrentDateTime()).andReturn(now);
+
+    replayAll();
 
     DateTime result = classUnderTest.getAgeLimitDateTime();
-    verify();
+    
+    verifyAll();
     assertTrue(result.equals(expected));
   }
   
+  @Test
   public void testAfterPropertiesSet() {
     classUnderTest = new BdbTrimAgeRule();
     classUnderTest.setFileCatalog(catalog);
     classUnderTest.afterPropertiesSet();
   }
   
+  @Test
   public void testAfterPropertiesSet_missingCatalog() {
     classUnderTest = new BdbTrimAgeRule();
     try {
@@ -263,5 +252,4 @@ public class BdbTrimAgeRuleTest extends TestCase {
       // pass
     }
   }
-  
 }

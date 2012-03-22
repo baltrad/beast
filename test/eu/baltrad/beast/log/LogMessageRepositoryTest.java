@@ -18,17 +18,23 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.log;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.util.Map;
 
-import org.easymock.MockControl;
-
-import junit.framework.TestCase;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Anders Henja
  */
-public class LogMessageRepositoryTest extends TestCase {
+public class LogMessageRepositoryTest extends EasyMockSupport {
   interface Methods {
     public void load(String[] filenames);
   }
@@ -36,40 +42,38 @@ public class LogMessageRepositoryTest extends TestCase {
   private static String XML_LOAD_TEST_FIXTURE = "load-test-log-messages.xml";
   private static String XML_LOAD_TEST_FIXTURE2 = "load-test-log-messages2.xml";
   private LogMessageRepository classUnderTest = null;
-  
-  /**
-   * @see junit.framework.TestCase#setUp()
-   */
-  protected void setUp() throws Exception {
-    super.setUp();
+
+  @Before
+  public void setUp() throws Exception {
     classUnderTest = new LogMessageRepository();
   }
 
-  /**
-   * @see junit.framework.TestCase#tearDown()
-   */
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @After
+  public void tearDown() throws Exception {
     classUnderTest = null;    
   }
-  
+
+  @Test
   public void testFilenames_init() throws Exception {
     String[] result = classUnderTest.getFilenames();
     assertEquals(0, result.length);
   }
 
+  @Test
   public void testFilenames_setArray() throws Exception {
     String[] arr = new String[]{"A", "B", "C"};
     classUnderTest.setFilenames(arr);
     assertSame(arr, classUnderTest.getFilenames());
   }
 
+  @Test
   public void testFilenames_setNull() throws Exception {
     classUnderTest.setFilenames(null);
     String[] result = classUnderTest.getFilenames();
     assertEquals(0, result.length);
   }
   
+  @Test
   public void testAdd() throws Exception {
     LogMessage msg = new LogMessage();
     msg.setCode("01234");
@@ -87,6 +91,7 @@ public class LogMessageRepositoryTest extends TestCase {
     assertNull(result);
   }
 
+  @Test
   public void testAdd_nullMessage() throws Exception {
     try {
       classUnderTest.add("MYMODULE", null);
@@ -96,6 +101,7 @@ public class LogMessageRepositoryTest extends TestCase {
     }
   }
 
+  @Test
   public void testAdd_nullModule() throws Exception {
     LogMessage msg = new LogMessage();
     msg.setCode("01234");
@@ -109,11 +115,13 @@ public class LogMessageRepositoryTest extends TestCase {
     }
   }
   
+  @Test
   public void testGet_noSuchMessage() throws Exception {
     LogMessage result = classUnderTest.getMessage("MYMODULE", "01234");
     assertNull(result);
   }
   
+  @Test
   public void testRemove() throws Exception {
     LogMessage msg = new LogMessage();
     msg.setCode("01234");
@@ -126,6 +134,7 @@ public class LogMessageRepositoryTest extends TestCase {
     assertNull(result);
   }
 
+  @Test
   public void testGetModuleMessages() throws Exception {
     LogMessage m1 = new LogMessage("00001", "Message 1");
     LogMessage m2 = new LogMessage("00002", "Message 1");
@@ -147,6 +156,7 @@ public class LogMessageRepositoryTest extends TestCase {
     assertSame(m3, result.get("00003"));
   }
 
+  @Test
   public void testGetMessage_args() throws Exception {
     LogMessage m1 = new LogMessage("00001", "Message %s ok");
     LogMessage m2 = new LogMessage("00001", "Message %s nok");
@@ -163,26 +173,8 @@ public class LogMessageRepositoryTest extends TestCase {
     result = classUnderTest.getMessage("MODULE2", "00002", "Message %s was ok", "abc");
     assertEquals("Message abc was ok", result);    
   }
-  
-  /*
-  public String getMessage(String module, String code, String message, Object... args) {
-    String msg = null;
-    LogMessage logmsg = getMessage(module, code);
-    if (logmsg != null) {
-      try {
-        msg = String.format(logmsg.getMessage(), args);
-      } catch (Exception e) {
-        // let default message be used instead and that one should not fail
-      }
-    }
-    
-    if (msg == null) {
-      msg = String.format(message, args);
-    }
-    
-    return msg;
-  }*/
-  
+
+  @Test
   public void testLoad() throws Exception {
     File f = new File(this.getClass().getResource(XML_LOAD_TEST_FIXTURE).getFile());
     classUnderTest.load(f.getAbsolutePath());
@@ -198,6 +190,7 @@ public class LogMessageRepositoryTest extends TestCase {
 
   }
 
+  @Test
   public void testLoad_manyFiles() throws Exception {
     File f = new File(this.getClass().getResource(XML_LOAD_TEST_FIXTURE).getFile());
     File f2 = new File(this.getClass().getResource(XML_LOAD_TEST_FIXTURE2).getFile());
@@ -219,14 +212,15 @@ public class LogMessageRepositoryTest extends TestCase {
     assertEquals(null, msg.getSolution());
   }
 
+  @Test
   public void testLoad_manyFiles_null() throws Exception {
     // Very silly test, but just verify that no exception is thrown
     classUnderTest.load((String[])null);
   }
   
+  @Test
   public void testAfterPropertiesSet() throws Exception {
-    MockControl methodControl = MockControl.createControl(Methods.class);
-    final Methods method = (Methods)methodControl.getMock();
+    final Methods method = createMock(Methods.class);
     String[] filenames = new String[0];
     classUnderTest = new LogMessageRepository() {
       protected void load(String[] filenames) {
@@ -238,10 +232,10 @@ public class LogMessageRepositoryTest extends TestCase {
     
     method.load(filenames);
     
-    methodControl.replay();
+    replayAll();
     
     classUnderTest.afterPropertiesSet();
     
-    methodControl.verify();
+    verifyAll();
   }
 }

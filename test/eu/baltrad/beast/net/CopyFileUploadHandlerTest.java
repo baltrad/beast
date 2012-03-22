@@ -18,14 +18,18 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 */
 package eu.baltrad.beast.net;
 
-import junit.framework.TestCase;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.fail;
 
-import org.easymock.MockControl;
-
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 
-public class CopyFileUploadHandlerTest extends TestCase {
+import org.easymock.EasyMockSupport;
+import org.junit.Before;
+import org.junit.Test;
+
+public class CopyFileUploadHandlerTest extends EasyMockSupport {
   private static interface CopyFileUploadHandlerMethods {
     boolean isDirectory(File path);
     void copyFileToDirectory(File src, File dst) throws IOException;
@@ -33,12 +37,11 @@ public class CopyFileUploadHandlerTest extends TestCase {
   };
 
   private CopyFileUploadHandlerMethods methods;
-  private MockControl methodsControl;
   private CopyFileUploadHandler classUnderTest;
 
-  protected void setUp() {
-    methodsControl = MockControl.createControl(CopyFileUploadHandlerMethods.class);
-    methods = (CopyFileUploadHandlerMethods)methodsControl.getMock();
+  @Before
+  public void setUp() {
+    methods = createMock(CopyFileUploadHandlerMethods.class);
     classUnderTest = new CopyFileUploadHandler() {
       @Override
       protected boolean isDirectory(File path) {
@@ -58,42 +61,39 @@ public class CopyFileUploadHandlerTest extends TestCase {
     };
   }
 
-  protected void replay() {
-    methodsControl.replay();
-  }
-
-  protected void verify() {
-    methodsControl.verify();
-  }
-
+  @Test
   public void testUpload_dstDirectory() throws Exception {
     File src = new File("/path/to/src");
     File dst = new File("/path/to/dst");
     URI dstUri = URI.create("copy:///path/to/dst");
 
-    methods.isDirectory(new File("/path/to/dst"));
-    methodsControl.setReturnValue(true);
+    expect(methods.isDirectory(new File("/path/to/dst"))).andReturn(true);
     methods.copyFileToDirectory(src, dst);
-    replay();
+    
+    replayAll();
 
     classUnderTest.upload(src, dstUri);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_dstFile() throws Exception {
     File src = new File("/path/to/src");
     File dst = new File("/path/to/dst");
     URI dstUri = URI.create("copy:///path/to/dst");
 
-    methods.isDirectory(new File("/path/to/dst"));
-    methodsControl.setReturnValue(false);
+    expect(methods.isDirectory(new File("/path/to/dst"))).andReturn(false);
     methods.copyFile(src, dst);
-    replay();
+    
+    replayAll();
 
     classUnderTest.upload(src, dstUri);
-    verify();
+    
+    verifyAll();
   }
 
+  @Test
   public void testUpload_invalidURI() throws Exception {
     File src = new File("/path/to/src");
     URI dstUri = URI.create("copy://host");

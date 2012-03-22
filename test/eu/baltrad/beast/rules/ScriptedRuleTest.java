@@ -17,40 +17,44 @@ You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules;
-import org.easymock.MockControl;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
+import org.easymock.EasyMockSupport;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.IBltMessage;
-
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  *
  */
-public class ScriptedRuleTest extends TestCase {
+public class ScriptedRuleTest extends EasyMockSupport {
+  @Test
   public void testConstructor() {
     ScriptedRule classUnderTest = new ScriptedRule(null, "groovy", "something");
     assertEquals("groovy", classUnderTest.getType());
     assertEquals("something", classUnderTest.getDefinition());
   }
   
+  @Test
   public void testHandle() {
-    MockControl sruleControl = MockControl.createControl(IScriptableRule.class);
-    IScriptableRule srule = (IScriptableRule)sruleControl.getMock();
+    IScriptableRule srule = createMock(IScriptableRule.class);
 
     IBltMessage msg = new IBltMessage(){};
     IBltMessage resmsg = new IBltMessage(){};
     
-    srule.handle(msg);
-    sruleControl.setReturnValue(resmsg);
-    sruleControl.replay();
+    expect(srule.handle(msg)).andReturn(resmsg);
+
+    replayAll();
     
     // Execute test
     ScriptedRule classUnderTest = new ScriptedRule(srule, null, null);
     IBltMessage result = classUnderTest.handle(msg);
     
     // verify
-    sruleControl.verify();
+    verifyAll();
     assertSame(result, resmsg);
   }
 }

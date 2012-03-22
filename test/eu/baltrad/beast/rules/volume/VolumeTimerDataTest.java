@@ -18,14 +18,20 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.volume;
 
-import eu.baltrad.bdb.util.DateTime;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import eu.baltrad.bdb.util.DateTime;
 
 /**
  * @author Anders Henja
  */
-public class VolumeTimerDataTest extends TestCase {
+public class VolumeTimerDataTest {
+  @Test
   public void testConstructor() {
     DateTime dt = new DateTime(2010,1,1,1,10,10);
     VolumeTimerData o = new VolumeTimerData(1,dt,"seang");
@@ -33,6 +39,7 @@ public class VolumeTimerDataTest extends TestCase {
     assertEquals("seang", o.getSource());
   }
 
+  @Test
   public void testConstructor_null() {
     try {
       new VolumeTimerData(1, null, "seang");
@@ -42,6 +49,7 @@ public class VolumeTimerDataTest extends TestCase {
     }
   }
 
+  @Test
   public void testConstructor_nullSource() {
     try {
       new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10),null);
@@ -51,6 +59,7 @@ public class VolumeTimerDataTest extends TestCase {
     }
   }
   
+  @Test
   public void testEquals() throws Exception {
     VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
     VolumeTimerData o2 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
@@ -60,6 +69,7 @@ public class VolumeTimerDataTest extends TestCase {
     assertTrue(o2.equals(o2));
   }
 
+  @Test
   public void testEquals_differentRuleId() throws Exception {
     VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
     VolumeTimerData o2 = new VolumeTimerData(2, new DateTime(2010,1,1,1,10,10), "seang");
@@ -67,6 +77,7 @@ public class VolumeTimerDataTest extends TestCase {
     assertFalse(o2.equals(o1));
   }
 
+  @Test
   public void testEquals_differentDateId() throws Exception {
     VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
     VolumeTimerData o2 = new VolumeTimerData(1, new DateTime(2010,2,1,1,10,10), "seang");
@@ -74,12 +85,14 @@ public class VolumeTimerDataTest extends TestCase {
     assertFalse(o2.equals(o1));
   }
   
+  @Test
   public void testEquals_notSameClass() throws Exception {
     VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
     Object o2 = new Object();
     assertFalse(o1.equals(o2));
   }
 
+  @Test
   public void testEquals_null() throws Exception {
     VolumeTimerData o1 = new VolumeTimerData(1, new DateTime(2010,1,1,1,10,10), "seang");
     assertFalse(o1.equals(null));

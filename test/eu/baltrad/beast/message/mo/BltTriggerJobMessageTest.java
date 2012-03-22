@@ -18,17 +18,21 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message.mo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.MessageParserException;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
  */
-public class BltTriggerJobMessageTest extends TestCase {
+public class BltTriggerJobMessageTest {
+  @Test
   public void testSetId() {
     BltTriggerJobMessage classUnderTest = new BltTriggerJobMessage();
     assertEquals(null, classUnderTest.getId());
@@ -36,6 +40,7 @@ public class BltTriggerJobMessageTest extends TestCase {
     assertEquals("a.b", classUnderTest.getId());
   }
 
+  @Test
   public void testSetName() {
     BltTriggerJobMessage classUnderTest = new BltTriggerJobMessage();
     assertEquals(null, classUnderTest.getName());
@@ -43,6 +48,7 @@ public class BltTriggerJobMessageTest extends TestCase {
     assertEquals("a.b", classUnderTest.getName());
   }
 
+  @Test
   public void testSetArguments() {
     BltTriggerJobMessage classUnderTest = new BltTriggerJobMessage();
     String[] result = classUnderTest.getArgs();
@@ -54,6 +60,7 @@ public class BltTriggerJobMessageTest extends TestCase {
     assertEquals("b", result[1]);
   }
   
+  @Test
   public void testSetArguments_null() {
     BltTriggerJobMessage classUnderTest = new BltTriggerJobMessage();
     classUnderTest.setArgs(null);
@@ -61,6 +68,7 @@ public class BltTriggerJobMessageTest extends TestCase {
     assertEquals(0, result.length);
   }
 
+  @Test
   public void testFromDocument() throws Exception {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("blttriggerjob");
@@ -84,6 +92,7 @@ public class BltTriggerJobMessageTest extends TestCase {
     assertEquals("arg2", args[1]);
   }
 
+  @Test
   public void testFromDocument_notBltGenerate() throws Exception {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("bltadm");
@@ -100,6 +109,7 @@ public class BltTriggerJobMessageTest extends TestCase {
     }
   }   
   
+  @Test
   public void testFromDocument_noArguments() throws Exception {
     Document document = DocumentHelper.createDocument();
     Element el = document.addElement("blttriggerjob");
@@ -117,6 +127,7 @@ public class BltTriggerJobMessageTest extends TestCase {
     assertEquals(0, args.length);
   }
   
+  @Test
   public void testToDocument() throws Exception {
     BltTriggerJobMessage classUnderTest = new BltTriggerJobMessage();
     classUnderTest.setId("a.id");
@@ -129,5 +140,4 @@ public class BltTriggerJobMessageTest extends TestCase {
     assertEquals("-k", result.valueOf("//blttriggerjob/arguments/arg[1]"));
     assertEquals("val", result.valueOf("//blttriggerjob/arguments/arg[2]"));
   }
-
 }

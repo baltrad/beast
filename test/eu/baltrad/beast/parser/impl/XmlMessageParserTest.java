@@ -18,11 +18,15 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.parser.impl;
 
-import junit.framework.TestCase;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.Test;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.IBltXmlMessage;
@@ -33,34 +37,18 @@ import eu.baltrad.beast.parser.IXmlMessageFactory;
  * Tests the XmlMessageParser
  * @author Anders Henja
  */
-public class XmlMessageParserTest extends TestCase {
+public class XmlMessageParserTest extends EasyMockSupport {
 
   private static interface ParseXmlMethod {
     public Document parseXml(String xml);
   }
-  
-  /**
-   * @see junit.framework.TestCase#setUp()
-   */
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
 
-  /**
-   * @see junit.framework.TestCase#tearDown()
-   */
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testParse() throws Exception {
     // Setup
-    MockControl factoryControl = MockControl.createControl(IXmlMessageFactory.class);
-    IXmlMessageFactory factory = (IXmlMessageFactory)factoryControl.getMock();
-    MockControl parseXmlControl = MockControl.createControl(ParseXmlMethod.class);
-    final ParseXmlMethod parseXml = (ParseXmlMethod)parseXmlControl.getMock();
-    MockControl msgControl = MockControl.createControl(IBltXmlMessage.class);
-    IBltXmlMessage msg = (IBltXmlMessage)msgControl.getMock();
+    IXmlMessageFactory factory = createMock(IXmlMessageFactory.class);
+    final ParseXmlMethod parseXml = createMock(ParseXmlMethod.class);
+    IBltXmlMessage msg = createMock(IBltXmlMessage.class);
     
     XmlMessageParser classUnderTest = new XmlMessageParser() {
       protected Document parseXml(String xml) {
@@ -73,26 +61,20 @@ public class XmlMessageParserTest extends TestCase {
     Document dom = DocumentHelper.createDocument();
     dom.addElement("sometag");
     String xml = "somexml";
-    parseXml.parseXml(xml);
-    parseXmlControl.setReturnValue(dom);
-    factory.createMessage("sometag");
-    factoryControl.setReturnValue(msg);
+    expect(parseXml.parseXml(xml)).andReturn(dom);
+    expect(factory.createMessage("sometag")).andReturn(msg);
     msg.fromDocument(dom);
     
-    parseXmlControl.replay();
-    factoryControl.replay();
-    msgControl.replay();
+    replayAll();
     
     IBltMessage result = classUnderTest.parse(xml);
     
     // Verify
-    parseXmlControl.verify();
-    factoryControl.verify();
-    msgControl.verify();
+    verifyAll();
     assertSame(msg, result);
-    
   }
-  
+
+  @Test
   public void testParse_illegalXml() {
     String xml = "<bltdexdata";
     XmlMessageParser classUnderTest = new XmlMessageParser();
@@ -104,6 +86,7 @@ public class XmlMessageParserTest extends TestCase {
     }
   }
   
+  @Test
   public void testParseXml_1() throws Exception {
     String xml =
       "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"+
@@ -113,6 +96,7 @@ public class XmlMessageParserTest extends TestCase {
     assertEquals("bltdexdata", result.getRootElement().getName());
   }
 
+  @Test
   public void testParseXml_2() throws Exception {
     String xml =
       "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"+

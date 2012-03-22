@@ -18,10 +18,18 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.xmlrpc;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.Test;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -29,18 +37,18 @@ import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorConfiguration;
 import eu.baltrad.beast.message.IBltMessage;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
- *
  */
-public class XmlRpcConfigurationManagerTest extends TestCase {
+public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
+  @Test
   public void testGetType() {
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     assertEquals("XMLRPC", classUnderTest.getType());
   }
   
+  @Test
   public void testCreateConfiguration() {
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     IAdaptorConfiguration result = classUnderTest.createConfiguration("ABC");
@@ -49,9 +57,9 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     assertEquals("XMLRPC", result.getType());
   }
   
+  @Test
   public void testStore() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
     
     IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
       public XmlRpcCommand generate(IBltMessage message) {return null;}
@@ -65,18 +73,16 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("http://somepath/somewhere");
     conf.setTimeout(6000);
     
-    jdbc.update("insert into beast_adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
-        new Object[]{2, "http://somepath/somewhere", (long)6000});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("insert into beast_adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
+        new Object[]{2, "http://somepath/somewhere", (long)6000})).andReturn(0);
     
-    jdbcControl.replay();
+    replayAll();
     
     // execute test
     IAdaptor result = classUnderTest.store(2, conf);
     
     // verify
-    jdbcControl.verify();
+    verifyAll();
     assertNotNull(result);
     assertTrue (result.getClass() == XmlRpcAdaptor.class);
     assertEquals("ABC", ((XmlRpcAdaptor)result).getName());
@@ -85,9 +91,9 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     assertSame(generator, ((XmlRpcAdaptor)result).getGenerator());
   }
   
+  @Test
   public void testStore_cannotStore() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
     
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
@@ -96,12 +102,10 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("http://somepath/somewhere");
     conf.setTimeout(6000);
     
-    jdbc.update("insert into beast_adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
-        new Object[]{2, "http://somepath/somewhere", (long)6000});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
+    expect(jdbc.update("insert into beast_adaptors_xmlrpc (adaptor_id, uri, timeout) values (?,?,?)",
+        new Object[]{2, "http://somepath/somewhere", (long)6000})).andThrow(new DataRetrievalFailureException("x"));
     
-    jdbcControl.replay();
+    replayAll();
     
     // execute test
     try {
@@ -112,12 +116,12 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     }
     
     // verify
-    jdbcControl.verify();
+    verifyAll();
   }  
 
+  @Test
   public void testStore_canNotCreateAdaptor() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
     
     IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
       public XmlRpcCommand generate(IBltMessage message) {return null;}
@@ -131,7 +135,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("httpsomebadurl");
     conf.setTimeout(6000);
     
-    jdbcControl.replay();
+    replayAll();
     
     // execute test
     try {
@@ -142,12 +146,12 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     }
     
     // verify
-    jdbcControl.verify();
+    verifyAll();
   }  
   
+  @Test
   public void testUpdate() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
 
     IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
       public XmlRpcCommand generate(IBltMessage message) {return null;}
@@ -161,17 +165,16 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("http://somepath/somewhere");
     conf.setTimeout(6000);
     
-    jdbc.update("update beast_adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
-        new Object[]{"http://somepath/somewhere", (long)6000, 2});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
-    jdbcControl.replay();
+    expect(jdbc.update("update beast_adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
+        new Object[]{"http://somepath/somewhere", (long)6000, 2})).andReturn(0);
+
+    replayAll();
     
     // execute test
     IAdaptor result = classUnderTest.update(2, conf);
     
     // verify
-    jdbcControl.verify();
+    verifyAll();
     assertNotNull(result);
     assertTrue (result.getClass() == XmlRpcAdaptor.class);
     assertEquals("ABC", ((XmlRpcAdaptor)result).getName());
@@ -180,9 +183,9 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     assertSame(generator, ((XmlRpcAdaptor)result).getGenerator());
   }   
 
+  @Test
   public void testUpdate_notDefined() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
 
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
@@ -191,12 +194,10 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("http://somepath/somewhere");
     conf.setTimeout(6000);
     
-    jdbc.update("update beast_adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
-        new Object[]{"http://somepath/somewhere", (long)6000, 2});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
+    expect(jdbc.update("update beast_adaptors_xmlrpc set uri=?, timeout=? where adaptor_id=?",
+        new Object[]{"http://somepath/somewhere", (long)6000, 2})).andThrow(new DataRetrievalFailureException("x"));
 
-    jdbcControl.replay();
+    replayAll();
     
     // execute test
     try {
@@ -207,12 +208,12 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     }
     
     // verify
-    jdbcControl.verify();
+    verifyAll();
   }   
 
+  @Test
   public void testUpdate_canNotUpdate() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
 
     IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
       public XmlRpcCommand generate(IBltMessage message) {return null;}
@@ -226,7 +227,7 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     conf.setURL("httpsomepath");
     conf.setTimeout(6000);
     
-    jdbcControl.replay();
+    replayAll();
     
     // execute test
     try {
@@ -237,43 +238,39 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     }
     
     // verify
-    jdbcControl.verify();
+    verifyAll();
   }   
   
+  @Test
   public void testRemove() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
     
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
     
-    jdbc.update("delete from beast_adaptors_xmlrpc where adaptor_id=?",
-        new Object[]{10});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("delete from beast_adaptors_xmlrpc where adaptor_id=?",
+        new Object[]{10})).andReturn(0);
     
-    jdbcControl.replay();
+    replayAll();
     
     // execute test
     classUnderTest.remove(10);
     
     // verify
-    jdbcControl.verify();
+    verifyAll();
   }
   
+  @Test
   public void testCannotRemove() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
     
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
     
-    jdbc.update("delete from beast_adaptors_xmlrpc where adaptor_id=?",
-        new Object[]{10});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setThrowable(new DataRetrievalFailureException("x"));
+    expect(jdbc.update("delete from beast_adaptors_xmlrpc where adaptor_id=?",
+        new Object[]{10})).andThrow(new DataRetrievalFailureException("x"));
     
-    jdbcControl.replay();
+    replayAll();
     
     // execute test
     try {
@@ -284,32 +281,31 @@ public class XmlRpcConfigurationManagerTest extends TestCase {
     }
     
     // verify
-    jdbcControl.verify();
+    verifyAll();
   }  
   
+  @Test
   public void testRead() throws Exception {
-    MockControl jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    SimpleJdbcOperations jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
+    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
 
     Map<String, Object> foundEntry = new HashMap<String, Object>();
     foundEntry.put("uri", "http://someurl");
     foundEntry.put("timeout", (int)2000);
     
-    jdbc.queryForMap("select uri, timeout from beast_adaptors_xmlrpc where adaptor_id=?", new Object[]{10});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(foundEntry);
+    expect(jdbc.queryForMap("select uri, timeout from beast_adaptors_xmlrpc where adaptor_id=?",
+        new Object[]{10})).andReturn(foundEntry);
 
     XmlRpcCommandGenerator generator = new XmlRpcCommandGenerator();
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
     classUnderTest.setGenerator(generator);
-    jdbcControl.replay();
+    replayAll();
     
     // Execute test
     XmlRpcAdaptor result = (XmlRpcAdaptor)classUnderTest.read(10, "SA1");
 
     // verify
-    jdbcControl.verify();
+    verifyAll();
     assertEquals("SA1", result.getName());
     assertEquals(2000, result.getTimeout());
     assertEquals("http://someurl", result.getUrl());

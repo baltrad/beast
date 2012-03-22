@@ -18,6 +18,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.pgfwk;
 
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,14 +28,13 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcHandler;
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author Anders Henja
- *
  */
-public class BaltradXmlRpcHandlerMappingTest extends TestCase {
+public class BaltradXmlRpcHandlerMappingTest {
+  @Test
   public void testGetHandler() throws Exception {
     XmlRpcHandler handler1 = new XmlRpcHandler() {
       public Object execute(XmlRpcRequest request) throws XmlRpcException {return null;}
@@ -54,6 +56,7 @@ public class BaltradXmlRpcHandlerMappingTest extends TestCase {
     assertSame(handler2, result);
   }
 
+  @Test
   public void testGetHandler_noneFound() throws Exception {
     XmlRpcHandler handler1 = new XmlRpcHandler() {
       public Object execute(XmlRpcRequest request) throws XmlRpcException {return null;}
@@ -77,6 +80,7 @@ public class BaltradXmlRpcHandlerMappingTest extends TestCase {
     }
   }
   
+  @Test
   public void testGetHandler_null() throws Exception {
     XmlRpcHandler handler1 = new XmlRpcHandler() {
       public Object execute(XmlRpcRequest request) throws XmlRpcException {return null;}
@@ -99,5 +103,4 @@ public class BaltradXmlRpcHandlerMappingTest extends TestCase {
       // pass
     }
   }  
-
 }

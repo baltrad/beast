@@ -18,62 +18,56 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.groovy;
 
-import junit.framework.TestCase;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 /**
  * @author Anders Henja
- *
  */
-public class GroovyRuleManagerTest extends TestCase {
+public class GroovyRuleManagerTest extends EasyMockSupport {
   private static interface ManagerMethods {
     public GroovyRule createRule(String script);
   };
 
   private GroovyRuleManager classUnderTest = null;
-  private MockControl jdbcControl = null;
   private SimpleJdbcOperations jdbc = null;
-  
-  protected void setUp() throws Exception {
-    jdbcControl = MockControl.createControl(SimpleJdbcOperations.class);
-    jdbc = (SimpleJdbcOperations)jdbcControl.getMock();
-    
+
+  @Before
+  public void setUp() throws Exception {
+    jdbc = createMock(SimpleJdbcOperations.class);
     classUnderTest = new GroovyRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
   }
-  
-  protected void tearDown() throws Exception {
+
+  @After
+  public void tearDown() throws Exception {
     jdbc = null;
-    jdbcControl = null;
     classUnderTest = null;
   }
-  
-  protected void replay() {
-    jdbcControl.replay();
-  }
-  
-  protected void verify() {
-    jdbcControl.verify();
-  }
-  
+
+  @Test
   public void testDelete() throws Exception {
-    jdbc.update("delete from beast_groovy_rules where rule_id=?", new Object[]{0});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("delete from beast_groovy_rules where rule_id=?", new Object[]{0})).andReturn(0);
     
-    replay();
+    replayAll();
+    
     classUnderTest.delete(0);
-    verify();
+    
+    verifyAll();
   }
   
+  @Test
   public void testLoad() throws Exception {
     GroovyRule kallerule = new GroovyRule();
     
-    MockControl methodsControl = MockControl.createControl(ManagerMethods.class);
-    
-    final ManagerMethods methods = (ManagerMethods)methodsControl.getMock();
+    final ManagerMethods methods = createMock(ManagerMethods.class);
     classUnderTest = new GroovyRuleManager() {
       protected GroovyRule createRule(String script) {
         return methods.createRule(script);
@@ -82,23 +76,19 @@ public class GroovyRuleManagerTest extends TestCase {
     classUnderTest.setJdbcTemplate(jdbc);
     
     
-    jdbc.queryForObject("select definition from beast_groovy_rules where rule_id=?",
-        String.class, new Object[]{0});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue("KALLE");
-    methods.createRule("KALLE");
-    methodsControl.setReturnValue(kallerule);
+    expect(jdbc.queryForObject("select definition from beast_groovy_rules where rule_id=?",
+        String.class, new Object[]{0})).andReturn("KALLE");
+    expect(methods.createRule("KALLE")).andReturn(kallerule);
     
-    replay();
-    methodsControl.replay();
+    replayAll();
     
     GroovyRule result = (GroovyRule)classUnderTest.load(0);
     
-    verify();
-    methodsControl.verify();
+    verifyAll();
     assertSame(kallerule, result);
   }
-  
+
+  @Test
   public void testStore() throws Exception {
     GroovyRule rule = new GroovyRule() {
       public String getScript() {
@@ -106,18 +96,17 @@ public class GroovyRuleManagerTest extends TestCase {
       }
     };
 
-    jdbc.update("insert into beast_groovy_rules (rule_id, definition) values (?,?)",
-        new Object[]{0,"KALLE"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("insert into beast_groovy_rules (rule_id, definition) values (?,?)",
+        new Object[]{0,"KALLE"})).andReturn(1);
     
-    replay();
+    replayAll();
     
     classUnderTest.store(0, rule);
     
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testUpdate() throws Exception {
     GroovyRule rule = new GroovyRule() {
       public String getScript() {
@@ -125,18 +114,17 @@ public class GroovyRuleManagerTest extends TestCase {
       }
     };
 
-    jdbc.update("update beast_groovy_rules set definition=? where rule_id=?",
-        new Object[]{0,"KALLE"});
-    jdbcControl.setMatcher(MockControl.ARRAY_MATCHER);
-    jdbcControl.setReturnValue(0);
+    expect(jdbc.update("update beast_groovy_rules set definition=? where rule_id=?",
+        new Object[]{0,"KALLE"})).andReturn(1);
     
-    replay();
+    replayAll();
     
     classUnderTest.update(0, rule);
     
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testCreateRule() throws Exception {
     GroovyRule result = (GroovyRule)classUnderTest.createRule();
     assertNotNull(result);

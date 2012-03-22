@@ -19,9 +19,13 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.log;
 
-import junit.framework.TestCase;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
 
-import org.easymock.MockControl;
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
@@ -31,31 +35,22 @@ import eu.baltrad.beast.message.mo.BltAlertMessage;
  * @author Anders Henja
  * @date Dec 20, 2011
  */
-public class AlertMessageReporterTest extends TestCase {
+public class AlertMessageReporterTest extends EasyMockSupport {
   interface Methods {
     public BltAlertMessage createAlert(String module, String severity, String code, String message);
     public String getMessage(String module, String code, String message, Object... args);
   };
 
-  private MockControl repositoryControl = null;
   private ILogMessageRepository repository = null;
-  private MockControl methodsControl = null;
   private Methods methods = null;
-  private MockControl managerControl = null;
   private IBltMessageManager manager = null;
   private AlertMessageReporter classUnderTest = null;
-  
-  /**
-   * @see junit.framework.TestCase#setUp()
-   */
-  protected void setUp() throws Exception {
-    super.setUp();
-    repositoryControl = MockControl.createControl(ILogMessageRepository.class);
-    repository = (ILogMessageRepository)repositoryControl.getMock();
-    methodsControl = MockControl.createControl(Methods.class);
-    methods = (Methods)methodsControl.getMock();
-    managerControl = MockControl.createControl(IBltMessageManager.class);
-    manager = (IBltMessageManager)managerControl.getMock();
+
+  @Before
+  public void setUp() throws Exception {
+    repository = createMock(ILogMessageRepository.class);
+    methods = createMock(Methods.class);
+    manager = createMock(IBltMessageManager.class);
     
     classUnderTest = new AlertMessageReporter() {
       protected String getMessage(String module, String code, String message, Object... args) {
@@ -69,156 +64,137 @@ public class AlertMessageReporterTest extends TestCase {
     classUnderTest.setMessageManager(manager);
   }
 
-  /**
-   * @see junit.framework.TestCase#tearDown()
-   */
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    repositoryControl = null;
+  @After
+  public void tearDown() throws Exception {
     repository = null;
-    methodsControl = null;
     methods = null;
     classUnderTest = null;
   }
   
-  protected void replay() {
-    repositoryControl.replay();
-    methodsControl.replay();
-    managerControl.replay();
-  }
-  
-  protected void verify() {
-    repositoryControl.verify();
-    methodsControl.verify();
-    managerControl.verify();
-  }
-
+  @Test
   public void testInfo_onlymessage() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
     
-    methods.createAlert("BEAST", "INFO", "XXXXX", "We got a message");
-    methodsControl.setReturnValue(bltmsg);
+    expect(methods.createAlert("BEAST", "INFO", "XXXXX", "We got a message")).andReturn(bltmsg);
     manager.manage(bltmsg);
     
-    replay();
+    replayAll();
     
     classUnderTest.info("We got a message");
     
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testInfo() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
     Object[] args = new Object[]{"a"};
     
-    methods.getMessage("BEAST", "00001", "We got a message %s", args);
-    methodsControl.setReturnValue("We got a message a");
-    methods.createAlert("BEAST", "INFO", "00001", "We got a message a");
-    methodsControl.setReturnValue(bltmsg);
+    expect(methods.getMessage("BEAST", "00001", "We got a message %s", args)).andReturn("We got a message a");
+    expect(methods.createAlert("BEAST", "INFO", "00001", "We got a message a")).andReturn(bltmsg);
     manager.manage(bltmsg);
     
-    replay();
+    replayAll();
     
     classUnderTest.info("00001", "We got a message %s", args);
     
-    verify();
+    verifyAll();
   }
 
+  @Test
   public void testWarning() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
     Object[] args = new Object[]{"a"};
     
-    methods.getMessage("BEAST", "00001", "We got a message %s", args);
-    methodsControl.setReturnValue("We got a message a");
-    methods.createAlert("BEAST", "WARNING", "00001", "We got a message a");
-    methodsControl.setReturnValue(bltmsg);
+    expect(methods.getMessage("BEAST", "00001", "We got a message %s", args)).andReturn("We got a message a");
+    expect(methods.createAlert("BEAST", "WARNING", "00001", "We got a message a")).andReturn(bltmsg);
     manager.manage(bltmsg);
     
-    replay();
+    replayAll();
     
     classUnderTest.warn("00001", "We got a message %s", args);
     
-    verify();
+    verifyAll();
   }
  
+  @Test
   public void testError() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
     Object[] args = new Object[]{"a"};
     
-    methods.getMessage("BEAST", "00001", "We got a message %s", args);
-    methodsControl.setReturnValue("We got a message a");
-    methods.createAlert("BEAST", "ERROR", "00001", "We got a message a");
-    methodsControl.setReturnValue(bltmsg);
+    expect(methods.getMessage("BEAST", "00001", "We got a message %s", args)).andReturn("We got a message a");
+    expect(methods.createAlert("BEAST", "ERROR", "00001", "We got a message a")).andReturn(bltmsg);
     manager.manage(bltmsg);
     
-    replay();
+    replayAll();
     
     classUnderTest.error("00001", "We got a message %s", args);
     
-    verify();
+    verifyAll();
   }  
 
+  @Test
   public void testFatal() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
     Object[] args = new Object[]{"a"};
     
-    methods.getMessage("BEAST", "00001", "We got a message %s", args);
-    methodsControl.setReturnValue("We got a message a");
-    methods.createAlert("BEAST", "FATAL", "00001", "We got a message a");
-    methodsControl.setReturnValue(bltmsg);
+    expect(methods.getMessage("BEAST", "00001", "We got a message %s", args)).andReturn("We got a message a");
+    expect(methods.createAlert("BEAST", "FATAL", "00001", "We got a message a")).andReturn(bltmsg);
     manager.manage(bltmsg);
     
-    replay();
+    replayAll();
     
     classUnderTest.fatal("00001", "We got a message %s", args);
     
-    verify();
+    verifyAll();
   }
   
+  @Test
   public void testCreateMessage() throws Exception {
     classUnderTest = new AlertMessageReporter();
     
-    replay();
+    replayAll();
     
     BltAlertMessage result = classUnderTest.createAlert("NISSE",BltAlertMessage.INFO, "00001", "we got something");
     
-    verify();
+    verifyAll();
     
     assertEquals("NISSE", result.getModule());
     assertEquals(BltAlertMessage.INFO, result.getSeverity());
     assertEquals("00001", result.getCode());
     assertEquals("we got something", result.getMessage());
   }
-   
-  
+
+  @Test
   public void testGetMessage() throws Exception {
     Object[] args = new Object[]{"is"};
-    repository.getMessage("MODULE1", "00001", "This %s ok", args);
-    repositoryControl.setReturnValue("This is ok");
+    
+    expect(repository.getMessage("MODULE1", "00001", "This %s ok", args)).andReturn("This is ok");
 
-    replay();
+    replayAll();
 
     classUnderTest = new AlertMessageReporter();
     classUnderTest.setMessageRepository(repository);
     
     String result = classUnderTest.getMessage("MODULE1", "00001", "This %s ok", args);
     
-    verify();
+    verifyAll();
     
     assertEquals("This is ok", result);
   }
   
+  @Test
   public void testGetMessage_nullRepository() throws Exception {
     Object[] args = new Object[]{"is"};
 
-    replay();
+    replayAll();
 
     classUnderTest = new AlertMessageReporter();
     classUnderTest.setMessageRepository(null);
     
     String result = classUnderTest.getMessage("MODULE1", "00001", "This %s ok", args);
     
-    verify();
+    verifyAll();
     
     assertEquals("This is ok", result);
   }
