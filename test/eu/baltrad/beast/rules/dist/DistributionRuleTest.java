@@ -168,6 +168,7 @@ public class DistributionRuleTest extends EasyMockSupport {
     verifyAll();
   }
 
+  @Test
   public void testGetProperties() {
     classUnderTest.setDestination("scheme:///");
     Map<String, String> props = classUnderTest.getProperties();
@@ -175,6 +176,7 @@ public class DistributionRuleTest extends EasyMockSupport {
     assertEquals(1, props.size());
   }
 
+  @Test
   public void testGetProperties_templateNamer() {
     classUnderTest.setDestination("scheme:///");
     classUnderTest.setMetadataNamingTemplate("namingTemplate");
@@ -184,6 +186,7 @@ public class DistributionRuleTest extends EasyMockSupport {
     assertEquals(2, props.size());
   }
 
+  @Test
   public void testSetProperties() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("destination", "scheme:///");
@@ -193,6 +196,7 @@ public class DistributionRuleTest extends EasyMockSupport {
     assertNull(classUnderTest.getMetadataNamingTemplate());
   }
 
+  @Test
   public void testSetProperties_templateNamer() {
     Map<String, String> props = new HashMap<String, String>();
     props.put("destination", "scheme:///");
