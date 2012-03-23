@@ -25,8 +25,6 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
-import junit.framework.TestCase;
-
 import eu.baltrad.bdb.db.Database;
 import eu.baltrad.bdb.db.rest.RestfulDatabase;
 
@@ -150,7 +148,7 @@ public class BeastDBTestHelper {
    * @param tc the test case
    * @return the application context
    */
-  public static AbstractApplicationContext loadContext(TestCase tc) {
+  public static AbstractApplicationContext loadContext(Object tc) {
     String cln = getClassName(tc.getClass());
     String cname = cln + "-context.xml";
     File f = new File(tc.getClass().getResource(cname).getFile());
@@ -166,7 +164,7 @@ public class BeastDBTestHelper {
    * @param tc
    * @return
    */
-  public static AbstractApplicationContext loadDbContext(TestCase tc) {
+  public static AbstractApplicationContext loadDbContext(Object tc) {
     String cln = getClassName(tc.getClass());
     String cname = cln + "-dbcontext.xml";
     File f = new File(tc.getClass().getResource(cname).getFile());
@@ -183,6 +181,7 @@ public class BeastDBTestHelper {
     template.update("delete from beast_volume_detectors");
     template.update("delete from beast_volume_sources");
     template.update("delete from beast_volume_rules");
+    template.update("delete from beast_gmap_rules");
     template.update("delete from beast_adaptors_xmlrpc");
     template.update("delete from beast_adaptors");
     template.update("delete from beast_rule_properties");
@@ -201,7 +200,7 @@ public class BeastDBTestHelper {
    * @param source
    * @param tc
    */
-  public void cleanInsert(TestCase tc) throws Exception {
+  public void cleanInsert(Object tc) throws Exception {
     Connection conn = source.getConnection();
     try {
       tearDown();
@@ -222,7 +221,7 @@ public class BeastDBTestHelper {
    * @return the dataset
    * @throws Exception
    */
-  public XlsDataSet getXlsDataset(TestCase tc, String extras) throws Exception {
+  public XlsDataSet getXlsDataset(Object tc, String extras) throws Exception {
     String cln = getClassName(tc.getClass());
     String cname = cln;
     if (extras != null) {
@@ -276,7 +275,7 @@ public class BeastDBTestHelper {
    * @return the table
    * @throws Exception
    */
-  public ITable getXlsTable(TestCase tc, String extras, String name, String[] order) throws Exception {
+  public ITable getXlsTable(Object tc, String extras, String name, String[] order) throws Exception {
     IDataSet dataset = getXlsDataset(tc, extras);
     if (order != null) {
       return new SortedTable(dataset.getTable(name),order);
@@ -293,7 +292,7 @@ public class BeastDBTestHelper {
    * @return the table
    * @throws Exception
    */
-  public ITable getXlsTable(TestCase tc, String extras, String name) throws Exception {
+  public ITable getXlsTable(Object tc, String extras, String name) throws Exception {
     return getXlsTable(tc,extras,name,null);
   }
   

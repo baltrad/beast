@@ -113,6 +113,12 @@ create table beast_volume_detectors (
   name text REFERENCES beast_anomaly_detectors(name)
 );
 
+create table beast_gmap_rules (
+  rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
+  area TEXT NOT NULL,
+  path TEXT
+);
+
 create table beast_scheduled_jobs (
   id SERIAL PRIMARY KEY,
   expression text NOT NULL,
