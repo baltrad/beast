@@ -370,7 +370,7 @@ public class CompositingRuleTest extends EasyMockSupport {
   
   protected CatalogEntry createExpectCatalogEntry(String source) {
     CatalogEntry entry = createMock(CatalogEntry.class);
-    expect(entry.getUuid()).andReturn("uuid");
+    expect(entry.getUuid()).andReturn("uuid-"+source);
     return entry;
   }
 
@@ -462,10 +462,11 @@ public class CompositingRuleTest extends EasyMockSupport {
     entriesBySources.add(createExpectCatalogEntry("selul"));
     entriesBySources.add(createExpectCatalogEntry("searl"));
     
+    /*
     List<String> fileEntries = new ArrayList<String>();
     fileEntries.add("/tmp/sekkr.h5");
     fileEntries.add("/tmp/selul.h5");
-    fileEntries.add("/tmp/searl.h5");
+    fileEntries.add("/tmp/searl.h5");*/
     
     classUnderTest.setArea("blt_composite");
     
@@ -477,7 +478,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     
     expect(ruleUtil.getEntriesByClosestTime(nominalTime, entries)).andReturn(entriesByTime);
     expect(ruleUtil.getEntriesBySources(sources, entriesByTime)).andReturn(entriesBySources);
-    expect(ruleUtil.getFilesFromEntries(entriesBySources)).andReturn(fileEntries);
+    //expect(ruleUtil.getFilesFromEntries(entriesBySources)).andReturn(fileEntries);
 
     classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     classUnderTest.setDetectors(detectors);
@@ -496,9 +497,9 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
     String[] files = msg.getFiles();
     assertEquals(3, files.length);
-    assertTrue(arrayContains(files, "/tmp/sekkr.h5"));
-    assertTrue(arrayContains(files, "/tmp/selul.h5"));
-    assertTrue(arrayContains(files, "/tmp/searl.h5"));
+    assertTrue(arrayContains(files, "uuid-sekkr"));
+    assertTrue(arrayContains(files, "uuid-selul"));
+    assertTrue(arrayContains(files, "uuid-searl"));
     String[] arguments = msg.getArguments();
     assertEquals(7, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);

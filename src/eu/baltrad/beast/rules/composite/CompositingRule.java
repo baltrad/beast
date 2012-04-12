@@ -543,11 +543,14 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     logger.debug("createMessage: filtering for sources: " +
                  StringUtils.collectionToDelimitedString(sources, " "));
     entries = ruleUtil.getEntriesBySources(sources, entries);
+    List<String> uuids = getUuidsFromEntries(entries);
     logger.debug("createMessage: entries: " +
-                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
+                 StringUtils.collectionToDelimitedString(uuids, " "));
     
-    List<String> files = ruleUtil.getFilesFromEntries(entries);
-    result.setFiles(files.toArray(new String[0]));
+    //List<String> uuids = getUuidsFromEntries(entries);
+    result.setFiles(uuids.toArray(new String[0]));
+    //List<String> files = ruleUtil.getFilesFromEntries(entries);
+    //result.setFiles(files.toArray(new String[0]));
 
     List<String> args = new ArrayList<String>();
     args.add("--area="+area);
