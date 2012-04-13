@@ -97,7 +97,7 @@ public class GoogleMapRule implements IRule, InitializingBean {
 	          String oname = createOutputName(d, t);
 	          result = new BltGenerateMessage();
 	          result.setAlgorithm(BEAST_GMAP_ALGORITHM);
-	          result.setFiles(new String[]{catalog.getFileCatalogPath(fe.getUuid().toString())});
+	          result.setFiles(new String[]{fe.getUuid().toString()});
 	          result.setArguments(new String[]{"--outfile="+oname});
 	        }
 	      }

@@ -169,7 +169,7 @@ public class GoogleMapRuleTest extends EasyMockSupport {
     expect(metadata.getWhatDate()).andReturn(date);
     expect(metadata.getWhatTime()).andReturn(time);
     expect(fe.getUuid()).andReturn(uuid);
-    expect(catalog.getFileCatalogPath(uuid.toString())).andReturn("/nisse/1.h5");
+    //expect(catalog.getFileCatalogPath(uuid.toString())).andReturn("/nisse/1.h5");
     
     replayAll();
     
@@ -179,7 +179,7 @@ public class GoogleMapRuleTest extends EasyMockSupport {
     
     assertEquals("eu.baltrad.beast.creategmap", result.getAlgorithm());
     assertEquals(1, result.getFiles().length);
-    assertEquals("/nisse/1.h5", result.getFiles()[0]);
+    assertEquals(uuid.toString(), result.getFiles()[0]);
     assertEquals(1, result.getArguments().length);
     assertEquals("--outfile=/tmp/data/swegmaps/2010/01/01/201001011000.png", result.getArguments()[0]);
   }
