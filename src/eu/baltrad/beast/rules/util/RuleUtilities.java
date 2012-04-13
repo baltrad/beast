@@ -336,7 +336,7 @@ public class RuleUtilities implements IRuleUtilities {
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#getRadarSources()
    */
   public synchronized List<String> getRadarSources() {
-    List<Source> sources = catalog.getCatalog().getDatabase().getSources();
+    List<Source> sources = catalog.getCatalog().getDatabase().getSourceManager().getSources();
     List<String> radarNames = new ArrayList<String>(sources.size());
 
     for (Source src : sources) {

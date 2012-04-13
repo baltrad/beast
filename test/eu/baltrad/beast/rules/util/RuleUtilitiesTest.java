@@ -33,7 +33,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.Database;
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.SourceManager;
+import eu.baltrad.bdb.oh5.Source;
 import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.beast.db.Catalog;
@@ -46,12 +49,16 @@ public class RuleUtilitiesTest extends EasyMockSupport {
   private RuleUtilities classUnderTest = null;
   private Catalog catalog = null;
   private FileCatalog fileCatalog = null;
+  private Database database = null;
+  private SourceManager sourceManager = null;
   private LocalStorage storage = null;
 
   @Before
   public void setUp() throws Exception {
     catalog = createMock(Catalog.class);
     fileCatalog = createMock(FileCatalog.class);
+    database = createMock(Database.class);
+    sourceManager = createMock(SourceManager.class);
     storage = createMock(LocalStorage.class);
     classUnderTest = new RuleUtilities();
     classUnderTest.setCatalog(catalog);
@@ -62,6 +69,8 @@ public class RuleUtilitiesTest extends EasyMockSupport {
     classUnderTest = null;
     storage = null;
     fileCatalog = null;
+    database = null;
+    sourceManager = null;
     catalog = null;
   }
 
@@ -341,6 +350,35 @@ public class RuleUtilitiesTest extends EasyMockSupport {
     assertEquals(false, classUnderTest.isTriggered(21, d1));
   }
 
+  @Test
+  public void testGetSources() throws Exception {
+    List<Source> sources = new ArrayList<Source>();
+    
+    Source s1 = new Source("1");
+    s1.put("RAD", "se1");
+    Source s2 = new Source("2");
+    s2.put("PLC", "se2");
+    Source s3 = new Source("3");
+    s3.put("RAD", "se3");
+
+    sources.add(s1);
+    sources.add(s2);
+    sources.add(s3);
+    
+    expect(catalog.getCatalog()).andReturn(fileCatalog);
+    expect(fileCatalog.getDatabase()).andReturn(database);
+    expect(database.getSourceManager()).andReturn(sourceManager);
+    expect(sourceManager.getSources()).andReturn(sources);
+    
+    replayAll();
+    
+    List<String> result = classUnderTest.getRadarSources();
+    
+    verifyAll();
+    assertEquals(2, result.size());
+    assertEquals("1", result.get(0));
+    assertEquals("3", result.get(1));
+  }
   
   private CatalogEntry createCatalogEntry(String src, DateTime dt) {
     CatalogEntry entry = createMock(CatalogEntry.class);
