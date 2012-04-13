@@ -451,22 +451,13 @@ public class CompositingRuleTest extends EasyMockSupport {
     
     // actual entries don't matter, just make the list of different size to distinguish
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createExpectCatalogEntry("sekkr"));
-
     List<CatalogEntry> entriesByTime = new ArrayList<CatalogEntry>();
-    entriesByTime.add(createExpectCatalogEntry("sekkr"));
-    entriesByTime.add(createExpectCatalogEntry("selul"));
-
     List<CatalogEntry> entriesBySources = new ArrayList<CatalogEntry>();
-    entriesBySources.add(createExpectCatalogEntry("sekkr"));
-    entriesBySources.add(createExpectCatalogEntry("selul"));
-    entriesBySources.add(createExpectCatalogEntry("searl"));
     
-    /*
     List<String> fileEntries = new ArrayList<String>();
-    fileEntries.add("/tmp/sekkr.h5");
-    fileEntries.add("/tmp/selul.h5");
-    fileEntries.add("/tmp/searl.h5");*/
+    fileEntries.add("uuid-1");
+    fileEntries.add("uuid-2");
+    fileEntries.add("uuid-3");
     
     classUnderTest.setArea("blt_composite");
     
@@ -478,7 +469,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     
     expect(ruleUtil.getEntriesByClosestTime(nominalTime, entries)).andReturn(entriesByTime);
     expect(ruleUtil.getEntriesBySources(sources, entriesByTime)).andReturn(entriesBySources);
-    //expect(ruleUtil.getFilesFromEntries(entriesBySources)).andReturn(fileEntries);
+    expect(ruleUtil.getUuidStringsFromEntries(entriesBySources)).andReturn(fileEntries);
 
     classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     classUnderTest.setDetectors(detectors);
@@ -497,9 +488,9 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
     String[] files = msg.getFiles();
     assertEquals(3, files.length);
-    assertTrue(arrayContains(files, "uuid-sekkr"));
-    assertTrue(arrayContains(files, "uuid-selul"));
-    assertTrue(arrayContains(files, "uuid-searl"));
+    assertTrue(arrayContains(files, "uuid-1"));
+    assertTrue(arrayContains(files, "uuid-2"));
+    assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
     assertEquals(7, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);

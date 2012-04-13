@@ -170,13 +170,13 @@ public class VolumeRuleITest extends TestCase {
     int len = FIXTURES_1900.length - 3;
     for (int i = 0; i < len; i++) {
       f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES_1900[i])));
-      fixpaths[i] = catalog.getCatalog().getLocalStorage().store(f).toString();
+      fixpaths[i] = f.getUuid().toString(); //catalog.getCatalog().getLocalStorage().store(f).toString();
       result = classUnderTest.handle(createDataMessage(f));
       assertNull(result);
     }
 
     f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES_1900[FIXTURES_1900.length - 3])));
-    fixpaths[FIXTURES_1900.length - 3] = catalog.getCatalog().getLocalStorage().store(f).toString();
+    fixpaths[FIXTURES_1900.length - 3] = f.getUuid().toString(); //catalog.getCatalog().getLocalStorage().store(f).toString();
     result = classUnderTest.handle(createDataMessage(f));
 
     // And now, the two last scans will arrive and they should not trigger
@@ -305,12 +305,12 @@ public class VolumeRuleITest extends TestCase {
     // final one.
     for (int i = 0; i < FIXTURES_1900.length - 1; i++) {
       f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES_1900[i])));
-      path = catalog.getCatalog().getLocalStorage().store(f).toString();
+      path = f.getUuid().toString(); //catalog.getCatalog().getLocalStorage().store(f).toString();
       filemap.put(FIXTURES_1900[i], path);
     }
     
     f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES_1900[FIXTURES_1900.length-1])));
-    path = catalog.getCatalog().getLocalStorage().store(f).toString();
+    path = f.getUuid().toString(); //catalog.getCatalog().getLocalStorage().store(f).toString();
     filemap.put(FIXTURES_1900[FIXTURES_1900.length-1], path);
     
     BltGenerateMessage msg = (BltGenerateMessage)classUnderTest.handle(createDataMessage(f));
@@ -335,7 +335,7 @@ public class VolumeRuleITest extends TestCase {
     
     for (String fname: fixtures) {
       FileEntry f = catalog.getCatalog().store(new FileInputStream(getFilePath(fname)));
-      String path = catalog.getCatalog().getLocalStorage().store(f).toString();
+      String path = f.getUuid().toString(); //catalog.getCatalog().getLocalStorage().store(f).toString();
       handled.filemap.put(fname, path);
       BltGenerateMessage msg = (BltGenerateMessage)testclass.handle(createDataMessage(f));
       if (msg != null) {

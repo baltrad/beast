@@ -534,23 +534,20 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     Time time = nominalDT.getTime();
     
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
-    logger.debug("createMessage: entries: " +
-                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
-    logger.debug("createMessage: filtering for nominal time: " + nominalDT.toIsoString());
+    //logger.debug("createMessage: entries: " +
+    //             StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
+    //logger.debug("createMessage: filtering for nominal time: " + nominalDT.toIsoString());
     entries = ruleUtil.getEntriesByClosestTime(nominalDT, entries);
-    logger.debug("createMessage: entries: " +
-                 StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
-    logger.debug("createMessage: filtering for sources: " +
-                 StringUtils.collectionToDelimitedString(sources, " "));
+    //logger.debug("createMessage: entries: " +
+    //             StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
+    //logger.debug("createMessage: filtering for sources: " +
+    //             StringUtils.collectionToDelimitedString(sources, " "));
     entries = ruleUtil.getEntriesBySources(sources, entries);
-    List<String> uuids = getUuidsFromEntries(entries);
+    List<String> uuids = ruleUtil.getUuidStringsFromEntries(entries);
     logger.debug("createMessage: entries: " +
                  StringUtils.collectionToDelimitedString(uuids, " "));
     
-    //List<String> uuids = getUuidsFromEntries(entries);
     result.setFiles(uuids.toArray(new String[0]));
-    //List<String> files = ruleUtil.getFilesFromEntries(entries);
-    //result.setFiles(files.toArray(new String[0]));
 
     List<String> args = new ArrayList<String>();
     args.add("--area="+area);

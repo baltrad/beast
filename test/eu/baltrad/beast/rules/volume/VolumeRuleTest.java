@@ -227,9 +227,9 @@ public class VolumeRuleTest extends EasyMockSupport {
     entries.add(createCatalogEntry("searl"));
 
     List<String> fileEntries = new ArrayList<String>();
-    fileEntries.add("/tmp/searl_1.h5");
-    fileEntries.add("/tmp/searl_2.h5");
-    fileEntries.add("/tmp/searl_3.h5");
+    fileEntries.add("uuid-1");
+    fileEntries.add("uuid-2");
+    fileEntries.add("uuid-3");
 
     List<String> detectors = new ArrayList<String>();
     detectors.add("ropo");
@@ -237,7 +237,7 @@ public class VolumeRuleTest extends EasyMockSupport {
     
     classUnderTest.setDetectors(detectors);
     
-    expect(utilities.getFilesFromEntries(entries)).andReturn(fileEntries);
+    expect(utilities.getUuidStringsFromEntries(entries)).andReturn(fileEntries);
 
     replayAll();
 
@@ -247,9 +247,9 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals("eu.baltrad.beast.GenerateVolume", result.getAlgorithm());
     String[] files = result.getFiles();
     assertEquals(3, files.length);
-    assertEquals(files[0], "/tmp/searl_1.h5");
-    assertEquals(files[1], "/tmp/searl_2.h5");
-    assertEquals(files[2], "/tmp/searl_3.h5");
+    assertEquals(files[0], "uuid-1");
+    assertEquals(files[1], "uuid-2");
+    assertEquals(files[2], "uuid-3");
     String[] arguments = result.getArguments();
     assertEquals(4, arguments.length);
     assertEquals("--source=searl", arguments[0]);
@@ -270,11 +270,11 @@ public class VolumeRuleTest extends EasyMockSupport {
     entries.add(createCatalogEntry("searl"));
 
     List<String> fileEntries = new ArrayList<String>();
-    fileEntries.add("/tmp/searl_1.h5");
-    fileEntries.add("/tmp/searl_2.h5");
-    fileEntries.add("/tmp/searl_3.h5");
+    fileEntries.add("uuid-1");
+    fileEntries.add("uuid-2");
+    fileEntries.add("uuid-3");
     
-    expect(utilities.getFilesFromEntries(entries)).andReturn(fileEntries);
+    expect(utilities.getUuidStringsFromEntries(entries)).andReturn(fileEntries);
 
     replayAll();
 
@@ -284,9 +284,9 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals("eu.baltrad.beast.GenerateVolume", result.getAlgorithm());
     String[] files = result.getFiles();
     assertEquals(3, files.length);
-    assertEquals(files[0], "/tmp/searl_1.h5");
-    assertEquals(files[1], "/tmp/searl_2.h5");
-    assertEquals(files[2], "/tmp/searl_3.h5");
+    assertEquals(files[0], "uuid-1");
+    assertEquals(files[1], "uuid-2");
+    assertEquals(files[2], "uuid-3");
     String[] arguments = result.getArguments();
     assertEquals(3, arguments.length);
     assertEquals("--source=searl", arguments[0]);

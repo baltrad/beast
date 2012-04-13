@@ -169,6 +169,32 @@ public class RuleUtilitiesTest extends EasyMockSupport {
   }
 
   @Test
+  public void testGetUuidStringsFromEntries() throws Exception {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    CatalogEntry ce1 = createMock(CatalogEntry.class);
+    CatalogEntry ce2 = createMock(CatalogEntry.class);
+    CatalogEntry ce3 = createMock(CatalogEntry.class);
+
+    entries.add(ce1);
+    entries.add(ce2);
+    entries.add(ce3);
+    
+    expect(ce1.getUuid()).andReturn("uuid-1");
+    expect(ce2.getUuid()).andReturn("uuid-2");
+    expect(ce3.getUuid()).andReturn("uuid-3");
+    
+    replayAll();
+    
+    List<String> result = classUnderTest.getUuidStringsFromEntries(entries);
+    
+    verifyAll();
+    assertEquals(3, result.size());
+    assertEquals("uuid-1", result.get(0));
+    assertEquals("uuid-2", result.get(1));
+    assertEquals("uuid-3", result.get(2));
+  }
+  
+  @Test
   public void testGetSourcesFromEntries() throws Exception {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));

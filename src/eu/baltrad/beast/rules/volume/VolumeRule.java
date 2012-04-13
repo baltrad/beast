@@ -488,8 +488,8 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     String source = entries.get(0).getSource();
     
     result.setAlgorithm("eu.baltrad.beast.GenerateVolume");
-
-    result.setFiles(ruleUtilities.getFilesFromEntries(entries).toArray(new String[0]));
+    
+    result.setFiles(ruleUtilities.getUuidStringsFromEntries(entries).toArray(new String[0]));
 
     List<String> args = new ArrayList<String>();
     args.add("--source="+source);

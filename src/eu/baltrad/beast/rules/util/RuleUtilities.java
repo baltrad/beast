@@ -209,6 +209,17 @@ public class RuleUtilities implements IRuleUtilities {
   }
 
   /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getUuidStringsFromEntries(java.util.List)
+   */
+  public List<String> getUuidStringsFromEntries(List<CatalogEntry> entries) {
+    List<String> result = new ArrayList<String>();
+    for (CatalogEntry entry: entries) {
+      result.add(entry.getUuid());
+    }
+    return result;
+  }
+  
+  /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#createCalendar(eu.baltrad.bdb.util.DateTime)
    */
   @Override

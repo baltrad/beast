@@ -79,6 +79,13 @@ public interface IRuleUtilities {
   public List<String> getFilesFromEntries(List<CatalogEntry> entries);
   
   /**
+   * Creates a list of uuids
+   * @param entries a list of entries
+   * @return a list of uuids
+   */
+  public List<String> getUuidStringsFromEntries(List<CatalogEntry> entries);
+  
+  /**
    * Returns a list of sources from the provided entries
    * @param entries the entries
    * @return a list of sources
