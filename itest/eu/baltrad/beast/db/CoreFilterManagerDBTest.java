@@ -84,7 +84,7 @@ public class CoreFilterManagerDBTest extends TestCase {
 
   public void testStoreCombinedWithAttributeChildren() {
     AttributeFilter sourceFilter = new AttributeFilter();
-    sourceFilter.setAttribute( "what/source:WMO" );
+    sourceFilter.setAttribute( "_bdb/source:WMO" );
     sourceFilter.setValueType( AttributeFilter.ValueType.STRING );
     sourceFilter.setOperator( AttributeFilter.Operator.IN );
     sourceFilter.setValue( "someValue" );

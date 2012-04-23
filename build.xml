@@ -319,6 +319,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <arg value="--pidfile=${build.dir}/baltrad-bdb-server.pid"/>
       <arg value="--logfile=${build.dir}/baltrad-bdb-server.log"/>
     </exec>
+  	<sleep seconds="2"/>
     <exec executable="${baltraddb.bin.path}/baltrad-bdb-client"
           failonerror="true">
       <arg value="import_sources"/>

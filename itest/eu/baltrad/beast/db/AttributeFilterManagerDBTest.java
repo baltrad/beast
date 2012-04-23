@@ -55,7 +55,7 @@ public class AttributeFilterManagerDBTest extends TestCase {
   public void testStore() throws Exception {
     AttributeFilter f = new AttributeFilter();
     f.setId(3);
-    f.setAttribute("what/source:_name");
+    f.setAttribute("_bdb/source_name");
     f.setOperator(AttributeFilter.Operator.IN);
     f.setValueType(AttributeFilter.ValueType.STRING);
     f.setValue("seang, searl");
