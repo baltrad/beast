@@ -26,7 +26,6 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.IBltXmlMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
-import eu.baltrad.beast.message.mo.BltDexDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.parser.IXmlMessageFactory;
 
@@ -69,14 +68,6 @@ public class XmlMessageParserITest extends TestCase {
      assertEquals("ls -la", ((BltCommandMessage)msg).getCommand());
    }
    
-   public void testParse_bltdexdata() throws Exception {
-     String xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
-     xml += "<bltdexdata />\n";
-     IBltXmlMessage msg = classUnderTest.parse(xml);
-     assertSame(BltDexDataMessage.class, msg.getClass());
-     assertEquals(null, ((BltDexDataMessage)msg).getFilename()); // Since this is handled by the multipart
-   }   
-
    public void testParse_bltgenerate() throws Exception {
      String xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
      xml += "<bltgenerate><algorithm>one.Algorithm</algorithm><filelist><file>file1</file><file>file2</file></filelist><arguments><arg>arg1</arg><arg>arg2</arg></arguments></bltgenerate>\n";

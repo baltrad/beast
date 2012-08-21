@@ -23,19 +23,20 @@
 
   <!-- http connector for sending responses to the dex -->
   <bean id="httpconnector" class="eu.baltrad.beast.adaptor.http.HttpConnector">
-    <property name="url" value="${server.url}" />
-    <!--
-    <property name="url" value="http://127.0.0.1:8080/BaltradDex/dispatch.htm"/>
-    -->
+    <property name="url" value="${baltrad.beast.server.url}" />
+  </bean>
+
+  <bean id="dataframefactory" class="eu.baltrad.beast.message.BltDataFrameMessageFactory">
+    <property name="nodeName" value="${baltrad.beast.pgf.nodename}" />
+    <property name="nodeUrl" value="${baltrad.beast.pgf.url}" />
+    <property name="keyczarKey" value="${baltrad.beast.pgf.key}" />
+    <property name="serverUrl" value="${baltrad.beast.server.url}" />
   </bean>
   
   <!-- generate plugins does not need to be added as properties to generate handler. The
        generate handler will check for bean-ids and verify that the specified class is
        implementing the IGeneratorPlugin interface -->
-  <bean id="generatehandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcGenerateHandler" autowire="byType">
-    <property name="channel" value="${server.channel}"/>
-    <property name="sender" value="${server.user}"/>
-  </bean>
+  <bean id="generatehandler" class="eu.baltrad.beast.pgfwk.handlers.BaltradXmlRpcGenerateHandler" autowire="byType" />
   
   <!-- the pg fwk handler that should be the front end for all requests -->
   <bean id="pgfwkhandler" class="eu.baltrad.beast.pgfwk.BaltradXmlRpcHandlerMapping">

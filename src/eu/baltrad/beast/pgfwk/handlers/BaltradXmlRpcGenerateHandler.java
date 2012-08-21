@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import eu.baltrad.beast.adaptor.http.IHttpConnector;
+import eu.baltrad.beast.message.IBltDataFrameMessageFactory;
 import eu.baltrad.beast.message.mo.BltDataFrameMessage;
 import eu.baltrad.beast.pgfwk.IGeneratorPlugin;
 
@@ -44,14 +45,12 @@ public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationC
   private IHttpConnector connector = null;
   
   /**
-   * The channel to send message to
+   * The factory for creating data frame messages
    */
-  private String channel = null;
+  private IBltDataFrameMessageFactory factory = null;
   
-  /**
-   * The name of the sender
-   */
-  private String sender = null;
+  public BaltradXmlRpcGenerateHandler() {
+  }
   
   /**
    * @see org.apache.xmlrpc.XmlRpcHandler#execute(org.apache.xmlrpc.XmlRpcRequest)
@@ -73,7 +72,7 @@ public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationC
       try {
         String output = ((IGeneratorPlugin)plugin).generate(algorithm, files, args);
         if (output != null) {
-          BltDataFrameMessage message = createMessage(output);
+          BltDataFrameMessage message = factory.createMessage(output);
           connector.send(message);
         }
         result = new Integer(0);
@@ -103,19 +102,6 @@ public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationC
   }
   
   /**
-   * Creates a baltrad data frame message
-   * @param file the name of the file to be sent
-   * @return the message
-   */
-  protected BltDataFrameMessage createMessage(String file) {
-    BltDataFrameMessage result = new BltDataFrameMessage();
-    result.setChannel(getChannel());
-    result.setSender(getSender());
-    result.setFilename(file);
-    return result;
-  }
-  
-  /**
    * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
    */
   @Override
@@ -139,30 +125,16 @@ public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationC
   }
 
   /**
-   * @param channel the channel to set
+   * @return the data frame message factory
    */
-  public void setChannel(String channel) {
-    this.channel = channel;
+  public IBltDataFrameMessageFactory getDataFrameMessageFactory() {
+    return factory;
   }
 
   /**
-   * @return the channel
+   * @param factory the data frame message factory
    */
-  public String getChannel() {
-    return channel;
-  }
-
-  /**
-   * @param sender the sender to set
-   */
-  public void setSender(String sender) {
-    this.sender = sender;
-  }
-
-  /**
-   * @return the sender
-   */
-  public String getSender() {
-    return sender;
+  public void setDataFrameMessageFactory(IBltDataFrameMessageFactory factory) {
+    this.factory = factory;
   }
 }

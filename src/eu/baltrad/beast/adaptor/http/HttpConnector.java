@@ -18,39 +18,33 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.adaptor.http;
 
-import java.io.File;
-import java.nio.charset.Charset;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Iterator;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.util.EntityUtils;
-import org.dom4j.Document;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataFrameMessage;
 
 /**
  * @author Anders Henja
- *
  */
 public class HttpConnector implements IHttpConnector {
+  /**
+   * The url this connector is communicating with
+   */
   private String url = null;
-  
-  private final static String MIME_MULTIPART = "multipart/form-data";
-  private static final String XML_ENCODING = "UTF-8";
-  private static final Charset CHARSET = Charset.forName( XML_ENCODING );
-  public static final String XML_PART = "<bf_xml/>";
-  public static final String FILE_PART = "<bf_file/>";
-  
+
   public HttpConnector() {
   }
   
@@ -59,15 +53,35 @@ public class HttpConnector implements IHttpConnector {
    */
   @Override
   public void send(IBltMessage message) {
-    HttpEntity entity = null;
-    
     if (message.getClass() == BltDataFrameMessage.class) {
-      entity = generateHttpEntity((BltDataFrameMessage)message);
+      BltDataFrameMessage msg = (BltDataFrameMessage)message;
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = createPost( getUrl() );
+      HttpEntity entity = generateHttpEntity(msg);
+      httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+      httpPost.setEntity(entity);
+      Iterator<String> keys = msg.getHeaders();
+
+      while (keys.hasNext()) {
+        String key = keys.next();
+        httpPost.addHeader(key, msg.getHeader(key));
+      }
+      try {
+        HttpResponse response = httpClient.execute( httpPost );
+        HttpEntity resEntity = response.getEntity();
+        if( resEntity != null ) {
+          EntityUtils.consume(resEntity);
+        }
+      } catch (Exception e) {
+        throw new HttpConnectorException(e);
+      } finally {
+        httpClient.getConnectionManager().shutdown();    
+      }
     }
-    
-    if (entity != null) {
-      send(entity);
-    }
+  }
+  
+  protected HttpPost createPost(String url) {
+    return new HttpPost(url);
   }
 
   /**
@@ -85,52 +99,18 @@ public class HttpConnector implements IHttpConnector {
   }
   
   /**
-   * Sends the entity
-   * @param entity
-   */
-  protected void send(HttpEntity entity) {
-    HttpClient httpClient = new DefaultHttpClient();
-    try {
-      httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION,
-          HttpVersion.HTTP_1_1);
-      HttpPost httpPost = new HttpPost( getUrl() );
-      httpPost.setEntity(entity);
-      HttpResponse response = httpClient.execute( httpPost );
-      HttpEntity resEntity = response.getEntity();
-      if( resEntity != null ) {
-        EntityUtils.consume(resEntity);
-      }
-    } catch (Exception e) {
-      throw new HttpConnectorException(e);
-    } finally {
-      httpClient.getConnectionManager().shutdown();    
-    }
-  }
-  
-  /**
    * Generates a multipart entity for usage when sending messages to
    * the dex.
    * @param message
    * @return the http entity
    */
   protected HttpEntity generateHttpEntity(BltDataFrameMessage message) {
-    MultipartEntity entity = new MultipartEntity();
     try {
-      Document d = message.toDocument();
-      d.setXMLEncoding(XML_ENCODING);
-      String xml = d.asXML();
-    
-      StringBody xmlBody = new StringBody( xml, MIME_MULTIPART, CHARSET );
-    
-      File f = new File(message.getFilename());
-      ContentBody contentBody = new FileBody(f, MIME_MULTIPART);
-    
-      entity.addPart( XML_PART, xmlBody );
-      entity.addPart( FILE_PART, contentBody );
-    
+      FileInputStream fis = new FileInputStream(message.getFilename());
+      ByteArrayEntity entity = new ByteArrayEntity(IOUtils.toByteArray(fis));
       return entity;
-    } catch (Exception e) {
-      throw new HttpConnectorException(e);
+    } catch (IOException e) {
+      throw new HttpConnectorException();
     }
   }
 }

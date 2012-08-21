@@ -23,10 +23,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import eu.baltrad.beast.adaptor.http.IHttpConnector;
+import eu.baltrad.beast.message.IBltDataFrameMessageFactory;
 import eu.baltrad.beast.message.mo.BltDataFrameMessage;
 import eu.baltrad.beast.pgfwk.IGeneratorPlugin;
 
@@ -34,14 +37,37 @@ import eu.baltrad.beast.pgfwk.IGeneratorPlugin;
  * @author Anders Henja
  */
 public class BaltradXmlRpcGenerateHandlerTest extends EasyMockSupport {
+  private IBltDataFrameMessageFactory factory = null;
+  private IHttpConnector connector = null;
+  private BaltradXmlRpcGenerateHandler classUnderTest = null;
+  private ApplicationContext context = null;
+
+  
   static interface MockMethods {
     public String[] createStringArray(Object[] arr);
-    public BltDataFrameMessage createMessage(String file);
   };
 
+  @Before
+  public void setUp() throws Exception {
+    factory = createMock(IBltDataFrameMessageFactory.class);
+    connector = createMock(IHttpConnector.class);
+    context = createMock(ApplicationContext.class);
+    classUnderTest = new BaltradXmlRpcGenerateHandler();
+    classUnderTest.setConnector(connector);
+    classUnderTest.setDataFrameMessageFactory(factory);
+    classUnderTest.setApplicationContext(context);
+  }
+  
+  @After
+  public void tearDown() throws Exception {
+    factory = null;
+    connector = null;
+    context = null;
+    classUnderTest = null;
+  }
+  
   @Test
   public void testCreateStringArray() {
-    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     Object[] strs = new String[]{"a", "b"};
     String[] result = classUnderTest.createStringArray(strs);
     assertEquals(2, result.length);
@@ -51,14 +77,12 @@ public class BaltradXmlRpcGenerateHandlerTest extends EasyMockSupport {
   
   @Test
   public void testCreateStringArray_null() {
-    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     String[] result = classUnderTest.createStringArray(null);
     assertEquals(0,result.length);
   }
 
   @Test
   public void testCreateStringArray_empty() {
-    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
     String[] result = classUnderTest.createStringArray(new Object[]{});
     assertEquals(0,result.length);
   }
@@ -66,15 +90,8 @@ public class BaltradXmlRpcGenerateHandlerTest extends EasyMockSupport {
   @Test
   public void testExecute() throws Exception {
     final MockMethods methods = createMock(MockMethods.class);
-    
-    ApplicationContext context = createMock(ApplicationContext.class);
-    
     XmlRpcRequest request = createMock(XmlRpcRequest.class);
-    
     IGeneratorPlugin pluginMock = createMock(IGeneratorPlugin.class);
-    
-    IHttpConnector connector = createMock(IHttpConnector.class);
-    
     
     Object[] ofiles = new Object[0];
     Object[] oargs = new Object[0];
@@ -86,12 +103,10 @@ public class BaltradXmlRpcGenerateHandlerTest extends EasyMockSupport {
       protected String[] createStringArray(Object[] arr) {
         return methods.createStringArray(arr);
       }
-      protected BltDataFrameMessage createMessage(String file) {
-        return methods.createMessage(file);
-      }
     };
-    classUnderTest.setApplicationContext(context);
     classUnderTest.setConnector(connector);
+    classUnderTest.setDataFrameMessageFactory(factory);
+    classUnderTest.setApplicationContext(context);
 
     expect(request.getParameter(0)).andReturn("somemethod");
     expect(request.getParameter(1)).andReturn(ofiles);
@@ -103,7 +118,7 @@ public class BaltradXmlRpcGenerateHandlerTest extends EasyMockSupport {
     expect(context.getBean("somemethod")).andReturn(pluginMock);
     
     expect(pluginMock.generate("somemethod", files, args)).andReturn("filename");
-    expect(methods.createMessage("filename")).andReturn(bltmessage);
+    expect(factory.createMessage("filename")).andReturn(bltmessage);
     connector.send(bltmessage);
     
     replayAll();
@@ -192,16 +207,19 @@ public class BaltradXmlRpcGenerateHandlerTest extends EasyMockSupport {
     assertEquals(-1, result);
   }  
   
-  @Test
-  public void testCreateMessage() throws Exception {
-    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
-    classUnderTest.setChannel("se_channel");
-    classUnderTest.setSender("admin");
-    
-    BltDataFrameMessage message = classUnderTest.createMessage("somefile");
-    
-    assertEquals("se_channel", message.getChannel());
-    assertEquals("admin", message.getSender());
-    assertEquals("somefile", message.getFilename());
-  }
+//  @Test
+//  public void testCreateMessage() throws Exception {
+//    BaltradXmlRpcGenerateHandler classUnderTest = new BaltradXmlRpcGenerateHandler();
+//    classUnderTest.setNodename("thisnode");
+//    classUnderTest.setNodeaddress("thisaddress");
+//    classUnderTest.setUrl("http://localhost");
+//    
+//    BltDataFrameMessage message = classUnderTest.createMessage("somefile");
+//    
+//    assertEquals("thisnode", message.getHeader("Node-Name"));
+//    assertEquals("thisaddress", message.getHeader("Node-Address"));
+//    assertEquals("application/x-hdf5", message.getHeader("Content-Type"));
+//    assertEquals(Base64.encodeBase64String("http://localhost".getBytes()), message.getHeader("Content-MD5"));
+//    assertEquals("somefile", message.getFilename());
+//  }
 }

@@ -223,6 +223,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
         <include name="**/*.xml"/>
         <include name="**/*.properties"/>
       	<include name="**/*.groovy"/>
+      	<include name="**/test-key.priv/*"/>
       </fileset>
     </copy>
   </target>

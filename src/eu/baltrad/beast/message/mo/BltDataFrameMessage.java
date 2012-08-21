@@ -19,60 +19,23 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.message.mo;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
 import eu.baltrad.beast.message.IBltXmlMessage;
 
 /**
  * @author Anders Henja
- *
-// Create XML string header using given encoding
-StringBody sbXMLHeader = new StringBody( xmlHdrStr, MIME_MULTIPART, CHARSET );
-// Create file content body
-File f = new File( absFilePath );
-ContentBody cbFile = new FileBody( f, MIME_MULTIPART );
-// Add XML header string
-this.addPart( XML_PART, sbXMLHeader );
-// Add file body content
-this.addPart( FILE_PART, cbFile );
-*/
+ */
 public class BltDataFrameMessage implements IBltXmlMessage  {
   /**
-   * Root tag
+   * The headers to be added to the data frame
    */
-  public static final String BLT_FRAME = "baltrad_frame";
-    
-  private static final String BLT_FRAME_HEADER = "header";
-  
-  private static final String BLT_FRAME_MIME_TYPE = "mimetype";
-  
-  private static final String BLT_FRAME_CONTENT = "content";
-  
-  private static final String BLT_FRAME_CONTENT_TYPE = "type";
-  
-  private static final String BLT_FRAME_SENDER = "sender_node_name";
-  
-  private static final String BLT_FRAME_FILE_NAME = "name";
-  
-  private static final String BLT_FRAME_CHNL_NAME = "channel";
-  
-  /**
-   * Form-data multipart string
-   */
-  private static final String BLT_FRAME_MIME_MULTIPART = "multipart/form-data";
-  
-  /**
-   * Content type indicating file transfer
-   */
-  public static final String BLT_FRAME_CONTENT_TYPE_FILE = "file";
-  
-  /**
-   * Sender
-   */
-  private String sender = null;
+  private Map<String, String> headers = new HashMap<String, String>();
   
   /**
    * Filename
@@ -80,16 +43,10 @@ public class BltDataFrameMessage implements IBltXmlMessage  {
   private String filename = null;
   
   /**
-   * Channel
-   */
-  private String channel = null;
-  
-  /**
    * @see eu.baltrad.beast.message.IBltXmlMessage#fromDocument(org.dom4j.Document)
    */
   @Override
   public void fromDocument(Document dom) {
-    // TODO Auto-generated method stub
   }
 
   /**
@@ -98,51 +55,9 @@ public class BltDataFrameMessage implements IBltXmlMessage  {
   @Override
   public Document toDocument() {
     Document document = DocumentHelper.createDocument();
-    Element root = document.addElement(BLT_FRAME);
-    Element header = root.addElement(BLT_FRAME_HEADER);
-    header.addAttribute(BLT_FRAME_MIME_TYPE, BLT_FRAME_MIME_MULTIPART);
-    header.addAttribute(BLT_FRAME_SENDER, getSender());
-    Element content = root.addElement(BLT_FRAME_CONTENT);
-    content.addAttribute(BLT_FRAME_CONTENT_TYPE, BLT_FRAME_CONTENT_TYPE_FILE);
-    content.addAttribute(BLT_FRAME_FILE_NAME, getFileBasename());
-    content.addAttribute(BLT_FRAME_CHNL_NAME, getChannel());
-    
     return document;
   }
-  /*
-    // XML element / document encoding
-    private static final String XML_ENCODING = "UTF-8";
-    // XML elements / available MIME types
-    public static final String MIME_MULTIPART = "multipart/form-data";
-    // Character set
-    private static final Charset CHARSET = Charset.forName( XML_ENCODING );
-    // Multipart message parts identifiers
-    public static final String XML_PART = "<bf_xml/>";
-    public static final String FILE_PART = "<bf_file/>";   * 
-  StringBody sbXMLHeader = new StringBody( xmlHdrStr, MIME_MULTIPART, CHARSET );
-  // Create file content body
-  File f = new File( absFilePath );
-  ContentBody cbFile = new FileBody( f, MIME_MULTIPART );
-  // Add XML header string
-  this.addPart( XML_PART, sbXMLHeader );
-  // Add file body content
-  this.addPart( FILE_PART, cbFile );
-  */
   
-  /**
-   * @param sender the sender to set
-   */
-  public void setSender(String sender) {
-    this.sender = sender;
-  }
-
-  /**
-   * @return the sender
-   */
-  public String getSender() {
-    return sender;
-  }
-
   /**
    * @param filename the filename to set
    */
@@ -168,16 +83,35 @@ public class BltDataFrameMessage implements IBltXmlMessage  {
   }
 
   /**
-   * @param channel the channel to set
+   * Add a header attribute to be used
+   * @param name the header name
+   * @param value the value
    */
-  public void setChannel(String channel) {
-    this.channel = channel;
+  public void addHeader(String name, String value) {
+    headers.put(name, value);
   }
-
+  
   /**
-   * @return the channel
+   * Return the value of the header with specified name
+   * @param name the name
+   * @return the value
    */
-  public String getChannel() {
-    return channel;
+  public String getHeader(String name) {
+    return headers.get(name);
+  }
+  
+  /**
+   * @return an iterator of all header names
+   */
+  public Iterator<String> getHeaders() {
+    return headers.keySet().iterator();
+  }
+  
+  /**
+   * @param name the header name
+   * @return if this message contains the specified header attribute or not
+   */
+  public boolean hasHeader(String name) {
+    return headers.containsKey(name);
   }
 }
