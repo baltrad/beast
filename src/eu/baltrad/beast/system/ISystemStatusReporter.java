@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------
-Copyright (C) 2009-2011 Swedish Meteorological and Hydrological Institute, SMHI,
+Copyright (C) 2009-2013 Swedish Meteorological and Hydrological Institute, SMHI,
 
 This file is part of the Beast library.
 
@@ -17,34 +17,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
 
-package eu.baltrad.beast.log;
+package eu.baltrad.beast.system;
+
+import java.util.Set;
 
 /**
- * System reporter. Will report messages to interested parties.
  * @author Anders Henja
+ *
  */
-public interface ISystemReporter {
+public interface ISystemStatusReporter {
   /**
-   * Reports the message.
-   * @param message - the message
+   * @return the identifying name of this reporter
    */
-  public void info(String code, String message, Object... args);
+  public String getName();
   
   /**
-   * Reports the message.
-   * @param message - the message
+   * @param args arguments for this reporter. For example might be used when checking a value in a url.
+   * Say that getName() returns mystatus, then it could be used like mystatus=arg 
+   * @return the status of this component
    */
-  public void warn(String code, String message, Object... args);
-  
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public void error(String code, String message,Object... args);
-  
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public void fatal(String code, String message, Object... args);  
+  public Set<SystemStatus> getStatus(String... args);
 }

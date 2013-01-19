@@ -125,3 +125,7 @@ create table beast_scheduled_jobs (
   name text NOT NULL REFERENCES beast_router_rules(name)
 );
 
+create table beast_host_filter (
+  name text PRIMARY KEY NOT NULL
+);
+

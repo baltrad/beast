@@ -219,13 +219,13 @@ public class XmlRpcAdaptor implements IAdaptor {
         }
       } catch (TimingOutCallback.TimeoutException e) {
         logger.debug("executeAsync TIMEOUT");
-        reporter.warn("00003", "XMLRPC communication with '%s' TIMEOUT", this.url);
+        reporter.warn("00201", "XMLRPC communication with '%s' TIMEOUT", this.url);
         if (cb != null) {
           cb.timeout(message);
         }
       } catch (Throwable t) {
         logger.debug("executeAsync TIMEOUT");
-        reporter.error("00004", "XMLRPC communication with '%s' FAILED", this.url);
+        reporter.error("00202", "XMLRPC communication with '%s' FAILED", this.url);
         if (cb != null) {
           cb.error(message, t);
         }

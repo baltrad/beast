@@ -168,4 +168,25 @@ public interface IRuleUtilities {
    * @return the list of radar names
    */
   public List<String> getRadarSources();
+  
+  /**
+   * Creates a diff between expected and actual list of strings. The returned mapping contains
+   * the joined strings in expected and actual and the Integer value has the following meaning.
+   * 0 = means that the string exists in both expected and actual
+   * -1 = means that the string exists in expected but not in actual
+   * +1 = means that the string exists in actual but not in expected
+   * @param expected the list of expected strings
+   * @param actual the list of actual strings
+   * @return a mapping to identify the difference between the two lits
+   */
+  public Map<String,Integer> diff(List<String> expected, List<String> actual);
+  
+  /**
+   * Useful for reporting to the system that there might be a deviation between
+   * expected and actual sources. This is probably quite handy when reporting
+   * alarms to an alarm handler.
+   * @param expected the expected sources
+   * @param actual the actual sources
+   */
+  public void reportRadarSourceUsage(List<String> expected, List<String> actual);
 }

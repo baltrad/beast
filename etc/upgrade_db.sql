@@ -29,6 +29,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION create_beast_host_filter() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_host_filter';
+  IF NOT FOUND THEN
+    create table beast_host_filter (
+      name text PRIMARY KEY NOT NULL
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_host_filter already exists';
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
+select create_beast_host_filter();
 
 drop function create_beast_gmap_rules();
+drop function create_beast_host_filter();
+
+

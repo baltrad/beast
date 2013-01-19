@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------
-Copyright (C) 2009-2011 Swedish Meteorological and Hydrological Institute, SMHI,
+Copyright (C) 2009-2013 Swedish Meteorological and Hydrological Institute, SMHI,
 
 This file is part of the Beast library.
 
@@ -17,34 +17,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
 
-package eu.baltrad.beast.log;
+package eu.baltrad.beast.system;
+
 
 /**
- * System reporter. Will report messages to interested parties.
+ * General status information indicating what type of status the system is in.
  * @author Anders Henja
  */
-public interface ISystemReporter {
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public void info(String code, String message, Object... args);
-  
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public void warn(String code, String message, Object... args);
-  
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public void error(String code, String message,Object... args);
-  
-  /**
-   * Reports the message.
-   * @param message - the message
-   */
-  public void fatal(String code, String message, Object... args);  
+public enum SystemStatus {
+  UNDEFINED,
+  OK,
+  COMMUNICATION_PROBLEM,
+  MEMORY_PROBLEM,
+  EXCHANGE_PROBLEM,
+  PROCESSING_PROBLEM;
 }

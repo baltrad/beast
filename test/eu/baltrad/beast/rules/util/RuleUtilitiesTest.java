@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -41,6 +42,8 @@ import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.system.RadarConnectionStatusReporter;
+import eu.baltrad.beast.system.SystemStatus;
 
 /**
  * @author Anders Henja
@@ -52,6 +55,7 @@ public class RuleUtilitiesTest extends EasyMockSupport {
   private Database database = null;
   private SourceManager sourceManager = null;
   private LocalStorage storage = null;
+  private RadarConnectionStatusReporter reporter = null;
 
   @Before
   public void setUp() throws Exception {
@@ -60,14 +64,17 @@ public class RuleUtilitiesTest extends EasyMockSupport {
     database = createMock(Database.class);
     sourceManager = createMock(SourceManager.class);
     storage = createMock(LocalStorage.class);
+    reporter = createMock(RadarConnectionStatusReporter.class);
     classUnderTest = new RuleUtilities();
     classUnderTest.setCatalog(catalog);
+    classUnderTest.setRadarReporter(reporter);
   }
   
   @After
   public void tearDown() throws Exception {
     classUnderTest = null;
     storage = null;
+    reporter = null;
     fileCatalog = null;
     database = null;
     sourceManager = null;
@@ -378,6 +385,106 @@ public class RuleUtilitiesTest extends EasyMockSupport {
     assertEquals(2, result.size());
     assertEquals("1", result.get(0));
     assertEquals("3", result.get(1));
+  }
+  
+  @Test
+  public void testDiff() throws Exception {
+    List<String> expected = new ArrayList<String>();
+    List<String> actual = new ArrayList<String>();
+    
+    expected.add("str1");
+    expected.add("str2");
+    expected.add("str3");
+    expected.add("str4");
+    actual.add("str2");
+    actual.add("str4");
+    actual.add("str5");
+    actual.add("str6");
+
+    Map<String,Integer> result = classUnderTest.diff(expected, actual);
+    
+    assertEquals(6, result.size());
+    assertEquals(-1, (int)result.get("str1"));
+    assertEquals(0, (int)result.get("str2"));
+    assertEquals(-1, (int)result.get("str3"));
+    assertEquals(0, (int)result.get("str4"));
+    assertEquals(1, (int)result.get("str5"));
+    assertEquals(1, (int)result.get("str6"));
+  }
+
+  @Test
+  public void testDiff_expectedNull() throws Exception {
+    List<String> actual = new ArrayList<String>();
+    
+    actual.add("str2");
+    actual.add("str4");
+    actual.add("str5");
+    actual.add("str6");
+
+    Map<String,Integer> result = classUnderTest.diff(null, actual);
+    
+    assertEquals(4, result.size());
+    assertEquals(1, (int)result.get("str2"));
+    assertEquals(1, (int)result.get("str4"));
+    assertEquals(1, (int)result.get("str5"));
+    assertEquals(1, (int)result.get("str6"));
+  }
+
+  @Test
+  public void testDiff_actualNull() throws Exception {
+    List<String> expected = new ArrayList<String>();
+    
+    expected.add("str1");
+    expected.add("str2");
+    expected.add("str3");
+    expected.add("str4");
+
+    Map<String,Integer> result = classUnderTest.diff(expected, null);
+    
+    assertEquals(4, result.size());
+    assertEquals(-1, (int)result.get("str1"));
+    assertEquals(-1, (int)result.get("str2"));
+    assertEquals(-1, (int)result.get("str3"));
+    assertEquals(-1, (int)result.get("str4"));
+  }
+
+  @Test
+  public void testReportSourceUsage() throws Exception {
+    List<String> expected = new ArrayList<String>();
+    List<String> actual = new ArrayList<String>();
+    
+    expected.add("str1");
+    expected.add("str2");
+    actual.add("str2");
+    actual.add("str3");
+    
+    reporter.setStatus("str1", SystemStatus.EXCHANGE_PROBLEM);
+    reporter.setStatus("str2", SystemStatus.OK);
+    
+    replayAll();
+    
+    classUnderTest.reportRadarSourceUsage(expected, actual);
+    
+    verifyAll();
+  }
+
+  @Test
+  public void testReportSourceUsage_noReporter() throws Exception {
+    classUnderTest.setRadarReporter(null);
+    
+    List<String> expected = new ArrayList<String>();
+    List<String> actual = new ArrayList<String>();
+    
+    expected.add("str1");
+    expected.add("str2");
+    actual.add("str2");
+    actual.add("str3");
+    
+    replayAll();
+    
+    classUnderTest.reportRadarSourceUsage(expected, actual);
+    
+    verifyAll();
   }
   
   private CatalogEntry createCatalogEntry(String src, DateTime dt) {

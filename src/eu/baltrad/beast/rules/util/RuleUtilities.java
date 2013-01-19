@@ -22,25 +22,25 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import eu.baltrad.beast.db.Catalog;
-import eu.baltrad.beast.db.CatalogEntry;
-
 import eu.baltrad.bdb.db.AttributeQuery;
 import eu.baltrad.bdb.db.AttributeResult;
-import eu.baltrad.bdb.expr.ExpressionFactory;
 import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
 import eu.baltrad.bdb.oh5.Source;
 import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
+import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.system.RadarConnectionStatusReporter;
+import eu.baltrad.beast.system.SystemStatus;
 
 /**
  * @author Anders Henja
@@ -79,6 +79,11 @@ public class RuleUtilities implements IRuleUtilities {
   private List<IdDateMapping> registeredTriggers = new ArrayList<IdDateMapping>();
   
   /**
+   * The radar connection status reporter
+   */
+  private RadarConnectionStatusReporter reporter = null;
+  
+  /**
    * The logger
    */
   private static Logger logger = LogManager.getLogger(RuleUtilities.class);
@@ -97,6 +102,13 @@ public class RuleUtilities implements IRuleUtilities {
     return catalog;
   }
 
+  /**
+   * @param reporter the reporter to set
+   */
+  public void setRadarReporter(RadarConnectionStatusReporter reporter) {
+    this.reporter = reporter;
+  }
+  
   /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#fetchLowestSourceElevationAngle(eu.baltrad.bdb.util.DateTime, eu.baltrad.bdb.util.DateTime, java.util.List)
    */
@@ -335,6 +347,7 @@ public class RuleUtilities implements IRuleUtilities {
   /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#getRadarSources()
    */
+  @Override
   public synchronized List<String> getRadarSources() {
     List<Source> sources = catalog.getCatalog().getDatabase().getSourceManager().getSources();
     List<String> radarNames = new ArrayList<String>(sources.size());
@@ -345,5 +358,48 @@ public class RuleUtilities implements IRuleUtilities {
       }
     }
     return radarNames;
+  }
+  
+
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#diff(java.util.List,java.util.List)
+   */
+  @Override
+  public Map<String,Integer> diff(List<String> expected, List<String> actual) {
+    Map<String,Integer> result = new HashMap<String, Integer>();
+    if (expected != null) {
+      for (String s : expected) {
+        result.put(s, -1);
+      }
+    }
+    
+    if (actual != null) {
+      for (String s : actual) {
+        if (result.containsKey(s)) {
+          result.put(s, 0);
+        } else {
+          result.put(s, 1);
+        }
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#reportRadarSourceUsage(java.util.List,java.util.List)
+   */
+  @Override
+  public void reportRadarSourceUsage(List<String> expected, List<String> actual) {
+    if (reporter != null) {
+      Map<String,Integer> difference = diff(expected, actual);
+      for (String s : expected) {
+        if (difference.get(s) == 0) {
+          reporter.setStatus(s, SystemStatus.OK);
+        } else if (difference.get(s) == -1) {
+          reporter.setStatus(s, SystemStatus.EXCHANGE_PROBLEM);
+        }
+      }
+    }
   }
 }

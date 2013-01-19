@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<log-messages module="BEAST">
-  <message id="00001">
+<log-messages>
+  <message module="BEAST" id="00001" severity="INFO">
     <text>Registered adaptor '%s' of type %s</text>
   </message>
   
-  <message id="00002">
+  <message module="BEAST" id="00002">
     <text>Failed to register adaptor '%s'</text>
   </message>
   
-  <message id="00003">
+  <message module="BEAST" id="00003" severity="WARNING">
     <text>XMLRPC communication with '%s' TIMEOUT</text>
   </message>
   
-  <message id="00004">
+  <message module="BEAST" id="00004" severity="ERROR">
     <text>XMLRPC communication with '%s' FAILED</text>
     <solution>Verify that the product generation framework is running</solution>
   </message>
 
-  <message id="00005">
+  <message module="BEAST" id="00005" severity="INFO">
     <text>Route definition '%s' removed</text>
   </message>
   
-  <message id="00006">
+  <message module="BEAST" id="00006" severity="INFO">
     <text>Failed to remove route definition '%s'</text>
   </message>
 
-  <message id="00007">
+  <message module="BEAST" id="00007" severity="INFO">
     <text>%s added route '%s'</text>
   </message>
 
-  <message id="00008">
+  <message module="BEAST" id="00008" severity="INFO">
     <text>%s failed to add route '%s'</text>
   </message>    
 
-  <message id="00009">
+  <message module="BEAST" id="00009" severity="INFO">
     <text>%s updated route '%s'</text>
   </message>
 
-  <message id="00010">
+  <message module="BEAST" id="00010" severity="INFO">
     <text>%s failed to update route '%s'</text>
   </message>
 </log-messages>

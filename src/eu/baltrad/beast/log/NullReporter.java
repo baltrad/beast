@@ -25,13 +25,6 @@ package eu.baltrad.beast.log;
  */
 public class NullReporter implements ISystemReporter {
   /**
-   * @see eu.baltrad.beast.log.ISystemReporter#info(java.lang.String)
-   */
-  @Override
-  public void info(String message) {
-  }
-
-  /**
    * @see eu.baltrad.beast.log.ISystemReporter#info(java.lang.String, java.lang.String, java.lang.Object[])
    */
   @Override

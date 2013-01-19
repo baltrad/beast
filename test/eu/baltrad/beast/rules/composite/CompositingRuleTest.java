@@ -458,6 +458,8 @@ public class CompositingRuleTest extends EasyMockSupport {
     fileEntries.add("uuid-1");
     fileEntries.add("uuid-2");
     fileEntries.add("uuid-3");
+
+    List<String> usedSources = new ArrayList<String>();
     
     classUnderTest.setArea("blt_composite");
     
@@ -470,7 +472,9 @@ public class CompositingRuleTest extends EasyMockSupport {
     expect(ruleUtil.getEntriesByClosestTime(nominalTime, entries)).andReturn(entriesByTime);
     expect(ruleUtil.getEntriesBySources(sources, entriesByTime)).andReturn(entriesBySources);
     expect(ruleUtil.getUuidStringsFromEntries(entriesBySources)).andReturn(fileEntries);
-
+    expect(ruleUtil.getSourcesFromEntries(entriesBySources)).andReturn(usedSources);
+    ruleUtil.reportRadarSourceUsage(sources, usedSources);
+    
     classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     classUnderTest.setDetectors(detectors);
     
@@ -789,7 +793,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals(0, classUnderTest.getDetectors().size());
     assertNotSame(detectors, classUnderTest.getDetectors());
   }
-
+  
   private CatalogEntry createCatalogEntry(String src, DateTime dt, double elangle) {
     CatalogEntry entry = createMock(CatalogEntry.class);
     return entry;

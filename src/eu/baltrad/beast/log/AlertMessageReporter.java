@@ -19,6 +19,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.log;
 
+import eu.baltrad.beast.log.message.ILogMessageRepository;
+import eu.baltrad.beast.log.message.LogMessage;
+import eu.baltrad.beast.log.message.MessageSeverity;
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 
@@ -37,23 +40,9 @@ public class AlertMessageReporter implements ISystemReporter {
   private ILogMessageRepository repository = null;
   
   /**
-   * This module name
-   */
-  private String module = null;
-  
-  /**
-   * Default constructor. Will set module id to BEAST
+   * Default constructor.
    */
   public AlertMessageReporter() {
-    module = "BEAST";
-  }
-  
-  /**
-   * Constructor
-   * @param module
-   */
-  public AlertMessageReporter(String module) {
-    this.module = module;
   }
   
   /**
@@ -71,21 +60,11 @@ public class AlertMessageReporter implements ISystemReporter {
   }
   
   /**
-   * @see eu.baltrad.beast.log.ISystemReporter#info(java.lang.String)
-   */
-  @Override
-  public void info(String message) {
-    BltAlertMessage bltmsg = createAlert(module, BltAlertMessage.INFO, "XXXXX", message);
-    messageManager.manage(bltmsg);
-  }
-
-  /**
    * @see eu.baltrad.beast.log.ISystemReporter#info(java.lang.String, java.lang.String, java.lang.Object[])
    */
   @Override
   public void info(String code, String message, Object... args) {
-    String strmsg = getMessage(module, code, message, args);
-    BltAlertMessage bltmsg = createAlert(module, BltAlertMessage.INFO, code, strmsg);
+    BltAlertMessage bltmsg = createAlert(BltAlertMessage.INFO, code, message, args);
     messageManager.manage(bltmsg);
   }
 
@@ -94,8 +73,7 @@ public class AlertMessageReporter implements ISystemReporter {
    */
   @Override
   public void warn(String code, String message, Object... args) {
-    String strmsg = getMessage(module, code, message, args);
-    BltAlertMessage bltmsg = createAlert(module, BltAlertMessage.WARNING, code, strmsg);
+    BltAlertMessage bltmsg = createAlert(BltAlertMessage.WARNING, code, message, args);
     messageManager.manage(bltmsg);
   }
 
@@ -104,8 +82,7 @@ public class AlertMessageReporter implements ISystemReporter {
    */
   @Override
   public void error(String code, String message, Object... args) {
-    String strmsg = getMessage(module, code, message, args);
-    BltAlertMessage bltmsg = createAlert(module, BltAlertMessage.ERROR, code, strmsg);
+    BltAlertMessage bltmsg = createAlert(BltAlertMessage.ERROR, code, message, args);
     messageManager.manage(bltmsg);
   }
 
@@ -114,8 +91,7 @@ public class AlertMessageReporter implements ISystemReporter {
    */
   @Override
   public void fatal(String code, String message, Object... args) {
-    String strmsg = getMessage(module, code, message, args);
-    BltAlertMessage bltmsg = createAlert(module, BltAlertMessage.FATAL, code, strmsg);
+    BltAlertMessage bltmsg = createAlert(BltAlertMessage.FATAL, code, message, args);
     messageManager.manage(bltmsg);
   }
   
@@ -127,12 +103,44 @@ public class AlertMessageReporter implements ISystemReporter {
    * @param message the error message
    * @return the alert
    */
-  protected BltAlertMessage createAlert(String module, String severity, String code, String message) {
+  protected BltAlertMessage createAlert(String severity, String code, String message, Object... args)
+  {
     BltAlertMessage result = new BltAlertMessage();
-    result.setModule(module);
-    result.setSeverity(severity);
+    
+    String module = null;
+    String errmsg = null;
+    MessageSeverity mseverity = MessageSeverity.UNDEFINED;
+    if (repository != null) {
+      LogMessage lmsg = repository.getMessage(code);
+      if (lmsg != null) {
+        module = lmsg.getModule();
+        mseverity = lmsg.getSeverity();
+        try {
+          errmsg = lmsg.getFormattedMessage(args);
+        } catch (Exception e) {
+          // We take care of errmsg = null further down
+        }
+      }
+    }
+    if (module == null) {
+      module = "BEAST";
+    }
+    if (mseverity != MessageSeverity.UNDEFINED) {
+      severity = mseverity.toString();
+    }
+    if (errmsg == null) {
+      try {
+        errmsg = String.format(message, args);
+      } catch (Exception e) {
+        errmsg = message;
+      }
+    }
+    
+    result.setModule(module);    
     result.setCode(code);
-    result.setMessage(message);
+    result.setSeverity(severity);
+    result.setMessage(errmsg);
+    
     return result;
   }
   
@@ -142,10 +150,10 @@ public class AlertMessageReporter implements ISystemReporter {
    * @param code - the error code
    * @param message - the error message
    */
-  protected String getMessage(String module, String code, String message, Object... args) {
+  protected String getMessage(String code, String message, Object... args) {
     String msg = null;
     if (repository != null) {
-      msg = repository.getMessage(module, code, message, args);
+      msg = repository.getMessage(code, message, args);
     } else {
       msg = String.format(message, args);
     }

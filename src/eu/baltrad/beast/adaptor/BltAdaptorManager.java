@@ -144,7 +144,6 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     String name = configuration.getName();
     String type = configuration.getType();
     IAdaptorConfigurationManager mgr = typeRegistry.get(type);
-
     if (mgr != null) {
       int index = 0;
       try {
@@ -185,7 +184,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     } else {
       result = redefineAdaptorConfiguration((Integer)entry.get("adaptor_id"), (String)entry.get("type"), configuration);
     }
-    reporter.info("00011", "Reregistered adaptor '%s' of type %s", name, type);
+    reporter.info("00003", "Reregistered adaptor '%s' of type %s", name, type);
 
     adaptors.put(name, result);
     
@@ -225,6 +224,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     try {
       template.update("update beast_adaptors set type=? where adaptor_id=?", new Object[]{ntype, adaptor_id});
     } catch (RuntimeException t) {
+      reporter.warn("00004", "Failed to change type of adaptor '%s' to %s", result.getName(), ntype);
       throw new AdaptorException("Failed to change type of adaptor");
     }
     
@@ -234,6 +234,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     try {
       mgr.remove(adaptor_id);
     } catch (RuntimeException t) {
+      reporter.info("00005", "Could not remove old adaptor configuration for '%s'", result.getName());
       t.printStackTrace();
     }
     return result;
@@ -254,7 +255,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
     template.update("delete from beast_adaptors where adaptor_id=?",
         new Object[]{adaptor_id});
     adaptors.remove(name);
-    reporter.info("XXXXX", "Unregistered adaptor '" + name + "'");
+    reporter.info("00006", "Unregistered adaptor '%s'", name);
   }
   
   /**

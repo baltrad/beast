@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------
-Copyright (C) 2009-2010 Swedish Meteorological and Hydrological Institute, SMHI,
+Copyright (C) 2009-2013 Swedish Meteorological and Hydrological Institute, SMHI,
 
 This file is part of the Beast library.
 
@@ -16,72 +16,73 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.log;
+package eu.baltrad.beast.system;
+
+import java.util.Date;
+
+import eu.baltrad.beast.log.message.MessageSeverity;
 
 /**
+ * System message. 
  * @author Anders Henja
  */
-public class LogMessage {
-  /**
-   * Message code
-   */
+public class SystemMessage {
+  private Date reportDate;
+  private String module;
   private String code;
-  
-  /**
-   * The error message
-   */
   private String message;
-  
-  /**
-   * If it is possible to resolve this error, this might be the solution
-   */
+  private MessageSeverity severity;
   private String solution;
-
+  
   /**
    * Default constructor
    */
-  public LogMessage() {
-    this(null);
+  public SystemMessage() {
+    reportDate = new Date();
   }
   
   /**
-   * Constructor
-   * @param code - the message code
+   * @return the report date
    */
-  public LogMessage(String code) {
-    this(code, null);
+  public Date getReportDate() {
+    return reportDate;
   }
   
   /**
-   * Constructor
-   * @param code the error code
-   * @param message the error message
+   * @param reportDate the report date to set
+   * @throws IllegalArgumentException if reportDate == null
    */
-  public LogMessage(String code, String message) {
-    this(code, message, null);
+  public void setReportDate(Date reportDate) {
+    if (reportDate == null) {
+      throw new IllegalArgumentException();
+    }
+    this.reportDate = reportDate;
   }
-  
+
   /**
-   * Constructor
-   * @param code the error code
-   * @param message the error message
-   * @param solution the solution for this error
+   * @return the module name
    */
-  public LogMessage(String code, String message, String solution) {
-    this.code = code;
-    this.message = message;
-    this.solution = solution;
+  public String getModule() {
+    return module;
+  }
+
+  /**
+   * @param module the module name to set
+   */
+  public void setModule(String module) {
+    this.module = module;
   }
   
+  
   /**
-   * @return the code
+   * @return the error code
    */
   public String getCode() {
     return code;
   }
-
+  
   /**
-   * @param code the code to set
+   * @param code the error code to set
    */
   public void setCode(String code) {
     this.code = code;
@@ -99,6 +100,20 @@ public class LogMessage {
    */
   public void setMessage(String message) {
     this.message = message;
+  }
+
+  /**
+   * @return the severity
+   */
+  public MessageSeverity getSeverity() {
+    return severity;
+  }
+
+  /**
+   * @param severity the severity to set
+   */
+  public void setSeverity(MessageSeverity severity) {
+    this.severity = severity;
   }
 
   /**

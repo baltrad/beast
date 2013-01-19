@@ -16,7 +16,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.log;
+package eu.baltrad.beast.log.message;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -24,7 +24,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.util.Map;
+import java.util.List;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -79,22 +79,20 @@ public class LogMessageRepositoryTest extends EasyMockSupport {
     msg.setCode("01234");
     msg.setMessage("my message");
     msg.setSolution("my solution");
-    classUnderTest.add("MYMODULE", msg);
+    msg.setModule("MYMODULE");
+    classUnderTest.add(msg);
     
-    LogMessage result = classUnderTest.getMessage("MYMODULE", "01234");
+    LogMessage result = classUnderTest.getMessage("01234");
     assertSame(msg, result);
     
-    result = classUnderTest.getMessage("ANOTHERMOD", "01234");
-    assertNull(result);
-
-    result = classUnderTest.getMessage("MYMODULE", "01235");
+    result = classUnderTest.getMessage("01235");
     assertNull(result);
   }
 
   @Test
   public void testAdd_nullMessage() throws Exception {
     try {
-      classUnderTest.add("MYMODULE", null);
+      classUnderTest.add(null);
       fail("Expected NullPointerException");
     } catch (NullPointerException e) {
       //pass
@@ -102,22 +100,32 @@ public class LogMessageRepositoryTest extends EasyMockSupport {
   }
 
   @Test
-  public void testAdd_nullModule() throws Exception {
+  public void testAdd_missingModuleInformation() throws Exception {
     LogMessage msg = new LogMessage();
-    msg.setCode("01234");
-    msg.setMessage("my message");
-    msg.setSolution("my solution");
+    msg.setCode("12345");
     try {
-      classUnderTest.add(null, msg);
-      fail("Expected NullPointerException");
-    } catch (NullPointerException e) {
+      classUnderTest.add(msg);
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      //pass
+    }
+  }
+  
+  @Test
+  public void testAdd_missingEcodeInformation() throws Exception {
+    LogMessage msg = new LogMessage();
+    msg.setModule("MODULE");
+    try {
+      classUnderTest.add(msg);
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
       //pass
     }
   }
   
   @Test
   public void testGet_noSuchMessage() throws Exception {
-    LogMessage result = classUnderTest.getMessage("MYMODULE", "01234");
+    LogMessage result = classUnderTest.getMessage("01234");
     assertNull(result);
   }
   
@@ -127,64 +135,80 @@ public class LogMessageRepositoryTest extends EasyMockSupport {
     msg.setCode("01234");
     msg.setMessage("my message");
     msg.setSolution("my solution");
-    classUnderTest.add("MYMODULE", msg);
+    msg.setModule("MYMODULE");
+    classUnderTest.add(msg);
 
-    classUnderTest.remove("MYMODULE", "01234");
-    LogMessage result = classUnderTest.getMessage("MYMODULE", "01234");
+    classUnderTest.remove("01234");
+    LogMessage result = classUnderTest.getMessage("01234");
     assertNull(result);
   }
 
   @Test
   public void testGetModuleMessages() throws Exception {
-    LogMessage m1 = new LogMessage("00001", "Message 1");
-    LogMessage m2 = new LogMessage("00002", "Message 1");
-    LogMessage m3 = new LogMessage("00003", "Message 1");
+    LogMessage m1 = new LogMessage("MODULE1", "00001", "Message 1");
+    LogMessage m2 = new LogMessage("MODULE1", "00002", "Message 1");
+    LogMessage m3 = new LogMessage("MODULE2", "00003", "Message 1");
     
-    classUnderTest.add("MODULE1", m1);
-    classUnderTest.add("MODULE1", m2);
-    classUnderTest.add("MODULE2", m2);
-    classUnderTest.add("MODULE2", m3);
+    classUnderTest.add(m1);
+    classUnderTest.add(m2);
+    classUnderTest.add(m2);
+    classUnderTest.add(m3);
 
-    Map<String,LogMessage> result = classUnderTest.getModuleMessages("MODULE1");
-    assertEquals(2, result.size());
-    assertSame(m1, result.get("00001"));
-    assertSame(m2, result.get("00002"));
-    
-    result = classUnderTest.getModuleMessages("MODULE2");
-    assertEquals(2, result.size());
-    assertSame(m2, result.get("00002"));
-    assertSame(m3, result.get("00003"));
+    List<LogMessage> result = classUnderTest.getModuleMessages();
+    assertEquals(3, result.size());
+    assertEquals("00001", result.get(0).getCode());
+    assertEquals("00002", result.get(1).getCode());
+    assertEquals("00003", result.get(2).getCode());
   }
 
   @Test
-  public void testGetMessage_args() throws Exception {
-    LogMessage m1 = new LogMessage("00001", "Message %s ok");
-    LogMessage m2 = new LogMessage("00001", "Message %s nok");
-
-    classUnderTest.add("MODULE1", m1);
-    classUnderTest.add("MODULE2", m2);
+  public void testGetModuleMessages_2() throws Exception {
+    LogMessage m1 = new LogMessage("MODULE1", "00001", "Message 1");
+    LogMessage m2 = new LogMessage("MODULE1", "00002", "Message 1");
+    LogMessage m3 = new LogMessage("MODULE2", "00001", "Message 1");
     
-    String result = classUnderTest.getMessage("MODULE1", "00001", "Message %s was ok", "abc");
+    classUnderTest.add(m1);
+    classUnderTest.add(m2);
+    classUnderTest.add(m2);
+    classUnderTest.add(m3);
+
+    List<LogMessage> result = classUnderTest.getModuleMessages();
+    assertEquals(2, result.size());
+    assertEquals("00001", result.get(0).getCode());
+    assertEquals("MODULE2", result.get(0).getModule());
+    assertEquals("00002", result.get(1).getCode());
+  }
+  
+  
+  @Test
+  public void testGetMessage_args() throws Exception {
+    LogMessage m1 = new LogMessage("MODULE1", "00001", "Message %s ok");
+    LogMessage m2 = new LogMessage("MODULE1", "00002", "Message %s nok");
+
+    classUnderTest.add(m1);
+    classUnderTest.add(m2);
+    
+    String result = classUnderTest.getMessage("00001", "Message %s was ok", "abc");
     assertEquals("Message abc ok", result);
-    result = classUnderTest.getMessage("MODULE1", "00002", "Message %s was ok", "abc");
-    assertEquals("Message abc was ok", result);
-    result = classUnderTest.getMessage("MODULE2", "00001", "Message %s was ok", "abc");
+    result = classUnderTest.getMessage("00002", "Message %s was ok", "abc");
     assertEquals("Message abc nok", result);
-    result = classUnderTest.getMessage("MODULE2", "00002", "Message %s was ok", "abc");
-    assertEquals("Message abc was ok", result);    
   }
 
   @Test
   public void testLoad() throws Exception {
     File f = new File(this.getClass().getResource(XML_LOAD_TEST_FIXTURE).getFile());
     classUnderTest.load(f.getAbsolutePath());
-    LogMessage msg = classUnderTest.getMessage("BEAST", "00001");
+    LogMessage msg = classUnderTest.getMessage("00001");
     assertEquals("00001", msg.getCode());
+    assertEquals("BEAST", msg.getModule());
+    assertEquals(MessageSeverity.INFO, msg.getSeverity());
     assertEquals("Registered adaptor '%s' of type %s", msg.getMessage());
     assertEquals(null, msg.getSolution());
 
-    msg = classUnderTest.getMessage("BEAST", "00004");
+    msg = classUnderTest.getMessage("00004");
     assertEquals("00004", msg.getCode());
+    assertEquals("BEAST", msg.getModule());
+    assertEquals(MessageSeverity.ERROR, msg.getSeverity());
     assertEquals("XMLRPC communication with '%s' FAILED", msg.getMessage());
     assertEquals("Verify that the product generation framework is running", msg.getSolution());
 
@@ -196,19 +220,23 @@ public class LogMessageRepositoryTest extends EasyMockSupport {
     File f2 = new File(this.getClass().getResource(XML_LOAD_TEST_FIXTURE2).getFile());
     
     classUnderTest.load(new String[]{f.getAbsolutePath(), f2.getAbsolutePath()});
-    LogMessage msg = classUnderTest.getMessage("BEAST", "00001");
+    LogMessage msg = classUnderTest.getMessage("00001");
     assertEquals("00001", msg.getCode());
+    assertEquals("BEAST", msg.getModule());
     assertEquals("Registered adaptor '%s' of type %s", msg.getMessage());
     assertEquals(null, msg.getSolution());
 
-    msg = classUnderTest.getMessage("BEAST", "00004");
+    msg = classUnderTest.getMessage("00004");
     assertEquals("00004", msg.getCode());
+    assertEquals("BEAST", msg.getModule());
     assertEquals("XMLRPC communication with '%s' FAILED", msg.getMessage());
     assertEquals("Verify that the product generation framework is running", msg.getSolution());
 
-    msg = classUnderTest.getMessage("OTHER", "00001");
-    assertEquals("00001", msg.getCode());
+    msg = classUnderTest.getMessage("10001");
+    assertEquals("10001", msg.getCode());
+    assertEquals("OTHER", msg.getModule());
     assertEquals("Something", msg.getMessage());
+    assertEquals(MessageSeverity.UNDEFINED, msg.getSeverity());
     assertEquals(null, msg.getSolution());
   }
 

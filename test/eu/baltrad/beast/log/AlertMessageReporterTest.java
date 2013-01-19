@@ -20,13 +20,16 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.log;
 
 import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertEquals;
+import junit.framework.Assert;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.baltrad.beast.log.message.ILogMessageRepository;
+import eu.baltrad.beast.log.message.LogMessage;
+import eu.baltrad.beast.log.message.MessageSeverity;
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 
@@ -37,8 +40,7 @@ import eu.baltrad.beast.message.mo.BltAlertMessage;
  */
 public class AlertMessageReporterTest extends EasyMockSupport {
   interface Methods {
-    public BltAlertMessage createAlert(String module, String severity, String code, String message);
-    public String getMessage(String module, String code, String message, Object... args);
+    public BltAlertMessage createAlert(String severity, String code, String message, Object... args);
   };
 
   private ILogMessageRepository repository = null;
@@ -53,11 +55,8 @@ public class AlertMessageReporterTest extends EasyMockSupport {
     manager = createMock(IBltMessageManager.class);
     
     classUnderTest = new AlertMessageReporter() {
-      protected String getMessage(String module, String code, String message, Object... args) {
-        return methods.getMessage(module, code, message, args);
-      }
-      protected BltAlertMessage createAlert(String module, String severity, String code, String message) {
-        return methods.createAlert(module, severity, code, message);
+      protected BltAlertMessage createAlert(String severity, String code, String message, Object... args) {
+        return methods.createAlert(severity, code, message, args);
       }
     };
     classUnderTest.setMessageRepository(repository);
@@ -72,31 +71,16 @@ public class AlertMessageReporterTest extends EasyMockSupport {
   }
   
   @Test
-  public void testInfo_onlymessage() throws Exception {
-    BltAlertMessage bltmsg = new BltAlertMessage();
-    
-    expect(methods.createAlert("BEAST", "INFO", "XXXXX", "We got a message")).andReturn(bltmsg);
-    manager.manage(bltmsg);
-    
-    replayAll();
-    
-    classUnderTest.info("We got a message");
-    
-    verifyAll();
-  }
-  
-  @Test
   public void testInfo() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
-    Object[] args = new Object[]{"a"};
     
-    expect(methods.getMessage("BEAST", "00001", "We got a message %s", args)).andReturn("We got a message a");
-    expect(methods.createAlert("BEAST", "INFO", "00001", "We got a message a")).andReturn(bltmsg);
+    expect(methods.createAlert(BltAlertMessage.INFO, "00001", "We got a message for %s", "nisse")).andReturn(bltmsg);
+    
     manager.manage(bltmsg);
     
     replayAll();
     
-    classUnderTest.info("00001", "We got a message %s", args);
+    classUnderTest.info("00001", "We got a message for %s", "nisse");
     
     verifyAll();
   }
@@ -104,15 +88,14 @@ public class AlertMessageReporterTest extends EasyMockSupport {
   @Test
   public void testWarning() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
-    Object[] args = new Object[]{"a"};
     
-    expect(methods.getMessage("BEAST", "00001", "We got a message %s", args)).andReturn("We got a message a");
-    expect(methods.createAlert("BEAST", "WARNING", "00001", "We got a message a")).andReturn(bltmsg);
+    expect(methods.createAlert(BltAlertMessage.WARNING, "00001", "We got a message for %s", "nisse")).andReturn(bltmsg);
+    
     manager.manage(bltmsg);
     
     replayAll();
     
-    classUnderTest.warn("00001", "We got a message %s", args);
+    classUnderTest.warn("00001", "We got a message for %s", "nisse");
     
     verifyAll();
   }
@@ -120,82 +103,110 @@ public class AlertMessageReporterTest extends EasyMockSupport {
   @Test
   public void testError() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
-    Object[] args = new Object[]{"a"};
     
-    expect(methods.getMessage("BEAST", "00001", "We got a message %s", args)).andReturn("We got a message a");
-    expect(methods.createAlert("BEAST", "ERROR", "00001", "We got a message a")).andReturn(bltmsg);
+    expect(methods.createAlert(BltAlertMessage.ERROR, "00001", "We got a message for %s", "nisse")).andReturn(bltmsg);
+    
     manager.manage(bltmsg);
     
     replayAll();
     
-    classUnderTest.error("00001", "We got a message %s", args);
+    classUnderTest.error("00001", "We got a message for %s", "nisse");
     
-    verifyAll();
+    verifyAll();    
   }  
 
   @Test
   public void testFatal() throws Exception {
     BltAlertMessage bltmsg = new BltAlertMessage();
-    Object[] args = new Object[]{"a"};
     
-    expect(methods.getMessage("BEAST", "00001", "We got a message %s", args)).andReturn("We got a message a");
-    expect(methods.createAlert("BEAST", "FATAL", "00001", "We got a message a")).andReturn(bltmsg);
+    expect(methods.createAlert(BltAlertMessage.FATAL, "00001", "We got a message for %s", "nisse")).andReturn(bltmsg);
+    
     manager.manage(bltmsg);
     
     replayAll();
     
-    classUnderTest.fatal("00001", "We got a message %s", args);
+    classUnderTest.fatal("00001", "We got a message for %s", "nisse");
     
-    verifyAll();
+    verifyAll();     
   }
   
   @Test
-  public void testCreateMessage() throws Exception {
-    classUnderTest = new AlertMessageReporter();
-    
-    replayAll();
-    
-    BltAlertMessage result = classUnderTest.createAlert("NISSE",BltAlertMessage.INFO, "00001", "we got something");
-    
-    verifyAll();
-    
-    assertEquals("NISSE", result.getModule());
-    assertEquals(BltAlertMessage.INFO, result.getSeverity());
-    assertEquals("00001", result.getCode());
-    assertEquals("we got something", result.getMessage());
-  }
-
-  @Test
-  public void testGetMessage() throws Exception {
-    Object[] args = new Object[]{"is"};
-    
-    expect(repository.getMessage("MODULE1", "00001", "This %s ok", args)).andReturn("This is ok");
-
-    replayAll();
-
+  public void testCreateAlert() throws Exception {
+    LogMessage lmsg = new LogMessage("MYMODULE", "00001", "another message for %s", MessageSeverity.ERROR);
     classUnderTest = new AlertMessageReporter();
     classUnderTest.setMessageRepository(repository);
+    classUnderTest.setMessageManager(manager);
     
-    String result = classUnderTest.getMessage("MODULE1", "00001", "This %s ok", args);
+    expect(repository.getMessage("00001")).andReturn(lmsg);
+    
+    replayAll();
+    
+    BltAlertMessage result = classUnderTest.createAlert(BltAlertMessage.WARNING, "00001", "a message for %s", "nisse");
     
     verifyAll();
     
-    assertEquals("This is ok", result);
+    Assert.assertEquals(BltAlertMessage.ERROR, result.getSeverity());
+    Assert.assertEquals("00001", result.getCode());
+    Assert.assertEquals("MYMODULE", result.getModule());
+    Assert.assertEquals("another message for nisse", result.getMessage());
   }
   
   @Test
-  public void testGetMessage_nullRepository() throws Exception {
-    Object[] args = new Object[]{"is"};
-
-    replayAll();
-
+  public void testCreateAlert_noRepository() throws Exception {
     classUnderTest = new AlertMessageReporter();
-    classUnderTest.setMessageRepository(null);
+    classUnderTest.setMessageManager(manager);
     
-    String result = classUnderTest.getMessage("MODULE1", "00001", "This %s ok", args);
+    replayAll();
+    
+    BltAlertMessage result = classUnderTest.createAlert(BltAlertMessage.ERROR, "00001", "a message for %s", "nisse");
     
     verifyAll();
     
-    assertEquals("This is ok", result);
+    Assert.assertEquals(BltAlertMessage.ERROR, result.getSeverity());
+    Assert.assertEquals("00001", result.getCode());
+    Assert.assertEquals("BEAST", result.getModule());
+    Assert.assertEquals("a message for nisse", result.getMessage());
+  }
+  
+  @Test
+  public void testCreateAlert_noSuchCode() throws Exception {
+    
+    classUnderTest = new AlertMessageReporter();
+    classUnderTest.setMessageRepository(repository);
+    classUnderTest.setMessageManager(manager);
+    
+    expect(repository.getMessage("00001")).andReturn(null);
+
+    replayAll();
+    
+    BltAlertMessage result = classUnderTest.createAlert(BltAlertMessage.ERROR, "00001", "a message for %s", "nisse");
+    
+    verifyAll();
+    
+    Assert.assertEquals(BltAlertMessage.ERROR, result.getSeverity());
+    Assert.assertEquals("00001", result.getCode());
+    Assert.assertEquals("BEAST", result.getModule());
+    Assert.assertEquals("a message for nisse", result.getMessage());
+  }
+  
+  @Test
+  public void testCreateAlert_noSeverityInMessage() throws Exception {
+    LogMessage lmsg = new LogMessage("MYMODULE", "00001", "another message for %s");
+    classUnderTest = new AlertMessageReporter();
+    classUnderTest.setMessageRepository(repository);
+    classUnderTest.setMessageManager(manager);
+    
+    expect(repository.getMessage("00001")).andReturn(lmsg);
+    
+    replayAll();
+    
+    BltAlertMessage result = classUnderTest.createAlert(BltAlertMessage.WARNING, "00001", "a message for %s", "nisse");
+    
+    verifyAll();
+    
+    Assert.assertEquals(BltAlertMessage.WARNING, result.getSeverity());
+    Assert.assertEquals("00001", result.getCode());
+    Assert.assertEquals("MYMODULE", result.getModule());
+    Assert.assertEquals("another message for nisse", result.getMessage());
   }
 }

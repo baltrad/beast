@@ -381,10 +381,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
       manager.delete(rule_id);
       template.update("delete from beast_router_dest where rule_id=?", new Object[]{rule_id});
       template.update("delete from beast_router_rules where rule_id=?", new Object[]{rule_id});
-      reporter.info("Route definition '" + name + "' removed");
-      reporter.info("00005", "Route definition '%s' removed", name);
+      reporter.info("00101", "Route definition '%s' removed", name);
     } catch (RuntimeException t) {
-      reporter.warn("00006","Failed to remove route definition '%s'", name);
+      reporter.warn("00102","Failed to remove route definition '%s'", name);
       throw new RuleException("Failed to remove rule: '" + name+"'", t);
     }
     removeDefinitionFromList(name);
@@ -416,9 +415,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
         ((IRuleRecipientAware)rule).setRecipients(def.getRecipients());
       }
       storeRecipients(ruleid, def.getRecipients());
-      reporter.info("00007", "%s added route '%s'", def.getAuthor(), def.getName());
+      reporter.info("00103", "%s added route '%s'", def.getAuthor(), def.getName());
     } catch (RuntimeException t) {
-      reporter.warn("00008", "%s failed to add route '%s'", def.getAuthor(), t.getMessage());
+      reporter.warn("00104", "%s failed to add route '%s'", def.getAuthor(), t.getMessage());
       throw new RuleException("Failed to add router rule definition: " + t.getMessage(), t);
     }
     this.definitions.add(def);
@@ -455,9 +454,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
       // replace recipients
       storeRecipients(rule_id, def.getRecipients());
       
-      reporter.info("00009", "%s updated route '%s'",def.getAuthor(), def.getName());
+      reporter.info("00105", "%s updated route '%s'",def.getAuthor(), def.getName());
     } catch (RuntimeException t) {
-      reporter.warn("00010", "%s failed to update route '%s'", def.getAuthor(), t.getMessage());
+      reporter.warn("00106", "%s failed to update route '%s'", def.getAuthor(), t.getMessage());
       throw new RuleException("Failed to update router rule definition: " + t.getMessage(), t);
     }
     

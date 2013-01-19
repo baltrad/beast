@@ -1,46 +1,67 @@
-<log-messages module="BEAST">
-  <message id="00001">
+<?xml version="1.0" encoding="UTF-8"?>
+<log-messages>
+  <!-- Adaptor registration -->
+  <message module="BEAST" id="00001" severity="INFO">
     <text>Registered adaptor '%s' of type %s"</text>
   </message>
   
-  <message id="00002">
+  <message module="BEAST" id="00002" severity="WARNING">
     <text>Failed to register adaptor '%s'</text>
-  </message>
-  
-  <message id="00003">
-    <text>XMLRPC communication with '%s' TIMEOUT</text>
-  </message>
-  
-  <message id="00004">
-    <text>XMLRPC communication with '%s' FAILED</text>
-    <solution>Verify that the product generation framework is running</solution>
+    <solution>User interaction problem. Check error message in user interface.</solution>
   </message>
 
-  <message id="00005">
+  <message module="BEAST" id="00003" severity="INFO">
+    <text>Reregistered adaptor '%s' of type %s</text>
+  </message>
+
+  <message module="BEAST" id="00004" severity="WARNING">
+    <text>Failed to change type of adaptor '%s' to %s</text>
+    <solution>User interaction problem. Check error message in user interface.</solution>
+  </message>
+
+  <message module="BEAST" id="00005" severity="INFO">
+    <text>Could not remove old adaptor configuration for '%s'</text>
+  </message>
+
+  <message module="BEAST" id="00006" severity="INFO">
+    <text>Unregistered adaptor '%s'</text>
+  </message>
+  
+  <!-- Route and rule management -->
+  <message module="BEAST" id="00101" severity="INFO">
     <text>Route definition '%s' removed</text>
   </message>
   
-  <message id="00006">
+  <message module="BEAST" id="00102" severity="WARNING">
     <text>Failed to remove route definition '%s'</text>
+    <solution>User interaction problem. Check error message in user interface.</solution>
   </message>
 
-  <message id="00007">
+  <message module="BEAST" id="00103" severity="INFO">
     <text>%s added route '%s'</text>
   </message>
 
-  <message id="00008">
+  <message module="BEAST" id="00104" severity="WARNING">
     <text>%s failed to add route '%s'</text>
+    <solution>User interaction problem. Check error message in user interface.</solution>
   </message>    
 
-  <message id="00009">
+  <message module="BEAST" id="00105" severity="INFO">
     <text>%s updated route '%s'</text>
   </message>
 
-  <message id="00010">
+  <message module="BEAST" id="00106" severity="WARNING">
     <text>%s failed to update route '%s'</text>
   </message>
   
-  <message id="00011">
-    <text>Reregistered adaptor '%s' of type %s</text>
+  <!-- Communication -->
+  <message module="BEAST" id="00201" severity="WARNING">
+    <text>XMLRPC communication with '%s' TIMEOUT</text>
+    <solution>Communication problem. Check load on the product generation framework.</solution>
+  </message>
+  
+  <message module="BEAST" id="00202" severity="ERROR">
+    <text>XMLRPC communication with '%s' FAILED</text>
+    <solution>Communication problem. Verify that the product generation framework is running</solution>
   </message>
 </log-messages>

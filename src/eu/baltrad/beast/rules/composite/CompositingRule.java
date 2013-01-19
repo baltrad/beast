@@ -20,6 +20,7 @@ package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -534,16 +535,12 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     Time time = nominalDT.getTime();
     
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
-    //logger.debug("createMessage: entries: " +
-    //             StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
-    //logger.debug("createMessage: filtering for nominal time: " + nominalDT.toIsoString());
     entries = ruleUtil.getEntriesByClosestTime(nominalDT, entries);
-    //logger.debug("createMessage: entries: " +
-    //             StringUtils.collectionToDelimitedString(getUuidsFromEntries(entries), " "));
-    //logger.debug("createMessage: filtering for sources: " +
-    //             StringUtils.collectionToDelimitedString(sources, " "));
     entries = ruleUtil.getEntriesBySources(sources, entries);
     List<String> uuids = ruleUtil.getUuidStringsFromEntries(entries);
+    List<String> usedSources = ruleUtil.getSourcesFromEntries(entries);
+    ruleUtil.reportRadarSourceUsage(sources, usedSources);
+    
     logger.debug("createMessage: entries: " +
                  StringUtils.collectionToDelimitedString(uuids, " "));
     
@@ -638,7 +635,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     }
     return uuids;
   }
-
+  
   /**
    * @see eu.baltrad.beast.rules.IRuleRecipientAware#setRecipients(java.util.List)
    */

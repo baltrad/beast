@@ -1,3 +1,4 @@
+drop table if exists beast_host_filter;
 drop table if exists beast_scheduled_jobs;
 drop table if exists beast_router_dest;
 drop table if exists beast_adaptors_xmlrpc;

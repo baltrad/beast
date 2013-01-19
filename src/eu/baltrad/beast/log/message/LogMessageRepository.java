@@ -16,9 +16,12 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
-package eu.baltrad.beast.log;
+package eu.baltrad.beast.log.message;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,13 +48,13 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
    * First key points out module. /log-messages/module.
    * Second key points at the error code.
    */
-  private Map<String, Map<String, LogMessage>> messages = null;
+  private Map<String, LogMessage> messages = null;
 
   /**
    * Default constructor
    */
   public LogMessageRepository() {
-    messages = new HashMap<String, Map<String,LogMessage>>();
+    messages = new HashMap<String,LogMessage>();
   }
   
   /**
@@ -66,7 +69,7 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
    * Constructor
    * @param messages the log messages
    */
-  public LogMessageRepository(Map<String, Map<String, LogMessage>> messages) {
+  public LogMessageRepository(Map<String, LogMessage> messages) {
     this.messages = messages;
   }
   
@@ -77,12 +80,17 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
    * @return the log message
    */
   @Override
-  public synchronized LogMessage getMessage(String module, String ecode) {
-    if (messages.containsKey(module)) {
-      Map<String, LogMessage> value = messages.get(module);
-      if (value.containsKey(ecode)) {
-        return value.get(ecode);
-      }
+  public synchronized LogMessage getMessage(String ecode) {
+    if (messages.containsKey(ecode)) {
+      return messages.get(ecode);
+    }
+    return null;
+  }
+  
+  @Override
+  public synchronized String getModule(String ecode) {
+    if (messages.containsKey(ecode)) {
+      return messages.get(ecode).getModule();
     }
     return null;
   }
@@ -93,29 +101,35 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
    * @return the messages
    */
   @Override
-  public synchronized Map<String,LogMessage> getModuleMessages(String module) {
-    if (messages.containsKey(module)) {
-      return messages.get(module);
-    } else {
-      return new HashMap<String, LogMessage>();
-    }
+  public synchronized List<LogMessage> getModuleMessages() {
+    List<LogMessage> result = new ArrayList<LogMessage>();
+    result.addAll(messages.values());
+    Collections.sort(result, new Comparator<LogMessage>() {
+      @Override
+      public int compare(LogMessage o1, LogMessage o2) {
+        String code1 = o1.getCode();
+        String code2 = o2.getCode();
+        return code1.compareTo(code2);
+      }
+    });
+    return result;
   }
   
   /**
    * @see eu.baltrad.beast.log.ILogMessageRepository#getMessage(String, String, String, Object...)
    */
   @Override
-  public String getMessage(String module, String code, String message, Object... args) {
+  public String getMessage(String code, String message, Object... args) {
     String msg = null;
-    LogMessage logmsg = getMessage(module, code);
+    LogMessage logmsg = getMessage(code);
     if (logmsg != null) {
       try {
-        msg = String.format(logmsg.getMessage(), args);
+        msg = logmsg.getFormattedMessage(args);
       } catch (Exception e) {
         // let default message be used instead and that one should not fail
       }
     }
-    
+   
     if (msg == null) {
       msg = String.format(message, args);
     }
@@ -127,15 +141,11 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
    * Adds a log message to this repository
    * @param message the message to add
    */
-  public synchronized void add(String module, LogMessage message) {
-    if (module != null) {
-      if (!messages.containsKey(module)) {
-        messages.put(module, new HashMap<String, LogMessage>());
-      }
-      Map<String, LogMessage> mod = messages.get(module);
-      mod.put(message.getCode(), message);
+  public synchronized void add(LogMessage message) {
+    if (message.getModule() != null && message.getCode() != null) {
+      messages.put(message.getCode(), message);
     } else {
-      throw new NullPointerException();
+      throw new IllegalArgumentException("No module or error code specified for logmessage");
     }
   }
   
@@ -143,12 +153,9 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
    * Removes the log message with specified error code
    * @param ecode the error code
    */
-  public synchronized void remove(String module, String ecode) {
-    if (messages.containsKey(module)) {
-      Map<String, LogMessage> mod = messages.get(module);
-      if (mod.containsKey(ecode)) {
-        mod.remove(ecode);
-      }
+  public synchronized void remove(String ecode) {
+    if (messages.containsKey(ecode)) {
+      messages.remove(ecode);
     }
   }
 
@@ -180,25 +187,20 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
       SAXReader reader = new SAXReader();
       Document doc = reader.read(f);
       
-      String module = doc.getRootElement().attribute("module").getText();
-      Map<String,LogMessage> map = null;
-      if (!messages.containsKey(module)) {
-        messages.put(module,  new HashMap<String,LogMessage>());
-      }
-      map = messages.get(module);
-
       XPath xpathSelector = DocumentHelper.createXPath("//log-messages/message");
       @SuppressWarnings("unchecked")
       List<Element> nodes = xpathSelector.selectNodes(doc);
       for (Element e : nodes) {
+        String module = e.attribute("module").getText();
         String code = e.attribute("id").getText();
+        MessageSeverity severity = MessageSeverity.UNDEFINED;
+        if (e.attribute("severity") != null) {
+          severity = strToSeverity(e.attribute("severity").getText());
+        }
         String txt = e.elementText("text");
         String solution = e.elementText("solution");
-        LogMessage msg = new LogMessage();
-        msg.setCode(code);
-        msg.setMessage(txt);
-        msg.setSolution(solution);
-        map.put(code, msg);
+        LogMessage msg = new LogMessage(module, code, txt, severity, solution);
+        messages.put(code, msg);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -217,6 +219,10 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
     }
   }
 
+  protected MessageSeverity strToSeverity(String str) {
+    return MessageSeverity.valueOf(str);
+  }
+  
   /**
    * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
    */

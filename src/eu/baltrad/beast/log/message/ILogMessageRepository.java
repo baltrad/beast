@@ -17,9 +17,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
 
-package eu.baltrad.beast.log;
+package eu.baltrad.beast.log.message;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Interface for supporting log messages belonging to various modules.
@@ -28,12 +28,18 @@ import java.util.Map;
  */
 public interface ILogMessageRepository {
   /**
-   * Returns a log message for the specified module and error code
-   * @param module the module name
+   * Returns a log message for the specified error code
    * @param ecode the error code
    * @return the log message or null if no message found
    */
-  public LogMessage getMessage(String module, String ecode);
+  public LogMessage getMessage(String ecode);
+  
+  /**
+   * Returns the module this error code belongs to
+   * @param ecode the error code
+   * @return the module or null if error code not could be found
+   */
+  public String getModule(String ecode);
   
   /**
    * Returns all messages belonging to a specific module. The
@@ -41,7 +47,7 @@ public interface ILogMessageRepository {
    * @param module the specific module
    * @return the messages, might be empty but will never be null
    */
-  public Map<String,LogMessage> getModuleMessages(String module);
+  public List<LogMessage> getModuleMessages();
   
   /**
    * Returns a message for specified module, code. The provided message is
@@ -52,5 +58,5 @@ public interface ILogMessageRepository {
    * @param args the argument list
    * @return a message
    */
-  public String getMessage(String module, String code, String message, Object... args);
+  public String getMessage(String code, String message, Object... args);
 }

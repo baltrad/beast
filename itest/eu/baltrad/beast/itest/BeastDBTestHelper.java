@@ -173,6 +173,7 @@ public class BeastDBTestHelper {
   
   public void tearDown() throws Exception {
     SimpleJdbcTemplate template = new SimpleJdbcTemplate(source);
+    template.update("delete from beast_host_filter");
     template.update("delete from beast_router_dest");
     template.update("delete from beast_groovy_rules");
     template.update("delete from beast_composite_detectors");
