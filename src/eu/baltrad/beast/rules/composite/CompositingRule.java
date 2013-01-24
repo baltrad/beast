@@ -90,6 +90,16 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   public final static String PCAPPI = "pcappi";
   
   /**
+   * Use Pseudo-Max compositing.
+   */
+  public final static String PMAX = "pmax";
+  
+  /**
+   * Use Max compositing
+   */
+  public final static String MAX = "max";
+  
+  /**
    * The catalog for database access
    */
   private Catalog catalog = null;
