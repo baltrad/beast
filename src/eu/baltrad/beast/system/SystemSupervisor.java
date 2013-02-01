@@ -22,6 +22,7 @@ package eu.baltrad.beast.system;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,12 +97,23 @@ public class SystemSupervisor implements ISystemSupervisor {
   }
   
   /**
-   * @see eu.baltad.beast.system.ISystemSupervisor#getStatus(java.lang.String, java.lang.String)
+   * @see eu.baltad.beast.system.ISystemSupervisor#getSupportedAttributes(java.lang.String)
+   */
+  @Override
+  public Set<String> getSupportedAttributes(String component) {
+    if (reporters.containsKey(component)) {
+      return reporters.get(component).getSupportedAttributes();
+    }
+    return new HashSet<String>();
+  }
+  
+  /**
+   * @see eu.baltad.beast.system.ISystemSupervisor#getStatus(java.lang.String, java.util.Map)
    */
   @Override  
-  public Set<SystemStatus> getStatus(String component, String...args) {
+  public Set<SystemStatus> getStatus(String component, Map<String,Object> values) {
     if (reporters.containsKey(component)) {
-      return reporters.get(component).getStatus(args);
+      return reporters.get(component).getStatus(values);
     }
     return EnumSet.of(SystemStatus.UNDEFINED);
   }

@@ -20,6 +20,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.system;
 
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import eu.baltrad.bdb.FileCatalog;
@@ -53,14 +55,22 @@ public class BdbConnectionStatusReporter implements ISystemStatusReporter {
    */
   @Override
   public String getName() {
-    return "bdb";
+    return "bdb.status";
   }
 
+  /**
+   * @see eu.baltrad.beast.system.ISystemStatusReporter#getSupportedAttributes()
+   */
+  @Override
+  public Set<String> getSupportedAttributes() {
+    return new HashSet<String>();
+  }
+  
   /**
    * @see eu.baltrad.beast.system.ISystemStatusReporter#getStatus()
    */
   @Override
-  public Set<SystemStatus> getStatus(String... args) {
+  public Set<SystemStatus> getStatus(Map<String,Object> values) {
     try {
       fc.getDatabase().getSourceManager().getSources();
       return EnumSet.of(SystemStatus.OK);

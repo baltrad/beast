@@ -20,6 +20,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.system;
 
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -47,14 +49,22 @@ public class DbConnectionStatusReporter implements ISystemStatusReporter {
    */
   @Override
   public String getName() {
-    return "db";
+    return "db.status";
   }
 
+  /**
+   * @see eu.baltrad.beast.system.ISystemStatusReporter#getSupportedAttributes()
+   */
+  @Override
+  public Set<String> getSupportedAttributes() {
+    return new HashSet<String>();
+  }
+  
   /**
    * @see eu.baltrad.beast.system.ISystemStatusReporter#getStatus(java.lang.String[])
    */
   @Override
-  public Set<SystemStatus> getStatus(String... args) {
+  public Set<SystemStatus> getStatus(Map<String,Object> values) {
     try {
       template.queryForInt("SELECT 1");
       return EnumSet.of(SystemStatus.OK);

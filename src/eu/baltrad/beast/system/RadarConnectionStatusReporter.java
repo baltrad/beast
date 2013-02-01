@@ -26,9 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 /**
  * @author Anders Henja
  *
@@ -38,32 +35,43 @@ public class RadarConnectionStatusReporter implements ISystemStatusReporter {
    * The remembered status for the radars
    */
   private Map<String, SystemStatus> radarStatus = new HashMap<String, SystemStatus>();
-  
+
   /**
-   * The logger
+   * The supported attributes
    */
-  private final static Logger logger = LogManager.getLogger(RadarConnectionStatusReporter.class);
+  private static Set<String> SUPPORTED_ATTRIBUTES=new HashSet<String>();
+  static {
+    SUPPORTED_ATTRIBUTES.add("sources");
+  }
   
   /**
    * @see eu.baltrad.beast.system.ISystemStatusReporter#getName()
    */
   @Override
   public String getName() {
-    return "radar";
+    return "radar.connection.status";
   }
 
+  /**
+   * @see eu.baltrad.beast.system.ISystemStatusReporter#getSupportedAttributes()
+   */
+  @Override
+  public Set<String> getSupportedAttributes() {
+    return SUPPORTED_ATTRIBUTES;
+  }
+  
   /**
    * @see eu.baltrad.beast.system.ISystemStatusReporter#getStatus(java.lang.String[])
    */
   @Override
-  public Set<SystemStatus> getStatus(String... args) {
-    logger.info("getStatus(String...)");
+  public Set<SystemStatus> getStatus(Map<String,Object> values) {
     Set<SystemStatus> result = new HashSet<SystemStatus>();
-    for (String str : args) {
-      String[] tokens = tokenizeString(str);
-      for (String str2 : tokens) {
-        if (radarStatus.containsKey(str2)) {
-          result.add(radarStatus.get(str2));
+    String sources = (String)values.get("sources");
+    if (sources != null) {
+      String[] tokens = tokenizeString(sources);
+      for (String str : tokens) {
+        if (radarStatus.containsKey(str)) {
+          result.add(radarStatus.get(str));
         } else {
           result.add(SystemStatus.UNDEFINED);
         }

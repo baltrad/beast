@@ -59,7 +59,13 @@ public class BdbConnectionStatusReporterTest extends EasyMockSupport {
   
   @Test
   public void testGetName() {
-    Assert.assertEquals("bdb", classUnderTest.getName());
+    Assert.assertEquals("bdb.status", classUnderTest.getName());
+  }
+  
+  @Test
+  public void testGetSupportedAttributes() {
+    Set<String> result = classUnderTest.getSupportedAttributes();
+    Assert.assertEquals(0, result.size());
   }
   
   @Test
@@ -75,7 +81,7 @@ public class BdbConnectionStatusReporterTest extends EasyMockSupport {
     
     replayAll();
     
-    result = classUnderTest.getStatus();
+    result = classUnderTest.getStatus(null);
     
     verifyAll();
     Assert.assertEquals(1, result.size());
@@ -92,7 +98,7 @@ public class BdbConnectionStatusReporterTest extends EasyMockSupport {
     
     replayAll();
     
-    result = classUnderTest.getStatus();
+    result = classUnderTest.getStatus(null);
     
     verifyAll();
     Assert.assertEquals(1, result.size());

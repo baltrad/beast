@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.After;
@@ -36,8 +38,8 @@ import eu.baltrad.beast.itest.BeastDBTestHelper;
  * @author Anders Henja
  *
  */
-public class BdbProductStatusReporterITest {
-  private BdbProductStatusReporter classUnderTest = null;
+public class BdbObjectStatusReporterITest {
+  private BdbObjectStatusReporter classUnderTest = null;
   private AbstractApplicationContext context = null;
   private BeastDBTestHelper helper = null;
   private FileCatalog fc = null;
@@ -57,7 +59,7 @@ public class BdbProductStatusReporterITest {
     helper.createBaltradDbPath();
     helper.purgeBaltradDB();
 
-    classUnderTest = new BdbProductStatusReporter();
+    classUnderTest = new BdbObjectStatusReporter();
     classUnderTest.setFileCatalog(fc);
     
     for (String s: FIXTURES) {
@@ -89,12 +91,18 @@ public class BdbProductStatusReporterITest {
     // first verifying that we get a hit and then (-4 minutes) that we don't
     long minute = ((now.getTimeInMillis() - c.getTimeInMillis()) / (60 * 1000)) + 2 ;
     
-    Set<SystemStatus> result = classUnderTest.getStatus("products=SCAN", "sources=searl", "minutes="+minute);
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN");
+    values.put("sources", "searl");
+    values.put("minutes", minute);
+    
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     Assert.assertEquals(1, result.size());
     Assert.assertTrue(result.contains(SystemStatus.OK));
     
-    result = classUnderTest.getStatus("products=SCAN","sources=searl", "minutes="+(minute-4));
+    values.put("minutes", minute - 4);
+    result = classUnderTest.getStatus(values);
 
     Assert.assertEquals(1, result.size());
     Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
@@ -116,8 +124,12 @@ public class BdbProductStatusReporterITest {
     // This is a very long time back in time but it ought to show that it works properly by
     // first verifying that we get a hit and then (-4 minutes) that we don't
     long minute = ((now.getTimeInMillis() - c.getTimeInMillis()) / (60 * 1000)) + 2 ;
-    
-    Set<SystemStatus> result = classUnderTest.getStatus("products=PVOL", "sources=searl", "minutes="+minute);
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "PVOL");
+    values.put("sources", "searl");
+    values.put("minutes", minute);
+
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     Assert.assertEquals(1, result.size());
     Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
@@ -139,8 +151,12 @@ public class BdbProductStatusReporterITest {
     // This is a very long time back in time but it ought to show that it works properly by
     // first verifying that we get a hit and then (-4 minutes) that we don't
     long minute = ((now.getTimeInMillis() - c.getTimeInMillis()) / (60 * 1000)) + 2 ;
-    
-    Set<SystemStatus> result = classUnderTest.getStatus("products=COMP", "sources=swegmaps_2000", "minutes="+minute);
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "COMP");
+    values.put("sources", "swegmaps_2000");
+    values.put("minutes", minute);
+
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     Assert.assertEquals(1, result.size());
     Assert.assertTrue(result.contains(SystemStatus.OK));

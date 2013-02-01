@@ -54,9 +54,9 @@ public class XmlSystemStatusGeneratorTest {
     Document result = classUnderTest.toDocument();
     
     assertEquals("system-status", result.getRootElement().getName());
-    assertEquals("radars", result.valueOf("//system-status/component/@name"));
-    assertEquals("abc,def", result.valueOf("//system-status/component/@value"));
-    assertEquals("OK", result.valueOf("//system-status/component/@status"));
+    assertEquals("radars", result.valueOf("//system-status/reporter/@name"));
+    assertEquals("abc,def", result.valueOf("//system-status/reporter/@value"));
+    assertEquals("OK", result.valueOf("//system-status/reporter/@status"));
   }
   
   @Test
@@ -66,7 +66,7 @@ public class XmlSystemStatusGeneratorTest {
     String result = classUnderTest.getXmlString();
     Assert.assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" +
         "<system-status>\n" +
-    		"<component name=\"radars\" value=\"abc,def\" status=\"OK\"/>\n" +
+    		"<reporter name=\"radars\" value=\"abc,def\" status=\"OK\"/>\n" +
         "</system-status>\n", result);
   }
 
@@ -78,7 +78,7 @@ public class XmlSystemStatusGeneratorTest {
     
     Assert.assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" +
         "<system-status>\n" +
-        "<component name=\"radars\" value=\"abc,def\" status=\"OK|MEMORY_PROBLEM\"/>\n" +
+        "<reporter name=\"radars\" value=\"abc,def\" status=\"OK|MEMORY_PROBLEM\"/>\n" +
         "</system-status>\n", result);
   }
 
@@ -91,8 +91,8 @@ public class XmlSystemStatusGeneratorTest {
     
     Assert.assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" +
         "<system-status>\n" +
-        "<component name=\"radars\" value=\"abc,def\" status=\"OK\"/>\n" +
-        "<component name=\"products\" value=\"ghi,jkl\" status=\"OK|COMMUNICATION_PROBLEM\"/>\n" +
+        "<reporter name=\"radars\" value=\"abc,def\" status=\"OK\"/>\n" +
+        "<reporter name=\"products\" value=\"ghi,jkl\" status=\"OK|COMMUNICATION_PROBLEM\"/>\n" +
         "</system-status>\n", result);
   }
 
@@ -105,8 +105,8 @@ public class XmlSystemStatusGeneratorTest {
     
     Assert.assertEquals("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\n" +
         "<system-status>\n" +
-        "<component name=\"radars\" value=\"abc,def\" status=\"OK\"/>\n" +
-        "<component name=\"products\" value=\"ghi,jkl\" status=\"OK|COMMUNICATION_PROBLEM\"/>\n" +
+        "<reporter name=\"radars\" value=\"abc,def\" status=\"OK\"/>\n" +
+        "<reporter name=\"products\" value=\"ghi,jkl\" status=\"OK|COMMUNICATION_PROBLEM\"/>\n" +
         "</system-status>\n", result);
   }
 

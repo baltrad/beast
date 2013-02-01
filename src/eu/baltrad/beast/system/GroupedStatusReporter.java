@@ -20,6 +20,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.system;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -40,7 +41,7 @@ public class GroupedStatusReporter implements ISystemStatusReporter {
   /**
    * The grouped reporters.
    */
-  private Map<String, ISystemStatusReporter> reporters;
+  private List<ISystemStatusReporter> reporters;
   
   /**
    * Constructor
@@ -51,11 +52,9 @@ public class GroupedStatusReporter implements ISystemStatusReporter {
   }
 
   /**
-   * The reporters that are set must be able to handle a null argument since the
-   * provided args supported by the reporter is name={reporter 1 name}, {reporter 2 name}, and so on
    * @param reporters
    */
-  public void setReporters(Map<String, ISystemStatusReporter> reporters) {
+  public void setReporters(List<ISystemStatusReporter> reporters) {
     this.reporters = reporters;
   }
   
@@ -68,20 +67,28 @@ public class GroupedStatusReporter implements ISystemStatusReporter {
   }
 
   /**
+   * @see eu.baltrad.beast.system.ISystemStatusReporter#getSupportedAttributes()
+   */
+  @Override
+  public Set<String> getSupportedAttributes() {
+    Set<String> result = new HashSet<String>();
+    for (ISystemStatusReporter reporter : reporters) {
+      Set<String> rattr = reporter.getSupportedAttributes();
+      if (rattr != null) {
+        result.addAll(rattr);
+      }
+    }
+    return result;
+  }
+  
+  /**
    * @see eu.baltrad.beast.system.ISystemStatusReporter#getStatus(java.lang.String[])
    */
   @Override
-  public Set<SystemStatus> getStatus(String... args) {
+  public Set<SystemStatus> getStatus(Map<String,Object> values) {
     Set<SystemStatus> result = new HashSet<SystemStatus>();
-    for (String str : args) {
-      String[] tokens = tokenizeString(str);
-      for (String str2 : tokens) {
-        if (reporters.containsKey(str2)) {
-          result.addAll(reporters.get(str2).getStatus());
-        } else {
-          result.add(SystemStatus.UNDEFINED);
-        }
-      }
+    for (ISystemStatusReporter reporter : reporters) {
+      result.addAll(reporter.getStatus(values));
     }
     if (result.size() == 0) {
       result.add(SystemStatus.UNDEFINED);

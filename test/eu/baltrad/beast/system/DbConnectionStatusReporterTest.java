@@ -21,6 +21,7 @@ package eu.baltrad.beast.system;
 
 import static org.easymock.EasyMock.expect;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import org.easymock.EasyMockSupport;
@@ -54,15 +55,21 @@ public class DbConnectionStatusReporterTest extends EasyMockSupport {
   @Test
   public void testName() {
     String result = classUnderTest.getName();
-    Assert.assertEquals("db", result);
+    Assert.assertEquals("db.status", result);
   }
 
+  @Test
+  public void testGetSupportedAttributes() {
+    Set<String> result = classUnderTest.getSupportedAttributes();
+    Assert.assertEquals(0, result.size());
+  }
+  
   @Test
   public void testStatus() {
     expect(template.queryForInt("SELECT 1")).andReturn(1);
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus();
+    Set<SystemStatus> result = classUnderTest.getStatus(new HashMap<String, Object>());
     
     verifyAll();
     Assert.assertEquals(1, result.size());
@@ -76,7 +83,7 @@ public class DbConnectionStatusReporterTest extends EasyMockSupport {
     
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus();
+    Set<SystemStatus> result = classUnderTest.getStatus(new HashMap<String, Object>());
     
     verifyAll();
     Assert.assertEquals(1, result.size());

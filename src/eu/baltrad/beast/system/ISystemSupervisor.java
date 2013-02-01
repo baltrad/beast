@@ -20,6 +20,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.system;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -39,11 +40,18 @@ public interface ISystemSupervisor {
   public List<SystemMessage> getMessages();
   
   /**
+   * Returns the attribute names supported by the specified component
+   * @param component the component
+   * @return a set of attribute names
+   */
+  public Set<String> getSupportedAttributes(String component);
+  
+  /**
    * Returns the status for the specified component with the given arguments
    * @param component the component
-   * @param args the arguments used for identifying specific parts
+   * @param values the arguments used for identifying specific parts
    * @return the system status as a set. That means that the status can be combined
    */
-  public Set<SystemStatus> getStatus(String component, String...args);
+  public Set<SystemStatus> getStatus(String component, Map<String,Object> values);
 
 }

@@ -24,7 +24,9 @@ import static org.easymock.EasyMock.expect;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -45,23 +47,21 @@ import eu.baltrad.bdb.util.DateTime;
 /**
  * @author Anders Henja
  */
-public class BdbProductStatusReporterTest extends EasyMockSupport {
+public class BdbObjectStatusReporterTest extends EasyMockSupport {
   static interface MethodMock {
     public FileQuery createFileQuery();
     public DateTime createFromDateTime(int minutes);
-    public List<Expression> createSourceList(String src);
-    public List<Expression> createProductsList(String src);
-    public Expression createSearchFilter(String... args);
+    public Expression createSearchFilter(Map<String,Object> values);
   };
   
-  private BdbProductStatusReporter classUnderTest = null;
+  private BdbObjectStatusReporter classUnderTest = null;
 
   private FileCatalog fileCatalog = null;
   
   @Before
   public void setUp() throws Exception {
     fileCatalog = createMock(FileCatalog.class);
-    classUnderTest = new BdbProductStatusReporter();
+    classUnderTest = new BdbObjectStatusReporter();
     classUnderTest.setFileCatalog(fileCatalog);
   }
   
@@ -74,7 +74,17 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
   @Test
   public void testGetName() {
     String result = classUnderTest.getName();
-    Assert.assertEquals("bdb_product_status", result);
+    Assert.assertEquals("bdb.object.status", result);
+  }
+  
+  @Test
+  public void testGetSupportedAttributes() {
+    Set<String> result = classUnderTest.getSupportedAttributes();
+    Assert.assertEquals(4, result.size());
+    Assert.assertEquals(true, result.contains("objects"));
+    Assert.assertEquals(true, result.contains("sources"));
+    Assert.assertEquals(true, result.contains("areas"));
+    Assert.assertEquals(true, result.contains("minutes"));
   }
   
   @Test
@@ -84,21 +94,26 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
     final MethodMock methods = createMock(MethodMock.class);
     Expression filter = createMock(Expression.class);
     FileResult fr = createMock(FileResult.class);
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN,COMP");
+    values.put("sources", "searl");
+    values.put("areas", "swegmaps_2000");
+    values.put("minutes", "5");
     
-    classUnderTest = new BdbProductStatusReporter() {
+    classUnderTest = new BdbObjectStatusReporter() {
       @Override
       protected FileQuery createFileQuery() {
         return methods.createFileQuery();
       }
       @Override
-      protected Expression createSearchFilter(String... args) {
-        return methods.createSearchFilter(args);
+      protected Expression createSearchFilter(Map<String,Object> values) {
+        return methods.createSearchFilter(values);
       }
     };
     classUnderTest.setFileCatalog(fileCatalog);
     
     expect(methods.createFileQuery()).andReturn(fq);
-    expect(methods.createSearchFilter("products=SCAN,PVOL","sources=searl","minute=5")).andReturn(filter);
+    expect(methods.createSearchFilter(values)).andReturn(filter);
     fq.setLimit(1);
     fq.setFilter(filter);
     expect(fileCatalog.getDatabase()).andReturn(db);
@@ -107,7 +122,7 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
     
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus("products=SCAN,PVOL", "sources=searl", "minute=5");
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     verifyAll();
     Assert.assertEquals(1, result.size());
@@ -122,20 +137,26 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
     Expression filter = createMock(Expression.class);
     FileResult fr = createMock(FileResult.class);
     
-    classUnderTest = new BdbProductStatusReporter() {
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN,COMP");
+    values.put("sources", "searl");
+    values.put("areas", "swegmaps_2000");
+    values.put("minutes", "5");
+    
+    classUnderTest = new BdbObjectStatusReporter() {
       @Override
       protected FileQuery createFileQuery() {
         return methods.createFileQuery();
       }
       @Override
-      protected Expression createSearchFilter(String... args) {
-        return methods.createSearchFilter(args);
+      protected Expression createSearchFilter(Map<String,Object> values) {
+        return methods.createSearchFilter(values);
       }
     };
     classUnderTest.setFileCatalog(fileCatalog);
     
     expect(methods.createFileQuery()).andReturn(fq);
-    expect(methods.createSearchFilter("products=SCAN,PVOL","sources=searl","minute=5")).andReturn(filter);
+    expect(methods.createSearchFilter(values)).andReturn(filter);
     fq.setLimit(1);
     fq.setFilter(filter);
     expect(fileCatalog.getDatabase()).andReturn(db);
@@ -144,7 +165,7 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
     
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus("products=SCAN,PVOL", "sources=searl", "minute=5");
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     verifyAll();
     Assert.assertEquals(1, result.size());
@@ -173,7 +194,7 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
     Expression expected = xpr.and(qfilter);
     
     // We mock the time so that we get a known time, rest can be tested as is.
-    classUnderTest = new BdbProductStatusReporter() {
+    classUnderTest = new BdbObjectStatusReporter() {
       @Override
       protected DateTime createFromDateTime(int minutes) {
         return mock.createFromDateTime(minutes);
@@ -184,12 +205,104 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
 
     replayAll();
     
-    Expression result = classUnderTest.createSearchFilter("products=SCAN,PVOL","sources=searl","minutes=10");
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN,PVOL");
+    values.put("sources", "searl");
+    values.put("minutes", "10");
+    
+    Expression result = classUnderTest.createSearchFilter(values);
     
     verifyAll();
     Assert.assertEquals(expected, result);
   }
-  
+
+  @Test
+  public void testCreateSearchFilter_minutesAsLong() {
+    final MethodMock mock = createMock(MethodMock.class);
+
+    ExpressionFactory xpr = new ExpressionFactory();
+    DateTime dt = new DateTime(2013,1,11,12,30,0);
+    List<Expression> slist = new ArrayList<Expression>();
+    List<Expression> plist = new ArrayList<Expression>();
+    
+    Expression dtfilter = xpr.ge(xpr.combinedDateTime("what/date", "what/time"), xpr.literal(dt));
+    slist.add(xpr.or(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal("searl")),
+                     xpr.eq(xpr.attribute("what/source:CMT"), xpr.literal("searl"))));
+    plist.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
+    plist.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("PVOL")));
+    
+    List<Expression> qfilter = new ArrayList<Expression>();
+    qfilter.add(dtfilter);
+    qfilter.add(xpr.or(slist));
+    qfilter.add(xpr.or(plist));
+    Expression expected = xpr.and(qfilter);
+    
+    // We mock the time so that we get a known time, rest can be tested as is.
+    classUnderTest = new BdbObjectStatusReporter() {
+      @Override
+      protected DateTime createFromDateTime(int minutes) {
+        return mock.createFromDateTime(minutes);
+      }
+    };
+    
+    expect(mock.createFromDateTime(10)).andReturn(dt);
+
+    replayAll();
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN,PVOL");
+    values.put("sources", "searl");
+    values.put("minutes", new Long(10));
+    
+    Expression result = classUnderTest.createSearchFilter(values);
+    
+    verifyAll();
+    Assert.assertEquals(expected, result);
+  }
+
+  @Test
+  public void testCreateSearchFilter_minutesAsInteger() {
+    final MethodMock mock = createMock(MethodMock.class);
+
+    ExpressionFactory xpr = new ExpressionFactory();
+    DateTime dt = new DateTime(2013,1,11,12,30,0);
+    List<Expression> slist = new ArrayList<Expression>();
+    List<Expression> plist = new ArrayList<Expression>();
+    
+    Expression dtfilter = xpr.ge(xpr.combinedDateTime("what/date", "what/time"), xpr.literal(dt));
+    slist.add(xpr.or(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal("searl")),
+                     xpr.eq(xpr.attribute("what/source:CMT"), xpr.literal("searl"))));
+    plist.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
+    plist.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("PVOL")));
+    
+    List<Expression> qfilter = new ArrayList<Expression>();
+    qfilter.add(dtfilter);
+    qfilter.add(xpr.or(slist));
+    qfilter.add(xpr.or(plist));
+    Expression expected = xpr.and(qfilter);
+    
+    // We mock the time so that we get a known time, rest can be tested as is.
+    classUnderTest = new BdbObjectStatusReporter() {
+      @Override
+      protected DateTime createFromDateTime(int minutes) {
+        return mock.createFromDateTime(minutes);
+      }
+    };
+    
+    expect(mock.createFromDateTime(10)).andReturn(dt);
+
+    replayAll();
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN,PVOL");
+    values.put("sources", "searl");
+    values.put("minutes", 10);
+    
+    Expression result = classUnderTest.createSearchFilter(values);
+    
+    verifyAll();
+    Assert.assertEquals(expected, result);
+  }
   
   @Test
   public void testCreateFromDateTime() {
@@ -201,7 +314,7 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
     mycalendar.set(Calendar.MINUTE, 35);
     mycalendar.set(Calendar.SECOND, 10);
     
-    classUnderTest = new BdbProductStatusReporter() {
+    classUnderTest = new BdbObjectStatusReporter() {
       @Override
       protected GregorianCalendar createCalendar() {
         return mycalendar;
@@ -228,7 +341,7 @@ public class BdbProductStatusReporterTest extends EasyMockSupport {
     Expression e3 = xpr.or(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal("ghi")),
                            xpr.eq(xpr.attribute("what/source:CMT"), xpr.literal("ghi")));
     
-    List<Expression> result = classUnderTest.createSourceList("abc,def,ghi");
+    List<Expression> result = classUnderTest.createSourceList("abc,def","ghi");
 
     Assert.assertEquals(3, result.size());
     Assert.assertEquals(e1, result.get(0));

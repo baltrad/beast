@@ -22,6 +22,8 @@ package eu.baltrad.beast.system;
 import static org.easymock.EasyMock.expect;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -52,14 +54,16 @@ public class SystemSupervisorTest extends EasyMockSupport {
   public void testCheckStatus() {
     Set<SystemStatus> rcstatus = EnumSet.of(SystemStatus.OK);
     RadarConnectionStatusReporter rcmock = createMock(RadarConnectionStatusReporter.class);
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("sources", "seang");
     
     classUnderTest.register("radar", rcmock);
     
-    expect(rcmock.getStatus("seang")).andReturn(rcstatus);
+    expect(rcmock.getStatus(values)).andReturn(rcstatus);
 
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus("radar", "seang");
+    Set<SystemStatus> result = classUnderTest.getStatus("radar", values);
 
     verifyAll();
     Assert.assertSame(rcstatus, result);
@@ -67,9 +71,12 @@ public class SystemSupervisorTest extends EasyMockSupport {
   
   @Test
   public void testCheckStatus_noSuchReporter() {
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("sources", "seang");
+    
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus("radar", "seang");
+    Set<SystemStatus> result = classUnderTest.getStatus("radar", values);
 
     verifyAll();
     Assert.assertEquals(1, result.size());
@@ -80,13 +87,16 @@ public class SystemSupervisorTest extends EasyMockSupport {
   public void testCheckStatus_system() {
     Set<SystemStatus> s1 = EnumSet.of(SystemStatus.COMMUNICATION_PROBLEM);
     ISystemStatusReporter smock = createMock(ISystemStatusReporter.class);
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("components", "bdb,db");
+    
     classUnderTest.register("system", smock);
     
-    expect(smock.getStatus("bdb,db")).andReturn(s1);
+    expect(smock.getStatus(values)).andReturn(s1);
     
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus("system", "bdb,db");
+    Set<SystemStatus> result = classUnderTest.getStatus("system", values);
     
     verifyAll();
     Assert.assertEquals(1, result.size());

@@ -117,7 +117,7 @@ public class XmlSystemStatusGenerator {
     Element el = document.addElement("system-status");
     
     for (StatusItem item : components) {
-      Element comp = el.addElement("component");
+      Element comp = el.addElement("reporter");
       comp.addAttribute("name", item.getComponent());
       comp.addAttribute("value", item.getValue());
       comp.addAttribute("status", item.getStatus());

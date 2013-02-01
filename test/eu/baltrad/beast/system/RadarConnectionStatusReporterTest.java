@@ -19,6 +19,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.system;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -50,19 +52,30 @@ public class RadarConnectionStatusReporterTest {
 
   @Test
   public void testGetName() {
-    Assert.assertEquals("radar", classUnderTest.getName());
+    Assert.assertEquals("radar.connection.status", classUnderTest.getName());
+  }
+  
+  @Test
+  public void testGetSupportedAttributes() {
+    Set<String> result = classUnderTest.getSupportedAttributes();
+    Assert.assertEquals(1, result.size());
+    Assert.assertTrue(result.contains("sources"));
   }
   
   @Test
   public void testGetStatus() {
-    Set<SystemStatus> result = classUnderTest.getStatus("node1");
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("sources", "node1");
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     Assert.assertEquals(1, result.size());
     Assert.assertTrue(result.contains(SystemStatus.OK));
   }
 
   @Test
   public void testGetStatus_commastr() {
-    Set<SystemStatus> result = classUnderTest.getStatus("node1,node3");
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("sources", "node1,node3");    
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     Assert.assertEquals(2, result.size());
     Assert.assertTrue(result.contains(SystemStatus.OK));
     Assert.assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
@@ -70,7 +83,9 @@ public class RadarConnectionStatusReporterTest {
 
   @Test
   public void testGetStatus_commastr_2() {
-    Set<SystemStatus> result = classUnderTest.getStatus("node1,node3,node4");
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("sources", "node1,node3,node4");
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     Assert.assertEquals(2, result.size());
     Assert.assertTrue(result.contains(SystemStatus.OK));
     Assert.assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
@@ -78,7 +93,9 @@ public class RadarConnectionStatusReporterTest {
 
   @Test
   public void testGetStatus_commastr_3() {
-    Set<SystemStatus> result = classUnderTest.getStatus("node1,,node3");
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("sources", "node1,,node3");    
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     Assert.assertEquals(2, result.size());
     Assert.assertTrue(result.contains(SystemStatus.OK));
     Assert.assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
@@ -86,14 +103,18 @@ public class RadarConnectionStatusReporterTest {
   
   @Test
   public void testGetStatus_noSuchNode() {
-    Set<SystemStatus> result = classUnderTest.getStatus("node5");
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("sources", "node5");    
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     Assert.assertEquals(1, result.size());
     Assert.assertTrue(result.contains(SystemStatus.UNDEFINED));
   }
   
   @Test
   public void testGetStatus_oneNodeNotExisting() {
-    Set<SystemStatus> result = classUnderTest.getStatus("node1,node5");
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("sources", "node1,node5");    
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     Assert.assertEquals(2, result.size());
     Assert.assertTrue(result.contains(SystemStatus.OK));
     Assert.assertTrue(result.contains(SystemStatus.UNDEFINED));

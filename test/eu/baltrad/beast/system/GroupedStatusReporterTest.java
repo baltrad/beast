@@ -21,8 +21,11 @@ package eu.baltrad.beast.system;
 
 import static org.easymock.EasyMock.expect;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,10 +51,10 @@ public class GroupedStatusReporterTest extends EasyMockSupport  {
     r1 = createMock(ISystemStatusReporter.class);
     r2 = createMock(ISystemStatusReporter.class);
     
-    Map<String, ISystemStatusReporter> map = new HashMap<String, ISystemStatusReporter>();
-    map.put("db", r1);
-    map.put("bdb", r2);
-    classUnderTest.setReporters(map);
+    List<ISystemStatusReporter> list = new ArrayList<ISystemStatusReporter>();
+    list.add(r1);
+    list.add(r2);
+    classUnderTest.setReporters(list);
   }
   
   @After
@@ -62,32 +65,50 @@ public class GroupedStatusReporterTest extends EasyMockSupport  {
   }
   
   @Test
+  public void testGetName() {
+    classUnderTest = new GroupedStatusReporter("nisse");
+    Assert.assertEquals("nisse", classUnderTest.getName());
+  }
+  
+  @Test
+  public void testGetSupportedAttributes() {
+    Set<String> s1 = new HashSet<String>();
+    s1.add("abc");
+    s1.add("def");
+    
+    Set<String> s2 = new HashSet<String>();
+    s1.add("def");
+    s1.add("ghi");
+    
+    expect(r1.getSupportedAttributes()).andReturn(s1);
+    expect(r2.getSupportedAttributes()).andReturn(s2);
+    
+    replayAll();
+    
+    Set<String> result = classUnderTest.getSupportedAttributes();
+    
+    verifyAll();
+    Assert.assertEquals(3, result.size());
+    Assert.assertTrue(result.contains("abc"));
+    Assert.assertTrue(result.contains("def"));
+    Assert.assertTrue(result.contains("ghi"));
+  }
+  
+  @Test
   public void testGetStatus() {
     Set<SystemStatus> s1 = EnumSet.of(SystemStatus.OK);
     Set<SystemStatus> s2 = EnumSet.of(SystemStatus.OK);
     
-    expect(r1.getStatus()).andReturn(s1);
-    expect(r2.getStatus()).andReturn(s2);
-    
-    replayAll();
-    
-    Set<SystemStatus> result = classUnderTest.getStatus("db,bdb");
-    
-    verifyAll();
-    
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
-  }
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("value", "123");
 
-  @Test
-  public void testGetStatus_2() {
-    Set<SystemStatus> s2 = EnumSet.of(SystemStatus.OK);
-    
-    expect(r2.getStatus()).andReturn(s2);
+    expect(r1.getStatus(values)).andReturn(s1);
+    expect(r2.getStatus(values)).andReturn(s2);
     
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus("bdb");
+    
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     verifyAll();
     
@@ -99,13 +120,15 @@ public class GroupedStatusReporterTest extends EasyMockSupport  {
   public void testGetStatus_3() {
     Set<SystemStatus> s1 = EnumSet.of(SystemStatus.OK, SystemStatus.MEMORY_PROBLEM);
     Set<SystemStatus> s2 = EnumSet.of(SystemStatus.COMMUNICATION_PROBLEM, SystemStatus.EXCHANGE_PROBLEM);
-    
-    expect(r1.getStatus()).andReturn(s1);
-    expect(r2.getStatus()).andReturn(s2);
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("values", "123");
+
+    expect(r1.getStatus(values)).andReturn(s1);
+    expect(r2.getStatus(values)).andReturn(s2);
     
     replayAll();
     
-    Set<SystemStatus> result = classUnderTest.getStatus("db,bdb");
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     verifyAll();
     

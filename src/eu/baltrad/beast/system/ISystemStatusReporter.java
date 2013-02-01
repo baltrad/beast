@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.system;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,9 +33,14 @@ public interface ISystemStatusReporter {
   public String getName();
   
   /**
-   * @param args arguments for this reporter. For example might be used when checking a value in a url.
-   * Say that getName() returns mystatus, then it could be used like mystatus=arg 
+   * @return the names of the supported attributes in the getStatus method call
+   */
+  public Set<String> getSupportedAttributes();
+  
+  /**
+   * @param values attribute values used for knowing what to query status for. Object might
+   * be quite a lot of different types of data so verify type before accessing data. 
    * @return the status of this component
    */
-  public Set<SystemStatus> getStatus(String... args);
+  public Set<SystemStatus> getStatus(Map<String,Object> values);
 }

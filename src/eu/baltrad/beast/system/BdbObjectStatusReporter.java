@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -40,24 +42,8 @@ import eu.baltrad.bdb.util.DateTime;
 
 /**
  * @author Anders Henja
- *
  */
-public class BdbProductStatusReporter implements ISystemStatusReporter{
-  /**
-   * minutes=xx
-   */
-  private final static Pattern MINUTE_PATTERN=Pattern.compile("^minutes=([0-9]+)$");
-  
-  /**
-   * products pattern, products=(SCAN|PVOL|COMP)(,(SCAN|PVOL|COMP))*
-   */
-  private final static Pattern PRODUCTS_PATTERN=Pattern.compile("^products=(.*)$");
-
-  /**
-   * products pattern, products=(src)(,(src))*
-   */
-  private final static Pattern SOURCES_PATTERN=Pattern.compile("^sources=(.*)$");
-
+public class BdbObjectStatusReporter implements ISystemStatusReporter{
   /**
    * The expression factory
    */
@@ -69,11 +55,22 @@ public class BdbProductStatusReporter implements ISystemStatusReporter{
   private FileCatalog fc = null;
   
   /**
+   * The supported attributes
+   */
+  private static Set<String> SUPPORTED_ATTRIBUTES=new HashSet<String>();
+  static {
+    SUPPORTED_ATTRIBUTES.add("minutes");
+    SUPPORTED_ATTRIBUTES.add("objects");
+    SUPPORTED_ATTRIBUTES.add("sources");
+    SUPPORTED_ATTRIBUTES.add("areas");
+  }
+  
+  /**
    * @see eu.baltrad.beast.system.ISystemStatusReporter#getName()
    */
   @Override
   public String getName() {
-    return "bdb_product_status";
+    return "bdb.object.status";
   }
 
   /**
@@ -86,17 +83,25 @@ public class BdbProductStatusReporter implements ISystemStatusReporter{
   }
   
   /**
-   * @see eu.baltrad.beast.system.ISystemStatusReporter#getStatus(java.lang.String[])
+   * @see eu.baltrad.beast.system.ISystemStatusReporter#getSupportedAttributes()
    */
   @Override
-  public Set<SystemStatus> getStatus(String... args) {
+  public Set<String> getSupportedAttributes() {
+    return SUPPORTED_ATTRIBUTES;
+  }
+  
+  /**
+   * Supports the value mapping. {
+   * "objects",<string list>; "sources",<string list>; "areas",<string list>; "minutes",<integer,long or string>
+   * @see eu.baltrad.beast.system.ISystemStatusReporter#getStatus()
+   */
+  @Override
+  public Set<SystemStatus> getStatus(Map<String,Object> values) {
     Set<SystemStatus> result = EnumSet.of(SystemStatus.UNDEFINED);
     FileQuery query = createFileQuery();
-    Expression expr = createSearchFilter(args);
-    
+    Expression expr = createSearchFilter(values);
     query.setLimit(1);
     query.setFilter(expr);
-
     FileResult set = fc.getDatabase().execute(query);
     if (set.next()) {
       result = EnumSet.of(SystemStatus.OK);
@@ -119,29 +124,35 @@ public class BdbProductStatusReporter implements ISystemStatusReporter{
    * @param args the arguments
    * @return the expression
    */
-  protected Expression createSearchFilter(String... args) {
+  protected Expression createSearchFilter(Map<String,Object> values) {
     int minute = 5;
-    String tlimit = extractStringValue(MINUTE_PATTERN, 1, args);
-    String srcstr = extractStringValue(SOURCES_PATTERN, 1, args);
-    String prodstr = extractStringValue(PRODUCTS_PATTERN, 1, args);
+    Object tlimit = values.get("minutes");
+    String srcstr = (String)values.get("sources");
+    String areastr = (String)values.get("areas");
+    String prodstr = (String)values.get("objects");
     Expression dtfilter = null;
     List<Expression> srcfilter = null;
     List<Expression> prodfilter = null;
     List<Expression> qfilter = new ArrayList<Expression>();
     
     if (tlimit != null) {
-      try {
-        minute = Integer.parseInt(tlimit);
-      } catch (Exception e) {
-        // nothing to do... we use default minutes
-        e.printStackTrace();
-      }
+      if (tlimit instanceof String) {
+        try {
+          minute = Integer.parseInt((String)tlimit);
+        } catch (Exception e) {
+          // nothing to do... we use default minutes
+          e.printStackTrace();
+        }
+      } else if (tlimit instanceof Long) {
+        // downcast ok
+        minute = ((Long)tlimit).intValue();
+      } else if (tlimit instanceof Integer) {
+        minute = (Integer)tlimit;
+      } // else use default value
     }
     DateTime dt = createFromDateTime(minute);
     dtfilter = createDateTimeFilter(dt);
-    if (srcstr != null) {
-      srcfilter = createSourceList(srcstr);
-    }
+    srcfilter = createSourceList(srcstr, areastr);
     if (prodstr != null) {
       prodfilter = createProductsList(prodstr);
     }
@@ -214,16 +225,25 @@ public class BdbProductStatusReporter implements ISystemStatusReporter{
    * @param src the list of sources
    * @return the list
    */
-  protected List<Expression> createSourceList(String src) {
+  protected List<Expression> createSourceList(String sources, String areas) {
     List<Expression> filters = new ArrayList<Expression>();
     
-    String[] products = tokenizeString(src);
-    for (String s : products) {
-      // We try both source name and the CMT field.
-      filters.add(xpr.or(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal(s)),
-                         xpr.eq(xpr.attribute("what/source:CMT"), xpr.literal(s))));
-      //filters.add(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal(s)));
-      //filters.add(xpr.eq(xpr.attribute("what/source:CMT"), xpr.literal(s)));
+    if (sources != null) {
+      String[] asources = tokenizeString(sources);
+      for (String s : asources) {
+        // We try both source name and the CMT field.
+        filters.add(xpr.or(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal(s)),
+                           xpr.eq(xpr.attribute("what/source:CMT"), xpr.literal(s))));
+      }
+    }
+    if (areas != null) {
+      String[] aareas = tokenizeString(areas);
+      for (String s : aareas) {
+        // We try both source name and the CMT field.
+        filters.add(xpr.or(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal(s)),
+                           xpr.eq(xpr.attribute("what/source:CMT"), xpr.literal(s))));
+      }
+      
     }
 
     return filters;
