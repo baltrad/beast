@@ -16,7 +16,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ###################################################################################
- 
+
 The beast library (acronym undefined) is not intended to be used stand alone. It's 
 main purpose is to provide the users a generic interface for passing on messages to 
 various receivers determined by router rules. Since this library has been
