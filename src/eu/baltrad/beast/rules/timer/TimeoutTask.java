@@ -64,7 +64,11 @@ public class TimeoutTask extends TimerTask {
   @Override
   public void run() {
     logger.debug("run()");
-    listener.timeoutNotification(id, rule, data);
+    try {
+      listener.timeoutNotification(id, rule, data);
+    } catch (Throwable t) {
+      logger.error(t);
+    }
   }
 
   /**
@@ -74,7 +78,12 @@ public class TimeoutTask extends TimerTask {
   public boolean cancel() {
     logger.debug("cancel()");
     boolean result = super.cancel();
-    listener.cancelNotification(id, rule, data);
+    try { 
+      listener.cancelNotification(id, rule, data);
+    } catch (Throwable t) {
+      // Do not allow an exception out of here.
+      logger.error(t);
+    }
     return result;
   }
 
@@ -83,7 +92,6 @@ public class TimeoutTask extends TimerTask {
    */
   public boolean stop() {
     logger.debug("stop()");
-    
     return super.cancel();
   }
 
