@@ -174,16 +174,16 @@ public class RuleUtilities implements IRuleUtilities {
   @Override
   public List<CatalogEntry> getEntriesByClosestTime(DateTime nominalDT, List<CatalogEntry> entries) {
     Map<String, CatalogEntry> entryMap = new HashMap<String, CatalogEntry>();
-    GregorianCalendar nominalTimeCalendar = createCalendar(nominalDT);
+    Calendar nominalTimeCalendar = createCalendar(nominalDT);
     
     for (CatalogEntry entry: entries) {
       String src = entry.getSource();
       if (!entryMap.containsKey(src)) {
         entryMap.put(src, entry);
       } else {
-        GregorianCalendar entryCalendar = createCalendar(entry.getDateTime());
+        Calendar entryCalendar = createCalendar(entry.getDateTime());
         CatalogEntry mapEntry = entryMap.get(src);
-        GregorianCalendar mapEntryCalendar = createCalendar(mapEntry.getDateTime());
+        Calendar mapEntryCalendar = createCalendar(mapEntry.getDateTime());
       
         // If the entrys time is closer to the nominal time than the existing one, replace it
         if (Math.abs(entryCalendar.compareTo(nominalTimeCalendar)) < Math.abs(mapEntryCalendar.compareTo(nominalTimeCalendar))) {
@@ -235,7 +235,7 @@ public class RuleUtilities implements IRuleUtilities {
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#createCalendar(eu.baltrad.bdb.util.DateTime)
    */
   @Override
-  public GregorianCalendar createCalendar(DateTime dt) {
+  public Calendar createCalendar(DateTime dt) {
     GregorianCalendar c = new GregorianCalendar();
     Date date = dt.getDate();
     Time time = dt.getTime();
@@ -243,6 +243,33 @@ public class RuleUtilities implements IRuleUtilities {
     return c;
   }
 
+  
+  @Override
+  public Calendar now() {
+    return GregorianCalendar.getInstance();
+  }
+  
+  @Override
+  public DateTime nowDT() {
+    return createDateTime(now());
+  }
+  
+  @Override
+  public DateTime createDateTime(Calendar c) {
+    return createDateTime(c.get(Calendar.YEAR), 
+        c.get(Calendar.MONTH)+1, 
+        c.get(Calendar.DAY_OF_MONTH), 
+        c.get(Calendar.HOUR_OF_DAY), 
+        c.get(Calendar.MINUTE), 
+        c.get(Calendar.SECOND));
+  }
+
+  @Override
+  public DateTime createDateTime(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second) {
+    return new DateTime(year, month, dayOfMonth, hourOfDay, minute, second);
+  }
+  
+  
   /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#getSourcesFromEntries(java.util.List)
    */
@@ -288,7 +315,7 @@ public class RuleUtilities implements IRuleUtilities {
     if (interval == 0 || 60%interval != 0) {
       throw new IllegalArgumentException("Interval must be evenly dividable by 60");
     }
-    GregorianCalendar cal = createCalendar(now);
+    Calendar cal = createCalendar(now);
     Time t = now.getTime();
     int period = t.minute() / interval;
     int minute = (period + 1) * interval;
@@ -306,7 +333,7 @@ public class RuleUtilities implements IRuleUtilities {
     if (interval == 0 || 60%interval != 0) {
       throw new IllegalArgumentException("Interval must be evenly dividable by 60");
     }
-    GregorianCalendar cal = createCalendar(now);
+    Calendar cal = createCalendar(now);
     Time t = now.getTime();
     int period = t.minute() / interval;
     int minute = (period - 1) * interval;

@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.util;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +98,36 @@ public interface IRuleUtilities {
    * @param dt the date time
    * @return a gregorian calendar
    */
-  public GregorianCalendar createCalendar(DateTime dt);
+  public Calendar createCalendar(DateTime dt);
+  
+  /**
+   * @return the current calendar. Same as calling GregorianCalendar.getInstance(). 
+   */
+  public Calendar now();
+  
+  /**
+   * @return the current date time.
+   */
+  public DateTime nowDT();
+
+  /**
+   * Creates an date time instance from a calendar
+   * @param c the calendar
+   * @return the date time instance
+   */
+  public DateTime createDateTime(Calendar c);
+  
+  /**
+   * Creates a date time instance
+   * @param year the year
+   * @param month the month between 1 - 12
+   * @param dayOfMonth the day between 1 - 31
+   * @param hourOfDay the hour of the day between 0 - 23
+   * @param minute the minute of the hour between 0 - 59
+   * @param second the second of the minute between 0 - 59
+   * @return the date time instance
+   */
+  public DateTime createDateTime(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second);
   
   /**
    * Creates the nominal time from current time and an interval.

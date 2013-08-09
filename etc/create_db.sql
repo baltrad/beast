@@ -129,3 +129,16 @@ create table beast_host_filter (
   name text PRIMARY KEY NOT NULL
 );
 
+create table beast_acrr_rules (
+  rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
+  area TEXT NOT NULL,
+  distancefield TEXT NOT NULL,
+  files_per_hour INTEGER NOT NULL,
+  hours INTEGER NOT NULL,
+  acceptable_loss INTEGER NOT NULL,
+  object_type TEXT NOT NULL, 
+  quantity TEXT NOT NULL,
+  zra decimal NOT NULL,
+  zrb decimal NOT NULL
+);
+
