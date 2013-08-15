@@ -351,10 +351,10 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <batchtest fork="yes" todir="${dist.dir}/junit-reports">
       	<fileset dir="${build.itest.dir}" includes="**/*Test.class"
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
-<!--      	
-      	<fileset dir="${build.itest.dir}" includes="**/AcrrRule*ITest.class"
+      	<!--      	
+      	<fileset dir="${build.itest.dir}" includes="**/AcrrRuleITest.class"
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
--->                 
+      	-->                 
       </batchtest>
     </junit>
     <antcall target="stop-baltrad-bdb-server" />
