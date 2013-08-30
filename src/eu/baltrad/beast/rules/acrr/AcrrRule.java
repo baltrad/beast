@@ -489,6 +489,9 @@ public class AcrrRule implements IRule, InitializingBean {
     TimeSelectionFilter f = new TimeSelectionFilter();
     f.setObjectType(objectType);
     f.setSource(area);
+    List<String> quants = new ArrayList<String>();
+    quants.add("ACRR");
+    f.exclude("what/quantity", quants);
     DateTime nxt = new DateTime(sdt.getDate(), sdt.getTime());
     TimeDelta delta = new TimeDelta().addSeconds(60 * interval);
     while (isLessOrEqual(nxt,edt)) {

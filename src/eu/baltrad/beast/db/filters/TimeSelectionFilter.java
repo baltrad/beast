@@ -20,7 +20,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.db.filters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import eu.baltrad.bdb.db.FileQuery;
 import eu.baltrad.bdb.expr.Expression;
@@ -37,6 +39,11 @@ public class TimeSelectionFilter implements ICatalogFilter {
    * The individual date times
    */
   private List<DateTime> dateTimes = new ArrayList<DateTime>();
+  
+  /**
+   * Excluded values
+   */
+  private Map<String,List<String>> excluded = new HashMap<String, List<String>>();
   
   /**
    * The object type we are after
@@ -91,6 +98,22 @@ public class TimeSelectionFilter implements ICatalogFilter {
   }
   
   /**
+   * Adds a attribute to be excluded. For example "what/quantity", {"ACRR",...}
+   * @param attribute the attribute name
+   * @param values the list of values
+   */
+  public void exclude(String attribute, List<String> values) {
+    excluded.put(attribute, values);
+  }
+  
+  /**
+   * @return the map of exclusions
+   */
+  public Map<String, List<String>> getExcluded() {
+    return excluded;
+  }
+  
+  /**
    * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.bdb.db.FileQuery)
    */
   @Override
@@ -113,6 +136,15 @@ public class TimeSelectionFilter implements ICatalogFilter {
     andFilter.add(xpr.or(dtFilter));
     andFilter.add(xpr.eq(xpr.attribute("what/source:CMT"), xpr.literal(source)));
 
+    for (String k : excluded.keySet()) {
+      List<String> values = excluded.get(k);
+      List<Expression> lexp = new ArrayList<Expression>();
+      for (String v : values) {
+        lexp.add(xpr.literal(v));
+      }
+      andFilter.add(xpr.not(xpr.in(xpr.attribute(k), xpr.list(lexp))));
+    }
+    
     query.appendOrderClause(xpr.asc(xpr.attribute("what/date", "string")));
     query.appendOrderClause(xpr.asc(xpr.attribute("what/time", "string")));
     
