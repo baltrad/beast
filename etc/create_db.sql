@@ -142,3 +142,17 @@ create table beast_acrr_rules (
   zrb decimal NOT NULL
 );
 
+create table beast_wrwp_rules (
+  rule_id INTEGER PRIMARY KEY REFERENCES beast_router_rules(rule_id),
+  interval INTEGER NOT NULL,
+  maxheight INTEGER NOT NULL,
+  mindistance INTEGER NOT NULL,
+  maxdistance INTEGER NOT NULL,
+  minelangle DECIMAL NOT NULL,
+  minvelocitythresh DECIMAL NOT NULL
+);  
+
+create table beast_wrwp_sources (
+  rule_id integer REFERENCES beast_wrwp_rules(rule_id),
+  source text
+);

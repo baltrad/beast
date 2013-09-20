@@ -1,0 +1,329 @@
+/* --------------------------------------------------------------------
+Copyright (C) 2009-2013 Swedish Meteorological and Hydrological Institute, SMHI,
+
+This file is part of the Beast library.
+
+Beast library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Beast library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
+------------------------------------------------------------------------*/
+
+package eu.baltrad.beast.rules.wrwp;
+
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.easymock.EasyMockSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+
+import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.rules.util.IRuleUtilities;
+import eu.baltrad.beast.rules.util.RuleUtilities;
+
+/**
+ * @author Anders Henja
+ *
+ */
+public class WrwpRuleManagerTest extends EasyMockSupport {
+  static interface Methods {
+    public void updateSources(int rule_id, List<String> sources);
+    public List<String> getSources(int rule_id);
+    public ParameterizedRowMapper<String> getSourceMapper();
+  }
+  
+  private SimpleJdbcOperations jdbc = null;
+  private WrwpRuleManager classUnderTest = null;
+  private Methods methods = null;
+  
+  /**
+   * @throws java.lang.Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+    jdbc = createMock(SimpleJdbcOperations.class);
+    methods = createMock(Methods.class);
+    
+    classUnderTest = new WrwpRuleManager() {
+      @Override
+      protected void updateSources(int rule_id, List<String> sources) {
+        methods.updateSources(rule_id, sources);
+      }
+      @Override
+      protected List<String> getSources(int rule_id) {
+        return methods.getSources(rule_id);
+      }
+      @Override
+      protected ParameterizedRowMapper<String> getSourceMapper() {
+        return methods.getSourceMapper();
+      }
+    };    
+    classUnderTest.setJdbcTemplate(jdbc);
+  }
+
+  /**
+   * @throws java.lang.Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    jdbc = null;
+    methods = null;
+    classUnderTest = null;
+  }
+
+  @Test
+  public void test_store() throws Exception {
+    List<String> sources = new ArrayList<String>();
+    sources.add("seang");
+    sources.add("searl");
+    WrwpRule rule = new WrwpRule();
+    rule.setInterval(300);
+    rule.setMaxheight(5000);
+    rule.setMindistance(1000);
+    rule.setMaxdistance(10000);
+    rule.setMinelevationangle(1.5);
+    rule.setMinvelocitythreshold(10.0);
+    rule.setSources(sources);
+
+    expect(jdbc.update("INSERT INTO beast_wrwp_rules " + 
+    		"(rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh) " +
+        "VALUES (?,?,?,?,?,?,?)", 
+        new Object[]{10, 300, 5000, 1000, 10000, 1.5, 10.0})).andReturn(1);
+    
+    methods.updateSources(10, sources);
+    
+    replayAll();
+    
+    classUnderTest.store(10, rule);
+    
+    verifyAll();
+    assertEquals(10, rule.getRuleId());
+  }
+  
+  @Test
+  public void test_load() throws Exception {
+    WrwpRule rule = new WrwpRule();
+    
+    final ParameterizedRowMapper<WrwpRule> mapper = new ParameterizedRowMapper<WrwpRule>() {
+      public WrwpRule mapRow(ResultSet arg0, int arg1) throws SQLException {
+        return null;
+      }
+    };
+
+    classUnderTest = new WrwpRuleManager() {
+      @Override
+      protected ParameterizedRowMapper<WrwpRule> getWrwpRuleMapper() {
+        return mapper;
+      }
+    };
+    classUnderTest.setJdbcTemplate(jdbc);
+    
+    expect(jdbc.queryForObject("SELECT * FROM beast_wrwp_rules WHERE rule_id=?",
+        mapper, new Object[]{3})).andReturn(rule);
+    
+    replayAll();
+    
+    WrwpRule result = (WrwpRule)classUnderTest.load(3);
+    
+    verifyAll();
+    assertSame(rule, result);    
+  }
+  
+  @Test
+  public void test_update() throws Exception {
+    List<String> sources = new ArrayList<String>();
+    sources.add("seang");
+    sources.add("searl");
+    WrwpRule rule = new WrwpRule();
+    rule.setInterval(300);
+    rule.setMaxheight(5000);
+    rule.setMindistance(1000);
+    rule.setMaxdistance(10000);
+    rule.setMinelevationangle(1.5);
+    rule.setMinvelocitythreshold(10.0);
+    rule.setSources(sources);
+
+    expect(jdbc.update(
+        "UPDATE beast_wrwp_rules SET interval=?, maxheight=?, mindistance=?," +
+        " maxdistance=?, minelangle=?, minvelocitythresh=? WHERE rule_id=?",
+        new Object[]{300, 5000, 1000, 10000, 1.5, 10.0, 12})).andReturn(1);
+    methods.updateSources(12, sources);
+    
+    replayAll();
+    
+    classUnderTest.update(12, rule);
+    
+    verifyAll();
+    assertEquals(12, rule.getRuleId());
+  }
+  
+  @Test
+  public void test_delete() throws Exception {
+    methods.updateSources(12, null);
+    
+    expect(jdbc.update("DELETE FROM beast_wrwp_rules WHERE rule_id=?",
+      new Object[]{12})).andReturn(0);
+      
+    replayAll();
+      
+    classUnderTest.delete(12);
+     
+    verifyAll();
+  }
+  
+  @Test
+  public void test_createRule() {
+    Catalog catalog = new Catalog();
+    RuleUtilities utils = new RuleUtilities();
+    
+    classUnderTest = new WrwpRuleManager();
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(utils);
+    
+    WrwpRule result = (WrwpRule)classUnderTest.createRule();
+    assertSame(catalog, result.getCatalog());
+    assertSame(utils, result.getRuleUtilities());
+  }
+  
+  @Test
+  public void test_updateSources() throws Exception {
+    List<String> sources = new ArrayList<String>();
+    sources.add("seang");
+    sources.add("searl");
+    
+    expect(jdbc.update("DELETE FROM beast_wrwp_sources WHERE rule_id=?",
+        new Object[]{13})).andReturn(2);
+    expect(jdbc.update("INSERT INTO beast_wrwp_sources (rule_id, source) VALUES (?,?)",
+        new Object[]{13, "seang"})).andReturn(1);
+    expect(jdbc.update("INSERT INTO beast_wrwp_sources (rule_id, source) VALUES (?,?)",
+        new Object[]{13, "searl"})).andReturn(1);
+    
+    classUnderTest = new WrwpRuleManager();
+    classUnderTest.setJdbcTemplate(jdbc);
+    
+    replayAll();
+    
+    classUnderTest.updateSources(13, sources);
+    
+    verifyAll();
+  }
+  
+  @Test
+  public void test_updateSources_nullSource() throws Exception {
+    expect(jdbc.update("DELETE FROM beast_wrwp_sources WHERE rule_id=?",
+        new Object[]{13})).andReturn(2);
+    
+    classUnderTest = new WrwpRuleManager();
+    classUnderTest.setJdbcTemplate(jdbc);
+    
+    replayAll();
+    
+    classUnderTest.updateSources(13, null);
+    
+    verifyAll();
+  }
+  
+  @Test
+  public void test_getSources() throws Exception {
+    List<String> sources = new ArrayList<String>();
+    ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+      @Override
+      public String mapRow(ResultSet rs, int arg1) throws SQLException {
+        return null;
+      }
+    };
+    
+    classUnderTest = new WrwpRuleManager() {
+      @Override
+      protected ParameterizedRowMapper<String> getSourceMapper() {
+        return methods.getSourceMapper();
+      }
+    };
+    classUnderTest.setJdbcTemplate(jdbc);
+    
+    expect(methods.getSourceMapper()).andReturn(mapper);
+    
+    expect(jdbc.query("SELECT source FROM beast_wrwp_sources WHERE rule_id=?", 
+        mapper,
+        new Object[]{3})).andReturn(sources);
+    
+    replayAll();
+    
+    List<String> result = classUnderTest.getSources(3);
+    
+    verifyAll();
+    assertSame(sources, result);
+  }
+  
+  @Test
+  public void test_wrwp_rule_mapper() throws Exception {
+    IRuleUtilities utils = createMock(IRuleUtilities.class);
+    Catalog cat = createMock(Catalog.class);
+    ResultSet rs = createMock(ResultSet.class);
+
+    List<String> sources = new ArrayList<String>();
+    
+    expect(rs.getInt("rule_id")).andReturn(3);
+    expect(rs.getInt("interval")).andReturn(300);
+    expect(rs.getInt("maxheight")).andReturn(5000);
+    expect(rs.getInt("mindistance")).andReturn(1000);
+    expect(rs.getInt("maxdistance")).andReturn(10000);
+    expect(rs.getDouble("minelangle")).andReturn(4.5);
+    expect(rs.getDouble("minvelocitythresh")).andReturn(1.5);
+    
+    expect(methods.getSources(3)).andReturn(sources);
+    
+    classUnderTest.setCatalog(cat);
+    classUnderTest.setRuleUtilities(utils);
+    
+    replayAll();
+    
+    WrwpRule result = classUnderTest.getWrwpRuleMapper().mapRow(rs, 1); 
+    
+    verifyAll();
+    assertEquals(3, result.getRuleId());
+    assertEquals(300, result.getInterval());
+    assertEquals(5000, result.getMaxheight());
+    assertEquals(1000, result.getMindistance());
+    assertEquals(10000, result.getMaxdistance());
+    assertEquals(4.5, result.getMinelevationangle(), 4);
+    assertEquals(1.5, result.getMinvelocitythreshold(), 4);
+    assertSame(sources, result.getSources());
+    assertSame(cat, result.getCatalog());
+    assertSame(utils, result.getRuleUtilities());
+  }
+
+  @Test
+  public void test_source_mapper() throws Exception {
+    ResultSet rs = createMock(ResultSet.class);
+   
+    expect(rs.getString("source")).andReturn("seang");
+    
+    classUnderTest = new WrwpRuleManager();
+    
+    replayAll();
+    
+    String result = classUnderTest.getSourceMapper().mapRow(rs, 0);
+    
+    verifyAll();
+    assertEquals("seang", result);
+  }
+}
