@@ -515,7 +515,7 @@ public class AcrrRuleTest extends EasyMockSupport {
         {12,5}};
     for (int[] h : filesPerHour) {
       classUnderTest.setFilesPerHour(h[0]);
-      assertEquals(h[1], classUnderTest.getInterval());
+      assertEquals(h[1], classUnderTest.getFilesPerHourInterval());
     }
   }
 }

@@ -133,28 +133,28 @@ public class AcrrRule implements IRule, InitializingBean {
   /**
    * @param catalog the catalog to set
    */
-  protected void setCatalog(Catalog catalog) {
+  public void setCatalog(Catalog catalog) {
     this.catalog = catalog;
   }
 
   /**
    * @return the catalog
    */
-  protected Catalog getCatalog() {
+  public Catalog getCatalog() {
     return this.catalog;
   }
   
   /**
    * @param ruleUtil the ruleUtil to set
    */
-  protected void setRuleUtilities(IRuleUtilities ruleUtil) {
+  public void setRuleUtilities(IRuleUtilities ruleUtil) {
     this.ruleUtil = ruleUtil;
   }
 
   /**
    * @return the ruleUtil
    */
-  protected IRuleUtilities getRuleUtilities() {
+  public IRuleUtilities getRuleUtilities() {
     return ruleUtil;
   }
   
@@ -363,7 +363,7 @@ public class AcrrRule implements IRule, InitializingBean {
     try {
       if (message instanceof BltTriggerJobMessage) {
         DateTime nowdt = ruleUtil.nowDT();
-        DateTime nt = ruleUtil.createNominalTime(nowdt, getInterval());
+        DateTime nt = ruleUtil.createNominalTime(nowdt, getFilesPerHourInterval());
         List<CatalogEntry> entries = findFiles(nowdt);
         List<String> uuids = ruleUtil.getUuidStringsFromEntries(entries);
         
@@ -403,11 +403,11 @@ public class AcrrRule implements IRule, InitializingBean {
    * @return the found unique entries.
    */
   protected List<CatalogEntry> findFiles(DateTime now) {
-    DateTime endDt = ruleUtil.createNominalTime(now, getInterval());
+    DateTime endDt = ruleUtil.createNominalTime(now, getFilesPerHourInterval());
     Calendar c = ruleUtil.createCalendar(endDt);
     c.add(Calendar.HOUR, -hours);
     DateTime startDt = ruleUtil.createDateTime(c);
-    TimeSelectionFilter filter = createFilter(startDt, endDt, getInterval());
+    TimeSelectionFilter filter = createFilter(startDt, endDt, getFilesPerHourInterval());
     return filterEntries(catalog.fetch(filter));
   }
   
@@ -506,7 +506,7 @@ public class AcrrRule implements IRule, InitializingBean {
    * 1 means 60 minute interval, 2 means 30 minute, 3 means 20 and so on 
    * @return the interval to use depending on the filesPerHour setting
    */
-  protected int getInterval() {
+  protected int getFilesPerHourInterval() {
     // 1,2,3,4,6,12
     if (filesPerHour == 1) {
       return 60;

@@ -142,6 +142,21 @@ create table beast_acrr_rules (
   zrb decimal NOT NULL
 );
 
+create table beast_gra_rules (
+  rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
+  area TEXT NOT NULL,
+  distancefield TEXT NOT NULL,
+  files_per_hour INTEGER NOT NULL,
+  hours INTEGER NOT NULL,
+  acceptable_loss INTEGER NOT NULL,
+  object_type TEXT NOT NULL, 
+  quantity TEXT NOT NULL,
+  zra decimal NOT NULL,
+  zrb decimal NOT NULL,
+  first_term_utc INTEGER NOT NULL,
+  interval INTEGER NOT NULL
+);
+
 create table beast_wrwp_rules (
   rule_id INTEGER PRIMARY KEY REFERENCES beast_router_rules(rule_id),
   interval INTEGER NOT NULL,
