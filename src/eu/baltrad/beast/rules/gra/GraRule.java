@@ -117,6 +117,8 @@ public class GraRule extends AcrrRule {
   public void setFirstTermUTC(int firstTermUTC) {
     if (firstTermUTC >= 0 && firstTermUTC < 24) {
       this.firstTermUTC = firstTermUTC;
+    } else {
+      throw new IllegalArgumentException("First term UTC not valid (should be between 0 and 23)");
     }
   }
 
@@ -131,6 +133,8 @@ public class GraRule extends AcrrRule {
   public void setInterval(int interval) {
     if (interval == 1 || interval == 2 || interval == 3 || interval == 4 || interval == 6 || interval == 8 || interval == 12 || interval == 24) {
       this.interval = interval;
+    } else {
+      throw new IllegalArgumentException("Interval not valid (should be 1,2,3,4,6,8,12 or 24)"); 
     }
   }
   

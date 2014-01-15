@@ -79,11 +79,17 @@ public class GraRuleTest extends EasyMockSupport {
       classUnderTest.setFirstTermUTC(i);
       assertEquals(i, classUnderTest.getFirstTermUTC());
     }
-    classUnderTest.setFirstTermUTC(2);
-    classUnderTest.setFirstTermUTC(-1);
-    assertEquals(2, classUnderTest.getFirstTermUTC());
-    classUnderTest.setFirstTermUTC(24);
-    assertEquals(2, classUnderTest.getFirstTermUTC());
+  }
+  
+  @Test
+  public void testSetFirstTermUTC_invalid() {
+    try {
+      classUnderTest.setFirstTermUTC(24);
+      fail("Expected IllegalArgument exception");
+    } catch (IllegalArgumentException iae) {
+      // pass
+    }
+    assertEquals(6, classUnderTest.getFirstTermUTC());
   }
   
   @Test
@@ -105,10 +111,17 @@ public class GraRuleTest extends EasyMockSupport {
     assertEquals(12, classUnderTest.getInterval());
     classUnderTest.setInterval(24);
     assertEquals(24, classUnderTest.getInterval());
-    classUnderTest.setInterval(-1);
-    assertEquals(24, classUnderTest.getInterval());
-    classUnderTest.setInterval(25);
-    assertEquals(24, classUnderTest.getInterval());
+  }
+  
+  @Test
+  public void testSetInterval_invalid() {
+    try {
+      classUnderTest.setInterval(5);
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException iae) {
+      // pass
+    }
+    assertEquals(12, classUnderTest.getInterval());
   }
   
   @Test
