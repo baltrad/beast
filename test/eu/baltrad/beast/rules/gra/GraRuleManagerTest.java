@@ -80,7 +80,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
     
     expect(jdbc.update(
         "INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) " +
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         new Object[]{3,"nrd_swe","eu.d.field",6,10,"COMP","DBZH",100.0,0.5,10,12})).andReturn(0);
     
     replayAll();
