@@ -108,7 +108,7 @@ public class GraRuleManagerITest extends TestCase {
     assertEquals("nrd_sswe", result.getArea());
     assertEquals("eu.baltrad.df2", result.getDistancefield());
     assertEquals(12, result.getFilesPerHour());
-    assertEquals(24, result.getHours());
+    assertEquals(4, result.getHours());
     assertEquals(0, result.getAcceptableLoss());
     assertEquals("COMP", result.getObjectType());
     assertEquals("TH", result.getQuantity());

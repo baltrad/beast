@@ -20,29 +20,11 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.gra;
 
 import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
-
-import eu.baltrad.beast.db.Catalog;
-import eu.baltrad.beast.rules.acrr.AcrrRule;
-import eu.baltrad.beast.rules.acrr.AcrrRuleManager;
-import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.beast.rules.util.RuleUtilities;
-
-import static org.easymock.EasyMock.expect;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static org.junit.Assert.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -88,7 +70,6 @@ public class GraRuleManagerTest extends EasyMockSupport {
     rule.setArea("nrd_swe");
     rule.setDistancefield("eu.d.field");
     rule.setFilesPerHour(6);
-    rule.setHours(2);
     rule.setAcceptableLoss(10);
     rule.setObjectType("COMP");
     rule.setQuantity("DBZH");
@@ -98,9 +79,9 @@ public class GraRuleManagerTest extends EasyMockSupport {
     rule.setInterval(12);
     
     expect(jdbc.update(
-        "INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) " +
+        "INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) " +
         "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-        new Object[]{3,"nrd_swe","eu.d.field",6,2,10,"COMP","DBZH",100.0,0.5,10,12})).andReturn(0);
+        new Object[]{3,"nrd_swe","eu.d.field",6,10,"COMP","DBZH",100.0,0.5,10,12})).andReturn(0);
     
     replayAll();
     
@@ -145,7 +126,6 @@ public class GraRuleManagerTest extends EasyMockSupport {
     rule.setArea("nrd_swe");
     rule.setDistancefield("eu.d.field");
     rule.setFilesPerHour(6);
-    rule.setHours(2);
     rule.setAcceptableLoss(10);
     rule.setObjectType("COMP");
     rule.setQuantity("DBZH");
@@ -155,8 +135,8 @@ public class GraRuleManagerTest extends EasyMockSupport {
     rule.setInterval(8);
 
     expect(jdbc.update("UPDATE beast_gra_rules SET "+
-      "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=? WHERE rule_id=?", 
-        new Object[]{"nrd_swe", "eu.d.field", 6, 2, 10, "COMP", "DBZH", 100.0, 0.5, 12, 8, 3})).andReturn(0);
+      "area=?, distancefield=?, files_per_hour=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=? WHERE rule_id=?", 
+        new Object[]{"nrd_swe", "eu.d.field", 6, 10, "COMP", "DBZH", 100.0, 0.5, 12, 8, 3})).andReturn(0);
     
     replayAll();
     
@@ -202,7 +182,6 @@ public class GraRuleManagerTest extends EasyMockSupport {
     expect(rs.getString("area")).andReturn("nrd_swe");
     expect(rs.getString("distancefield")).andReturn("eu.e.field");
     expect(rs.getInt("files_per_hour")).andReturn(3);
-    expect(rs.getInt("hours")).andReturn(2);
     expect(rs.getInt("acceptable_loss")).andReturn(10);
     expect(rs.getString("object_type")).andReturn("IMAGE");
     expect(rs.getString("quantity")).andReturn("DBZH");
@@ -226,7 +205,6 @@ public class GraRuleManagerTest extends EasyMockSupport {
     assertEquals("nrd_swe", result.getArea());
     assertEquals("eu.e.field", result.getDistancefield());
     assertEquals(3, result.getFilesPerHour());
-    assertEquals(2, result.getHours());
     assertEquals(10, result.getAcceptableLoss());
     assertEquals("IMAGE", result.getObjectType());
     assertEquals("DBZH", result.getQuantity());

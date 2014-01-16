@@ -28,7 +28,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
-import eu.baltrad.beast.rules.acrr.AcrrRule;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -81,7 +80,6 @@ public class GraRuleManager implements IRuleManager {
     String area = arule.getArea();
     String dfield = arule.getDistancefield();
     int fhours = arule.getFilesPerHour();
-    int hours = arule.getHours();
     int aloss = arule.getAcceptableLoss();
     String otype = arule.getObjectType();
     String quantity = arule.getQuantity();
@@ -90,8 +88,8 @@ public class GraRuleManager implements IRuleManager {
     int firstTermUTC = arule.getFirstTermUTC();
     int interval = arule.getInterval();
     
-    template.update("INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
-        new Object[]{rule_id, area, dfield, fhours, hours, aloss, otype, quantity, zrA, zrB, firstTermUTC, interval});
+    template.update("INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) VALUES (?,?,?,?,?,?,?,?,?,?,?)", 
+        new Object[]{rule_id, area, dfield, fhours, aloss, otype, quantity, zrA, zrB, firstTermUTC, interval});
     
     arule.setRuleId(rule_id);
   }
@@ -115,7 +113,6 @@ public class GraRuleManager implements IRuleManager {
     String area = arule.getArea();
     String dfield = arule.getDistancefield();
     int fhours = arule.getFilesPerHour();
-    int hours = arule.getHours();
     int acceptable_loss = arule.getAcceptableLoss();
     String otype = arule.getObjectType();
     String quantity = arule.getQuantity();
@@ -125,8 +122,8 @@ public class GraRuleManager implements IRuleManager {
     int interval = arule.getInterval();
     
     template.update("UPDATE beast_gra_rules SET " +
-        "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=? WHERE rule_id=?",
-        new Object[]{area, dfield, fhours, hours, acceptable_loss, otype, quantity, zra, zrb, firstTermUTC, interval, rule_id});
+        "area=?, distancefield=?, files_per_hour=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=? WHERE rule_id=?",
+        new Object[]{area, dfield, fhours, acceptable_loss, otype, quantity, zra, zrb, firstTermUTC, interval, rule_id});
     
     arule.setRuleId(rule_id);
   }
@@ -164,7 +161,6 @@ public class GraRuleManager implements IRuleManager {
         result.setArea(rs.getString("area"));
         result.setDistancefield(rs.getString("distancefield"));
         result.setFilesPerHour(rs.getInt("files_per_hour"));
-        result.setHours(rs.getInt("hours"));
         result.setAcceptableLoss(rs.getInt("acceptable_loss"));
         result.setObjectType(rs.getString("object_type"));
         result.setQuantity(rs.getString("quantity"));

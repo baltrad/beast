@@ -125,6 +125,32 @@ public class GraRuleTest extends EasyMockSupport {
   }
   
   @Test
+  public void testIntervalHoursSame() {
+    assertEquals(12, classUnderTest.getHours());
+    assertEquals(12, classUnderTest.getInterval());
+    classUnderTest.setHours(6);
+    assertEquals(6, classUnderTest.getHours());
+    assertEquals(6, classUnderTest.getInterval());
+    classUnderTest.setInterval(12);
+    assertEquals(12, classUnderTest.getHours());
+    assertEquals(12, classUnderTest.getInterval());
+    try {
+      classUnderTest.setInterval(5);
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException ae) {
+      // pass
+    }
+    try {
+      classUnderTest.setHours(5);
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException ae) {
+      // pass
+    }
+    assertEquals(12, classUnderTest.getHours());
+    assertEquals(12, classUnderTest.getInterval());
+  }
+  
+  @Test
   public void testGetNominalTime() {
     classUnderTest.setInterval(12);
     classUnderTest.setFirstTermUTC(6);

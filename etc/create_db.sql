@@ -147,7 +147,6 @@ create table beast_gra_rules (
   area TEXT NOT NULL,
   distancefield TEXT NOT NULL,
   files_per_hour INTEGER NOT NULL,
-  hours INTEGER NOT NULL,
   acceptable_loss INTEGER NOT NULL,
   object_type TEXT NOT NULL, 
   quantity TEXT NOT NULL,

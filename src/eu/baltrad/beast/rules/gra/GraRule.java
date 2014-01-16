@@ -42,6 +42,16 @@ import eu.baltrad.beast.rules.acrr.AcrrRule;
  */
 public class GraRule extends AcrrRule {
   /**
+   * The default interval
+   */
+  private static int DEFAULT_INTERVAL = 12;
+  
+  /**
+   * The default first term UTC
+   */
+  private static int DEFAULT_FIRST_TERM_UTC = 6;
+  
+  /**
    * The name of this static acrr type
    */
   public final static String TYPE = "blt_gra";
@@ -54,13 +64,17 @@ public class GraRule extends AcrrRule {
   /**
    * Number of hours / calculation.
    */
-  private int interval = 12;
+  private int interval = DEFAULT_INTERVAL;
   
   /**
    * First term of the calculation. For example, if interval is 12 and firstTermUTC = 6 it means
    * that the first gra calculation will be performed between 18:00 - 06:00 and the next one between 06:00 and 18:00.
    */
-  private int firstTermUTC = 6;
+  private int firstTermUTC = DEFAULT_FIRST_TERM_UTC;
+  
+  public GraRule() {
+    setHours(DEFAULT_INTERVAL);
+  }
   
   /**
    * @see eu.baltrad.beast.rules.IRule#getType()
@@ -94,7 +108,7 @@ public class GraRule extends AcrrRule {
         args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
         args.add("--zra="+getZrA());
         args.add("--zrb="+getZrB());
-        args.add("--hours="+getHours());
+        args.add("--interval="+getHours());
         args.add("--N="+(getFilesPerHour() * getHours() + 1));
         args.add("--accept="+ getAcceptableLoss());
         args.add("--quantity="+getQuantity());
@@ -110,10 +124,18 @@ public class GraRule extends AcrrRule {
     return null;
   }
 
+  /**
+   * Returns the offset in hours to the first observation term. This is the time when the term ends.
+   * @return the offset in hours
+   */
   public int getFirstTermUTC() {
     return firstTermUTC;
   }
 
+  /**
+   * Sets the  offset in hours to the first observation term. This is the time when the term ends.
+   * @param firstTermUTC the offset in hours
+   */
   public void setFirstTermUTC(int firstTermUTC) {
     if (firstTermUTC >= 0 && firstTermUTC < 24) {
       this.firstTermUTC = firstTermUTC;
@@ -122,12 +144,17 @@ public class GraRule extends AcrrRule {
     }
   }
 
+  /**
+   * The interval for each term. This will always be the same as hours but it is only allowed to have the same values
+   * as the interval.
+   * @return the interval
+   */
   public int getInterval() {
     return interval;
   }
 
   /**
-   * The interval of which we can use as periods
+   * The interval of which we can use as periods. This overrides the hours setting.
    * @param interval the interval, must be evenly dividable by 24. I.e. 1,2,3,4,6,8,12 and 24
    */
   public void setInterval(int interval) {
@@ -136,6 +163,22 @@ public class GraRule extends AcrrRule {
     } else {
       throw new IllegalArgumentException("Interval not valid (should be 1,2,3,4,6,8,12 or 24)"); 
     }
+  }
+  
+  /**
+   * Same definition as {@link #setInterval(int)}
+   */
+  @Override
+  public void setHours(int hours) {
+    setInterval(hours);
+  }
+  
+  /**
+   * Same definition as {@link #getHours()}
+   */
+  @Override
+  public int getHours() {
+    return getInterval();
   }
   
   /**

@@ -105,7 +105,6 @@ public class GraRuleITest  extends TestCase {
     classUnderTest.setZrB(2.0);
     classUnderTest.setObjectType("IMAGE");
     classUnderTest.setFilesPerHour(4);
-    classUnderTest.setHours(2);
     classUnderTest.setFirstTermUTC(11);
     classUnderTest.setInterval(1);
     classUnderTest.setAcceptableLoss(50);
@@ -143,8 +142,8 @@ public class GraRuleITest  extends TestCase {
     assertTrue(arglist.contains("--time=110000"));
     assertTrue(arglist.contains("--zra=10.0"));
     assertTrue(arglist.contains("--zrb=2.0"));
-    assertTrue(arglist.contains("--hours=2"));
-    assertTrue(arglist.contains("--N=9"));
+    assertTrue(arglist.contains("--interval=1"));
+    assertTrue(arglist.contains("--N=5"));
     assertTrue(arglist.contains("--accept=50"));
     assertTrue(arglist.contains("--quantity=DBZH"));
     assertTrue(arglist.contains("--distancefield=se.smhi.rave.somedistance"));
@@ -161,7 +160,6 @@ public class GraRuleITest  extends TestCase {
     classUnderTest.setZrB(2.0);
     classUnderTest.setObjectType("IMAGE");
     classUnderTest.setFilesPerHour(4);
-    classUnderTest.setHours(2);
     classUnderTest.setFirstTermUTC(11);
     classUnderTest.setInterval(1);
     classUnderTest.setAcceptableLoss(50);
@@ -178,15 +176,11 @@ public class GraRuleITest  extends TestCase {
     
     Map<DateTime, FileEntry> entries = new HashMap<DateTime, FileEntry>();
     String[] files = result.getFiles();
-    assertEquals(9, files.length);
+    assertEquals(5, files.length);
     for (String s : files) {
       FileEntry fe = catalog.getCatalog().getDatabase().getFileEntry(UUID.fromString(s));
       entries.put(new DateTime(fe.getMetadata().getWhatDate(), fe.getMetadata().getWhatTime()), fe);
     }
-    assertTrue(entries.containsKey(new DateTime(2010,01,01,10,00,00)));
-    assertTrue(entries.containsKey(new DateTime(2010,01,01,10,15,00)));
-    assertTrue(entries.containsKey(new DateTime(2010,01,01,10,30,00)));
-    assertTrue(entries.containsKey(new DateTime(2010,01,01,10,45,00)));
     assertTrue(entries.containsKey(new DateTime(2010,01,01,11,00,00)));
     assertTrue(entries.containsKey(new DateTime(2010,01,01,11,15,00)));
     assertTrue(entries.containsKey(new DateTime(2010,01,01,11,30,00)));
@@ -203,8 +197,8 @@ public class GraRuleITest  extends TestCase {
     assertTrue(arglist.contains("--time=120000"));
     assertTrue(arglist.contains("--zra=10.0"));
     assertTrue(arglist.contains("--zrb=2.0"));
-    assertTrue(arglist.contains("--hours=2"));
-    assertTrue(arglist.contains("--N=9"));
+    assertTrue(arglist.contains("--interval=1"));
+    assertTrue(arglist.contains("--N=5"));
     assertTrue(arglist.contains("--accept=50"));
     assertTrue(arglist.contains("--quantity=DBZH"));
     assertTrue(arglist.contains("--distancefield=se.smhi.rave.somedistance"));
