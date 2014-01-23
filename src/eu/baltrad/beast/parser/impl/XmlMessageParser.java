@@ -67,14 +67,23 @@ public class XmlMessageParser implements IXmlMessageParser {
    * @throws MessageParserException
    */
   protected Document parseXml(String xml) {
+    InputStream in = null;
     try {
       SAXReader xmlReader = new SAXReader();
-      InputStream in = new ByteArrayInputStream(xml.getBytes("ISO-8859-1"));
+      in = new ByteArrayInputStream(xml.getBytes("ISO-8859-1"));
       return xmlReader.read(in);
     } catch (UnsupportedEncodingException t) {
       throw new MessageParserException("Failed to parse xml", t);
     } catch (DocumentException t) {
       throw new MessageParserException("Failed to parse xml", t);
+    } finally {
+      if (in != null) {
+        try {
+          in.close();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
 }

@@ -103,10 +103,16 @@ public class BdbObjectStatusReporter implements ISystemStatusReporter{
     query.setLimit(1);
     query.setFilter(expr);
     FileResult set = fc.getDatabase().execute(query);
-    if (set.next()) {
-      result = EnumSet.of(SystemStatus.OK);
-    } else {
-      result = EnumSet.of(SystemStatus.COMMUNICATION_PROBLEM);
+    try {
+      if (set.next()) {
+        result = EnumSet.of(SystemStatus.OK);
+      } else {
+        result = EnumSet.of(SystemStatus.COMMUNICATION_PROBLEM);
+      }
+    } finally {
+      if (set != null) {
+        set.close();
+      }
     }
     
     return result;

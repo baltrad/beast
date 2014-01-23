@@ -26,7 +26,9 @@ import junit.framework.TestCase;
 
 import org.springframework.context.support.AbstractApplicationContext;
 
+import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
+import eu.baltrad.beast.adaptor.IAdaptorConfiguration;
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptor;
 import eu.baltrad.beast.adaptor.xmlrpc.XmlRpcAdaptorConfiguration;
@@ -35,6 +37,9 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.pgfwk.BaltradXmlRpcServer;
+import eu.baltrad.beast.router.IMultiRoutedMessage;
+import eu.baltrad.beast.router.IRoutedMessage;
+import eu.baltrad.beast.router.IRouter;
 import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.groovy.GroovyRule;
@@ -267,5 +272,119 @@ public class BltManagerTest extends TestCase {
   
   public void testIt() {
     
+  }
+  
+  
+  public void XtestHangingJobs() throws Exception {
+    BltMessageManager mgr = new BltMessageManager();
+    IRouter router = new IRouter() {
+      @Override
+      public List<IRoutedMessage> getRoutedMessages(IBltMessage msg) {
+        System.out.println("Waiting in thread");
+        try {
+          wait(30000);
+        } catch (InterruptedException e) {
+          
+        }
+        System.out.println("Woke up");
+        return null;
+      }
+      
+      @Override
+      public synchronized List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg) {
+        System.out.println("Waiting in thread");
+        try {
+          wait(30000);
+        } catch (InterruptedException e) {
+          
+        }
+        System.out.println("Woke up");
+        List<IMultiRoutedMessage> result = new ArrayList<IMultiRoutedMessage>();
+        result.add(new IMultiRoutedMessage() {
+          
+          @Override
+          public IBltMessage getMessage() {
+            // TODO Auto-generated method stub
+            return null;
+          }
+          
+          @Override
+          public List<String> getDestinations() {
+            // TODO Auto-generated method stub
+            return null;
+          }
+        });
+        return result;
+      }
+    };
+    
+    IBltAdaptorManager admgr = new IBltAdaptorManager() {
+      @Override
+      public void unregister(String name) {
+      }
+      
+      @Override
+      public IAdaptor reregister(IAdaptorConfiguration configuration) {
+        return null;
+      }
+      
+      @Override
+      public IAdaptor register(IAdaptorConfiguration configuration) {
+        return null;
+      }
+      
+      @Override
+      public void handle(IRoutedMessage message, IAdaptorCallback callback) {
+        System.out.println("Adaptor::handle(IRoutedMessage,IAdaptorCallback)");
+      }
+      
+      @Override
+      public void handle(IRoutedMessage message) {
+        System.out.println("Adaptor::handle(IRoutedMessage)");
+      }
+      
+      @Override
+      public void handle(IMultiRoutedMessage message) {
+        System.out.println("Adaptor::handle(IMultiRoutedMessage)");
+      }
+      
+      @Override
+      public List<IAdaptor> getRegisteredAdaptors() {
+        return null;
+      }
+      
+      @Override
+      public List<String> getAvailableTypes() {
+        return null;
+      }
+      
+      @Override
+      public List<String> getAdaptorNames() {
+        return null;
+      }
+      
+      @Override
+      public IAdaptor getAdaptor(String name) {
+        return null;
+      }
+      
+      @Override
+      public IAdaptorConfiguration createConfiguration(String type, String name) {
+        return null;
+      }
+    };
+    
+    mgr.setRouter(router);
+    mgr.setManager(admgr);
+    mgr.afterPropertiesSet();
+    
+    for (int i = 0; i < 30; i++) {
+      System.out.println("Managing message " + i);
+      mgr.manage(new IBltMessage() {
+        
+      });
+    }
+    
+    Thread.sleep(1000 * 3600);
   }
 }

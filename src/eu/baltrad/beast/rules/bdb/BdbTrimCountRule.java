@@ -167,7 +167,9 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
         numRemoved += 1;
       }
     } finally {
-      r.close();
+      if (r != null) {
+        r.close();
+      }
     }
   }
   
@@ -181,7 +183,9 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
     try {
       return r.size();
     } finally {
-      r.close();
+      if (r != null) {
+        r.close();
+      }
     }
   }
   

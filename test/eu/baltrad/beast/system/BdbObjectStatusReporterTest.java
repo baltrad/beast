@@ -119,6 +119,7 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     expect(fileCatalog.getDatabase()).andReturn(db);
     expect(db.execute(fq)).andReturn(fr);
     expect(fr.next()).andReturn(true);
+    fr.close();
     
     replayAll();
     
@@ -162,6 +163,7 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     expect(fileCatalog.getDatabase()).andReturn(db);
     expect(db.execute(fq)).andReturn(fr);
     expect(fr.next()).andReturn(false); // Only difference
+    fr.close();
     
     replayAll();
     

@@ -171,7 +171,9 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
         numRemoved += 1;
       }
     } finally {
-      rset.close();
+      if (rset != null) {
+        rset.close();
+      }
     }
   }
     

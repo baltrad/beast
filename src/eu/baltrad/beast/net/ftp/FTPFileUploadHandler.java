@@ -83,8 +83,15 @@ public class FTPFileUploadHandler extends FileUploadHandlerBase {
       throw new IOException("Failed to cwd: " + dstPath);
     if (!client.setFileType(client.BINARY_FILE_TYPE))
       throw new IOException("Failed to set binary transfer mode");
-    if (!client.storeFile(dstFilename, openStream(src)))
-      throw new IOException("Failed to store " + src.toString());
+    InputStream is = openStream(src);
+    try {
+      if (!client.storeFile(dstFilename, is))
+        throw new IOException("Failed to store " + src.toString());
+    } finally {
+      if (is != null) {
+        is.close();
+      }
+    }
   }
 
   protected boolean isDirectory(File path) throws IOException {
