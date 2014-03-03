@@ -111,11 +111,15 @@ public class BltMessageManager implements IBltMessageManager, InitializingBean, 
    * @see IBltMessageManager#manage(IBltMessage)
    */
   public synchronized void manage(IBltMessage message) {
-    Runnable r = createRunnable(message);
-    try {
-      executor.execute(r);
-    }catch (RuntimeException t) {
-      t.printStackTrace();
+    if (!executor.isShutdown()) {
+      Runnable r = createRunnable(message);
+      try {
+        executor.execute(r);
+      }catch (RuntimeException t) {
+        t.printStackTrace();
+      }
+    } else {
+      logger.warn("ExecutorService has been shutdown, can not manage message");
     }
   }
   

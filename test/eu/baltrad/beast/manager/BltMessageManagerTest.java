@@ -73,8 +73,36 @@ public class BltMessageManagerTest extends EasyMockSupport {
       }
     };
     
+    expect(executor.isShutdown()).andReturn(false);
+    
     executor.execute(r);
     
+    classUnderTest = new BltMessageManager() {
+      protected Runnable createRunnable(IBltMessage message) {
+        return r;
+      }
+    };
+    classUnderTest.setExecutor(executor);
+    
+    replayAll();
+    
+    classUnderTest.manage(message);
+    
+    verifyAll();
+  }
+  
+  
+  @Test
+  public void testManage_onShutdown() {
+    IBltMessage message = new IBltMessage() {};
+    final Runnable r = new Runnable() {
+      @Override
+      public void run() {
+      }
+    };
+    
+    expect(executor.isShutdown()).andReturn(true);
+
     classUnderTest = new BltMessageManager() {
       protected Runnable createRunnable(IBltMessage message) {
         return r;
