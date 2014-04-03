@@ -173,6 +173,21 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * in degrees. Etc. See ODIM specification.
    */
   private String prodpar = "1000.0";
+
+  /**
+   * Indicates if GRA coefficients should be applied or not
+   */
+  private boolean applyGRA = false;
+  
+  /**
+   * The ZR A coefficient when translating from reflectivity to MM/H
+   */
+  private double ZR_A = 200.0;
+  
+  /**
+   * The ZR b coefficient when translating from reflectivity to MM/H
+   */
+  private double ZR_b = 1.6;
   
   /**
    * The recipients that are affected by this rule. Used
@@ -579,6 +594,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     }
     args.add("--method="+this.method);
     args.add("--prodpar="+this.prodpar);
+    if (isApplyGRA()) {
+      args.add("--applygra=true");
+      args.add("--zrA="+this.ZR_A);
+      args.add("--zrb="+this.ZR_b);
+    }
     
     result.setArguments(args.toArray(new String[0]));
 
@@ -727,5 +747,47 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    */
   public String getProdpar() {
     return prodpar;
+  }
+
+  /**
+   * @return if GRA correction should be applied or not
+   */
+  public boolean isApplyGRA() {
+    return applyGRA;
+  }
+
+  /**
+   * @param applyGRA if GRA correction should be applied or not
+   */
+  public void setApplyGRA(boolean applyGRA) {
+    this.applyGRA = applyGRA;
+  }
+
+  /**
+   * @return the ZR A coefficient when converting from reflectivity to MM/H
+   */
+  public double getZR_A() {
+    return ZR_A;
+  }
+
+  /**
+   * @param zR_A the ZR A coefficient
+   */
+  public void setZR_A(double zR_A) {
+    ZR_A = zR_A;
+  }
+
+  /**
+   * @return the ZR b coefficient when converting from reflectivity to MM/H
+   */
+  public double getZR_b() {
+    return ZR_b;
+  }
+
+  /**
+   * @param zR_b the ZR b coefficient
+   */
+  public void setZR_b(double zR_b) {
+    ZR_b = zR_b;
   }
 }

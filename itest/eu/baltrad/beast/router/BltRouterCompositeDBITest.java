@@ -112,6 +112,9 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(CompositingRule.SelectionMethod_NEAREST_RADAR, ((CompositingRule)def.getRule()).getSelectionMethod());
     assertEquals(CompositingRule.PPI, ((CompositingRule)def.getRule()).getMethod());
     assertEquals("0.5", ((CompositingRule)def.getRule()).getProdpar());
+    assertEquals(false, ((CompositingRule)def.getRule()).isApplyGRA());
+    assertEquals(100.0, ((CompositingRule)def.getRule()).getZR_A(), 4);
+    assertEquals(1.5, ((CompositingRule)def.getRule()).getZR_b(), 4);
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
     assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
   }
@@ -161,6 +164,9 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     rule.setMethod(CompositingRule.CAPPI);
     rule.setProdpar("500.0");
+    rule.setApplyGRA(true);
+    rule.setZR_A(210.0);
+    rule.setZR_b(1.7);
     rule.setDetectors(detectors);
     rule.setSources(sources);
 

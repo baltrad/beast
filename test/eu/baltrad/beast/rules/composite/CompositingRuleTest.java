@@ -124,6 +124,27 @@ public class CompositingRuleTest extends EasyMockSupport {
   }
   
   @Test
+  public void testApplyGRA() {
+    assertEquals(false, classUnderTest.isApplyGRA());
+    classUnderTest.setApplyGRA(true);
+    assertEquals(true, classUnderTest.isApplyGRA());
+  }
+  
+  @Test
+  public void testZR_A() {
+    assertEquals(200.0, classUnderTest.getZR_A(), 4);
+    classUnderTest.setZR_A(10.0);
+    assertEquals(10.0, classUnderTest.getZR_A(), 4);
+  }
+  
+  @Test
+  public void testZR_b() {
+    assertEquals(1.6, classUnderTest.getZR_b(), 4);
+    classUnderTest.setZR_b(10.0);
+    assertEquals(10.0, classUnderTest.getZR_b(), 4);
+  }
+
+  @Test
   public void testTimeout() throws Exception {
     final ICompositingMethods methods = createMock(ICompositingMethods.class);
     DateTime dt = new DateTime(2010, 4, 15, 10, 15, 0);
@@ -505,6 +526,80 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--method=ppi", arguments[5]);
     assertEquals("--prodpar=0.5", arguments[6]);
   }
+
+  @Test
+  public void testCreateMessage_applyGRA() {
+    Date date = new Date(2010, 2, 1);
+    Time time = new Time(1, 0, 0);
+    DateTime nominalTime = new DateTime(date, time);
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("ropo");
+    detectors.add("sigge");
+    detectors.add("nisse");
+    
+    // actual entries don't matter, just make the list of different size to distinguish
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    List<CatalogEntry> entriesByTime = new ArrayList<CatalogEntry>();
+    List<CatalogEntry> entriesBySources = new ArrayList<CatalogEntry>();
+    
+    List<String> fileEntries = new ArrayList<String>();
+    fileEntries.add("uuid-1");
+    fileEntries.add("uuid-2");
+    fileEntries.add("uuid-3");
+
+    List<String> usedSources = new ArrayList<String>();
+    
+    classUnderTest.setArea("blt_composite");
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("sekkr");
+    sources.add("selul");
+    sources.add("searl");
+    classUnderTest.setSources(sources);
+    
+    expect(ruleUtil.getEntriesByClosestTime(nominalTime, entries)).andReturn(entriesByTime);
+    expect(ruleUtil.getEntriesBySources(sources, entriesByTime)).andReturn(entriesBySources);
+    expect(ruleUtil.getUuidStringsFromEntries(entriesBySources)).andReturn(fileEntries);
+    expect(ruleUtil.getSourcesFromEntries(entriesBySources)).andReturn(usedSources);
+    ruleUtil.reportRadarSourceUsage(sources, usedSources);
+    
+    classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    classUnderTest.setDetectors(detectors);
+    
+    classUnderTest.setMethod(CompositingRule.PPI);
+    classUnderTest.setProdpar("0.5");
+    classUnderTest.setApplyGRA(true);
+    classUnderTest.setZR_A(100.0);
+    classUnderTest.setZR_b(1.4);
+    
+    replayAll();
+    
+    IBltMessage result = classUnderTest.createMessage(nominalTime, entries);
+    
+    verifyAll();
+    
+    assertTrue(result instanceof BltGenerateMessage);
+    BltGenerateMessage msg = (BltGenerateMessage)result;
+    assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
+    String[] files = msg.getFiles();
+    assertEquals(3, files.length);
+    assertTrue(arrayContains(files, "uuid-1"));
+    assertTrue(arrayContains(files, "uuid-2"));
+    assertTrue(arrayContains(files, "uuid-3"));
+    String[] arguments = msg.getArguments();
+    assertEquals(10, arguments.length);
+    assertEquals("--area=blt_composite", arguments[0]);
+    assertEquals("--date=20100201", arguments[1]);
+    assertEquals("--time=010000", arguments[2]);
+    assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
+    assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
+    assertEquals("--method=ppi", arguments[5]);
+    assertEquals("--prodpar=0.5", arguments[6]);
+    assertEquals("--applygra=true", arguments[7]);
+    assertEquals("--zrA=100.0", arguments[8]);
+    assertEquals("--zrb=1.4", arguments[9]);
+  }
+
   
   @Test
   public void testFetchEntries() throws Exception {
