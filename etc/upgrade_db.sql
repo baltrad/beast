@@ -112,19 +112,19 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_applygra() RETURNS VOID AS $$
 BEGIN
-  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_composite_rules' AND column_name = 'applygra';
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'applygra';
   IF NOT FOUND THEN
     ALTER TABLE beast_composite_rules ADD COLUMN applygra boolean;
     UPDATE beast_composite_rules SET applygra='false';
     ALTER TABLE beast_composite_rules ALTER COLUMN applygra SET NOT NULL;
   END IF; 
-  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_composite_rules' AND column_name = 'ZR_A';
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'zr_a';
   IF NOT FOUND THEN
     ALTER TABLE beast_composite_rules ADD COLUMN ZR_A decimal;
     UPDATE beast_composite_rules SET ZR_A=200.0;
     ALTER TABLE beast_composite_rules ALTER COLUMN ZR_A SET NOT NULL;
   END IF; 
-  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_composite_rules' AND column_name = 'ZR_b';
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'zr_b';
   IF NOT FOUND THEN
     ALTER TABLE beast_composite_rules ADD COLUMN ZR_b decimal;
     UPDATE beast_composite_rules SET ZR_b=1.6;
