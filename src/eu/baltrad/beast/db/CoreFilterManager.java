@@ -22,6 +22,7 @@ package eu.baltrad.beast.db;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -39,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CoreFilterManager implements IFilterManager {
   private Map<String, IFilterManager> subManagers = null;
   private SimpleJdbcOperations template;
-
+  private Map<Integer, IFilter> cachedFilters = new HashMap<Integer, IFilter>();
   public void setJdbcTemplate(SimpleJdbcOperations template) {
     this.template = template;
   }
@@ -54,11 +55,12 @@ public class CoreFilterManager implements IFilterManager {
   @Transactional(propagation=Propagation.REQUIRED,
                  rollbackFor=Exception.class)
   @Override
-  public void store(IFilter filter) {
+  public synchronized void store(IFilter filter) {
     int id = sqlInsertFilter(filter.getType());
     filter.setId(id);
     IFilterManager subManager = getSubManager(filter);
     subManager.store(filter);
+    cachedFilters.put(id, filter);
   }
   
   /**
@@ -66,13 +68,18 @@ public class CoreFilterManager implements IFilterManager {
    */
   @Override
   public IFilter load(int id) {
-    Map<String, Object> map = sqlSelectFilter(id);
+    if (!cachedFilters.containsKey(id)) {
+      Map<String, Object> map = sqlSelectFilter(id);
 
-    IFilterManager subManager = getSubManager((String)map.get("type"));
-    IFilter filter = subManager.load(id);
-    filter.setId(id);
+      IFilterManager subManager = getSubManager((String)map.get("type"));
+      IFilter filter = subManager.load(id);
+      filter.setId(id);
 
-    return filter;
+      synchronized(this) {
+        cachedFilters.put(id, filter);
+      }
+    }
+    return cachedFilters.get(id);
   }
 
   /**
@@ -81,9 +88,10 @@ public class CoreFilterManager implements IFilterManager {
   @Transactional(propagation=Propagation.REQUIRED,
                  rollbackFor=Exception.class)
   @Override
-  public void update(IFilter filter) {
+  public synchronized void update(IFilter filter) {
     IFilterManager subManager = getSubManager(filter);
     subManager.update(filter);
+    cachedFilters.put(filter.getId(), filter);
   }
   
   /**
@@ -92,14 +100,24 @@ public class CoreFilterManager implements IFilterManager {
   @Transactional(propagation=Propagation.REQUIRED,
                  rollbackFor=Exception.class)
   @Override
-  public void remove(IFilter filter) {
+  public synchronized void remove(IFilter filter) {
     IFilterManager subManager = getSubManager(filter);
     subManager.remove(filter);
 
-    sqlDeleteFilter(filter.getId());
+    int id = filter.getId();
+    sqlDeleteFilter(id);
     filter.setId(null);
+    cachedFilters.remove(id);
   }
 
+  /**
+   * Gives access to the cached filters. Mostly used for test purposes.
+   * @return the cached filters
+   */
+  protected Map<Integer, IFilter> getCachedFilters() {
+    return cachedFilters;
+  }
+  
   private IFilterManager getSubManager(IFilter filter) {
     return subManagers.get(filter.getType());
   }

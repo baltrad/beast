@@ -21,6 +21,7 @@ package eu.baltrad.beast.db;
 
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertFalse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,15 +83,40 @@ public class CoreFilterManagerTest extends EasyMockSupport {
   }
 
   @Test
+  public void testLoad_cached() {
+    Map<String, Object> values = new HashMap<String, Object>();
+    values.put("type", "mock");
+    
+    expect(methods.sqlSelectFilter(1)).andReturn(values);
+    expect(filterManager.load(1)).andReturn(filter);
+    filter.setId(1);
+    
+    replayAll();
+
+    IFilter f = classUnderTest.load(1);
+    
+    IFilter f2 = classUnderTest.load(1); // Should not cause any calls except getting from cache
+    
+    verifyAll();
+    
+    assertSame(f, filter);
+    assertSame(f2, filter);
+    
+  }
+  
+  @Test
   public void testUpdate() {
     expect(filter.getType()).andReturn("mock");
     filterManager.update(filter);
+    expect(filter.getId()).andReturn(1);
     
     replayAll();
     
     classUnderTest.update(filter);
     
     verifyAll();
+    IFilter f = classUnderTest.getCachedFilters().get(1);
+    assertSame(filter, f);
   }
 
   @Test
@@ -106,5 +132,6 @@ public class CoreFilterManagerTest extends EasyMockSupport {
     classUnderTest.remove(filter);
     
     verifyAll();
+    assertFalse(classUnderTest.getCachedFilters().containsKey(1));
   }
 }
