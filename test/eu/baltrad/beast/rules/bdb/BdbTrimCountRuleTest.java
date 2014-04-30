@@ -19,10 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.bdb;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.anyObject;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.HashMap;
@@ -36,9 +33,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.FileCatalog;
 import eu.baltrad.bdb.db.Database;
-import eu.baltrad.bdb.db.FileEntry;
-import eu.baltrad.bdb.db.FileQuery;
-import eu.baltrad.bdb.db.FileResult;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 
@@ -47,13 +41,9 @@ public class BdbTrimCountRuleTest extends EasyMockSupport {
   private BdbTrimCountRuleMethods methods = null;
   private Database db = null;
   private FileCatalog catalog = null;
-  private FileQuery query = null;
-  private FileResult result = null;
-  private FileEntry entry = null;
 
   private static interface BdbTrimCountRuleMethods {
     public void execute();
-    public FileQuery getExcessiveFileQuery();
     public int getFileCount();
   }
 
@@ -63,9 +53,6 @@ public class BdbTrimCountRuleTest extends EasyMockSupport {
     methods = createMock(BdbTrimCountRuleMethods.class);
     db = createMock(Database.class);
     catalog = createMock(FileCatalog.class);
-    query = createMock(FileQuery.class);
-    result = createMock(FileResult.class);
-    entry = createMock(FileEntry.class);
     classUnderTest = new BdbTrimCountRule();
   }
 
@@ -149,99 +136,30 @@ public class BdbTrimCountRuleTest extends EasyMockSupport {
   @Test
   public void testExecute() {
     classUnderTest = new BdbTrimCountRule() {
-      protected FileQuery getExcessiveFileQuery() {
-        return methods.getExcessiveFileQuery();
+      protected int getFileCount() {
+        return methods.getFileCount();
       }
     };
     classUnderTest.setFileCatalog(catalog);
     classUnderTest.setFileCountLimit(1);
 
-    expect(methods.getExcessiveFileQuery()).andReturn(query);
+    expect(methods.getFileCount()).andReturn(2);
     expect(catalog.getDatabase()).andReturn(db);
-    expect(db.execute(query)).andReturn(result);
-    expect(result.size()).andReturn(1);
-    expect(result.next()).andReturn(true);
-    expect(result.getFileEntry()).andReturn(entry);
-    catalog.remove(entry);
-    expect(result.next()).andReturn(false);
-    result.close();
+    expect(db.removeFilesByCount(1, 100)).andReturn(1);
     
     replayAll();
   
     classUnderTest.execute();
   
     verifyAll();
-  }
-
-  @Test
-  public void testExecuteNullQuery() {
-    classUnderTest = new BdbTrimCountRule() {
-      protected FileQuery getExcessiveFileQuery() {
-        return methods.getExcessiveFileQuery();
-      }
-    };
-    classUnderTest.setFileCatalog(catalog);
-    classUnderTest.setFileCountLimit(1);
-
-    expect(methods.getExcessiveFileQuery()).andReturn(null);
-
-    replayAll();
-    
-    classUnderTest.execute();
-
-    verifyAll();
-  }
-  
-  @Test
-  public void testGetExcessiveFileQuery() {
-    classUnderTest = new BdbTrimCountRule() {
-      protected int getFileCount() {
-        return methods.getFileCount();
-      }
-    };
-    classUnderTest.setFileCountLimit(100);
-    classUnderTest.setFileCatalog(catalog);
-    
-    expect(methods.getFileCount()).andReturn(110);
-
-    replayAll();
-
-    FileQuery q = classUnderTest.getExcessiveFileQuery();
-    
-    verifyAll();
-    assertNotNull(q);
-    assertEquals(new Integer(10), q.getLimit());
-  }
-
-  @Test
-  public void testGetExcessiveFileQueryLimitNotMet() {
-    classUnderTest = new BdbTrimCountRule() {
-      protected int getFileCount() {
-        return methods.getFileCount();
-      }
-    };
-    classUnderTest.setFileCountLimit(100);
-    classUnderTest.setFileCatalog(catalog);
-
-    expect(methods.getFileCount()).andReturn(100);
-
-    replayAll();
-    
-    FileQuery q = classUnderTest.getExcessiveFileQuery();
-    
-    verifyAll();
-    assertNull(q);
   }
 
   @Test
   public void testGetFileCount() {
     classUnderTest.setFileCatalog(catalog);
 
-
     expect(catalog.getDatabase()).andReturn(db);
-    expect(db.execute(anyObject(FileQuery.class))).andReturn(result);
-    expect(result.size()).andReturn(10);
-    result.close();
+    expect(db.getFileCount()).andReturn(10L);
     
     replayAll();
 

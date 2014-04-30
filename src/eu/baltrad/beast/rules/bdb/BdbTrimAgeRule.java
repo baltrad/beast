@@ -32,9 +32,6 @@ import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 
 import eu.baltrad.bdb.FileCatalog;
-import eu.baltrad.bdb.db.FileQuery;
-import eu.baltrad.bdb.db.FileResult;
-import eu.baltrad.bdb.expr.ExpressionFactory;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.TimeDelta;
 
@@ -157,37 +154,23 @@ public class BdbTrimAgeRule implements IRule, IRulePropertyAccess, InitializingB
    * execute this rule
    */
   protected void execute() {
-    FileQuery qry = getExcessiveFileQuery();
-    FileResult rset = catalog.getDatabase().execute(qry);
-    try {
-      int numFiles = rset.size();
-      int numRemoved = 0;
-      while (rset.next()) {
-        if ((numRemoved % LOG_PROGRESS_FREQUENCY) == 0) {
-          logger.debug("removing files from " + numRemoved +
-                       " onwards of " + numFiles);
-        }
-        catalog.remove(rset.getFileEntry());
-        numRemoved += 1;
-      }
-    } finally {
-      if (rset != null) {
-        rset.close();
-      }
+    DateTime dt = getAgeLimitDateTime();
+    int numRemoved = 0;
+    int nrRemoved = catalog.getDatabase().removeFilesByAge(dt, LOG_PROGRESS_FREQUENCY);
+    if (nrRemoved > 0) {
+      logger.info("Removed files from 0 to " + nrRemoved);
     }
-  }
-    
-  /**
-   * get query for files older than fileAgeLimit
-   */
-  protected FileQuery getExcessiveFileQuery() {
-    ExpressionFactory xpr = new ExpressionFactory();
-    FileQuery qry = new FileQuery();
-    qry.setFilter(xpr.lt(
-      xpr.combinedDateTime("what/date", "what/time"),
-      xpr.literal(getAgeLimitDateTime())
-    ));
-    return qry;
+    numRemoved += nrRemoved;
+    while (nrRemoved > 0) {
+      nrRemoved = catalog.getDatabase().removeFilesByAge(dt, LOG_PROGRESS_FREQUENCY);
+      if (nrRemoved > 0) {
+        logger.info("Removed files from " + numRemoved + " to " + (nrRemoved + numRemoved));
+      } else {
+        break;
+      }
+      numRemoved += nrRemoved;
+    }
+    logger.info("Removed " + numRemoved + " files by age.");
   }
 
   /**

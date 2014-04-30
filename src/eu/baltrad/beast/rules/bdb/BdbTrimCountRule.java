@@ -32,9 +32,6 @@ import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 
 import eu.baltrad.bdb.FileCatalog;
-import eu.baltrad.bdb.db.FileQuery;
-import eu.baltrad.bdb.db.FileResult;
-import eu.baltrad.bdb.expr.ExpressionFactory;
 
 /**
  * Rule to keep the number of files in BDB below a limit.
@@ -149,26 +146,22 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
    * execute this rule
    */
   protected void execute() {
-    FileQuery qry = getExcessiveFileQuery();
-    if (qry == null)
+    int fileCount = getFileCount();
+    int ctr = fileCount - fileCountLimit;
+    int totalNumberOfFilesToRemove = ctr;
+    
+    if (fileCount <= fileCountLimit) {
       return;
-
-    FileResult r = catalog.getDatabase().execute(qry);
-
-    try {
-      int numFiles = r.size();
-      int numRemoved = 0;
-      while (r.next()) {
-        if ((numRemoved % LOG_PROGRESS_FREQUENCY) == 0) {
-          logger.debug("removing files from " + numRemoved +
-                       " onwards of " + numFiles);
-        }
-        catalog.remove(r.getFileEntry());
-        numRemoved += 1;
-      }
-    } finally {
-      if (r != null) {
-        r.close();
+    }
+    
+    int numRemoved = 0;
+    while (ctr > 0) {
+      logger.info("Removing files from " + numRemoved + " onwards of " + totalNumberOfFilesToRemove);
+      int nrRemoved = catalog.getDatabase().removeFilesByCount(fileCountLimit, LOG_PROGRESS_FREQUENCY);
+      ctr -= nrRemoved;
+      numRemoved += nrRemoved;
+      if (nrRemoved == 0) {
+        break;
       }
     }
   }
@@ -177,37 +170,7 @@ public class BdbTrimCountRule implements IRule, IRulePropertyAccess, Initializin
    * get the number of files in the database
    */
   protected int getFileCount() {
-    // XXX: this should use catalog.file_count() once implemented in BDB
-    FileQuery qry = new FileQuery();
-    FileResult r = catalog.getDatabase().execute(qry);
-    try {
-      return r.size();
-    } finally {
-      if (r != null) {
-        r.close();
-      }
-    }
-  }
-  
-  /**
-   * get the query for files that exceed fileCountLimit
-   * @return the query or null if no excessive files
-   */
-  protected FileQuery getExcessiveFileQuery() {
-    ExpressionFactory xpr = new ExpressionFactory();
-  
-    int fileCount = getFileCount();
-    if (fileCount <= fileCountLimit)
-      return null;
-
-    FileQuery qry = new FileQuery();
-    qry.appendOrderClause(
-      xpr.asc(
-        xpr.combinedDateTime("_bdb/stored_date", "_bdb/stored_time")
-      )
-    );
-    qry.setLimit(fileCount - fileCountLimit);
-    return qry;
+    return (int)catalog.getDatabase().getFileCount();
   }
 
   /**

@@ -20,7 +20,6 @@ package eu.baltrad.beast.rules.bdb;
 
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -35,9 +34,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.FileCatalog;
 import eu.baltrad.bdb.db.Database;
-import eu.baltrad.bdb.db.FileEntry;
-import eu.baltrad.bdb.db.FileQuery;
-import eu.baltrad.bdb.db.FileResult;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
@@ -47,13 +43,9 @@ public class BdbTrimAgeRuleTest extends EasyMockSupport {
   private BdbTrimAgeRuleMethods methods = null;
   private Database db = null;
   private FileCatalog catalog = null;
-  private FileQuery query = null;
-  private FileResult result = null;
-  private FileEntry entry = null;
 
   private static interface BdbTrimAgeRuleMethods {
     public void execute();
-    public FileQuery getExcessiveFileQuery();
     public DateTime getAgeLimitDateTime();
     public DateTime getCurrentDateTime();
   }
@@ -64,9 +56,6 @@ public class BdbTrimAgeRuleTest extends EasyMockSupport {
     methods = createMock(BdbTrimAgeRuleMethods.class);
     db = createMock(Database.class);
     catalog = createMock(FileCatalog.class);
-    query = createMock(FileQuery.class);
-    result = createMock(FileResult.class);
-    entry = createMock(FileEntry.class);
   }
 
   @After
@@ -148,49 +137,26 @@ public class BdbTrimAgeRuleTest extends EasyMockSupport {
 
   @Test
   public void testExecute() {
-    classUnderTest = new BdbTrimAgeRule() {
-      protected FileQuery getExcessiveFileQuery() {
-        return methods.getExcessiveFileQuery();
-      }
-    };
-    classUnderTest.setFileCatalog(catalog);
-    classUnderTest.setFileAgeLimit(1);
-
-    expect(methods.getExcessiveFileQuery()).andReturn(query);
-    expect(catalog.getDatabase()).andReturn(db);
-    expect(db.execute(query)).andReturn(result);
-    expect(result.size()).andReturn(1);
-    expect(result.next()).andReturn(true);
-    expect(result.getFileEntry()).andReturn(entry);
-    catalog.remove(entry);
-    expect(result.next()).andReturn(false);
-    result.close();
-    
-    replayAll();
-  
-    classUnderTest.execute();
-  
-    verifyAll();
-  }
-  
-  @Test
-  public void testGetExcessiveFileQuery() {
+    DateTime dt = new DateTime();
     classUnderTest = new BdbTrimAgeRule() {
       protected DateTime getAgeLimitDateTime() {
         return methods.getAgeLimitDateTime();
       }
     };
     classUnderTest.setFileCatalog(catalog);
-    DateTime dt = new DateTime(2011, 1, 7, 11, 0, 0);
-    
-    expect(methods.getAgeLimitDateTime()).andReturn(dt);
+    classUnderTest.setFileAgeLimit(1);
 
+    expect(methods.getAgeLimitDateTime()).andReturn(dt);
+    expect(catalog.getDatabase()).andReturn(db).anyTimes();
+    expect(db.removeFilesByAge(dt, 100)).andReturn(10);
+    expect(db.removeFilesByAge(dt, 100)).andReturn(20);
+    expect(db.removeFilesByAge(dt, 100)).andReturn(0);
+    
     replayAll();
   
-    FileQuery q = classUnderTest.getExcessiveFileQuery();
-    
+    classUnderTest.execute();
+  
     verifyAll();
-    assertNotNull(q);
   }
 
   @Test
