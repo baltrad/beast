@@ -133,12 +133,27 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION create_beast_scansun_sources() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_scansun_sources';
+  IF NOT FOUND THEN
+    create table beast_scansun_sources (
+      rule_id integer REFERENCES beast_router_rules(rule_id),
+      source text
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_scansun_sources already exists';
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
 select create_beast_gra_rules();
 select create_beast_wrwp_rules();
 select update_beast_composite_rules_with_applygra();
+select create_beast_scansun_sources();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -146,4 +161,5 @@ drop function create_beast_acrr_rules();
 drop function create_beast_gra_rules();
 drop function create_beast_wrwp_rules();
 drop function update_beast_composite_rules_with_applygra();
+drop function create_beast_scansun_sources();
 

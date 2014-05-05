@@ -187,6 +187,7 @@ public class BeastDBTestHelper {
     template.update("delete from beast_gra_rules");
     template.update("delete from beast_wrwp_sources");
     template.update("delete from beast_wrwp_rules");
+    template.update("delete from beast_scansun_sources");
     template.update("delete from beast_adaptors_xmlrpc");
     template.update("delete from beast_adaptors");
     template.update("delete from beast_rule_properties");

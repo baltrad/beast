@@ -122,6 +122,11 @@ create table beast_gmap_rules (
   path TEXT
 );
 
+create table beast_scansun_sources (
+  rule_id integer REFERENCES beast_router_rules(rule_id),
+  source text
+);
+
 create table beast_scheduled_jobs (
   id SERIAL PRIMARY KEY,
   expression text NOT NULL,

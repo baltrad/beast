@@ -15,6 +15,7 @@ drop table if exists beast_acrr_rules;
 drop table if exists beast_gra_rules;
 drop table if exists beast_wrwp_sources;
 drop table if exists beast_wrwp_rules;
+drop table if exists beast_scansun_sources;
 drop table if exists beast_rule_properties;
 drop table if exists beast_rule_filters;
 drop table if exists beast_router_rules;
