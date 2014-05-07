@@ -180,6 +180,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   private boolean applyGRA = false;
   
   /**
+   * Indicates if malfunc should be ignored or not when generating the composites
+   */
+  private boolean ignoreMalfunc = false;
+  
+  /**
    * The ZR A coefficient when translating from reflectivity to MM/H
    */
   private double ZR_A = 200.0;
@@ -600,6 +605,10 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       args.add("--zrb="+this.ZR_b);
     }
     
+    if (isIgnoreMalfunc()) {
+      args.add("--ignore-malfunc=true");
+    }
+    
     result.setArguments(args.toArray(new String[0]));
 
     logger.debug("createMessage: Returning algorithm " + result.getAlgorithm());
@@ -789,5 +798,19 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    */
   public void setZR_b(double zR_b) {
     ZR_b = zR_b;
+  }
+
+  /**
+   * @return if malfunc should be ignored or not
+   */
+  public boolean isIgnoreMalfunc() {
+    return ignoreMalfunc;
+  }
+
+  /**
+   * @param ignoreMalfunc if malfunc should be ignored or not
+   */
+  public void setIgnoreMalfunc(boolean ignoreMalfunc) {
+    this.ignoreMalfunc = ignoreMalfunc;
   }
 }

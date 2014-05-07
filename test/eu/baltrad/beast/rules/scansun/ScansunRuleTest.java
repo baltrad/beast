@@ -72,8 +72,8 @@ public class ScansunRuleTest extends EasyMockSupport {
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("PVOL");
-    expect(md.getSource()).andReturn(source);
-    expect(source.get("NOD")).andReturn("seses");
+    expect(fe.getSource()).andReturn(source);
+    expect(source.getName()).andReturn("seses");
     expect(fe.getUuid()).andReturn(ruid);
     
     replayAll();
@@ -103,8 +103,8 @@ public class ScansunRuleTest extends EasyMockSupport {
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("PVOL");
-    expect(md.getSource()).andReturn(source);
-    expect(source.get("NOD")).andReturn("nisse");
+    expect(fe.getSource()).andReturn(source);
+    expect(source.getName()).andReturn("nisse");
     expect(fe.getUuid()).andReturn(ruid);
     
     replayAll();
@@ -133,8 +133,8 @@ public class ScansunRuleTest extends EasyMockSupport {
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("PVOL");
-    expect(md.getSource()).andReturn(source);
-    expect(source.get("NOD")).andReturn(null);
+    expect(fe.getSource()).andReturn(source);
+    expect(source.getName()).andReturn(null);
     
     replayAll();
     

@@ -72,7 +72,8 @@ public class ScansunRule implements IRule {
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
         String object = file.getMetadata().getWhatObject();
-        String src = file.getMetadata().getSource().get("NOD");
+        String src = file.getSource().getName();
+        
         if (object != null && object.equals("PVOL") && src != null && sources.contains(src)) {
           BltGenerateMessage result = new BltGenerateMessage();
           result.setAlgorithm("eu.baltrad.beast.GenerateScansun");

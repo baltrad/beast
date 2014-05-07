@@ -133,6 +133,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_ignore_malfunc() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'ignore_malfunc';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_composite_rules ADD COLUMN ignore_malfunc boolean;
+    UPDATE beast_composite_rules SET ignore_malfunc='false';
+    ALTER TABLE beast_composite_rules ALTER COLUMN ignore_malfunc SET NOT NULL;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION create_beast_scansun_sources() RETURNS VOID AS $$
 BEGIN
   PERFORM true FROM information_schema.tables WHERE table_name = 'beast_scansun_sources';
@@ -153,6 +164,7 @@ select create_beast_acrr_rules();
 select create_beast_gra_rules();
 select create_beast_wrwp_rules();
 select update_beast_composite_rules_with_applygra();
+select update_beast_composite_rules_with_ignore_malfunc();
 select create_beast_scansun_sources();
 
 drop function create_beast_gmap_rules();
@@ -161,5 +173,6 @@ drop function create_beast_acrr_rules();
 drop function create_beast_gra_rules();
 drop function create_beast_wrwp_rules();
 drop function update_beast_composite_rules_with_applygra();
+drop function update_beast_composite_rules_with_ignore_malfunc();
 drop function create_beast_scansun_sources();
 

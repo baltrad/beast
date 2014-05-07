@@ -70,7 +70,8 @@ create table beast_composite_rules (
   prodpar text NOT NULL,
   applygra boolean NOT NULL,
   ZR_A decimal NOT NULL,
-  ZR_b decimal NOT NULL
+  ZR_b decimal NOT NULL,
+  ignore_malfunc boolean NOT NULL
 );
 
 create table beast_composite_sources (

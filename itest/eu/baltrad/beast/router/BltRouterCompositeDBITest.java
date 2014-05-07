@@ -167,6 +167,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setApplyGRA(true);
     rule.setZR_A(210.0);
     rule.setZR_b(1.7);
+    rule.setIgnoreMalfunc(false);
     rule.setDetectors(detectors);
     rule.setSources(sources);
 

@@ -140,9 +140,10 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setApplyGRA(true);
     rule.setZR_A(10.0);
     rule.setZR_b(5.0);
+    rule.setIgnoreMalfunc(true);
     expect(jdbc.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b)"+
-        " values (?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0}))
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc)"+
+        " values (?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true}))
           .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -185,8 +186,10 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setApplyGRA(true);
     rule.setZR_A(10.0);
     rule.setZR_b(5.0);
-    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=? where rule_id=?",
-        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, 13}))
+    rule.setIgnoreMalfunc(true);
+    
+    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=? where rule_id=?",
+        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, 13}))
         .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -360,6 +363,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     expect(rs.getBoolean("applygra")).andReturn(true);
     expect(rs.getDouble("ZR_A")).andReturn(10.0);
     expect(rs.getDouble("ZR_b")).andReturn(5.0);
+    expect(rs.getBoolean("ignore_malfunc")).andReturn(true);
     
     expect(method.getSources(10)).andReturn(sources);
     expect(method.getDetectors(10)).andReturn(detectors);
@@ -395,6 +399,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     assertEquals(true, result.isApplyGRA());
     assertEquals(10.0, result.getZR_A(), 4);
     assertEquals(5.0, result.getZR_b(), 4);
+    assertEquals(true, result.isIgnoreMalfunc());
   }  
   
   @Test
