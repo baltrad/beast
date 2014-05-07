@@ -185,6 +185,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   private boolean ignoreMalfunc = false;
   
   /**
+   * Indicates if cloudtype filter should be applied or not
+   */
+  private boolean ctFilter = false;
+  
+  /**
    * The ZR A coefficient when translating from reflectivity to MM/H
    */
   private double ZR_A = 200.0;
@@ -608,6 +613,9 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     if (isIgnoreMalfunc()) {
       args.add("--ignore-malfunc=true");
     }
+    if (isCtFilter()) {
+      args.add("--ctfilter=True");
+    }
     
     result.setArguments(args.toArray(new String[0]));
 
@@ -812,5 +820,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    */
   public void setIgnoreMalfunc(boolean ignoreMalfunc) {
     this.ignoreMalfunc = ignoreMalfunc;
+  }
+
+  public boolean isCtFilter() {
+    return ctFilter;
+  }
+
+  public void setCtFilter(boolean ctFilter) {
+    this.ctFilter = ctFilter;
   }
 }

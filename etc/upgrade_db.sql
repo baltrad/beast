@@ -158,6 +158,31 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_ctfilter() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'ctfilter';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_composite_rules ADD COLUMN ctfilter boolean;
+    UPDATE beast_composite_rules SET ctfilter='false';
+    ALTER TABLE beast_composite_rules ALTER COLUMN ctfilter SET NOT NULL;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION create_beast_scansun_sources() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_scansun_sources';
+  IF NOT FOUND THEN
+    create table beast_scansun_sources (
+      rule_id integer REFERENCES beast_router_rules(rule_id),
+      source text
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_scansun_sources already exists';
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -165,6 +190,7 @@ select create_beast_gra_rules();
 select create_beast_wrwp_rules();
 select update_beast_composite_rules_with_applygra();
 select update_beast_composite_rules_with_ignore_malfunc();
+select update_beast_composite_rules_with_ctfilter();
 select create_beast_scansun_sources();
 
 drop function create_beast_gmap_rules();
@@ -174,5 +200,6 @@ drop function create_beast_gra_rules();
 drop function create_beast_wrwp_rules();
 drop function update_beast_composite_rules_with_applygra();
 drop function update_beast_composite_rules_with_ignore_malfunc();
+drop function update_beast_composite_rules_with_ctfilter();
 drop function create_beast_scansun_sources();
 

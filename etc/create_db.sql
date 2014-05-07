@@ -71,7 +71,8 @@ create table beast_composite_rules (
   applygra boolean NOT NULL,
   ZR_A decimal NOT NULL,
   ZR_b decimal NOT NULL,
-  ignore_malfunc boolean NOT NULL
+  ignore_malfunc boolean NOT NULL,
+  ctfilter boolean NOT NULL
 );
 
 create table beast_composite_sources (

@@ -123,10 +123,11 @@ public class CompositingRuleManager implements IRuleManager {
     double ZR_A = crule.getZR_A();
     double ZR_b = crule.getZR_b();
     boolean ignoreMalfunc = crule.isIgnoreMalfunc();
+    boolean ctfilter = crule.isCtFilter();
     
     template.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc)"+
-        " values (?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignoreMalfunc});
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter)"+
+        " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignoreMalfunc, ctfilter});
     storeSources(ruleId, crule.getSources());
     storeDetectors(ruleId, crule.getDetectors());
     crule.setRuleId(ruleId);
@@ -139,8 +140,8 @@ public class CompositingRuleManager implements IRuleManager {
   public void update(int ruleId, IRule rule) {
     CompositingRule crule = (CompositingRule)rule;
     template.update(
-        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=? where rule_id=?",
-        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), crule.getSelectionMethod(), crule.getMethod(), crule.getProdpar(), crule.isApplyGRA(), crule.getZR_A(), crule.getZR_b(), crule.isIgnoreMalfunc(), ruleId});
+        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=? where rule_id=?",
+        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), crule.getSelectionMethod(), crule.getMethod(), crule.getProdpar(), crule.isApplyGRA(), crule.getZR_A(), crule.getZR_b(), crule.isIgnoreMalfunc(), crule.isCtFilter(), ruleId});
     storeSources(ruleId, crule.getSources());
     storeDetectors(ruleId, crule.getDetectors());
     crule.setRuleId(ruleId);
@@ -225,6 +226,7 @@ public class CompositingRuleManager implements IRuleManager {
         result.setZR_A(rs.getDouble("ZR_A"));
         result.setZR_b(rs.getDouble("ZR_b"));
         result.setIgnoreMalfunc(rs.getBoolean("ignore_malfunc"));
+        result.setCtFilter(rs.getBoolean("ctfilter"));
         result.setSources(getSources(rule_id));
         result.setDetectors(getDetectors(rule_id));
         return result;

@@ -115,6 +115,8 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(false, ((CompositingRule)def.getRule()).isApplyGRA());
     assertEquals(100.0, ((CompositingRule)def.getRule()).getZR_A(), 4);
     assertEquals(1.5, ((CompositingRule)def.getRule()).getZR_b(), 4);
+    assertEquals(true, ((CompositingRule)def.getRule()).isIgnoreMalfunc());
+    assertEquals(true, ((CompositingRule)def.getRule()).isCtFilter());
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
     assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
   }
@@ -168,6 +170,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setZR_A(210.0);
     rule.setZR_b(1.7);
     rule.setIgnoreMalfunc(false);
+    rule.setCtFilter(false);
     rule.setDetectors(detectors);
     rule.setSources(sources);
 
