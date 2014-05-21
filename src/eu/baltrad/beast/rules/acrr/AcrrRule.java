@@ -407,6 +407,9 @@ public class AcrrRule implements IRule, InitializingBean {
     Calendar c = ruleUtil.createCalendar(endDt);
     c.add(Calendar.HOUR, -hours);
     DateTime startDt = ruleUtil.createDateTime(c);
+    logger.info("startDt: "+startDt.getDate().toIsoString()+" "+startDt.getTime().toIsoString());
+    logger.info("endDt: "+endDt.getDate().toIsoString()+" "+endDt.getTime().toIsoString());
+    logger.info("Files per hour interval: " + getFilesPerHourInterval());
     TimeSelectionFilter filter = createFilter(startDt, endDt, getFilesPerHourInterval());
     return filterEntries(catalog.fetch(filter));
   }

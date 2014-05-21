@@ -20,6 +20,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.gra;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Formatter;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
 import eu.baltrad.bdb.util.TimeDelta;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.db.filters.TimeSelectionFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
@@ -124,6 +126,19 @@ public class GraRule extends AcrrRule {
     return null;
   }
 
+  @Override
+  protected List<CatalogEntry> findFiles(DateTime now) {
+    DateTime endDt = getRuleUtilities().createNominalTime(now, getFilesPerHourInterval());
+    Calendar c = getRuleUtilities().createCalendar(endDt);
+    c.add(Calendar.HOUR, -interval);
+    DateTime startDt = getRuleUtilities().createDateTime(c);
+    logger.info("startDt: "+startDt.getDate().toIsoString()+" "+startDt.getTime().toIsoString());
+    logger.info("endDt: "+endDt.getDate().toIsoString()+" "+endDt.getTime().toIsoString());
+    logger.info("Files per hour interval: " + getFilesPerHourInterval());
+    TimeSelectionFilter filter = createFilter(startDt, endDt, getFilesPerHourInterval());
+    return filterEntries(getCatalog().fetch(filter));
+  }
+  
   /**
    * Returns the offset in hours to the first observation term. This is the time when the term ends.
    * @return the offset in hours
