@@ -142,9 +142,10 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setZR_b(5.0);
     rule.setIgnoreMalfunc(true);
     rule.setCtFilter(true);
+    rule.setQitotalField("se.baltrad.something");
     expect(jdbc.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter)"+
-        " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true}))
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field)"+
+        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, "se.baltrad.something"}))
           .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -189,9 +190,10 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setZR_b(5.0);
     rule.setIgnoreMalfunc(true);
     rule.setCtFilter(true);
+    rule.setQitotalField("se.baltrad.something");
     
-    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=? where rule_id=?",
-        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, 13}))
+    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=? where rule_id=?",
+        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, "se.baltrad.something", 13}))
         .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -367,7 +369,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     expect(rs.getDouble("ZR_b")).andReturn(5.0);
     expect(rs.getBoolean("ignore_malfunc")).andReturn(true);
     expect(rs.getBoolean("ctfilter")).andReturn(true);
-    
+    expect(rs.getString("qitotal_field")).andReturn("se.baltrad.something");
     expect(method.getSources(10)).andReturn(sources);
     expect(method.getDetectors(10)).andReturn(detectors);
     
@@ -404,6 +406,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     assertEquals(5.0, result.getZR_b(), 4);
     assertEquals(true, result.isIgnoreMalfunc());
     assertEquals(true, result.isCtFilter());
+    assertEquals("se.baltrad.something", result.getQitotalField());
   }  
   
   @Test

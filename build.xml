@@ -353,7 +353,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<fileset dir="${build.itest.dir}" includes="**/*Test.class"
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
       	<!--      	
-      	<fileset dir="${build.itest.dir}" includes="**/BaltradDBITest.class"
+      	<fileset dir="${build.itest.dir}" includes="**/BltRouterCompositeDBITest.class"
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
       	-->                 
       </batchtest>

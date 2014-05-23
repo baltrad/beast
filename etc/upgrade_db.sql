@@ -183,6 +183,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_qitotal_field() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'qitotal_field';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_composite_rules ADD COLUMN qitotal_field TEXT;
+    UPDATE beast_composite_rules SET qitotal_field=NULL;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -192,6 +202,7 @@ select update_beast_composite_rules_with_applygra();
 select update_beast_composite_rules_with_ignore_malfunc();
 select update_beast_composite_rules_with_ctfilter();
 select create_beast_scansun_sources();
+select update_beast_composite_rules_with_qitotal_field();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -202,4 +213,5 @@ drop function update_beast_composite_rules_with_applygra();
 drop function update_beast_composite_rules_with_ignore_malfunc();
 drop function update_beast_composite_rules_with_ctfilter();
 drop function create_beast_scansun_sources();
+drop function update_beast_composite_rules_with_qitotal_field();
 

@@ -20,7 +20,6 @@ package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -198,6 +197,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * The ZR b coefficient when translating from reflectivity to MM/H
    */
   private double ZR_b = 1.6;
+  
+  /**
+   * The qi total field to use if QI-compositing should be performed.
+   */
+  private String qitotalField = null;
   
   /**
    * The recipients that are affected by this rule. Used
@@ -616,6 +620,9 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     if (isCtFilter()) {
       args.add("--ctfilter=True");
     }
+    if (getQitotalField() != null) {
+      args.add("--qitotal_field="+getQitotalField());
+    }
     
     result.setArguments(args.toArray(new String[0]));
 
@@ -828,5 +835,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
 
   public void setCtFilter(boolean ctFilter) {
     this.ctFilter = ctFilter;
+  }
+
+  public String getQitotalField() {
+    return qitotalField;
+  }
+
+  public void setQitotalField(String qitotalField) {
+    this.qitotalField = qitotalField;
   }
 }

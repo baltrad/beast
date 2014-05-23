@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
+import org.dbunit.dataset.filter.DefaultColumnFilter;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -88,6 +89,12 @@ public class BltRouterCompositeDBITest extends TestCase {
     expected = helper.getXlsTable(this, extras, "beast_scheduled_jobs");
     actual = helper.getDatabaseTable("beast_scheduled_jobs");
     Assertion.assertEquals(expected, actual);
+    
+    expected = helper.getXlsTable(this, extras, "beast_composite_rules");
+    expected = DefaultColumnFilter.excludedColumnsTable(expected, new String[]{"ZR_A","ZR_b"}); // ZRA & ZR_b causes some presicionproblems
+    actual = helper.getDatabaseTable("beast_composite_rules");
+    actual = DefaultColumnFilter.excludedColumnsTable(actual, new String[]{"ZR_A","ZR_b"});
+    Assertion.assertEquals(expected, actual);
   }
   
   protected void verifyDetectorTables(String extras) throws Exception {
@@ -117,6 +124,8 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(1.5, ((CompositingRule)def.getRule()).getZR_b(), 4);
     assertEquals(true, ((CompositingRule)def.getRule()).isIgnoreMalfunc());
     assertEquals(true, ((CompositingRule)def.getRule()).isCtFilter());
+    assertEquals("se.baltrad.something", ((CompositingRule)def.getRule()).getQitotalField());
+    
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
     assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
   }
@@ -171,6 +180,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setZR_b(1.7);
     rule.setIgnoreMalfunc(false);
     rule.setCtFilter(false);
+    rule.setQitotalField("se.someone.somewhere");
     rule.setDetectors(detectors);
     rule.setSources(sources);
 
