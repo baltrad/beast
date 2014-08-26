@@ -179,6 +179,9 @@ public class BeastDBTestHelper {
     template.update("delete from beast_composite_detectors");
     template.update("delete from beast_composite_sources");
     template.update("delete from beast_composite_rules");
+    template.update("delete from beast_site2d_detectors");
+    template.update("delete from beast_site2d_sources");
+    template.update("delete from beast_site2d_rules");
     template.update("delete from beast_volume_detectors");
     template.update("delete from beast_volume_sources");
     template.update("delete from beast_volume_rules");

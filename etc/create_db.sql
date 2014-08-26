@@ -86,6 +86,30 @@ create table beast_composite_detectors (
   name text REFERENCES beast_anomaly_detectors(name)
 );
 
+create table beast_site2d_rules (
+  rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
+  area text,
+  interval integer NOT NULL,
+  byscan boolean NOT NULL,
+  method text NOT NULL,
+  prodpar text NOT NULL,
+  applygra boolean NOT NULL,
+  ZR_A decimal NOT NULL,
+  ZR_b decimal NOT NULL,
+  ignore_malfunc boolean NOT NULL,
+  ctfilter boolean NOT NULL
+);
+
+create table beast_site2d_sources (
+  rule_id integer REFERENCES beast_site2d_rules(rule_id),
+  source text
+);
+
+create table beast_site2d_detectors (
+  rule_id integer REFERENCES beast_site2d_rules(rule_id),
+  name text REFERENCES beast_anomaly_detectors(name)
+);
+
 create table beast_rule_properties (
   rule_id integer NOT NULL REFERENCES beast_router_rules(rule_id),
   key text NOT NULL,

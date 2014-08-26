@@ -193,6 +193,49 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION create_beast_site2d_rules() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_site2d_rules';
+  IF NOT FOUND THEN
+    create table beast_site2d_rules (
+      rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
+      area text,
+      interval integer NOT NULL,
+      byscan boolean NOT NULL,
+      method text NOT NULL,
+      prodpar text NOT NULL,
+      applygra boolean NOT NULL,
+      ZR_A decimal NOT NULL,
+      ZR_b decimal NOT NULL,
+      ignore_malfunc boolean NOT NULL,
+      ctfilter boolean NOT NULL
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_site2d_rules already exists';
+  END IF;
+  
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_site2d_sources';
+  IF NOT FOUND THEN
+    create table beast_site2d_sources (
+      rule_id integer REFERENCES beast_site2d_sources(rule_id),
+      source text
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_site2d_sources already exists';
+  END IF; 
+  
+  PERFORM true FROM information_schema.tables WHERE table_name = 'beast_site2d_detectors';
+  IF NOT FOUND THEN
+    create table beast_site2d_detectors (
+      rule_id integer REFERENCES beast_site2d_rules(rule_id),
+      name text REFERENCES beast_anomaly_detectors(name)
+    );
+  ELSE
+    RAISE NOTICE 'Table beast_site2d_detectors already exists';
+  END IF;   
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -203,6 +246,7 @@ select update_beast_composite_rules_with_ignore_malfunc();
 select update_beast_composite_rules_with_ctfilter();
 select create_beast_scansun_sources();
 select update_beast_composite_rules_with_qitotal_field();
+select create_beast_site2d_rules();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -214,4 +258,5 @@ drop function update_beast_composite_rules_with_ignore_malfunc();
 drop function update_beast_composite_rules_with_ctfilter();
 drop function create_beast_scansun_sources();
 drop function update_beast_composite_rules_with_qitotal_field();
+drop function create_beast_site2d_rules();
 
