@@ -217,7 +217,7 @@ BEGIN
   PERFORM true FROM information_schema.tables WHERE table_name = 'beast_site2d_sources';
   IF NOT FOUND THEN
     create table beast_site2d_sources (
-      rule_id integer REFERENCES beast_site2d_sources(rule_id),
+      rule_id integer REFERENCES beast_site2d_rules(rule_id),
       source text
     );
   ELSE
