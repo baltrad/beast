@@ -259,6 +259,11 @@ public class Site2DRule implements IRule, InitializingBean {
     if (isCtFilter()) {
       args.add("--ctfilter=True");
     }
+    if (this.pcsid != null) {
+      args.add("--pcsid="+this.pcsid);
+      args.add("--xscale="+this.xscale);
+      args.add("--yscale="+this.yscale);
+    }
     
     result.setArguments(args.toArray(new String[0]));
 

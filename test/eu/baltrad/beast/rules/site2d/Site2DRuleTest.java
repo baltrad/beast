@@ -103,7 +103,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertNotNull(result);
     assertEquals(1, result.getFiles().length);
     assertEquals(ruid.toString(), result.getFiles()[0]);
-    assertEquals(7, result.getArguments().length);
+    assertEquals(10, result.getArguments().length);
     assertEquals("--area=gnom_area", result.getArguments()[0]);
     assertEquals("--anomaly-qc=piff,puff", result.getArguments()[1]);
     assertEquals("--method=pcappi", result.getArguments()[2]);
@@ -111,6 +111,9 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals("--applygra=true", result.getArguments()[4]);
     assertEquals("--zrA=200.0", result.getArguments()[5]);
     assertEquals("--zrb=1.6", result.getArguments()[6]);
+    assertEquals("--pcsid=gmaps", result.getArguments()[7]);
+    assertEquals("--xscale=2000.0", result.getArguments()[8]);
+    assertEquals("--yscale=2000.0", result.getArguments()[9]);
   }
 
   @Test
@@ -133,6 +136,56 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.setApplyGRA(true);
     classUnderTest.setDetectors(detectors);
     classUnderTest.setScanBased(true);
+    
+    expect(msg.getFileEntry()).andReturn(fe).anyTimes();
+    expect(fe.getMetadata()).andReturn(md).anyTimes();
+    expect(md.getWhatObject()).andReturn("SCAN");
+    expect(fe.getSource()).andReturn(source);
+    expect(source.getName()).andReturn("seses");
+    expect(fe.getUuid()).andReturn(ruid);
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertNotNull(result);
+    assertEquals(1, result.getFiles().length);
+    assertEquals(ruid.toString(), result.getFiles()[0]);
+    assertEquals(10, result.getArguments().length);
+    assertEquals("--area=gnom_area", result.getArguments()[0]);
+    assertEquals("--anomaly-qc=piff,puff", result.getArguments()[1]);
+    assertEquals("--method=pcappi", result.getArguments()[2]);
+    assertEquals("--prodpar=1000.0", result.getArguments()[3]);
+    assertEquals("--applygra=true", result.getArguments()[4]);
+    assertEquals("--zrA=200.0", result.getArguments()[5]);
+    assertEquals("--zrb=1.6", result.getArguments()[6]);
+    assertEquals("--pcsid=gmaps", result.getArguments()[7]);
+    assertEquals("--xscale=2000.0", result.getArguments()[8]);
+    assertEquals("--yscale=2000.0", result.getArguments()[9]);
+  }
+
+  @Test
+  public void handle_without_pcsid() {
+    BltDataMessage msg = createMock(BltDataMessage.class);
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata md = createMock(Metadata.class);
+    Source source = createMock(Source.class);
+    UUID ruid = UUID.randomUUID();
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("seses");
+    sources.add("nisse");
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("piff");
+    detectors.add("puff");
+    
+    classUnderTest.setArea("gnom_area");
+    classUnderTest.setSources(sources);
+    classUnderTest.setApplyGRA(true);
+    classUnderTest.setDetectors(detectors);
+    classUnderTest.setScanBased(true);
+    classUnderTest.setPcsid(null);
     
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
