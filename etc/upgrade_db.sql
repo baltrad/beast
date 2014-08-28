@@ -208,7 +208,10 @@ BEGIN
       ZR_A decimal NOT NULL,
       ZR_b decimal NOT NULL,
       ignore_malfunc boolean NOT NULL,
-      ctfilter boolean NOT NULL
+      ctfilter boolean NOT NULL,
+      pcsid text,
+      xscale decimal NOT NULL,
+      yscale decimal NOT NULL
     );
   ELSE
     RAISE NOTICE 'Table beast_site2d_rules already exists';

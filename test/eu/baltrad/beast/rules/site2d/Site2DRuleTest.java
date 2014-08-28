@@ -194,17 +194,17 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertNull(result);
   }
 
-  //@Test
+  @Test
   public void type() {
     assertEquals("blt_site2d", classUnderTest.getType());
   }
 
-  //@Test
+  @Test
   public void isValid() {
     assertEquals(true, classUnderTest.isValid());
   }
   
-  //@Test
+  @Test
   public void afterPropertiesSet() throws Exception {
     Site2DRule classUnderTest = new Site2DRule();
     classUnderTest.setCatalog(catalog);
@@ -212,7 +212,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.afterPropertiesSet();
   }
   
-  //@Test
+  @Test
   public void afterPropertiesSet_missingCatalog() throws Exception {
     try {
       Site2DRule classUnderTest = new Site2DRule();
@@ -224,7 +224,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     }
   }
   
-  //@Test
+  @Test
   public void afterPropertiesSet_missingRuleUtils() throws Exception {
     try {
       Site2DRule classUnderTest = new Site2DRule();
@@ -236,7 +236,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     }
   }
 
-  //@Test
+  @Test
   public void testSetInterval() throws Exception {
     int[] valid = {1,2,3,4,5,6,10,12,15,20,30,60};
     for (int v : valid) {
@@ -244,7 +244,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     }
   }
 
-  //@Test
+  @Test
   public void testSetInterval_invalid() throws Exception {
     int[] invalid = {0,7,8,9,11,13,14,16,17,18,19,21,22,23,24,25,26,27,28,29,35,40,61,62};
     for (int v : invalid) {
@@ -257,7 +257,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     }
   }
   
-  //@Test
+  @Test
   public void sources() {
     List<String> sources = new ArrayList<String>();
     sources.add("nisse");
@@ -265,7 +265,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertSame(sources, classUnderTest.getSources());
   }
   
-  //@Test
+  @Test
   public void area() {
     assertEquals(null, classUnderTest.getArea());
     classUnderTest.setArea("nisse");
@@ -274,14 +274,14 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals(null, classUnderTest.getArea());
   }
   
-  //@Test
+  @Test
   public void scanBased() {
     assertEquals(false, classUnderTest.isScanBased());
     classUnderTest.setScanBased(true);
     assertEquals(true, classUnderTest.isScanBased());
   }
   
-  //@Test
+  @Test
   public void detectors() {
     List<String> detectors = new ArrayList<String>();
     assertEquals(0, classUnderTest.getDetectors().size());
@@ -291,14 +291,14 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals(0, classUnderTest.getDetectors().size());
   }
   
-  //@Test
+  @Test
   public void method() {
     assertEquals(Site2DRule.PCAPPI, classUnderTest.getMethod());
     classUnderTest.setMethod(Site2DRule.PPI);
     assertEquals(Site2DRule.PPI, classUnderTest.getMethod());
   }
   
-  //@Test
+  @Test
   public void prodpar() {
     assertEquals("1000.0", classUnderTest.getProdpar());
     classUnderTest.setProdpar("1,1");
@@ -307,28 +307,28 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals("", classUnderTest.getProdpar());
   }
   
-  //@Test
+  @Test
   public void applyGRA() {
     assertEquals(false, classUnderTest.isApplyGRA());
     classUnderTest.setApplyGRA(true);
     assertEquals(true, classUnderTest.isApplyGRA());
   }
   
-  //@Test
+  @Test
   public void ignoreMalfunc() {
     assertEquals(false, classUnderTest.isIgnoreMalfunc());
     classUnderTest.setIgnoreMalfunc(true);
     assertEquals(true, classUnderTest.isIgnoreMalfunc());
   }
   
-  //@Test
+  @Test
   public void ctFilter() {
     assertEquals(false, classUnderTest.isCtFilter());
     classUnderTest.setCtFilter(true);
     assertEquals(true, classUnderTest.isCtFilter());
   }
   
-  //@Test
+  @Test
   public void zr_A() {
     assertEquals(200.0, classUnderTest.getZR_A(), 4);
     classUnderTest.setZR_A(1.1);
@@ -340,5 +340,26 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals(1.6, classUnderTest.getZR_b(), 4);
     classUnderTest.setZR_b(1.2);
     assertEquals(1.2, classUnderTest.getZR_b(), 4);
+  }
+  
+  @Test
+  public void pcsid() {
+    assertEquals("gmaps", classUnderTest.getPcsid());
+    classUnderTest.setPcsid("abc");
+    assertEquals("abc", classUnderTest.getPcsid());
+  }
+  
+  @Test
+  public void xscale() {
+    assertEquals(2000.0, classUnderTest.getXscale(), 4);
+    classUnderTest.setXscale(1.1);
+    assertEquals(1.1, classUnderTest.getXscale(), 4);
+  }
+  
+  @Test
+  public void yscale() {
+    assertEquals(2000.0, classUnderTest.getYscale(), 4);
+    classUnderTest.setYscale(1.1);
+    assertEquals(1.1, classUnderTest.getYscale(), 4);
   }
 }

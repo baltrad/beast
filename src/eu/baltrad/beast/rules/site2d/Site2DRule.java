@@ -153,6 +153,21 @@ public class Site2DRule implements IRule, InitializingBean {
   private double ZR_b = 1.6;
   
   /**
+   * The projection to use for the best-fit area approach
+   */
+  private String pcsid = "gmaps";
+  
+  /**
+   * The xscale in meters to use for the best-fit area approach
+   */
+  private double xscale = 2000.0;
+  
+  /**
+   * The yscale in meters to use for the best-fit area approach
+   */
+  private double yscale = 2000.0;
+  
+  /**
    * the rule id
    */
   private int ruleid = -1;
@@ -473,5 +488,47 @@ public class Site2DRule implements IRule, InitializingBean {
    */
   public void setZR_b(double zR_b) {
     ZR_b = zR_b;
+  }
+
+  /**
+   * @return The pcs to use if the best-fit area approach should be used
+   */
+  public String getPcsid() {
+    return pcsid;
+  }
+
+  /**
+   * @param pcsid The pcs to use if the best-fit area approach should be used
+   */
+  public void setPcsid(String pcsid) {
+    this.pcsid = pcsid;
+  }
+
+  /**
+   * @return The xscale (in meters) to use if the best-fit area approach should be used
+   */
+  public double getXscale() {
+    return xscale;
+  }
+
+  /**
+   * @param xscale The xscale (in meters) to use if the best-fit area approach should be used
+   */
+  public void setXscale(double xscale) {
+    this.xscale = xscale;
+  }
+
+  /**
+   * @return The yscale (in meters) to use if the best-fit area approach should be used
+   */
+  public double getYscale() {
+    return yscale;
+  }
+
+  /**
+   * @param yscale The yscale (in meters) to use if the best-fit area approach should be used
+   */
+  public void setYscale(double yscale) {
+    this.yscale = yscale;
   }
 }

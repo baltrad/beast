@@ -69,10 +69,13 @@ public class Site2DRuleManager implements IRuleManager {
     boolean byscan = srule.isScanBased();
     double zrA = srule.getZR_A();
     double zrb = srule.getZR_b();
+    String pcsid = srule.getPcsid();
+    double xscale = srule.getXscale();
+    double yscale = srule.getYscale();
     
     template.update(
-        "INSERT INTO beast_site2d_rules (rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter)"+
-        " VALUES (?,?,?,?,?,?,?,?,?,?,?)", new Object[]{rule_id, area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter});
+        "INSERT INTO beast_site2d_rules (rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale)"+
+        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{rule_id, area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale});
     
     storeSources(rule_id, sources);
     storeDetectors(rule_id, detectors);
@@ -108,10 +111,13 @@ public class Site2DRuleManager implements IRuleManager {
     boolean byscan = srule.isScanBased();
     double zrA = srule.getZR_A();
     double zrb = srule.getZR_b();
+    String pcsid = srule.getPcsid();
+    double xscale = srule.getXscale();
+    double yscale = srule.getYscale();
 
     template.update("UPDATE beast_site2d_rules" +
-        " SET area=?, interval=?, byscan=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?" +
-        " WHERE rule_id=?", new Object[]{area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, rule_id});
+        " SET area=?, interval=?, byscan=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, pcsid=?, xscale=?, yscale=?" +
+        " WHERE rule_id=?", new Object[]{area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale, rule_id});
     storeSources(rule_id, sources);
     storeDetectors(rule_id, detectors);
     srule.setRuleId(rule_id);
@@ -242,6 +248,9 @@ public class Site2DRuleManager implements IRuleManager {
         result.setZR_b(rs.getDouble("ZR_b"));
         result.setIgnoreMalfunc(rs.getBoolean("ignore_malfunc"));
         result.setCtFilter(rs.getBoolean("ctfilter"));
+        result.setPcsid(rs.getString("pcsid"));
+        result.setXscale(rs.getDouble("xscale"));
+        result.setYscale(rs.getDouble("yscale"));
         result.setSources(getSources(rule_id));
         result.setDetectors(getDetectors(rule_id));
         return result;

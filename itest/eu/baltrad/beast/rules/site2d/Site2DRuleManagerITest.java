@@ -107,6 +107,9 @@ public class Site2DRuleManagerITest extends TestCase {
     rule.setSources(sources);
     rule.setZR_A(1.1);
     rule.setZR_b(0.1);
+    rule.setPcsid("abc");
+    rule.setXscale(3000.0);
+    rule.setYscale(4000.0);
     
     classUnderTest.store(5, rule);
     
@@ -133,6 +136,9 @@ public class Site2DRuleManagerITest extends TestCase {
     rule.setCtFilter(true);
     rule.setDetectors(detectors);
     rule.setSources(sources);
+    rule.setPcsid("abc");
+    rule.setXscale(3000.0);
+    rule.setYscale(4000.0);
     
     classUnderTest.update(3, rule);
     
@@ -164,6 +170,9 @@ public class Site2DRuleManagerITest extends TestCase {
     assertEquals(1.1, rule.getZR_b(), 4);
     assertEquals(true, rule.isIgnoreMalfunc());
     assertEquals(false, rule.isCtFilter());
+    assertEquals("pcs1", rule.getPcsid());
+    assertEquals(1000.0, rule.getXscale(), 4);
+    assertEquals(1000.0, rule.getYscale(), 4);
   }
 
 }
