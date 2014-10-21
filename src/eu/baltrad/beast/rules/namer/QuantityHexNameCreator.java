@@ -19,11 +19,21 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.namer;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.oh5.Attribute;
@@ -36,24 +46,25 @@ import eu.baltrad.bdb.oh5.Node;
  * 
  * @author Anders Henja
  */
-public class QuantityHexNameCreator implements MetadataNameCreator, InitializingBean {
+public class QuantityHexNameCreator implements MetadataNameCreator {
   /**
    * Bitmask to use when shifting from left to right.
    */
   private final static long SR_BITMASK = 0x8000000000000000L;
-  
+
   /**
    * Bitmask to use when shifting from right to left.
    */
   private final static long SL_BITMASK = 0x1L;
-  
+
   /**
-   * The mapping between quantity and bit-position. 
+   * The mapping between quantity and bit-position.
    */
   private Map<String, Integer> map;
-  
+
   /**
-   * If shifting should be performed to left or right. Default is to shift to the right.
+   * If shifting should be performed to left or right. Default is to shift to
+   * the right.
    */
   private boolean shiftLeft = false;
 
@@ -65,7 +76,9 @@ public class QuantityHexNameCreator implements MetadataNameCreator, Initializing
 
   /**
    * Constructor
-   * @param map the mapping between quantity and bit position
+   * 
+   * @param map
+   *          the mapping between quantity and bit position
    */
   public QuantityHexNameCreator(Map<String, Integer> map) {
     this(map, false);
@@ -73,14 +86,27 @@ public class QuantityHexNameCreator implements MetadataNameCreator, Initializing
 
   /**
    * Constructor
-   * @param map the mapping between quantity and bit position
-   * @param shiftLeft if the bit pattern should be masked from left or right
+   * 
+   * @param map
+   *          the mapping between quantity and bit position
+   * @param shiftLeft
+   *          if the bit pattern should be masked from left or right
    */
   public QuantityHexNameCreator(Map<String, Integer> map, boolean shiftLeft) {
     this.map = map;
     this.shiftLeft = shiftLeft;
   }
-  
+
+  /**
+   * Constructor
+   * 
+   * @param file
+   *          the mapping as a xml file
+   */
+  public QuantityHexNameCreator(File file) {
+    parseFile(file);
+  }
+
   /**
    * @see eu.baltrad.beast.rules.namer.MetadataNameCreator#createName(eu.baltrad.bdb.oh5.Metadata)
    */
@@ -100,30 +126,35 @@ public class QuantityHexNameCreator implements MetadataNameCreator, Initializing
         }
       }
     }
-    return "0x"+Long.toHexString(createMaskFromIntegers(integers));
+    return "0x" + Long.toHexString(createMaskFromIntegers(integers));
   }
 
   /**
    * Creates the bit pattern
-   * @param integers a list of integer positions
+   * 
+   * @param integers
+   *          a list of integer positions
    * @return the created long value
    */
   protected long createMaskFromIntegers(List<Integer> integers) {
     long result = 0L;
     for (Integer i : integers) {
       if (shiftLeft) {
-        result = result | (SL_BITMASK << (long)i);
+        result = result | (SL_BITMASK << (long) i);
       } else {
-        result = result | (SR_BITMASK >>> (long)i);
+        result = result | (SR_BITMASK >>> (long) i);
       }
     }
     return result;
   }
-  
+
   /**
    * Returns the value for the specified path in the metadata
-   * @param metadata the metadata
-   * @param attrPath the node path
+   * 
+   * @param metadata
+   *          the metadata
+   * @param attrPath
+   *          the node path
    * @return the string value if found, otherwise null
    */
   protected String getAttributeValue(Metadata metadata, String attrPath) {
@@ -133,12 +164,59 @@ public class QuantityHexNameCreator implements MetadataNameCreator, Initializing
     }
     return null;
   }
-  
-  /**
-   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-   */
-  @Override
-  public void afterPropertiesSet() throws Exception {
+
+  protected void parseFile(File file) {
+    SAXReader xmlReader = new SAXReader();
+    Document doc = null;
+
+    try {
+      doc = xmlReader.read(file);
+
+      if (!doc.getRootElement().getName().equalsIgnoreCase("odim-quantities")) {
+        throw new RuntimeException("Not a proper odim-quantities xml definition file");
+      }
+      
+      boolean leftShifting = isLeftShifting(doc);
+      Map<String,Integer> mapping = parseMapping(doc);
+      
+      this.shiftLeft = leftShifting;
+      this.map = mapping;
+    } catch (DocumentException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    }
   }
 
+  /**
+   * Verifies if the shifting should be performed left to right or right to left
+   * @param doc the document
+   * @return if shifting should be performed to left or right
+   */
+  protected boolean isLeftShifting(Document doc) {
+    boolean result = false;
+    org.dom4j.Attribute shifting = doc.getRootElement().attribute("shift");
+    if (shifting != null) {
+      result = shifting.getValue().equalsIgnoreCase("left");
+    }
+    return result;
+  }
+
+  /**
+   * Parses the quantities xml file
+   * 
+   * @param file
+   *          the file
+   * @return a map
+   */
+  protected Map<String, Integer> parseMapping(Document doc) {
+    Map<String, Integer> result = new HashMap<String, Integer>();
+    @SuppressWarnings("unchecked")
+    List<Element> nodes = (List<Element>) doc.selectNodes("//quantity");
+    for (Element e : nodes) {
+      String v = e.getText();
+      int index = Integer.parseInt(e.attribute("index").getValue());
+      result.put(v, index);
+    }
+
+    return result;
+  }
 }

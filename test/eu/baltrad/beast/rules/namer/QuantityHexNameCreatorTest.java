@@ -21,6 +21,7 @@ package eu.baltrad.beast.rules.namer;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,7 +119,40 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     assertEquals("0x8000000000000000", result);
   }
 
-  
+  @Test
+  public void testConstructor_filePath() throws Exception {
+    Metadata metadata = createBaseMetadata();
+    metadata.addNode("/dataset1/data1/what", new Attribute("quantity", "DBZH"));
+    metadata.addNode("/dataset2/data1/what", new Attribute("quantity", "DBZH"));
+    metadata.addNode("/dataset1/data2/what", new Attribute("quantity", "TH"));
+    metadata.addNode("/dataset2/data2/what", new Attribute("quantity", "ABCD"));
+    metadata.addNode("/dataset1/what", new Attribute("quantity", "LSB"));
+    metadata.addNode("/dataset2/what", new Attribute("quantity", "NLSB"));
+    
+    classUnderTest = new QuantityHexNameCreator(new File(getClass().getResource("quantities_fixture.xml").getFile()));
+
+    String result = classUnderTest.createName(metadata);
+    
+    assertEquals("0x3", result);
+  }
+
+  @Test
+  public void testConstructor_filePath_shiftLeft() throws Exception {
+    Metadata metadata = createBaseMetadata();
+    metadata.addNode("/dataset1/data1/what", new Attribute("quantity", "DBZH"));
+    metadata.addNode("/dataset2/data1/what", new Attribute("quantity", "DBZH"));
+    metadata.addNode("/dataset1/data2/what", new Attribute("quantity", "TH"));
+    metadata.addNode("/dataset2/data2/what", new Attribute("quantity", "ABCD"));
+    metadata.addNode("/dataset1/what", new Attribute("quantity", "LSB"));
+    metadata.addNode("/dataset2/what", new Attribute("quantity", "NLSB"));
+    
+    classUnderTest = new QuantityHexNameCreator(new File(getClass().getResource("quantities_fixture_shift_left.xml").getFile()));
+
+    String result = classUnderTest.createName(metadata);
+    
+    assertEquals("0xc000000000000000", result);
+  }
+
   private Metadata createBaseMetadata() {
     Metadata metadata = new Metadata();
     metadata.addNode("/", new Group("dataset1"));
