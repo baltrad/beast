@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,17 +53,38 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
   }
 
   @Test
+  public void supports() {
+    assertEquals(true, classUnderTest.supports("${_beast/hexdata}"));
+    assertEquals(false, classUnderTest.supports("${/hexdata}"));
+    assertEquals(false, classUnderTest.supports("${klsdak}"));
+    assertEquals(false, classUnderTest.supports(null));
+  }
+  
+  @Test
   public void testCreate_1_shiftRight() {
     Metadata metadata = createBaseMetadata();
     metadata.addNode("/dataset1/data1/what", new Attribute("quantity", "DBZH"));
     metadata.addNode("/dataset2/data1/what", new Attribute("quantity", "DBZH"));
     metadata.addNode("/dataset2/data2/what", new Attribute("quantity", "TH"));
 
-    String result = classUnderTest.createName(metadata);
+    String result = classUnderTest.createName("${_beast/hexdata}", metadata);
     
     assertEquals("0x3", result);
   }
 
+  @Test
+  public void testCreate_shiftRight_invalidTag() {
+    Metadata metadata = createBaseMetadata();
+
+    try{
+      classUnderTest.createName("${/hexdata}", metadata);
+      Assert.fail("Expected MetadataNameCreatorException");
+    } catch (MetadataNameCreatorException e) {
+      // pass
+    }
+  }
+
+  
   @Test
   public void testCreate_2_shiftRight() {
     Metadata metadata = createBaseMetadata();
@@ -70,7 +92,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     metadata.addNode("/dataset2/data1/what", new Attribute("quantity", "DBZH"));
     metadata.addNode("/dataset2/data2/what", new Attribute("quantity", "NONAME"));
 
-    String result = classUnderTest.createName(metadata);
+    String result = classUnderTest.createName("${_beast/hexdata}", metadata);
     
     assertEquals("0x1", result);
   }
@@ -86,7 +108,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     metadata.addNode("/dataset2/what", new Attribute("quantity", "NLSB"));
     
 
-    String result = classUnderTest.createName(metadata);
+    String result = classUnderTest.createName("${_beast/hexdata}", metadata);
     
     assertEquals("0xd000000000000003", result);
   }
@@ -100,7 +122,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     metadata.addNode("/dataset2/data1/what", new Attribute("quantity", "DBZH"));
     metadata.addNode("/dataset2/data2/what", new Attribute("quantity", "TH"));
 
-    String result = classUnderTest.createName(metadata);
+    String result = classUnderTest.createName("${_beast/hexdata}", metadata);
     
     assertEquals("0xc000000000000000", result);
   }
@@ -114,7 +136,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     metadata.addNode("/dataset2/data1/what", new Attribute("quantity", "DBZH"));
     metadata.addNode("/dataset2/data2/what", new Attribute("quantity", "NONAME"));
 
-    String result = classUnderTest.createName(metadata);
+    String result = classUnderTest.createName("${_beast/hexdata}", metadata);
     
     assertEquals("0x8000000000000000", result);
   }
@@ -131,7 +153,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     
     classUnderTest = new QuantityHexNameCreator(new File(getClass().getResource("quantities_fixture.xml").getFile()));
 
-    String result = classUnderTest.createName(metadata);
+    String result = classUnderTest.createName("${_beast/hexdata}", metadata);
     
     assertEquals("0x3", result);
   }
@@ -148,7 +170,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     
     classUnderTest = new QuantityHexNameCreator(new File(getClass().getResource("quantities_fixture_shift_left.xml").getFile()));
 
-    String result = classUnderTest.createName(metadata);
+    String result = classUnderTest.createName("${_beast/hexdata}", metadata);
     
     assertEquals("0xc000000000000000", result);
   }

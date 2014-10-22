@@ -19,11 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.namer;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,7 +30,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.oh5.Attribute;
 import eu.baltrad.bdb.oh5.Metadata;
@@ -57,6 +52,8 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
    */
   private final static long SL_BITMASK = 0x1L;
 
+  private final static String HEXDATA_TAG = "${_beast/hexdata}";
+  
   /**
    * The mapping between quantity and bit-position.
    */
@@ -107,11 +104,23 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
     parseFile(file);
   }
 
+
+  /**
+   * @see MetadataNameCreator#supports(String)
+   */
+  @Override
+  public boolean supports(String tag) {
+    return (tag != null && tag.equalsIgnoreCase(HEXDATA_TAG));
+  }
+  
   /**
    * @see eu.baltrad.beast.rules.namer.MetadataNameCreator#createName(eu.baltrad.bdb.oh5.Metadata)
    */
   @Override
-  public String createName(Metadata metadata) {
+  public String createName(String tag, Metadata metadata) {
+    if (!supports(tag)) {
+      throw new MetadataNameCreatorException("Not supported tag: " + tag);
+    }
     Iterator<Node> iterator = metadata.iterator();
     List<Integer> integers = new ArrayList<Integer>();
     while (iterator.hasNext()) {

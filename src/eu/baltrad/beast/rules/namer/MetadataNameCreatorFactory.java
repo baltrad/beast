@@ -19,28 +19,48 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.namer;
 
-import eu.baltrad.bdb.oh5.Metadata;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Creates a specific name from the metadata. It is not a template namer or anything,
- * it is just for creating a very specific name from the metadata.
- * 
+ * A metadata name creator provider.
  * @author Anders Henja
+ *
  */
-public interface MetadataNameCreator {
+public class MetadataNameCreatorFactory {
+  private List<MetadataNameCreator> creators = null;
   /**
-   * If this name creater supports the provided tag (${...})
-   * @param tag the tag
-   * @return if tag is supported or not
+   * Constructor
    */
-  public boolean supports(String tag);
+  public MetadataNameCreatorFactory() {
+    setCreators(new ArrayList<MetadataNameCreator>());
+  }
+
+  /**
+   * @param creators the list of metadata name creators to set
+   */
+  public void setCreators(List<MetadataNameCreator> creators) {
+    this.creators = creators;
+  }
+
+  /**
+   * @return the metadata name creators
+   */
+  public List<MetadataNameCreator> getCreators() {
+    return creators;
+  }  
   
   /**
-   * Creates a name that should replace the provided tag. In some circumstances the tag can contain additional information
-   * that needs to be handled.
+   * Returns a metadata name creator that supports the provided tag. If more than one creator supports the provided tag, the first found is returned
    * @param tag the tag
-   * @param metadata the metadata
-   * @return the tag
+   * @return the creator or null if none is found
    */
-  public String createName(String tag, Metadata metadata);
+  public MetadataNameCreator get(String tag) {
+    for (MetadataNameCreator creator : creators) {
+      if (creator.supports(tag)) {
+        return creator;
+      }
+    }
+    return null;
+  }
 }
