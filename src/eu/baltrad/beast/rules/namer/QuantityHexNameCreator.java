@@ -52,7 +52,10 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
    */
   private final static long SL_BITMASK = 0x1L;
 
-  private final static String HEXDATA_TAG = "${_beast/hexdata}";
+  /**
+   * The hexdata tag
+   */
+  private final static String HEXDATA_TAG = "_beast/hexdata";
   
   /**
    * The mapping between quantity and bit-position.

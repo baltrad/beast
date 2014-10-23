@@ -37,12 +37,50 @@ public class MetadataNameCreatorFactoryTest extends EasyMockSupport {
   }
   
   @Test
+  public void support_1() {
+    expect(abcCreator.supports("abc")).andReturn(true);
+    
+    replayAll();
+
+    boolean result = classUnderTest.supports("abc");
+    
+    verifyAll();
+    assertEquals(true, result);
+  }
+
+  @Test
+  public void support_2() {
+    expect(abcCreator.supports("def")).andReturn(false);
+    expect(defCreator.supports("def")).andReturn(true);
+    
+    replayAll();
+
+    boolean result = classUnderTest.supports("def");
+    
+    verifyAll();
+    assertEquals(true, result);
+  }
+
+  @Test
+  public void support_3() {
+    expect(abcCreator.supports("ghi")).andReturn(false);
+    expect(defCreator.supports("ghi")).andReturn(false);
+    
+    replayAll();
+
+    boolean result = classUnderTest.supports("ghi");
+    
+    verifyAll();
+    assertEquals(false, result);
+  }
+
+  @Test
   public void get_1() {
-    expect(abcCreator.supports("${abc}")).andReturn(true);
+    expect(abcCreator.supports("abc")).andReturn(true);
     
     replayAll();
     
-    MetadataNameCreator result = classUnderTest.get("${abc}");
+    MetadataNameCreator result = classUnderTest.get("abc");
     
     verifyAll();
     assertSame(abcCreator, result);
@@ -50,12 +88,12 @@ public class MetadataNameCreatorFactoryTest extends EasyMockSupport {
   
   @Test
   public void get_2() {
-    expect(abcCreator.supports("${def}")).andReturn(false);
-    expect(defCreator.supports("${def}")).andReturn(true);
+    expect(abcCreator.supports("def")).andReturn(false);
+    expect(defCreator.supports("def")).andReturn(true);
     
     replayAll();
     
-    MetadataNameCreator result = classUnderTest.get("${def}");
+    MetadataNameCreator result = classUnderTest.get("def");
     
     verifyAll();
     assertSame(defCreator, result);
@@ -63,12 +101,12 @@ public class MetadataNameCreatorFactoryTest extends EasyMockSupport {
 
   @Test
   public void get_3() {
-    expect(abcCreator.supports("${ghi}")).andReturn(false);
-    expect(defCreator.supports("${ghi}")).andReturn(false);
+    expect(abcCreator.supports("ghi")).andReturn(false);
+    expect(defCreator.supports("ghi")).andReturn(false);
     
     replayAll();
     
-    MetadataNameCreator result = classUnderTest.get("${ghi}");
+    MetadataNameCreator result = classUnderTest.get("ghi");
     
     verifyAll();
     assertNull(result);

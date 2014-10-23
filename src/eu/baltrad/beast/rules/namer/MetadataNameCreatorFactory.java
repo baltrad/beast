@@ -51,6 +51,20 @@ public class MetadataNameCreatorFactory {
   }  
   
   /**
+   * Returns if there are any namer that supports the provided tag
+   * @param tag the tag
+   * @return if there exist any name creator or not
+   */
+  public boolean supports(String tag) {
+    for (MetadataNameCreator creator : creators) {
+      if (creator.supports(tag)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
    * Returns a metadata name creator that supports the provided tag. If more than one creator supports the provided tag, the first found is returned
    * @param tag the tag
    * @return the creator or null if none is found
