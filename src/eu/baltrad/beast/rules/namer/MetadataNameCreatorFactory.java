@@ -22,16 +22,11 @@ package eu.baltrad.beast.rules.namer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 /**
  * A metadata name creator provider.
  * @author Anders Henja
- *
  */
 public class MetadataNameCreatorFactory {
-  private final static Logger logger = LogManager.getLogger(MetadataNameCreatorFactory.class);
   
   private List<MetadataNameCreator> creators = null;
   /**
@@ -61,7 +56,6 @@ public class MetadataNameCreatorFactory {
    * @return if there exist any name creator or not
    */
   public boolean supports(String tag) {
-    logger.info("Number of creators: " + creators.size());
     for (MetadataNameCreator creator : creators) {
       if (creator.supports(tag)) {
         return true;
