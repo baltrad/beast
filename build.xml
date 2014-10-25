@@ -142,6 +142,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<include name="log4j.properties" />
       	<include name="xmlrpcserver.properties" />
       	<include name="beast-log-messages.xml" />
+      	<include name="odim_quantities.xml" />
       </fileset>
   	</copy>
   	<copy todir="${prefix}/beast/examples">

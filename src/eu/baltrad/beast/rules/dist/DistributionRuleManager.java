@@ -31,6 +31,7 @@ import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
 import eu.baltrad.beast.rules.PropertyManager;
 import eu.baltrad.beast.rules.RuleFilterManager;
+import eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory;
 
 /**
  */
@@ -50,6 +51,11 @@ public class DistributionRuleManager implements IRuleManager,
    * LocalStorage to associate with created rules
    */
   private LocalStorage localStorage;
+  
+  /**
+   * The metadata name creator factory that should be set in the rules
+   */
+  private MetadataNameCreatorFactory factory;
   
   /**
    * @param manager the manager to set
@@ -100,6 +106,7 @@ public class DistributionRuleManager implements IRuleManager,
   @Override
   public DistributionRule createRule() {
     DistributionRule result = new DistributionRule(localStorage);
+    result.setNameCreatorFactory(factory);
     return result;
   }
 
@@ -134,5 +141,13 @@ public class DistributionRuleManager implements IRuleManager,
     if (localStorage == null) {
       throw new BeanInitializationException("missing LocalStorage");
     }
+  }
+
+  public MetadataNameCreatorFactory getMetadataNameCreatorFactory() {
+    return factory;
+  }
+
+  public void setMetadataNameCreatorFactory(MetadataNameCreatorFactory factory) {
+    this.factory = factory;
   }
 }

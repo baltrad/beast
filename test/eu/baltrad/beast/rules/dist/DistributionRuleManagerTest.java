@@ -35,6 +35,7 @@ import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.PropertyManager;
 import eu.baltrad.beast.rules.RuleFilterManager;
+import eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory;
 
 public class DistributionRuleManagerTest extends EasyMockSupport {
   private PropertyManager propertyManager;
@@ -42,17 +43,20 @@ public class DistributionRuleManagerTest extends EasyMockSupport {
   private IFilter filter;
   private LocalStorage localStorage;
   private DistributionRuleManager classUnderTest;
-
+  private MetadataNameCreatorFactory factory;
+  
   @Before
   public void setUp() {
     propertyManager = createMock(PropertyManager.class);
     filterManager = createMock(RuleFilterManager.class);
     filter = createMock(IFilter.class);
     localStorage = createMock(LocalStorage.class);
+    factory = createMock(MetadataNameCreatorFactory.class);
     classUnderTest = new DistributionRuleManager();
     classUnderTest.setPropertyManager(propertyManager);
     classUnderTest.setRuleFilterManager(filterManager);
     classUnderTest.setLocalStorage(localStorage);
+    classUnderTest.setMetadataNameCreatorFactory(factory);
   }
 
   @Test
@@ -140,5 +144,12 @@ public class DistributionRuleManagerTest extends EasyMockSupport {
     } catch (BeanInitializationException e) {
       // pass
     }
+  }
+  
+  @Test
+  public void testCreate() {
+    DistributionRule rule = (DistributionRule)classUnderTest.createRule();
+    assertSame(factory, rule.getNameCreatorFactory());
+    assertSame(localStorage, rule.getLocalStorage());
   }
 }

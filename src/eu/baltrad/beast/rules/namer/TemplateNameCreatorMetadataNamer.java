@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------
-Copyright (C) 2009-2013 Swedish Meteorological and Hydrological Institute, SMHI,
+Copyright (C) 2009-2014 Swedish Meteorological and Hydrological Institute, SMHI,
 
 This file is part of the Beast library.
 
@@ -64,6 +64,13 @@ public class TemplateNameCreatorMetadataNamer implements MetadataNamer, Initiali
    */
   public TemplateNameCreatorMetadataNamer(String template) {
     this.template = template;
+  }
+  
+  /**
+   * @return the template
+   */
+  public String getTemplate() {
+    return this.template;
   }
   
   /**

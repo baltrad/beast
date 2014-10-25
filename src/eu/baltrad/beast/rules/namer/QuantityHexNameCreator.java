@@ -55,7 +55,7 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
   /**
    * The hexdata tag
    */
-  private final static String HEXDATA_TAG = "_beast/hexdata";
+  private final static String HEXCODE_TAG = "_beast/hexcode";
   
   /**
    * The mapping between quantity and bit-position.
@@ -113,7 +113,7 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
    */
   @Override
   public boolean supports(String tag) {
-    return (tag != null && tag.equalsIgnoreCase(HEXDATA_TAG));
+    return (tag != null && tag.equalsIgnoreCase(HEXCODE_TAG));
   }
   
   /**

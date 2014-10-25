@@ -33,9 +33,12 @@ import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.net.FileUploader;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
+import eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory;
+import eu.baltrad.beast.rules.namer.TemplateNameCreatorMetadataNamer;
 
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.oh5.MetadataMatcher;
+import eu.baltrad.bdb.oh5.MetadataNamer;
 import eu.baltrad.bdb.oh5.TemplateMetadataNamer;
 import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.FileEntryNamer;
@@ -56,7 +59,8 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   private FileUploader uploader;
   private LocalStorage localStorage;
   private FileEntryNamer namer;
-
+  private MetadataNameCreatorFactory nameCreatorFactory;
+  
   /**
    * The logger
    */
@@ -69,6 +73,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     this.matcher = new MetadataMatcher();
     this.uploader = FileUploader.createDefault();
     this.localStorage = localStorage;
+    this.setNameCreatorFactory(new MetadataNameCreatorFactory());
   }
 
   protected void setMatcher(MetadataMatcher matcher) {
@@ -79,6 +84,14 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     this.uploader = uploader;
   }
 
+  public MetadataNameCreatorFactory getNameCreatorFactory() {
+    return nameCreatorFactory;
+  }
+
+  public void setNameCreatorFactory(MetadataNameCreatorFactory nameCreatorFactory) {
+    this.nameCreatorFactory = nameCreatorFactory;
+  }
+  
   public IFilter getFilter() {
     return filter;
   }
@@ -103,9 +116,10 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
    * Set metadata naming template.
    */
   public void setMetadataNamingTemplate(String tmpl) {
-    this.namer = new MetadataFileEntryNamer(
-      new TemplateMetadataNamer(tmpl)
-    );
+    TemplateNameCreatorMetadataNamer mnamer = new TemplateNameCreatorMetadataNamer(tmpl);
+    mnamer.setFactory(nameCreatorFactory);
+    mnamer.afterPropertiesSet();
+    this.namer = new MetadataFileEntryNamer(mnamer);
   }
 
   /**
@@ -119,7 +133,7 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
 
     try {
       MetadataFileEntryNamer metadataNamer = (MetadataFileEntryNamer)namer;
-      TemplateMetadataNamer templateNamer = (TemplateMetadataNamer)metadataNamer.getMetadataNamer();
+      TemplateNameCreatorMetadataNamer templateNamer = (TemplateNameCreatorMetadataNamer)metadataNamer.getMetadataNamer();
       return templateNamer.getTemplate();
     } catch (ClassCastException e) {
       return null;
