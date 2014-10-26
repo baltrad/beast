@@ -111,6 +111,33 @@ public class TemplateNameCreatorMetadataNamerTest extends EasyMockSupport {
   }
 
   @Test
+  public void name_many_odd_characters_in_template() {
+    Metadata metadata = createBaseMetadata();
+
+    classUnderTest = new TemplateNameCreatorMetadataNamer("${_beast/name:ab cd ef}_${a/b/c}_${a:/#@+_-.}");
+    classUnderTest.setFactory(factory);
+    
+    expect(factory.supports("_beast/name:ab cd ef")).andReturn(true);
+    expect(factory.get("_beast/name:ab cd ef")).andReturn(nameCreator);
+    expect(nameCreator.createName("_beast/name:ab cd ef", metadata)).andReturn("a");
+
+    expect(factory.supports("a/b/c")).andReturn(true);
+    expect(factory.get("a/b/c")).andReturn(nameCreator);
+    expect(nameCreator.createName("a/b/c", metadata)).andReturn("b");
+
+    expect(factory.supports("a:/#@+_-.")).andReturn(true);
+    expect(factory.get("a:/#@+_-.")).andReturn(nameCreator);
+    expect(nameCreator.createName("a:/#@+_-.", metadata)).andReturn("c");
+    
+    replayAll();
+    
+    String result = classUnderTest.name(metadata);
+    
+    verifyAll();
+    assertEquals("a_b_c", result);
+  }
+  
+  @Test
   public void afterPropertiesSet_invalid() {
     classUnderTest = new TemplateNameCreatorMetadataNamer("${what/date}_${what/source:CMT}_${supportedTag}_${unsupportedTag}.h5");
     try {

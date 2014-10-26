@@ -37,7 +37,6 @@ import eu.baltrad.bdb.oh5.Metadata;
 
 /**
  * @author Anders Henja
- * 
  */
 public class QuantityHexNameCreatorTest extends EasyMockSupport {
   private QuantityHexNameCreator classUnderTest = null;
