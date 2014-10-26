@@ -35,7 +35,7 @@ import eu.baltrad.bdb.oh5.Metadata;
 public class FormattableDateTimeNameCreator implements MetadataNameCreator {
   private final static Pattern pattern;
   static {
-    pattern = Pattern.compile("_beast/datetime(:[A-Za-z0-9\\-/: ]+)?"); // \\(:[:A-Za-z0-9/.\\- ]*\\)
+    pattern = Pattern.compile("_beast/datetime(:[A-Za-z0-9\\-/: _]+)?"); // \\(:[:A-Za-z0-9/.\\- ]*\\)
   }
 
   private SimpleDateFormat DATETIME_FORMATTER = new SimpleDateFormat("yyyyMMddHHmmss");
