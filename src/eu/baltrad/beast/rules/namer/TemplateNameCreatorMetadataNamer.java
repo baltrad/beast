@@ -43,14 +43,15 @@ public class TemplateNameCreatorMetadataNamer implements MetadataNamer, Initiali
   private String template;
 
   private static final Pattern pattern;
-
+  
+  private SubOperationHandler subOperationHandler;
+  
   static {
     pattern = Pattern.compile("\\$(?:" + "(\\$)|" + // group 1 matches escaped
                                                     // delimiter ($$)
-        "\\{([_/a-z][_:/a-z0-9 #@+\\-\\.]*)\\}" + // group 2 matches the placeholder
+        "\\{([_/a-z][_:/a-z0-9 #@+\\-\\.]*)\\}((.(tolower|toupper|substring)(\\((([0-9]+)(,([0-9]+))?)?\\)))*)" + // group 2 matches the placeholder, group 3 matches all suboperations
         ")", Pattern.CASE_INSENSITIVE);
   }
-  ///#@+_-.<>
   private MetadataNameCreatorFactory factory = null;
   
   /**
@@ -64,6 +65,7 @@ public class TemplateNameCreatorMetadataNamer implements MetadataNamer, Initiali
    */
   public TemplateNameCreatorMetadataNamer(String template) {
     this.template = template;
+    subOperationHandler = new SubOperationHandler();
   }
   
   /**
@@ -71,6 +73,14 @@ public class TemplateNameCreatorMetadataNamer implements MetadataNamer, Initiali
    */
   public String getTemplate() {
     return this.template;
+  }
+  
+  /**
+   * Setter used for test purposes
+   * @param subOperationHandler the sub operation handler
+   */
+  void setSubOperationHandler(SubOperationHandler subOperationHandler) {
+    this.subOperationHandler = subOperationHandler;
   }
   
   /**
@@ -82,19 +92,20 @@ public class TemplateNameCreatorMetadataNamer implements MetadataNamer, Initiali
     Matcher m = pattern.matcher(template);
     while (m.find()) {
       String placeholder = m.group(2);
+      String suboperation = m.group(3);
       if (placeholder != null) {
         if (placeholder.toLowerCase().startsWith("_bdb/source:")) {
           String r = getSourceItem("_bdb/source", placeholder.substring(12),
               metadata);
-          m.appendReplacement(result, r);
+          m.appendReplacement(result, suboperation.equals("")?r:subOperationHandler.handle(suboperation, r));
         } else if (placeholder.toLowerCase().startsWith("what/source:")) {
           String r = getSourceItem("what/source", placeholder.substring(12),
               metadata);
-          m.appendReplacement(result, r);
+          m.appendReplacement(result, suboperation.equals("")?r:subOperationHandler.handle(suboperation, r));
         } else if (placeholder.toLowerCase().startsWith("/what/source:")) {
           String r = getSourceItem("what/source", placeholder.substring(13),
               metadata);
-          m.appendReplacement(result, r);
+          m.appendReplacement(result, suboperation.equals("")?r:subOperationHandler.handle(suboperation, r));
         } else if (factory.supports(placeholder)) {
           MetadataNameCreator creator = factory.get(placeholder);
           String r = null;
@@ -102,12 +113,15 @@ public class TemplateNameCreatorMetadataNamer implements MetadataNamer, Initiali
             r = creator.createName(placeholder, metadata);
           }
           if (r != null) {
+            r = suboperation.equals("")?r:subOperationHandler.handle(suboperation, r);
             m.appendReplacement(result, r);
           } else {
             m.appendReplacement(result,  "null");
           }
         } else {
-          m.appendReplacement(result, getAttributeValue(metadata, placeholder));
+          String attrvalue = getAttributeValue(metadata, placeholder);
+          attrvalue = suboperation.equals("")?attrvalue:subOperationHandler.handle(suboperation, attrvalue);
+          m.appendReplacement(result, attrvalue);
         }
       }
     }
@@ -135,8 +149,7 @@ public class TemplateNameCreatorMetadataNamer implements MetadataNamer, Initiali
       throw new InitializationException("Missing MetadataNameCreatorFactory");
     }
   }
-
-
+  
   private String getAttributeValue(Metadata metadata, String attrPath) {
     Attribute attr = metadata.getAttribute(attrPath);
     if (attr != null) {

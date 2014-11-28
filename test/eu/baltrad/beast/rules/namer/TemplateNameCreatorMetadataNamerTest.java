@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------
-Copyright (C) 2009-2013 Swedish Meteorological and Hydrological Institute, SMHI,
+Copyright (C) 2009-2014 Swedish Meteorological and Hydrological Institute, SMHI,
 
 This file is part of the Beast library.
 
@@ -21,6 +21,9 @@ package eu.baltrad.beast.rules.namer;
 
 import static org.junit.Assert.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
@@ -34,20 +37,23 @@ import static org.easymock.EasyMock.*;
 
 /**
  * @author Anders Henja
- *
+ * @date 2014-11-28
  */
 public class TemplateNameCreatorMetadataNamerTest extends EasyMockSupport {
   private TemplateNameCreatorMetadataNamer classUnderTest = null;
   private MetadataNameCreatorFactory factory = null;
   private MetadataNameCreator nameCreator = null;
+  private SubOperationHandler subOperationHandler = null;
   
   @Before
   public void setUp() throws Exception {
     nameCreator = createMock(MetadataNameCreator.class);
     factory = createMock(MetadataNameCreatorFactory.class);
+    subOperationHandler = createMock(SubOperationHandler.class);
     classUnderTest = new TemplateNameCreatorMetadataNamer("${what/date}_${what/source:CMT}_${supportedTag}_${unsupportedTag}.h5");
     classUnderTest.setFactory(factory);
     classUnderTest.afterPropertiesSet();
+    classUnderTest.setSubOperationHandler(subOperationHandler);
   }
   
   @After
@@ -55,6 +61,7 @@ public class TemplateNameCreatorMetadataNamerTest extends EasyMockSupport {
     classUnderTest = null;
     factory = null;
     nameCreator = null;
+    subOperationHandler = null;
   }
   
   @Test
@@ -138,6 +145,78 @@ public class TemplateNameCreatorMetadataNamerTest extends EasyMockSupport {
   }
   
   @Test
+  public void name_suboperation_tolower() {
+    Metadata metadata = createBaseMetadata();
+    classUnderTest = new TemplateNameCreatorMetadataNamer("${what/date}_${what/object}.tolower().h5");
+    expect(factory.supports("what/date")).andReturn(false);
+    expect(factory.supports("what/object")).andReturn(false);
+    expect(subOperationHandler.handle(".tolower()", "IMAGE")).andReturn("image");
+    classUnderTest.setFactory(factory);
+    classUnderTest.setSubOperationHandler(subOperationHandler);
+    
+    replayAll();
+    
+    String result = classUnderTest.name(metadata);
+    
+    verifyAll();
+    assertEquals("20140101_image.h5", result);
+  }
+
+  @Test
+  public void name_suboperation_toupper_end() {
+    Metadata metadata = createBaseMetadata();
+    classUnderTest = new TemplateNameCreatorMetadataNamer("${what/date}_${what/object}.toupper(2).h5");
+    expect(factory.supports("what/date")).andReturn(false);
+    expect(factory.supports("what/object")).andReturn(false);
+    expect(subOperationHandler.handle(".toupper(2)", "IMAGE")).andReturn("IMAGE");
+    classUnderTest.setFactory(factory);
+    classUnderTest.setSubOperationHandler(subOperationHandler);
+    
+    replayAll();
+    
+    String result = classUnderTest.name(metadata);
+    
+    verifyAll();
+    assertEquals("20140101_IMAGE.h5", result);
+  }
+
+  @Test
+  public void name_suboperation_substring_begin_end() {
+    Metadata metadata = createBaseMetadata();
+    classUnderTest = new TemplateNameCreatorMetadataNamer("${what/date}_${what/object}.substring(2,3).h5");
+    expect(factory.supports("what/date")).andReturn(false);
+    expect(factory.supports("what/object")).andReturn(false);
+    expect(subOperationHandler.handle(".substring(2,3)", "IMAGE")).andReturn("IMAGE");
+    classUnderTest.setFactory(factory);
+    classUnderTest.setSubOperationHandler(subOperationHandler);
+    
+    replayAll();
+    
+    String result = classUnderTest.name(metadata);
+    
+    verifyAll();
+    assertEquals("20140101_IMAGE.h5", result);
+  }
+
+  @Test
+  public void name_suboperation_chained() {
+    Metadata metadata = createBaseMetadata();
+    classUnderTest = new TemplateNameCreatorMetadataNamer("${what/date}_${what/object}.tolower().toupper(1).substring(2,3).h5");
+    expect(factory.supports("what/date")).andReturn(false);
+    expect(factory.supports("what/object")).andReturn(false);
+    expect(subOperationHandler.handle(".tolower().toupper(1).substring(2,3)", "IMAGE")).andReturn("IMAGE");
+    classUnderTest.setFactory(factory);
+    classUnderTest.setSubOperationHandler(subOperationHandler);
+    
+    replayAll();
+    
+    String result = classUnderTest.name(metadata);
+    
+    verifyAll();
+    assertEquals("20140101_IMAGE.h5", result);
+  }
+
+  @Test
   public void afterPropertiesSet_invalid() {
     classUnderTest = new TemplateNameCreatorMetadataNamer("${what/date}_${what/source:CMT}_${supportedTag}_${unsupportedTag}.h5");
     try {
@@ -154,10 +233,12 @@ public class TemplateNameCreatorMetadataNamerTest extends EasyMockSupport {
     metadata.addNode("/", new Group("dataset2"));
     metadata.addNode("/", new Group("what"));
     metadata.addNode("/", new Group("where"));
+    metadata.addNode("/", new Group("how"));
     metadata.addNode("/what", new Attribute("date", "20140101"));
     metadata.addNode("/what", new Attribute("time", "100000"));
     metadata.addNode("/what", new Attribute("source", "ORG:82,CMT:testgmaps_2000"));
     metadata.addNode("/what", new Attribute("object", "IMAGE"));
+    metadata.addNode("/how", new Attribute("task", "se.some.qc"));
     metadata.addNode("/dataset1", new Group("data1"));
     metadata.addNode("/dataset1", new Group("data2"));
     metadata.addNode("/dataset1", new Group("what"));
