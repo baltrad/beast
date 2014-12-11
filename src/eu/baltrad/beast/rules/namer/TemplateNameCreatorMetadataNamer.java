@@ -49,7 +49,7 @@ public class TemplateNameCreatorMetadataNamer implements MetadataNamer, Initiali
   static {
     pattern = Pattern.compile("\\$(?:" + "(\\$)|" + // group 1 matches escaped
                                                     // delimiter ($$)
-        "\\{([_/a-z][_:/a-z0-9 #@+\\-\\.]*)\\}((.(tolower|toupper|substring)(\\((([0-9]+)(,([0-9]+))?)?\\)))*)" + // group 2 matches the placeholder, group 3 matches all suboperations
+        "\\{([_/a-z][_:/a-z0-9 #@+\\-\\.]*)\\}((.(tolower|toupper|substring|trim|rtrim|ltrim)(\\((([0-9]+)(,([0-9]+))?)?\\)))*)" + // group 2 matches the placeholder, group 3 matches all suboperations
         ")", Pattern.CASE_INSENSITIVE);
   }
   private MetadataNameCreatorFactory factory = null;

@@ -26,10 +26,12 @@ import java.util.regex.Pattern;
  * @author Anders Henja
  */
 public class SubOperationHandler {
-  private static final Pattern suboperationPattern;
+  private static final Pattern SUBOPERATION_PATTERN;
+  private static final Pattern LTRIM = Pattern.compile("^\\s+");
+  private static final Pattern RTRIM = Pattern.compile("\\s+$");
   
   static {
-    suboperationPattern = Pattern.compile(".(tolower|toupper|substring)(\\((([0-9]+)(,([0-9]+))?)?\\))",Pattern.CASE_INSENSITIVE);
+    SUBOPERATION_PATTERN = Pattern.compile(".(tolower|toupper|substring|trim|rtrim|ltrim)(\\((([0-9]+)(,([0-9]+))?)?\\))",Pattern.CASE_INSENSITIVE);
   }
 
   public SubOperationHandler() {
@@ -55,7 +57,7 @@ public class SubOperationHandler {
   public String handle(String suboperation, String value) {
     String result = value;
     if (suboperation != null) {
-      Matcher m = suboperationPattern.matcher(suboperation); // Function in group 1, 
+      Matcher m = SUBOPERATION_PATTERN.matcher(suboperation); // Function in group 1, 
       while (m.find()) {
         String op = m.group(1);
         if (op.equalsIgnoreCase("tolower") && result != null) {
@@ -98,6 +100,12 @@ public class SubOperationHandler {
               result = result.substring(0, info.endIndex);
             }
           }
+        } else if (op.equalsIgnoreCase("trim") && result != null) {
+          result = result.trim();
+        } else if (op.equalsIgnoreCase("ltrim") && result != null) {
+          result = LTRIM.matcher(result).replaceAll("");
+        } else if (op.equalsIgnoreCase("rtrim") && result != null) {
+          result = RTRIM.matcher(result).replaceAll("");
         }
       }
     }

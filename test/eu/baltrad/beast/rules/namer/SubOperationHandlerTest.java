@@ -78,10 +78,32 @@ public class SubOperationHandlerTest {
     assertEquals("hi", classUnderTest.handle(".substring(7,9)", "abcdefghi"));
     assertEquals("abcdefghi", classUnderTest.handle(".substring(7,11)", "abcdefghi")); // Out of bounds
   }
+  
+  @Test
+  public void trim() {
+    assertEquals("abcdefghi", classUnderTest.handle(".trim()", "  abcdefghi  "));
+    assertEquals("abcdefghi", classUnderTest.handle(".trim()", "abcdefghi  "));
+    assertEquals("abcdefghi", classUnderTest.handle(".trim()", "  abcdefghi"));
+  }
 
+  @Test
+  public void ltrim() {
+    assertEquals("abcdefghi  ", classUnderTest.handle(".ltrim()", "  abcdefghi  "));
+    assertEquals("abcdefghi  ", classUnderTest.handle(".ltrim()", "abcdefghi  "));
+    assertEquals("abcdefghi", classUnderTest.handle(".ltrim()", "  abcdefghi"));
+  }
+
+  @Test
+  public void rtrim() {
+    assertEquals("  abcdefghi", classUnderTest.handle(".rtrim()", "  abcdefghi  "));
+    assertEquals("abcdefghi", classUnderTest.handle(".rtrim()", "abcdefghi  "));
+    assertEquals("  abcdefghi", classUnderTest.handle(".rtrim()", "  abcdefghi"));
+  }
+  
   @Test
   public void combined_suboperations() {
     assertEquals("ABCdefgh", classUnderTest.handle(".tolower().toupper(0,4).tolower(3)", "ABCDEFGH"));
     assertEquals("Cde", classUnderTest.handle(".tolower().toupper(0,4).tolower(3).substring(2,5)", "ABCDEFGH"));
+    assertEquals("abc def", classUnderTest.handle(".tolower().trim()", "ABC DEF "));
   }
 }
