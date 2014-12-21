@@ -64,7 +64,10 @@ public class FormattableDateTimeNameCreator implements MetadataNameCreator {
       if (dstr != null && tstr != null && dstr.toString() != null && tstr.toString() != null) {
         String dtstr = dstr.toString() + tstr.toString();
         try {
-          Date d = DATETIME_FORMATTER.parse(dtstr);
+          Date d = null;
+          synchronized(DATETIME_FORMATTER) {
+            d = DATETIME_FORMATTER.parse(dtstr);
+          }
           String nformat = "yyyyMMddHHmmss";
           if (tag.contains(":")) {
             nformat = tag.substring(tag.indexOf(":")+1);
