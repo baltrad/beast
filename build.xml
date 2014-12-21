@@ -154,6 +154,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   	<!-- remove old beast.jar that contained version information -->
   	<delete file="${prefix}/beast/bin/${app.name}-0.1-dev.jar" failonerror="false"/>
   	<delete file="${prefix}/beast/libs/commons-io-2.1.jar" failonerror="false"/> <!-- If 2.1 installed, remove it -->
+  	<delete file="${prefix}/beast/libs/sshj-0.3.1.jar" failonerror="false"/>
   	<copy file="${dist.dir}/${app.name}.jar" todir="${prefix}/beast/bin" />
   	<copy file="${etc.dir}/xmlrpcserver" todir="${prefix}/beast/bin" />
     <chmod file="${prefix}/beast/bin/xmlrpcserver" perm="755"/>
