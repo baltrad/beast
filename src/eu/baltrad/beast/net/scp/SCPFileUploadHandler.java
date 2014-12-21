@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
+import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
@@ -44,28 +45,29 @@ public class SCPFileUploadHandler extends FileUploadHandlerBase {
   }
     
   public void upload(File src, URI dst) throws IOException {
-    this.client = acquireSSHClient();
-    connect(dst);
+    SSHClient client = connect(dst);
     try {
-      auth(dst);
-      store(src, dst);
+      auth(client, dst);
+      store(client, src, dst);
     } finally {
-      disconnect();
+      disconnect(client);
     }
   }
 
-  protected void connect(URI uri) throws IOException {
+  protected SSHClient connect(URI uri) throws IOException {
+    SSHClient client = acquireSSHClient();
     client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
     client.setTimeout(DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
     client.connect(uri.getHost(), getPort(uri));
+    return client;
   }
 
-  protected void disconnect() throws IOException {
+  protected void disconnect(SSHClient client) throws IOException {
     client.disconnect();
   }
 
-  protected void auth(URI uri) throws IOException {
+  protected void auth(SSHClient client, URI uri) throws IOException {
     String pass = getPassword(uri);
     String user = getUser(uri);
     if (pass == null || pass.isEmpty())
@@ -74,7 +76,7 @@ public class SCPFileUploadHandler extends FileUploadHandlerBase {
       client.authPassword(user, pass);
   }
 
-  protected void store(File src, URI dst) throws IOException {
+  protected void store(SSHClient client, File src, URI dst) throws IOException {
     SCPFileTransfer xfer = client.newSCPFileTransfer();
     xfer.upload(src.toString(), getPath(dst));
   }
@@ -114,17 +116,22 @@ public class SCPFileUploadHandler extends FileUploadHandlerBase {
   }
 
   protected SSHClient acquireSSHClient() {
-    return new SSHClient();
+    return new SSHClient(createDefaultConfig());
   }
 
-  /**
-   * Set ssh client instance. This is for testing purposes.
-   */
-  protected void setSSHClient(SSHClient client) {
-    this.client = client;
+  protected DefaultConfig createDefaultConfig() {
+    if (sshDefaultConfig == null) {
+      synchronized (sshDefaultConfigLock) {
+        if (sshDefaultConfig == null) {
+          sshDefaultConfig = new DefaultConfig();
+        }
+      }
+    }
+    return sshDefaultConfig;
   }
-
+  
   protected static final int DEFAULT_CONNECT_TIMEOUT = 10000;
   protected static final int DEFAULT_SOCKET_TIMEOUT = 60000;
-  private SSHClient client;
+  private DefaultConfig sshDefaultConfig = null;
+  private Object sshDefaultConfigLock = new Object();
 }

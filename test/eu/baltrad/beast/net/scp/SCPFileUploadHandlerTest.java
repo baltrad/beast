@@ -36,9 +36,10 @@ import org.junit.Test;
 public class SCPFileUploadHandlerTest extends EasyMockSupport {
   private static interface MockMethods {
     SSHClient acquireSSHClient();
-    void connect(URI u) throws IOException;
-    void auth(URI u) throws IOException;
-    void store(File s, URI d) throws IOException;
+    SSHClient connect(URI u) throws IOException;
+    void auth(SSHClient client, URI u) throws IOException;
+    void store(SSHClient client, File s, URI d) throws IOException;
+    void disconnect(SSHClient client) throws IOException;
   };
 
   private SSHClient client;
@@ -61,20 +62,19 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
 
     classUnderTest = new SCPFileUploadHandler() {
       @Override
-      public SSHClient acquireSSHClient() { return methods.acquireSSHClient(); }
+      public SSHClient connect(URI u) throws IOException { return methods.connect(u); }
       @Override
-      public void connect(URI u) throws IOException { methods.connect(u); }
+      public void auth(SSHClient client, URI u) throws IOException { methods.auth(client, u); }
       @Override
-      public void auth(URI u) throws IOException { methods.auth(u); }
+      public void store(SSHClient client, File s, URI d) throws IOException { methods.store(client, s, d); }
       @Override
-      public void store(File s, URI d) throws IOException { methods.store(s, d); }
+      public void disconnect(SSHClient client) throws IOException { methods.disconnect(client); }
     };
   
-    expect(methods.acquireSSHClient()).andReturn(client);
-    methods.connect(dst);
-    methods.auth(dst);
-    methods.store(src, dst);
-    client.disconnect();
+    expect(methods.connect(dst)).andReturn(client);
+    methods.auth(client, dst);
+    methods.store(client, src, dst);
+    methods.disconnect(client);
     
     replayAll();
 
@@ -90,12 +90,9 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
 
     classUnderTest = new SCPFileUploadHandler() {
       @Override
-      public SSHClient acquireSSHClient() { return methods.acquireSSHClient(); }
-      @Override
-      public void connect(URI u) throws IOException { methods.connect(u); }
+      public SSHClient connect(URI u) throws IOException { return methods.connect(u); }
     };
 
-    expect(methods.acquireSSHClient()).andReturn(client);
     methods.connect(dst);
     expectLastCall().andThrow(new IOException());
     
@@ -116,18 +113,17 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
 
     classUnderTest = new SCPFileUploadHandler() {
       @Override
-      public SSHClient acquireSSHClient() { return methods.acquireSSHClient(); }
+      public SSHClient connect(URI u) throws IOException { return methods.connect(u); }
       @Override
-      public void connect(URI u) throws IOException { methods.connect(u); }
+      public void auth(SSHClient client, URI u) throws IOException { methods.auth(client, u); }
       @Override
-      public void auth(URI u) throws IOException { methods.auth(u); }
+      public void disconnect(SSHClient client) throws IOException { methods.disconnect(client); }
     };
 
-    expect(methods.acquireSSHClient()).andReturn(client);
-    methods.connect(dst);
-    methods.auth(dst);
+    expect(methods.connect(dst)).andReturn(client);
+    methods.auth(client, dst);
     expectLastCall().andThrow(new IOException());
-    client.disconnect();
+    methods.disconnect(client);
     
     replayAll();
 
@@ -146,21 +142,20 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
 
     classUnderTest = new SCPFileUploadHandler() {
       @Override
-      public SSHClient acquireSSHClient() { return methods.acquireSSHClient(); }
+      public SSHClient connect(URI u) throws IOException { return methods.connect(u); }
       @Override
-      public void connect(URI u) throws IOException { methods.connect(u); }
+      public void auth(SSHClient client, URI u) throws IOException { methods.auth(client, u); }
       @Override
-      public void auth(URI u) throws IOException { methods.auth(u); }
+      public void store(SSHClient client, File s, URI d) throws IOException { methods.store(client, s, d); }
       @Override
-      public void store(File s, URI d) throws IOException { methods.store(s, d); }
+      public void disconnect(SSHClient client) throws IOException { methods.disconnect(client); }
     };
 
-    expect(methods.acquireSSHClient()).andReturn(client);
-    methods.connect(dst);
-    methods.auth(dst);
-    methods.store(src, dst);
+    expect(methods.connect(dst)).andReturn(client);
+    methods.auth(client, dst);
+    methods.store(client, src, dst);
     expectLastCall().andThrow(new IOException());
-    client.disconnect();
+    methods.disconnect(client);
     
     replayAll();
 
@@ -174,7 +169,10 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
 
   @Test
   public void testConnect() throws Exception {
-    classUnderTest.setSSHClient(client);
+    classUnderTest = new SCPFileUploadHandler() {
+      @Override
+      public SSHClient acquireSSHClient() { return client; };
+    };
     client.setConnectTimeout(SCPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
     client.setTimeout(SCPFileUploadHandler.DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
@@ -189,7 +187,10 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
 
   @Test
   public void testConnect_defaultPort() throws Exception {
-    classUnderTest.setSSHClient(client);
+    classUnderTest = new SCPFileUploadHandler() {
+      @Override
+      public SSHClient acquireSSHClient() { return client; };
+    };
     client.setConnectTimeout(SCPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
     client.setTimeout(SCPFileUploadHandler.DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
@@ -204,41 +205,47 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
 
   @Test
   public void testAuth_pubkey() throws Exception {
-    classUnderTest.setSSHClient(client);
     client.authPublickey("user");
     
     replayAll();
 
-    classUnderTest.auth(URI.create("scp://user@host/path"));
+    classUnderTest.auth(client, URI.create("scp://user@host/path"));
     
     verifyAll();
   }
 
   @Test
   public void testAuth_password() throws Exception {
-    classUnderTest.setSSHClient(client);
     client.authPassword("user", "pass");
     
     replayAll();
 
-    classUnderTest.auth(URI.create("scp://user:pass@host/path"));
+    classUnderTest.auth(client, URI.create("scp://user:pass@host/path"));
     
     verifyAll();
   }
 
   @Test
   public void testStore() throws Exception {
-    classUnderTest.setSSHClient(client);
-
     expect(client.newSCPFileTransfer()).andReturn(xfer);
     xfer.upload("/path/to/file", "/path");
+    replayAll();
+    
+    classUnderTest.store(client, new File("/path/to/file"), URI.create("/path"));
+    
+    verifyAll();
+    
   }
 
   @Test
   public void testStore_missingPath() throws Exception {
-    classUnderTest.setSSHClient(client);
-
     expect(client.newSCPFileTransfer()).andReturn(xfer);
     xfer.upload("/path/to/file", "/");
+    
+    replayAll();
+
+    classUnderTest.store(client, new File("/path/to/file"), URI.create("/"));
+    
+    verifyAll();
   }
 }
