@@ -119,13 +119,14 @@ public class VolumeRuleManager implements IRuleManager {
     boolean ascending = vrule.isAscending();
     double minelev = vrule.getElevationMin();
     double maxelev = vrule.getElevationMax();
+    String elangles = vrule.getElevationAngles();
     List<String> sources = vrule.getSources();
     List<String> detectors = vrule.getDetectors();
     
     template.update("insert into beast_volume_rules" +
-                    " (rule_id, interval, timeout, ascending, minelev, maxelev) values" +
-                    " (?,?,?,?,?,?)", 
-                    new Object[]{ruleId, interval, timeout, ascending, minelev, maxelev});
+                    " (rule_id, interval, timeout, ascending, minelev, maxelev, elangles) values" +
+                    " (?,?,?,?,?,?,?)", 
+                    new Object[]{ruleId, interval, timeout, ascending, minelev, maxelev, elangles});
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
@@ -143,12 +144,13 @@ public class VolumeRuleManager implements IRuleManager {
     boolean ascending = vrule.isAscending();
     double minelev = vrule.getElevationMin();
     double maxelev = vrule.getElevationMax();
+    String elangles = vrule.getElevationAngles();
     List<String> sources = vrule.getSources();
     List<String> detectors = vrule.getDetectors();
     
     template.update("update beast_volume_rules set" +
-                    " interval=?, timeout=?, ascending=?, minelev=?, maxelev=? where rule_id=?", 
-                    new Object[]{interval, timeout, ascending, minelev, maxelev, ruleId});
+                    " interval=?, timeout=?, ascending=?, minelev=?, maxelev=?, elangles=? where rule_id=?", 
+                    new Object[]{interval, timeout, ascending, minelev, maxelev, elangles, ruleId});
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
@@ -224,6 +226,7 @@ public class VolumeRuleManager implements IRuleManager {
         boolean ascending = rs.getBoolean("ascending");
         double mine = rs.getDouble("minelev");
         double maxe = rs.getDouble("maxelev");
+        String elangles = rs.getString("elangles");
         List<String> sources = getSources(rule_id);
         List<String> detectors = getDetectors(rule_id);
         result.setRuleId(rule_id);
@@ -232,6 +235,7 @@ public class VolumeRuleManager implements IRuleManager {
         result.setAscending(ascending);
         result.setElevationMin(mine);
         result.setElevationMax(maxe);
+        result.setElevationAngles(elangles);
         result.setSources(sources);
         result.setDetectors(detectors);
         return result;

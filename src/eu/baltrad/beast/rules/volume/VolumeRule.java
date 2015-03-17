@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -129,6 +130,11 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
    * Detectors that should be run for this composite rule
    */
   private List<String> detectors = new ArrayList<String>();
+
+  /**
+   * The elevation angles
+   */
+  private List<Double> elevationAngles = new ArrayList<Double>();
   
   /**
    * Default constructor, however use manager for creation.
@@ -436,12 +442,26 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
    * @return true if the criterias has been met.
    */
   protected boolean areCriteriasMet(List<CatalogEntry> entries, DateTime dt, String source) {
-    for (CatalogEntry ce : entries) {
-      Double elangle = (Double)ce.getAttribute("/dataset1/where/elangle");
-      if ((ascending == true && elangle >= eMax) ||
-          (ascending == false && elangle <= eMin)) {
-        return true;
+    if (this.elevationAngles.size() == 0) {
+      for (CatalogEntry ce : entries) {
+        Double elangle = (Double)ce.getAttribute("/dataset1/where/elangle");
+        if ((ascending == true && elangle >= eMax) ||
+            (ascending == false && elangle <= eMin)) {
+          return true;
+        }
       }
+    } else {
+      ArrayList<Double> currentAngles = new ArrayList<Double>(); 
+      for (CatalogEntry ce : entries) {
+        Double elangle = (Double)ce.getAttribute("/dataset1/where/elangle");
+        currentAngles.add(elangle);
+      }
+      for (Double d : elevationAngles) {
+        if (!currentAngles.contains(d)) {
+          return false;
+        }
+      }
+      return true;
     }
     
     return false; 
@@ -595,5 +615,35 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
         ruleUtilities == null) {
       throw new BeanInitializationException("catalog, timeoutManager or ruleUtilities missing");
     }
+  }
+
+  public String getElevationAngles() {
+    if (elevationAngles.size() > 0) {
+      return StringUtils.join(elevationAngles.toArray(), ",");
+    }
+    return null;
+  }
+
+  public void setElevationAngles(String elevationAngles) throws IllegalArgumentException {
+    ArrayList<Double> newValues = new ArrayList<Double>();
+    if (elevationAngles != null && elevationAngles.trim().length() > 0) {
+      String[] tokens = elevationAngles.split("\\s*,\\s*");
+      for (String t : tokens) {
+        try {
+          newValues.add(Double.parseDouble(t));
+        } catch (Exception e) {
+          throw new IllegalArgumentException(e);
+        }
+      }
+      for (Double d : newValues) {
+        this.elevationAngles.add(d);
+      }
+    } else {
+      this.elevationAngles.clear();
+    }
+  }
+  
+  public List<Double> getElevationAnglesAsDoubles() {
+    return elevationAngles;
   }
 }

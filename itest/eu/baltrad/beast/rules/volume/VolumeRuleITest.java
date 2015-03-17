@@ -330,20 +330,49 @@ public class VolumeRuleITest extends TestCase {
     assertTrue(containsFile(msg.getFiles(), filemap.get(FIXTURES_1900[9])));
   }
   
-  protected HandleHelper storeFiles(VolumeRule testclass, String[] fixtures) throws Exception {
-    HandleHelper handled = new HandleHelper();
+  public void testHandle_ascendingDescendingScans() throws Exception {
+    classUnderTest.setElevationAngles("0.5,1.0,1.5,2.0,2.5,4.0,8.0,14.0,24.0,40.0");
     
-    for (String fname: fixtures) {
-      FileEntry f = catalog.getCatalog().store(new FileInputStream(getFilePath(fname)));
-      String path = f.getUuid().toString(); //catalog.getCatalog().getLocalStorage().store(f).toString();
-      handled.filemap.put(fname, path);
-      BltGenerateMessage msg = (BltGenerateMessage)testclass.handle(createDataMessage(f));
-      if (msg != null) {
-        handled.triggeringFiles.add(fname);
-        handled.messages.add(msg);
+    HandleHelper h_1845 = storeFiles(classUnderTest, FIXTURES_1845);
+    assertEquals(1, h_1845.triggeringFiles.size());
+    assertEquals("fixtures/scan_sehud_40.0_20110126T184700Z.h5", h_1845.triggeringFiles.get(0));
+    
+    // This is not a completely accurate way to test that ascending-descending scans are handled
+    // properly since the datetimes are out of sync but it should be enough for verifying that we
+    // are able to handle it.
+    HandleHelper h_1900 = storeFiles(classUnderTest, FIXTURES_1900, true, -2);
+    assertEquals(1, h_1900.triggeringFiles.size());
+    assertEquals("fixtures/scan_sehud_0.5_20110126T190000Z.h5", h_1900.triggeringFiles.get(0));
+  }
+
+  protected void storeOneFile(VolumeRule testclass, HandleHelper handled, String filename) throws Exception  {
+    FileEntry f = catalog.getCatalog().store(new FileInputStream(getFilePath(filename)));
+    String path = f.getUuid().toString();
+    handled.filemap.put(filename, path);
+    BltGenerateMessage msg = (BltGenerateMessage)testclass.handle(createDataMessage(f));
+    if (msg != null) {
+      handled.triggeringFiles.add(filename);
+      handled.messages.add(msg);
+    }
+  }
+  
+  protected HandleHelper storeFiles(VolumeRule testclass, String[] fixtures, boolean reverse, int startpos) throws Exception {
+    HandleHelper handled = new HandleHelper();
+
+    if (reverse) {
+      for (int i = fixtures.length-1+startpos; i >= 0; i--) {
+        storeOneFile(testclass, handled, fixtures[i]);
+      }
+    } else {
+      for (String fname : fixtures) {
+        storeOneFile(testclass, handled, fname);
       }
     }
     return handled;
+  }
+
+  protected HandleHelper storeFiles(VolumeRule testclass, String[] fixtures) throws Exception {
+    return storeFiles(testclass, fixtures, false, 0);
   }
   
   protected void validateMessage(BltGenerateMessage msg, String[] args, Collection<String> values) {

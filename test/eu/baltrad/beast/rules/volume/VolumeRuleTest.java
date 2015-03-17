@@ -216,6 +216,47 @@ public class VolumeRuleTest extends EasyMockSupport {
   }
 
   @Test
+  public void testAreCriteriasMet_withElevationAngles_hit() throws Exception {
+    DateTime now = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry(new Double(1.0)));
+    entries.add(createCatalogEntry(new Double(5.0)));
+    entries.add(createCatalogEntry(new Double(10.0)));
+    entries.add(createCatalogEntry(new Double(11.0)));
+
+    classUnderTest.setElevationMax(12.0);
+    classUnderTest.setAscending(true);
+    classUnderTest.setElevationAngles("1.0,5.0,10.0,11.0");
+    
+    replayAll();
+    
+    boolean result = classUnderTest.areCriteriasMet(entries, now, "seang");
+    
+    verifyAll();
+    assertEquals(true, result);
+  }
+  
+  @Test
+  public void testAreCriteriasMet_withElevationAngles_nohit() throws Exception {
+    DateTime now = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry(new Double(1.0)));
+    entries.add(createCatalogEntry(new Double(5.0)));
+    entries.add(createCatalogEntry(new Double(11.0)));
+
+    classUnderTest.setElevationMax(11.0);
+    classUnderTest.setAscending(true);
+    classUnderTest.setElevationAngles("1.0,5.0,10.0,11.0");
+    
+    replayAll();
+    
+    boolean result = classUnderTest.areCriteriasMet(entries, now, "seang");
+    
+    verifyAll();
+    assertEquals(false, result);
+  }
+  
+  @Test
   public void testCreateMessage() throws Exception {
     Date date = new Date(2010, 2, 1);
     Time time = new Time(1, 0, 0);
@@ -543,6 +584,71 @@ public class VolumeRuleTest extends EasyMockSupport {
     }
   }
   
+  @Test
+  public void testSetElevationAngles() {
+    classUnderTest.setElevationAngles("1.5,2,3.5,4");
+    assertEquals(4, classUnderTest.getElevationAnglesAsDoubles().size());
+    assertEquals(1.5, classUnderTest.getElevationAnglesAsDoubles().get(0), 2);
+    assertEquals(2.0, classUnderTest.getElevationAnglesAsDoubles().get(1), 2);
+    assertEquals(3.5, classUnderTest.getElevationAnglesAsDoubles().get(2), 2);
+    assertEquals(4.0, classUnderTest.getElevationAnglesAsDoubles().get(3), 2);
+  }
+  
+  @Test
+  public void testSetElevationAngles_withWhiteSpaces() {
+    classUnderTest.setElevationAngles(" 1.5 , 2, 3.5 , 4 ");
+    assertEquals(4, classUnderTest.getElevationAnglesAsDoubles().size());
+    assertEquals(1.5, classUnderTest.getElevationAnglesAsDoubles().get(0), 2);
+    assertEquals(2.0, classUnderTest.getElevationAnglesAsDoubles().get(1), 2);
+    assertEquals(3.5, classUnderTest.getElevationAnglesAsDoubles().get(2), 2);
+    assertEquals(4.0, classUnderTest.getElevationAnglesAsDoubles().get(3), 2);
+  }
+  
+  @Test
+  public void testSetElevationAngles_empty() {
+    classUnderTest.setElevationAngles("1.5,2,3.5,4");
+    assertEquals(4, classUnderTest.getElevationAnglesAsDoubles().size());
+    classUnderTest.setElevationAngles(null);
+    assertEquals(0, classUnderTest.getElevationAnglesAsDoubles().size());
+    classUnderTest.setElevationAngles("");
+    assertEquals(0, classUnderTest.getElevationAnglesAsDoubles().size());
+  }
+
+  @Test
+  public void testSetElevationAngles_badValues_alreadySet() {
+    classUnderTest.setElevationAngles("1.5,2,3.5,4");
+    try {
+      classUnderTest.setElevationAngles("1.5.2,3.5,4");
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      // pass
+    }
+    assertEquals(4, classUnderTest.getElevationAnglesAsDoubles().size());
+  }
+
+  @Test
+  public void testSetElevationAngles_badValues() {
+    try {
+      classUnderTest.setElevationAngles("1.5.2,3.5,4");
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      // pass
+    }
+    assertEquals(0, classUnderTest.getElevationAnglesAsDoubles().size());
+  }
+  
+  @Test
+  public void testGetElevationAngles() {
+    classUnderTest.setElevationAngles("1.5,2,3.5,4");
+    assertEquals("1.5,2.0,3.5,4.0", classUnderTest.getElevationAngles());
+  }
+
+  @Test
+  public void testGetElevationAngles_withSpacesInSet() {
+    classUnderTest.setElevationAngles(" 1.5 ,2, 3.5,4 ");
+    assertEquals("1.5,2.0,3.5,4.0", classUnderTest.getElevationAngles());
+  }
+
   
   protected CatalogEntry createCatalogEntry(Double elangle) {
     CatalogEntry entry = createMock(CatalogEntry.class);

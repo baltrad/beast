@@ -239,6 +239,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_volume_rules_with_elangles_field() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_volume_rules' AND column_name = 'elangles';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_volume_rules ADD COLUMN elangles TEXT;
+    UPDATE beast_volume_rules SET elangles=NULL;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -250,6 +260,7 @@ select update_beast_composite_rules_with_ctfilter();
 select create_beast_scansun_sources();
 select update_beast_composite_rules_with_qitotal_field();
 select create_beast_site2d_rules();
+select update_beast_volume_rules_with_elangles_field();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -262,4 +273,4 @@ drop function update_beast_composite_rules_with_ctfilter();
 drop function create_beast_scansun_sources();
 drop function update_beast_composite_rules_with_qitotal_field();
 drop function create_beast_site2d_rules();
-
+drop function update_beast_volume_rules_with_elangles_field();

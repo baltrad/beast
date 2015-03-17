@@ -131,13 +131,14 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setAscending(false);
     rule.setElevationMax(10.0);
     rule.setElevationMin(2.0);
+    rule.setElevationAngles("1.0,2.0,3.0");
     rule.setInterval(6);
     rule.setTimeout(20);
     rule.setSources(sources);
     rule.setDetectors(detectors);
     
     expect(jdbc.update("insert into beast_volume_rules (rule_id, interval, timeout, " +
-        "ascending, minelev, maxelev) values (?,?,?,?,?,?)", new Object[]{13, 6, 20, false, 2.0, 10.0})).andReturn(0);
+        "ascending, minelev, maxelev, elangles) values (?,?,?,?,?,?,?)", new Object[]{13, 6, 20, false, 2.0, 10.0, "1.0,2.0,3.0"})).andReturn(0);
 
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
@@ -170,13 +171,14 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setAscending(false);
     rule.setElevationMax(10.0);
     rule.setElevationMin(2.0);
+    rule.setElevationAngles("1.0,2.0,3.0");
     rule.setInterval(6);
     rule.setTimeout(20);
     rule.setSources(sources);
     rule.setDetectors(detectors);
     
     expect(jdbc.update("update beast_volume_rules set interval=?, timeout=?, " +
-        "ascending=?, minelev=?, maxelev=? where rule_id=?", new Object[]{6, 20, false, 2.0, 10.0, 13}))
+        "ascending=?, minelev=?, maxelev=?, elangles=? where rule_id=?", new Object[]{6, 20, false, 2.0, 10.0, "1.0,2.0,3.0", 13}))
         .andReturn(1);
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
@@ -277,6 +279,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     expect(rs.getBoolean("ascending")).andReturn(false);
     expect(rs.getDouble("minelev")).andReturn(2.0);
     expect(rs.getDouble("maxelev")).andReturn(10.0);
+    expect(rs.getString("elangles")).andReturn("1.0,2.0,3.0");
     expect(method.getSources(10)).andReturn(sources);
     expect(method.getDetectors(10)).andReturn(detectors);
     
@@ -305,6 +308,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     assertEquals(false, result.isAscending());
     assertEquals(2.0, result.getElevationMin(), 4);
     assertEquals(10.0, result.getElevationMax(), 4);
+    assertEquals("1.0,2.0,3.0", result.getElevationAngles());
     assertSame(sources, result.getSources());
   }
   

@@ -133,7 +133,8 @@ create table beast_volume_rules (
   timeout integer NOT NULL,
   ascending boolean NOT NULL,
   minelev decimal NOT NULL,
-  maxelev decimal NOT NULL
+  maxelev decimal NOT NULL,
+  elangles text
 );
 
 create table beast_volume_sources (
