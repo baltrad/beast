@@ -119,6 +119,11 @@ public class AcrrRule implements IRule, InitializingBean {
   private String quantity = "DBZH";
   
   /**
+   * If GRA coefficients should be applied or not
+   */
+  private boolean applyGRA = false;
+  
+  /**
    * The logger
    */
   private static Logger logger = LogManager.getLogger(AcrrRule.class);
@@ -384,7 +389,9 @@ public class AcrrRule implements IRule, InitializingBean {
         args.add("--accept="+ acceptableLoss);
         args.add("--quantity="+quantity);
         args.add("--distancefield=" + distancefield);
-        
+        if (isApplyGRA()) {
+          args.add("--applygra=true");
+        }
         result.setArguments(args.toArray(new String[0]));
         
         return result;
@@ -525,5 +532,19 @@ public class AcrrRule implements IRule, InitializingBean {
       return 5;
     }
     throw new IllegalArgumentException("Should not be possible to call getInterval with bad filesPerHour setting");
+  }
+
+  /**
+   * @return If GRA coefficients should be applied or not 
+   */
+  public boolean isApplyGRA() {
+    return applyGRA;
+  }
+
+  /**
+   * @param applyGRA If GRA coefficients should be applied or not
+   */
+  public void setApplyGRA(boolean applyGRA) {
+    this.applyGRA = applyGRA;
   }
 }

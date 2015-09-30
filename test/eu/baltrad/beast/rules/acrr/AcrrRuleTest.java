@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,8 @@ import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.TimeSelectionFilter;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -58,6 +61,7 @@ public class AcrrRuleTest extends EasyMockSupport {
     boolean isLessOrEqual(DateTime d1, DateTime d2);
     TimeSelectionFilter createFilter(DateTime sdt, DateTime edt, int interval);
     List<CatalogEntry> filterEntries(List<CatalogEntry> entries);
+    List<CatalogEntry> findFiles(DateTime now);
     int compareStoredDateTime(CatalogEntry e1, CatalogEntry e2);
   };
   
@@ -245,6 +249,73 @@ public class AcrrRuleTest extends EasyMockSupport {
   }
   
   @Test
+  public void handle() {
+    BltTriggerJobMessage message = new BltTriggerJobMessage();
+    
+    // Setup
+    final Methods methods = createMock(Methods.class);
+
+    DateTime dtNow = new DateTime();
+    DateTime nominalTime = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    List<String> uuids = new ArrayList<String>();
+    uuids.add("A");
+    uuids.add("B");
+    
+    expect(ruleUtil.nowDT()).andReturn(dtNow);
+    expect(ruleUtil.createNominalTime(dtNow, 15)).andReturn(nominalTime);
+    expect(methods.findFiles(dtNow)).andReturn(entries);
+    expect(ruleUtil.getUuidStringsFromEntries(entries)).andReturn(uuids);
+    
+    classUnderTest = new AcrrRule() {
+      @Override
+      protected List<CatalogEntry> findFiles(DateTime now) {
+        return methods.findFiles(now);
+      }
+    };
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setArea("swegmaps");
+    classUnderTest.setZrA(10.0);
+    classUnderTest.setZrB(11.0);
+    classUnderTest.setFilesPerHour(4);
+    classUnderTest.setHours(6);
+    classUnderTest.setAcceptableLoss(20);
+    classUnderTest.setQuantity("DBZH");
+    classUnderTest.setDistancefield("se.distancefield");
+    classUnderTest.setApplyGRA(true);
+    
+    
+    replayAll();
+    
+    // Test
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(message);
+    
+    // Verify
+    verifyAll();
+    
+    String dateStr = new Formatter().format("%d%02d%02d",dtNow.getDate().year(), dtNow.getDate().month(), dtNow.getDate().day()).toString();
+    String timeStr = new Formatter().format("%02d%02d%02d",dtNow.getTime().hour(), dtNow.getTime().minute(), dtNow.getTime().second()).toString();
+    
+    assertEquals("eu.baltrad.beast.GenerateAcrr", result.getAlgorithm());
+    assertEquals(2, result.getFiles().length);
+    assertEquals("A", result.getFiles()[0]);
+    assertEquals("B", result.getFiles()[1]);
+    assertEquals(11, result.getArguments().length);
+    assertEquals("--area=swegmaps", result.getArguments()[0]);
+    assertEquals("--date="+dateStr, result.getArguments()[1]);
+    assertEquals("--time="+timeStr, result.getArguments()[2]);
+    assertEquals("--zra=10.0", result.getArguments()[3]);
+    assertEquals("--zrb=11.0", result.getArguments()[4]);
+    assertEquals("--hours=6", result.getArguments()[5]);
+    assertEquals("--N=25", result.getArguments()[6]);
+    assertEquals("--accept=20", result.getArguments()[7]);
+    assertEquals("--quantity=DBZH", result.getArguments()[8]);
+    assertEquals("--distancefield=se.distancefield", result.getArguments()[9]);
+    assertEquals("--applygra=true", result.getArguments()[10]);
+  }
+  
+  @Test
   public void test_filterEntries() {
     final Methods methods = createMock(Methods.class);
 
@@ -376,18 +447,6 @@ public class AcrrRuleTest extends EasyMockSupport {
   
   //@Test
   public void testGet() {
-//    ett gäng filsträngar - tänkt på att antalet filer är filer_per_timme*timmar+1, t ex om man ackumulerar mellan kl. 0 och 1, och man har data var 15:e min, så ska man leta rätt på filerna 00:00, 00:15, 00:30, 00:45, och 01:00.
-//    datum vid slutet av integrationsperioden
-//    klockslag vid slutet av integrationsperioden
-//    filsträng för produkten
-//    antalet timmar i integrationenperioden
-//    koefficient A i Z-R relationen - default 200.0
-//    koefficient b i Z-R relationen - default 1.6
-//    tröskel för andelen bortfall i data under perioden - default 5%
-//    antalet förväntade inputprodukter per timme - t ex 4, 6, 12
-//    def generate(fstrs, DATE, TIME, ofstr, hrs=24, zr_a=200.0, zr_b=1.6,
-//        accept=0.05, iph=4):
-    
     classUnderTest.setArea("swegmaps_2000");
     classUnderTest.setHours(2);
     classUnderTest.setZrA(200.0);
@@ -400,23 +459,6 @@ public class AcrrRuleTest extends EasyMockSupport {
                                        // 6 => 00, 10, 20, 30, 40, 50, 00
                                        //12 => 00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 00
   classUnderTest.setAcceptableLoss(5); // In percent
-
-    
-//    // Either like this
-//    classUnderTest.setTriggeringMinutes(new string[]{"00", "15", "45"});
-//    
-//    // Or like this
-//                                       //  0 => Once an hour (i.e. when 00 gång i timmen, samma som 60
-//    classUnderTest.setInterval(0);     //  5 => Every 5 minute
-//                                       // 10 => Every 10 minute
-//                                       // 15 => Every 15 minute
-//                                       // 20 => Every 20 minute
-//                                       // 30 => Every 30 minute
-//                                       // 60 => Same as 0
-//    
-    // Instead we are using the scheduler for triggering, is a much more rational way.
-    
-    
   }
   
   @Test

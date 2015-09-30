@@ -178,7 +178,8 @@ create table beast_acrr_rules (
   object_type TEXT NOT NULL, 
   quantity TEXT NOT NULL,
   zra decimal NOT NULL,
-  zrb decimal NOT NULL
+  zrb decimal NOT NULL,
+  applygra boolean NOT NULL
 );
 
 create table beast_gra_rules (

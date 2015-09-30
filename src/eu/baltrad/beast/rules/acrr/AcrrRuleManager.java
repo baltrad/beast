@@ -86,9 +86,10 @@ public class AcrrRuleManager implements IRuleManager {
     String quantity = arule.getQuantity();
     double zrA = arule.getZrA();
     double zrB = arule.getZrB();
+    boolean applygra = arule.isApplyGRA();
     
-    template.update("INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb) VALUES (?,?,?,?,?,?,?,?,?,?)", 
-        new Object[]{rule_id, area, dfield, fhours, hours, aloss, otype, quantity, zrA, zrB});
+    template.update("INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra) VALUES (?,?,?,?,?,?,?,?,?,?,?)", 
+        new Object[]{rule_id, area, dfield, fhours, hours, aloss, otype, quantity, zrA, zrB, applygra});
     
     arule.setRuleId(rule_id);
   }
@@ -118,10 +119,11 @@ public class AcrrRuleManager implements IRuleManager {
     String quantity = arule.getQuantity();
     double zra = arule.getZrA();
     double zrb = arule.getZrB();
+    boolean applygra = arule.isApplyGRA();
     
     template.update("UPDATE beast_acrr_rules SET " +
-        "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=? WHERE rule_id=?",
-        new Object[]{area, dfield, fhours, hours, acceptable_loss, otype, quantity, zra, zrb, rule_id});
+        "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=? WHERE rule_id=?",
+        new Object[]{area, dfield, fhours, hours, acceptable_loss, otype, quantity, zra, zrb, applygra, rule_id});
     
     arule.setRuleId(rule_id);
   }
@@ -165,6 +167,7 @@ public class AcrrRuleManager implements IRuleManager {
         result.setQuantity(rs.getString("quantity"));
         result.setZrA(rs.getDouble("zra"));
         result.setZrB(rs.getDouble("zrb"));
+        result.setApplyGRA(rs.getBoolean("applygra"));
         return result;
       }
     };

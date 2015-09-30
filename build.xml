@@ -355,9 +355,9 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<fileset dir="${build.itest.dir}" includes="**/*Test.class"
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
       	<!--
-      	<fileset dir="${build.itest.dir}" includes="**/VolumeRule*ITest.class"
+      	<fileset dir="${build.itest.dir}" includes="**/AcrrRule*ITest.class"
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
-                 -->
+        -->
       </batchtest>
     </junit>
     <antcall target="stop-baltrad-bdb-server" />

@@ -93,6 +93,7 @@ public class AcrrRuleManagerITest extends TestCase {
     rule.setQuantity("DBZH");
     rule.setZrA(250.0);
     rule.setZrB(1.0);
+    rule.setApplyGRA(true);
     
     classUnderTest.store(4, rule);
     
@@ -111,6 +112,7 @@ public class AcrrRuleManagerITest extends TestCase {
     assertEquals("TH", result.getQuantity());
     assertEquals(300.0, result.getZrA(), 4);
     assertEquals(0.6, result.getZrB(), 4);
+    assertEquals(false, result.isApplyGRA());
   }
   
   public void test_update() throws Exception {
@@ -124,6 +126,7 @@ public class AcrrRuleManagerITest extends TestCase {
     rule.setQuantity("DBZH");
     rule.setZrA(100.0);
     rule.setZrB(2.0);
+    rule.setApplyGRA(true);
     
     classUnderTest.update(2, rule);
     
