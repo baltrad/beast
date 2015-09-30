@@ -57,7 +57,7 @@ BEGIN
       quantity TEXT NOT NULL,
       zra decimal NOT NULL,
       zrb decimal NOT NULL,
-      applygra boolean NOT NULL,
+      applygra boolean NOT NULL
     );
   ELSE
     RAISE NOTICE 'Table beast_acrr_rules already exists';
