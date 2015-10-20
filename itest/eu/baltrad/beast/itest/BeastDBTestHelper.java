@@ -25,9 +25,6 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
-import eu.baltrad.bdb.db.Database;
-import eu.baltrad.bdb.db.rest.RestfulDatabase;
-
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -39,8 +36,11 @@ import org.dbunit.dataset.excel.XlsDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+
+import eu.baltrad.bdb.db.Database;
+import eu.baltrad.bdb.db.rest.RestfulDatabase;
 
 /**
  * Singleton helper function...
@@ -172,7 +172,7 @@ public class BeastDBTestHelper {
   }
   
   public void tearDown() throws Exception {
-    SimpleJdbcTemplate template = new SimpleJdbcTemplate(source);
+    JdbcTemplate template = new JdbcTemplate(source);
     template.update("delete from beast_host_filter");
     template.update("delete from beast_router_dest");
     template.update("delete from beast_groovy_rules");

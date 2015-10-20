@@ -25,9 +25,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
-import org.springframework.scheduling.quartz.CronTriggerBean;
+import org.quartz.JobKey;
+import org.quartz.TriggerKey;
 
 import eu.baltrad.beast.manager.IBltMessageManager;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
@@ -63,17 +66,23 @@ public class BeastJobInvokerTest extends EasyMockSupport {
 
   @Test
   public void testExecute() throws Exception {
-    CronTriggerBean trigger = new CronTriggerBean();
-    trigger.setName("a.id");
-    JobDetail detail = new JobDetail();
-    detail.setName("a.name");
-    detail.getJobDataMap().put("messageManager", msgManager);
+    CronTrigger trigger = createMock(CronTrigger.class);
+    JobDetail detail = createMock(JobDetail.class); //new JobDetail();
+    TriggerKey key = new TriggerKey("a.id","beast");
+    JobKey jobKey = new JobKey("a.name", "beast");
+    JobDataMap jobDataMap = new JobDataMap();
+    jobDataMap.put("messageManager", msgManager);
 
     BltTriggerJobMessage msg = new BltTriggerJobMessage();
     
     expect(ctx.getJobDetail()).andReturn(detail);
+    expect(detail.getKey()).andReturn(jobKey);
+    expect(detail.getJobDataMap()).andReturn(jobDataMap);
+    
     expect(ctx.getTrigger()).andReturn(trigger);
+    expect(trigger.getKey()).andReturn(key);
     expect(methods.createMessage("a.id","a.name")).andReturn(msg);
+    
     msgManager.manage(msg);
 
     replayAll();

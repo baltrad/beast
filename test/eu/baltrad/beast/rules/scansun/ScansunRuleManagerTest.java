@@ -32,8 +32,8 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.rules.IRule;
 
@@ -49,11 +49,11 @@ public class ScansunRuleManagerTest extends EasyMockSupport {
   };
   
   private ScansunRuleManager classUnderTest = null;
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
   
   @Before
   public void setUp() throws Exception {
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     classUnderTest = new ScansunRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
   }
@@ -72,8 +72,9 @@ public class ScansunRuleManagerTest extends EasyMockSupport {
     sources.add("B");
     rule.setSources(sources);
     
-    expect(jdbc.queryForInt("SELECT COUNT(*) FROM beast_scansun_sources WHERE rule_id=?",
-        new Object[]{13})).andReturn(0);
+    expect(jdbc.queryForObject("SELECT COUNT(*) FROM beast_scansun_sources WHERE rule_id=?",
+        int.class,
+        13)).andReturn(0);
     
     expect(jdbc.update(
         "INSERT INTO beast_scansun_sources (rule_id, source)"+
@@ -98,14 +99,14 @@ public class ScansunRuleManagerTest extends EasyMockSupport {
     List<String> sources = new ArrayList<String>();
     ScansunRule srule = createMock(ScansunRule.class);
     
-    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    final RowMapper<String> mapper = new RowMapper<String>() {
       public String mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new ScansunRuleManager() {
       @Override
-      protected ParameterizedRowMapper<String> getSourceMapper() {
+      protected RowMapper<String> getSourceMapper() {
         return mapper;
       }
       @Override

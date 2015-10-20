@@ -31,8 +31,8 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
@@ -51,11 +51,11 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
   };
 
   private CompositingRuleManager classUnderTest = null;
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
   
   @Before
   public void setUp() throws Exception {
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     classUnderTest = new CompositingRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
   }
@@ -96,13 +96,13 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
   @Test
   public void testLoad() throws Exception {
     CompositingRule rule = new CompositingRule();
-    final ParameterizedRowMapper<CompositingRule> mapper = new ParameterizedRowMapper<CompositingRule>() {
+    final RowMapper<CompositingRule> mapper = new RowMapper<CompositingRule>() {
       public CompositingRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new CompositingRuleManager() {
-      protected ParameterizedRowMapper<CompositingRule> getCompsiteRuleMapper() {
+      protected RowMapper<CompositingRule> getCompsiteRuleMapper() {
         return mapper;
       }
     };
@@ -257,13 +257,13 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
   public void testGetSources() throws Exception {
     List<String> sources = new ArrayList<String>();
     
-    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    final RowMapper<String> mapper = new RowMapper<String>() {
       public String mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new CompositingRuleManager() {
-      protected ParameterizedRowMapper<String> getSourceMapper() {
+      protected RowMapper<String> getSourceMapper() {
         return mapper;
       }
     };
@@ -321,13 +321,13 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
   public void testGetDetectors() throws Exception {
     List<String> detectors = new ArrayList<String>();
     
-    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    final RowMapper<String> mapper = new RowMapper<String>() {
       public String mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new CompositingRuleManager() {
-      protected ParameterizedRowMapper<String> getDetectorMapper() {
+      protected RowMapper<String> getDetectorMapper() {
         return mapper;
       }
     };
@@ -385,7 +385,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
       }
     };
     
-    ParameterizedRowMapper<CompositingRule> mapper = classUnderTest.getCompsiteRuleMapper();
+    RowMapper<CompositingRule> mapper = classUnderTest.getCompsiteRuleMapper();
 
     replayAll();
     

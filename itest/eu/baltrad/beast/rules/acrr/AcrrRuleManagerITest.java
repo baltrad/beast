@@ -19,19 +19,16 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.acrr;
 
-import java.io.File;
+import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.beast.rules.volume.VolumeRuleManager;
-import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
@@ -43,7 +40,7 @@ public class AcrrRuleManagerITest extends TestCase {
   
   private BeastDBTestHelper helper = null;
   private AcrrRuleManager classUnderTest = null;
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   private Catalog catalog = null;
   private IRuleUtilities utilities = null;
 
@@ -54,7 +51,7 @@ public class AcrrRuleManagerITest extends TestCase {
     helper.purgeBaltradDB();
     
     helper.cleanInsert(this);
-    template = (SimpleJdbcOperations)dbcontext.getBean("jdbcTemplate");
+    template = (JdbcOperations)dbcontext.getBean("jdbcTemplate");
     
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");

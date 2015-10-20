@@ -19,6 +19,10 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.gmap;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -26,13 +30,10 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
-import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -40,13 +41,13 @@ import static org.junit.Assert.assertEquals;
  * @date Mar 23, 2012
  */
 public class GoogleMapRuleManagerTest extends EasyMockSupport {
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   private Catalog catalog = null;
   private GoogleMapRuleManager classUnderTest = null;
   
   @Before
   public void setUp() throws Exception {
-    template = createMock(SimpleJdbcOperations.class);
+    template = createMock(JdbcOperations.class);
     catalog = createMock(Catalog.class);
     classUnderTest = new GoogleMapRuleManager();
     classUnderTest.setCatalog(catalog);
@@ -80,14 +81,14 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
   public void testLoad() throws Exception {
     GoogleMapRule rule = new GoogleMapRule();
     
-    final ParameterizedRowMapper<GoogleMapRule> mapper = new ParameterizedRowMapper<GoogleMapRule>() {
+    final RowMapper<GoogleMapRule> mapper = new RowMapper<GoogleMapRule>() {
       @Override
       public GoogleMapRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new GoogleMapRuleManager() {
-      protected ParameterizedRowMapper<GoogleMapRule> getGmapRuleMapper() {
+      protected RowMapper<GoogleMapRule> getGmapRuleMapper() {
         return mapper;
       }
     };
@@ -140,7 +141,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
   
   @Test
   public void testGmapRowMapper() throws Exception {
-    ParameterizedRowMapper<GoogleMapRule> mapper = classUnderTest.getGmapRuleMapper();
+    RowMapper<GoogleMapRule> mapper = classUnderTest.getGmapRuleMapper();
     ResultSet rs = createMock(ResultSet.class);
     
     expect(rs.getString("area")).andReturn("sswe");

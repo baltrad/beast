@@ -30,7 +30,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 /**
  * @author Anders Henja
@@ -38,11 +38,11 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
  */
 public class DbConnectionStatusReporterTest extends EasyMockSupport {
   private DbConnectionStatusReporter classUnderTest = null;
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   @Before
   public void setUp() throws Exception {
-    template = createMock(SimpleJdbcOperations.class);
+    template = createMock(JdbcOperations.class);
     classUnderTest = new DbConnectionStatusReporter();
     classUnderTest.setJdbcTemplate(template);
   }
@@ -66,7 +66,7 @@ public class DbConnectionStatusReporterTest extends EasyMockSupport {
   
   @Test
   public void testStatus() {
-    expect(template.queryForInt("SELECT 1")).andReturn(1);
+    expect(template.queryForObject("SELECT 1", int.class)).andReturn(1);
     replayAll();
     
     Set<SystemStatus> result = classUnderTest.getStatus(new HashMap<String, Object>());
@@ -78,7 +78,7 @@ public class DbConnectionStatusReporterTest extends EasyMockSupport {
   
   @Test
   public void testStatus_noConnection() {
-    expect(template.queryForInt("SELECT 1")).andThrow(new DataAccessException("smugg") {
+    expect(template.queryForObject("SELECT 1", int.class)).andThrow(new DataAccessException("smugg") {
       private static final long serialVersionUID = 1L; });
     
     replayAll();

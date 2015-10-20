@@ -5,3 +5,4 @@ dist
 !test/eu/baltrad/beast/rules/dist
 !itest/eu/baltrad/beast/rules/dist
 *.swp
+.ruby-version

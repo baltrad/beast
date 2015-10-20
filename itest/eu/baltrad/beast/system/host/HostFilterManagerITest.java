@@ -19,8 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.system.host;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
 
 import junit.framework.Assert;
@@ -31,7 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 
@@ -50,7 +48,7 @@ public class HostFilterManagerITest {
     helper = (BeastDBTestHelper)context.getBean("helper");
     helper.cleanInsert(this);
     classUnderTest = new HostFilterManager();
-    classUnderTest.setTemplate((SimpleJdbcOperations)context.getBean("jdbcTemplate"));
+    classUnderTest.setTemplate((JdbcOperations)context.getBean("jdbcTemplate"));
   }
 
   @After

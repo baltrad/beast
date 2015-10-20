@@ -27,8 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * @author Anders Henja
@@ -52,7 +52,7 @@ public class HostFilterManager implements IHostFilterManager, InitializingBean {
   /**
    * The db access
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
 
   /**
    * The patterns
@@ -74,7 +74,7 @@ public class HostFilterManager implements IHostFilterManager, InitializingBean {
   /**
    * @param template the template to use
    */
-  public void setTemplate(SimpleJdbcOperations template) {
+  public void setTemplate(JdbcOperations template) {
     this.template = template;
   }
   
@@ -164,8 +164,8 @@ public class HostFilterManager implements IHostFilterManager, InitializingBean {
    * Returns the row mapper for mapping entries
    * @return
    */
-  protected ParameterizedRowMapper<String> getEntryMapper() {
-    return new ParameterizedRowMapper<String>() {
+  protected RowMapper<String> getEntryMapper() {
+    return new RowMapper<String>() {
       @Override
       public String mapRow(ResultSet rs, int rown) throws SQLException {
         return rs.getString("name");

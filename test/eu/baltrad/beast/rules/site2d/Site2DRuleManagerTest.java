@@ -33,8 +33,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
@@ -52,7 +52,7 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     public List<String> getDetectors(int rule_id);
   };
   
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   private IRuleUtilities ruleUtilities = null;
   private Catalog catalog = null;
   private Methods methods = null;
@@ -83,7 +83,7 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
       }
     };
     methods = createMock(Methods.class);
-    template = createMock(SimpleJdbcOperations.class);
+    template = createMock(JdbcOperations.class);
     ruleUtilities = createMock(IRuleUtilities.class);
     catalog = createMock(Catalog.class);
     classUnderTest.setTemplate(template);
@@ -226,14 +226,14 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
   @Test
   public void load() {
     Site2DRule rule = new Site2DRule();
-    final ParameterizedRowMapper<Site2DRule> mapper = new ParameterizedRowMapper<Site2DRule>() {
+    final RowMapper<Site2DRule> mapper = new RowMapper<Site2DRule>() {
       public Site2DRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new Site2DRuleManager() {
       @Override
-      protected ParameterizedRowMapper<Site2DRule> getSite2DRuleMapper() {
+      protected RowMapper<Site2DRule> getSite2DRuleMapper() {
         return mapper;
       }
     };
@@ -297,13 +297,13 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
   public void testGetSources() throws Exception {
     List<String> sources = new ArrayList<String>();
     
-    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    final RowMapper<String> mapper = new RowMapper<String>() {
       public String mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new Site2DRuleManager() {
-      protected ParameterizedRowMapper<String> getSourceMapper() {
+      protected RowMapper<String> getSourceMapper() {
         return mapper;
       }
     };
@@ -367,13 +367,13 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
   public void testGetDetectors() throws Exception {
     List<String> detectors = new ArrayList<String>();
     
-    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    final RowMapper<String> mapper = new RowMapper<String>() {
       public String mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new Site2DRuleManager() {
-      protected ParameterizedRowMapper<String> getDetectorMapper() {
+      protected RowMapper<String> getDetectorMapper() {
         return mapper;
       }
     };

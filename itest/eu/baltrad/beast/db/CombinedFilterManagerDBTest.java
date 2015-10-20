@@ -31,7 +31,7 @@ import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.easymock.EasyMock;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 
@@ -54,7 +54,7 @@ public class CombinedFilterManagerDBTest extends TestCase {
     childManager = createMock(IFilterManager.class);
 
     classUnderTest = new CombinedFilterManager();
-    SimpleJdbcOperations template = (SimpleJdbcOperations)context.getBean("jdbcTemplate");
+    JdbcOperations template = (JdbcOperations)context.getBean("jdbcTemplate");
     classUnderTest.setJdbcTemplate(template);
     classUnderTest.setChildManager(childManager);
   }

@@ -29,25 +29,29 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.scheduling.quartz.CronTriggerBean;
-import org.springframework.scheduling.quartz.JobDetailBean;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import eu.baltrad.beast.manager.IBltMessageManager;
@@ -63,23 +67,23 @@ public class BeastSchedulerTest extends EasyMockSupport {
     public GeneratedKeyHolder createKeyHolder();
     public void scheduleJob(CronEntry entry) throws SchedulerException;
     public void rescheduleJob(int id, CronEntry entry) throws SchedulerException;
-    public void registerJob(String jobName) throws org.quartz.SchedulerException;
+    public JobDetail registerJob(String jobName) throws org.quartz.SchedulerException;
     public BeanPropertySqlParameterSource getParameterSource(CronEntry entry);
-    public CronTriggerBean createTrigger(CronEntry entry);
-    public JobDetailBean createJob(String name);
-    public ParameterizedRowMapper<CronEntry> getScheduleMapper();
+    public CronTrigger createTrigger(CronEntry entry, JobDetail jobDetail);
+    public JobDetailFactoryBean createJob(String name);
+    public RowMapper<CronEntry> getScheduleMapper();
   };
   
   private SchedulerFactoryBean sfBean = null;
   private MockMethods methods = null;
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
   private BeastScheduler classUnderTest = null;
 
   @Before
   public void setUp() throws Exception {
     sfBean = createMock(SchedulerFactoryBean.class);
     methods = createMock(MockMethods.class);
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     
     classUnderTest = new BeastScheduler() {
       protected CronEntry createCronEntry(String expression, String name) {
@@ -97,16 +101,16 @@ public class BeastSchedulerTest extends EasyMockSupport {
       protected void rescheduleJob(int id, CronEntry entry) throws SchedulerException {
         methods.rescheduleJob(id, entry);
       }
-      protected void registerJob(String jobName) throws org.quartz.SchedulerException {
-        methods.registerJob(jobName);
+      protected JobDetail registerJob(String jobName) throws org.quartz.SchedulerException {
+        return methods.registerJob(jobName);
       }
       protected BeanPropertySqlParameterSource getParameterSource(CronEntry entry) {
         return methods.getParameterSource(entry);
       }
-      protected CronTriggerBean createTrigger(CronEntry entry) {
-        return methods.createTrigger(entry);
+      protected CronTrigger createTrigger(CronEntry entry, JobDetail jobDetail) {
+        return methods.createTrigger(entry, jobDetail);
       }
-      protected ParameterizedRowMapper<CronEntry> getScheduleMapper() {
+      protected RowMapper<CronEntry> getScheduleMapper() {
         return methods.getScheduleMapper();
       }
     };
@@ -132,7 +136,7 @@ public class BeastSchedulerTest extends EasyMockSupport {
     entries.add(e2);
     entries.add(e3);
     
-    ParameterizedRowMapper<CronEntry> mapper = new ParameterizedRowMapper<CronEntry>() {
+    RowMapper<CronEntry> mapper = new RowMapper<CronEntry>() {
       public CronEntry mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
@@ -270,7 +274,7 @@ public class BeastSchedulerTest extends EasyMockSupport {
     expect(sfBean.getScheduler()).andReturn(scheduler);
     expect(jdbc.update("delete from beast_scheduled_jobs where id=?",
         new Object[]{2})).andReturn(1);
-    expect(scheduler.unscheduleJob("2", "beast")).andReturn(true);
+    expect(scheduler.unscheduleJob(new TriggerKey("2", "beast"))).andReturn(true);
     
     replayAll();
     
@@ -308,7 +312,7 @@ public class BeastSchedulerTest extends EasyMockSupport {
     
     expect(jdbc.update("delete from beast_scheduled_jobs where id=?",
         new Object[]{2})).andReturn(1);
-    expect(scheduler.unscheduleJob("2", "beast")).andThrow(schedulerException);
+    expect(scheduler.unscheduleJob(new TriggerKey("2", "beast"))).andThrow(schedulerException);
     
     replayAll();
     
@@ -325,98 +329,110 @@ public class BeastSchedulerTest extends EasyMockSupport {
   @Test
   public void testGetSchedule() throws Exception {
     Scheduler scheduler = createMock(Scheduler.class);
-    CronTrigger t1 = new CronTrigger();
-    t1.setName("1");
-    t1.setJobName("A");
-    t1.setCronExpression("1 * * * * ?");
-    CronTrigger t2 = new CronTrigger();
-    t2.setName("2");
-    t2.setJobName("B");
-    t2.setCronExpression("2 * * * * ?");
-    CronTrigger t3 = new CronTrigger();
-    t3.setName("3");
-    t3.setJobName("C");
-    t3.setCronExpression("3 * * * * ?");
-    SimpleTrigger t4 = new SimpleTrigger();
-    Trigger[] tg1 = new Trigger[]{t1, t2};
-    Trigger[] tg2 = new Trigger[]{t3, t4};
+    CronTrigger t1 = createMock(CronTrigger.class);
+    CronTrigger t2 = createMock(CronTrigger.class);
+    TriggerKey t1k = new TriggerKey("1","beast");
+    TriggerKey t2k = new TriggerKey("2","beast");
+    Set<JobKey> keys = new HashSet<JobKey>();
+    JobKey key1 = new JobKey("A", "beast");
+    JobKey key2 = new JobKey("B", "beast");
+    keys.add(key1);
+    keys.add(key2);
+    
+    List<Trigger> triggers1 = new ArrayList<Trigger>();
+    triggers1.add(t1);
+    
+    List<Trigger> triggers2 = new ArrayList<Trigger>();
+    triggers2.add(t2);
     
     expect(sfBean.getScheduler()).andReturn(scheduler);
-    expect(scheduler.getJobNames("beast")).andReturn(new String[]{"A", "B", "C"});
-    expect(scheduler.getTriggersOfJob("A", "beast")).andReturn(new Trigger[]{});
-    expect(scheduler.getTriggersOfJob("B", "beast")).andReturn(tg1);
-    expect(scheduler.getTriggersOfJob("C", "beast")).andReturn(tg2);
+    expect(scheduler.getJobKeys(GroupMatcher.jobGroupEquals("beast"))).andReturn(keys);
+    expect(scheduler.getTriggersOfJob(key1)).andReturn((ArrayList)triggers1);
+    expect(t1.getKey()).andReturn(t1k);
+    expect(t1.getCronExpression()).andReturn("1 * * * * ?");
+    expect(t1.getJobKey()).andReturn(key1);
+    
+    expect(scheduler.getTriggersOfJob(key2)).andReturn((ArrayList)triggers2);
+    expect(t2.getKey()).andReturn(t2k);
+    expect(t2.getCronExpression()).andReturn("3 * * * * ?");
+    expect(t2.getJobKey()).andReturn(key2);
     
     replayAll();
     
     List<CronEntry> entries = classUnderTest.getSchedule();
 
     verifyAll();
-    assertEquals(3, entries.size());
+    assertEquals(2, entries.size());
     assertEquals(1, entries.get(0).getId());
     assertEquals("1 * * * * ?", entries.get(0).getExpression());
     assertEquals("A", entries.get(0).getName());
     assertEquals(2, entries.get(1).getId());
-    assertEquals("2 * * * * ?", entries.get(1).getExpression());
+    assertEquals("3 * * * * ?", entries.get(1).getExpression());
     assertEquals("B", entries.get(1).getName());
-    assertEquals(3, entries.get(2).getId());
-    assertEquals("3 * * * * ?", entries.get(2).getExpression());
-    assertEquals("C", entries.get(2).getName());
-    
   }
   
   @Test
   public void testCreateTrigger() throws Exception {
+    JobDetail jobDetail = createMock(JobDetail.class);
     CronEntry entry = new CronEntry();
     entry.setId(10);
     entry.setExpression("0 * * * * ?");
     entry.setName("job");
+
+    expect(jobDetail.getKey()).andReturn(new JobKey("job", "beast"));
+    replayAll();
     
     classUnderTest = new BeastScheduler();
+    CronTrigger result = classUnderTest.createTrigger(entry, jobDetail);
     
-    CronTriggerBean result = classUnderTest.createTrigger(entry);
-    
-    assertEquals("10", result.getName());
-    assertEquals("beast", result.getGroup());
-    assertEquals("job", result.getJobName());
-    assertEquals("beast", result.getJobGroup());
+    verifyAll();
+    assertEquals("10", result.getKey().getName());
+    assertEquals("beast", result.getKey().getGroup());
+    assertEquals("job", result.getJobKey().getName());
+    assertEquals("beast", result.getJobKey().getGroup());
     assertEquals("0 * * * * ?", result.getCronExpression());
   }
  
   @Test
   public void testCreateTrigger_badExpression() throws Exception {
+    JobDetail jobDetail = createMock(JobDetail.class);
     CronEntry entry = new CronEntry();
     entry.setId(10);
     entry.setExpression("0 * * ?");
     entry.setName("job");
     
+    expect(jobDetail.getKey()).andReturn(new JobKey("job", "beast"));
+    
+    replayAll();
     classUnderTest = new BeastScheduler();
     
     try {
-      classUnderTest.createTrigger(entry);
+      classUnderTest.createTrigger(entry, jobDetail);
       fail("Expected SchedulerException");
     } catch (SchedulerException e) {
       // pass
     }
+    verifyAll();
   }
   
   @Test
   public void testScheduleJob() throws Exception {
     Scheduler scheduler = createMock(Scheduler.class);
-    CronTriggerBean triggerBean = new CronTriggerBean();
+    JobDetail jobDetail = createMock(JobDetail.class);
+    CronTrigger triggerBean = createMock(CronTrigger.class);
     CronEntry entry = new CronEntry(1, "0 * * * * ?", "A");
     
-    expect(methods.createTrigger(entry)).andReturn(triggerBean);
-    methods.registerJob("A");
+    expect(methods.registerJob("A")).andReturn(jobDetail);
+    expect(methods.createTrigger(entry, jobDetail)).andReturn(triggerBean);
     expect(sfBean.getScheduler()).andReturn(scheduler);
     expect(scheduler.scheduleJob(triggerBean)).andReturn(new Date(0));
     
     classUnderTest = new BeastScheduler() {
-      protected CronTriggerBean createTrigger(CronEntry entry) {
-        return methods.createTrigger(entry);
+      protected CronTrigger createTrigger(CronEntry entry, JobDetail jobDetail) {
+        return methods.createTrigger(entry, jobDetail);
       }
-      protected void registerJob(String jobName) throws org.quartz.SchedulerException {
-        methods.registerJob(jobName);
+      protected JobDetail registerJob(String jobName) throws org.quartz.SchedulerException {
+        return methods.registerJob(jobName);
       }      
     };
     classUnderTest.setSchedulerFactoryBean(sfBean);
@@ -431,23 +447,24 @@ public class BeastSchedulerTest extends EasyMockSupport {
 
   @Test
   public void testRescheduleJob() throws Exception {
+    JobDetail jobDetail = createMock(JobDetail.class);
     Scheduler scheduler = createMock(Scheduler.class);
-    CronTriggerBean triggerBean = new CronTriggerBean();
+    CronTrigger triggerBean = createMock(CronTrigger.class);
     CronEntry entry = new CronEntry(1, "0 * * * * ?", "A");
     
-    expect(methods.createTrigger(entry)).andReturn(triggerBean);
-    methods.registerJob("A");
+    expect(methods.createTrigger(entry, jobDetail)).andReturn(triggerBean);
+    expect(methods.registerJob("A")).andReturn(jobDetail);
     expect(sfBean.getScheduler()).andReturn(scheduler);
     
-    expect(scheduler.unscheduleJob("1", "beast")).andReturn(true);
+    expect(scheduler.unscheduleJob(new TriggerKey("1", "beast"))).andReturn(true);
     expect(scheduler.scheduleJob(triggerBean)).andReturn(new Date());
     
     classUnderTest = new BeastScheduler() {
-      protected CronTriggerBean createTrigger(CronEntry entry) {
-        return methods.createTrigger(entry);
+      protected CronTrigger createTrigger(CronEntry entry, JobDetail jobDetail) {
+        return methods.createTrigger(entry, jobDetail);
       }
-      protected void registerJob(String jobName) throws org.quartz.SchedulerException {
-        methods.registerJob(jobName);
+      protected JobDetail registerJob(String jobName) throws org.quartz.SchedulerException {
+        return methods.registerJob(jobName);
       }      
     };
     classUnderTest.setSchedulerFactoryBean(sfBean);
@@ -464,16 +481,18 @@ public class BeastSchedulerTest extends EasyMockSupport {
   public void testRegisterJob() throws Exception {
     Scheduler scheduler = createMock(Scheduler.class);
 
-    JobDetailBean detail = new JobDetailBean();
+    JobDetailFactoryBean detailFactory = createMock(JobDetailFactoryBean.class);
+    JobDetail detail = createMock(JobDetail.class);
     classUnderTest = new BeastScheduler() {
-      protected JobDetailBean createJob(String name) {
+      protected JobDetailFactoryBean createJob(String name) {
         return methods.createJob(name);
       }      
     };
     classUnderTest.setSchedulerFactoryBean(sfBean);
     
-    expect(methods.createJob("ABC")).andReturn(detail);
+    expect(methods.createJob("ABC")).andReturn(detailFactory);
     expect(sfBean.getScheduler()).andReturn(scheduler);
+    expect(detailFactory.getObject()).andReturn(detail);
     scheduler.addJob(detail, true);
     
     replayAll();
@@ -487,17 +506,19 @@ public class BeastSchedulerTest extends EasyMockSupport {
   public void testRegisterJob_addJobThrowsException() throws Exception {
     Scheduler scheduler = createMock(Scheduler.class);
 
-    JobDetailBean detail = new JobDetailBean();
+    JobDetailFactoryBean detailFactory = createMock(JobDetailFactoryBean.class);
+    JobDetail detail = createMock(JobDetail.class);
     org.quartz.SchedulerException exc = new org.quartz.SchedulerException();
     classUnderTest = new BeastScheduler() {
-      protected JobDetailBean createJob(String name) {
+      protected JobDetailFactoryBean createJob(String name) {
         return methods.createJob(name);
       }      
     };
     classUnderTest.setSchedulerFactoryBean(sfBean);
     
-    expect(methods.createJob("ABC")).andReturn(detail);
+    expect(methods.createJob("ABC")).andReturn(detailFactory);
     expect(sfBean.getScheduler()).andReturn(scheduler);
+    expect(detailFactory.getObject()).andReturn(detail);
     scheduler.addJob(detail, true);
     expectLastCall().andThrow(exc);
 
@@ -524,10 +545,7 @@ public class BeastSchedulerTest extends EasyMockSupport {
   
   @Test
   public void testGetNamedParameterTemplate() throws Exception {
-    SimpleJdbcOperations template = createMock(SimpleJdbcOperations.class);
-    JdbcOperations operations = createMock(JdbcOperations.class);
-    
-    expect(template.getJdbcOperations()).andReturn(operations);
+    JdbcOperations template = createMock(JdbcOperations.class);
     
     classUnderTest = new BeastScheduler();
     classUnderTest.setJdbcTemplate(template);
@@ -535,7 +553,7 @@ public class BeastSchedulerTest extends EasyMockSupport {
     replayAll();
     
     NamedParameterJdbcTemplate result = classUnderTest.getNamedParameterTemplate();
-    assertSame(operations, result.getJdbcOperations());
+    assertSame(template, result.getJdbcOperations());
 
     verifyAll();
   }
@@ -549,12 +567,12 @@ public class BeastSchedulerTest extends EasyMockSupport {
     
     replayAll();
     
-    JobDetailBean result = classUnderTest.createJob("abc");
+    JobDetailFactoryBean result = classUnderTest.createJob("abc");
     
     verifyAll();
-    assertEquals("abc", result.getName());
-    assertEquals("beast", result.getGroup());
-    assertSame(BeastJobInvoker.class, result.getJobClass());
+    assertEquals("abc", result.getObject().getKey().getName());
+    assertEquals("beast", result.getObject().getKey().getGroup());
+    assertSame(BeastJobInvoker.class, result.getObject().getJobClass());
     assertSame(mgr, result.getJobDataMap().get("messageManager"));
   }
   

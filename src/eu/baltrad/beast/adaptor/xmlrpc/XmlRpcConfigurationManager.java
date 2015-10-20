@@ -21,7 +21,7 @@ package eu.baltrad.beast.adaptor.xmlrpc;
 import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
@@ -36,7 +36,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
   /**
    * The jdbc template
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * The xmlrpc command generator, will be set in all created adaptors
@@ -53,7 +53,7 @@ public class XmlRpcConfigurationManager implements IAdaptorConfigurationManager 
    * Sets the jdbc template, used for testing.
    * @param template the template to set
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
   

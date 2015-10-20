@@ -42,8 +42,8 @@ public class BeastJobInvoker implements Job {
   public void execute(JobExecutionContext ctx) throws JobExecutionException {
     JobDetail detail = ctx.getJobDetail() ;
     IBltMessageManager mgr = (IBltMessageManager)detail.getJobDataMap().get("messageManager");
-    String id = ctx.getTrigger().getName();
-    String name = detail.getName();
+    String id = ctx.getTrigger().getKey().getName();
+    String name = detail.getKey().getName();
     logger.debug("Running triggered job message with id="+id+" and name="+name);
     BltTriggerJobMessage msg = createMessage(id, name);
     mgr.manage(msg);

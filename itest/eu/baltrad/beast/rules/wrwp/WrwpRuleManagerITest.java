@@ -19,10 +19,10 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.wrwp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +32,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
-import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.beast.rules.acrr.AcrrRule;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -50,7 +48,7 @@ public class WrwpRuleManagerITest {
 
   private BeastDBTestHelper helper = null;
   private WrwpRuleManager classUnderTest = null;
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   private Catalog catalog = null;
   private IRuleUtilities utilities = null;
 
@@ -62,7 +60,7 @@ public class WrwpRuleManagerITest {
     helper.purgeBaltradDB();
     
     helper.cleanInsert(this);
-    template = (SimpleJdbcOperations)dbcontext.getBean("jdbcTemplate");
+    template = (JdbcOperations)dbcontext.getBean("jdbcTemplate");
     
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");

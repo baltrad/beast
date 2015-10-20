@@ -30,7 +30,7 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.db.IFilterManager;
@@ -44,14 +44,14 @@ public class RuleFilterManagerTest extends EasyMockSupport {
   };
 
   private RuleFilterManagerMethods methods;
-  private SimpleJdbcOperations jdbc;
+  private JdbcOperations jdbc;
   private IFilterManager filterManager;
   private RuleFilterManager classUnderTest;
 
   @Before
   public void setUp() throws Exception {
     methods = createMock(RuleFilterManagerMethods.class);
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     filterManager = createMock(IFilterManager.class);
     classUnderTest = new RuleFilterManager() {
       @Override

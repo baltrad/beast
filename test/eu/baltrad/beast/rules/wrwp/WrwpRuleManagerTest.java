@@ -32,8 +32,8 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
@@ -47,10 +47,10 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
   static interface Methods {
     public void updateSources(int rule_id, List<String> sources);
     public List<String> getSources(int rule_id);
-    public ParameterizedRowMapper<String> getSourceMapper();
+    public RowMapper<String> getSourceMapper();
   }
   
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
   private WrwpRuleManager classUnderTest = null;
   private Methods methods = null;
   
@@ -59,7 +59,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
    */
   @Before
   public void setUp() throws Exception {
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     methods = createMock(Methods.class);
     
     classUnderTest = new WrwpRuleManager() {
@@ -72,7 +72,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
         return methods.getSources(rule_id);
       }
       @Override
-      protected ParameterizedRowMapper<String> getSourceMapper() {
+      protected RowMapper<String> getSourceMapper() {
         return methods.getSourceMapper();
       }
     };    
@@ -122,7 +122,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
   public void test_load() throws Exception {
     WrwpRule rule = new WrwpRule();
     
-    final ParameterizedRowMapper<WrwpRule> mapper = new ParameterizedRowMapper<WrwpRule>() {
+    final RowMapper<WrwpRule> mapper = new RowMapper<WrwpRule>() {
       public WrwpRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
@@ -130,7 +130,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
 
     classUnderTest = new WrwpRuleManager() {
       @Override
-      protected ParameterizedRowMapper<WrwpRule> getWrwpRuleMapper() {
+      protected RowMapper<WrwpRule> getWrwpRuleMapper() {
         return mapper;
       }
     };
@@ -244,7 +244,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
   @Test
   public void test_getSources() throws Exception {
     List<String> sources = new ArrayList<String>();
-    ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    RowMapper<String> mapper = new RowMapper<String>() {
       @Override
       public String mapRow(ResultSet rs, int arg1) throws SQLException {
         return null;
@@ -253,7 +253,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     
     classUnderTest = new WrwpRuleManager() {
       @Override
-      protected ParameterizedRowMapper<String> getSourceMapper() {
+      protected RowMapper<String> getSourceMapper() {
         return methods.getSourceMapper();
       }
     };

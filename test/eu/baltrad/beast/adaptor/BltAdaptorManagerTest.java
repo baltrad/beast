@@ -38,8 +38,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.message.IBltMessage;
 
@@ -54,7 +54,7 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
   }
  
   private IAdaptorConfigurationManager xyzManager = null;
-  private SimpleJdbcOperations jdbcTemplate = null;
+  private JdbcOperations jdbcTemplate = null;
   
   private BltAdaptorManager classUnderTest = null;
   private IAdaptorConfiguration xyzConfiguration = null;
@@ -70,7 +70,7 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
         return "XYZ";
       }
     };
-    jdbcTemplate = createMock(SimpleJdbcOperations.class); 
+    jdbcTemplate = createMock(JdbcOperations.class); 
 
     classUnderTest = new BltAdaptorManager();
     classUnderTest.getTypeRegistry().put("XYZ", xyzManager);
@@ -172,8 +172,9 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
            new Object[]{"SA1","XYZ"}))
       .andReturn(0);
     
-    expect(jdbcTemplate.queryForInt("select adaptor_id from beast_adaptors where name=?", 
-           new Object[]{"SA1"}))
+    expect(jdbcTemplate.queryForObject("select adaptor_id from beast_adaptors where name=?",
+           int.class,
+           "SA1"))
       .andReturn(2);
     
     expect(xyzManager.store(2, xyzConfiguration)).andReturn(adaptor);
@@ -538,7 +539,7 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
       }
     };
     
-    ParameterizedRowMapper<IAdaptor> result = classUnderTest.getAdaptorMapper();
+    RowMapper<IAdaptor> result = classUnderTest.getAdaptorMapper();
     
     // Verify
     assertSame(adaptor, result.mapRow(null, 0));
@@ -604,7 +605,7 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
     readAdaptors.add(a1);
     readAdaptors.add(a2);
     
-    final ParameterizedRowMapper<IAdaptor> mapper = new ParameterizedRowMapper<IAdaptor>() {
+    final RowMapper<IAdaptor> mapper = new RowMapper<IAdaptor>() {
       public IAdaptor mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
@@ -614,7 +615,7 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
         (Object[])null)).andReturn(readAdaptors);
     
     classUnderTest = new BltAdaptorManager() {
-      protected ParameterizedRowMapper<IAdaptor> getAdaptorMapper() {
+      protected RowMapper<IAdaptor> getAdaptorMapper() {
         return mapper;
       }
     };

@@ -33,8 +33,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
@@ -53,11 +53,11 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
   };
   
   private VolumeRuleManager classUnderTest = null;
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
 
   @Before
   public void setUp() throws Exception {
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     classUnderTest = new VolumeRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
   }
@@ -97,13 +97,13 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
   @Test
   public void testLoad() throws Exception {
     VolumeRule rule = new VolumeRule();
-    final ParameterizedRowMapper<VolumeRule> mapper = new ParameterizedRowMapper<VolumeRule>() {
+    final RowMapper<VolumeRule> mapper = new RowMapper<VolumeRule>() {
       public VolumeRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new VolumeRuleManager() {
-      protected ParameterizedRowMapper<VolumeRule> getVolumeRuleMapper() {
+      protected RowMapper<VolumeRule> getVolumeRuleMapper() {
         return mapper;
       }
     };
@@ -240,13 +240,13 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
   public void testGetSources() throws Exception {
     List<String> sources = new ArrayList<String>();
     
-    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    final RowMapper<String> mapper = new RowMapper<String>() {
       public String mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     classUnderTest = new VolumeRuleManager() {
-      protected ParameterizedRowMapper<String> getSourceMapper() {
+      protected RowMapper<String> getSourceMapper() {
         return mapper;
       }
     };
@@ -295,7 +295,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
       }
     };
     
-    ParameterizedRowMapper<VolumeRule> mapper = classUnderTest.getVolumeRuleMapper();
+    RowMapper<VolumeRule> mapper = classUnderTest.getVolumeRuleMapper();
     
     replayAll();
     

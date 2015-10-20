@@ -24,17 +24,12 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.db.FileEntry;
-import eu.baltrad.bdb.util.Date;
-import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IRule;
-import eu.baltrad.beast.rules.composite.CompositingRule;
 
 /**
  * @author Anders Henja

@@ -32,19 +32,19 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * @author Anders Henja
  */
 public class HostFilterManagerTest extends EasyMockSupport {
   private HostFilterManager classUnderTest = null;
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   @Before
   public void setUp() throws Exception {
-    template = createMock(SimpleJdbcOperations.class);
+    template = createMock(JdbcOperations.class);
     classUnderTest = new HostFilterManager();
     classUnderTest.setTemplate(template);
   }
@@ -235,14 +235,14 @@ public class HostFilterManagerTest extends EasyMockSupport {
     strings.add("192.168.1.1");
     strings.add("192.168.1.2");
     
-    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    final RowMapper<String> mapper = new RowMapper<String>() {
       @Override
       public String mapRow(ResultSet rs, int rown) throws SQLException {
         return null;
       }
     };
     classUnderTest = new HostFilterManager() {
-      protected ParameterizedRowMapper<String> getEntryMapper() {
+      protected RowMapper<String> getEntryMapper() {
         return mapper;
       }
     };
@@ -268,14 +268,14 @@ public class HostFilterManagerTest extends EasyMockSupport {
     strings.add("192.168.a.1");
     strings.add("192.168.1.2");
     
-    final ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    final RowMapper<String> mapper = new RowMapper<String>() {
       @Override
       public String mapRow(ResultSet rs, int rown) throws SQLException {
         return null;
       }
     };
     classUnderTest = new HostFilterManager() {
-      protected ParameterizedRowMapper<String> getEntryMapper() {
+      protected RowMapper<String> getEntryMapper() {
         return mapper;
       }
     };

@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +40,7 @@ public class RuleFilterManager {
   /**
    * JDBC operations
    */
-  private SimpleJdbcOperations jdbcOps = null;
+  private JdbcOperations jdbcOps = null;
   
   /**
    */
@@ -49,7 +49,7 @@ public class RuleFilterManager {
   /**
    * @param jdbcOps the JDBC operations to set
    */
-  public void setSimpleJdbcOperations(SimpleJdbcOperations jdbcOps) {
+  public void setSimpleJdbcOperations(JdbcOperations jdbcOps) {
     this.jdbcOps = jdbcOps;
   }
 
@@ -81,7 +81,7 @@ public class RuleFilterManager {
   protected Map<String, Integer> getRuleFilterKeyIdMap(int ruleId) {
     List<Map<String, Integer>> data = jdbcOps.query(
       "select key, filter_id from beast_rule_filters where rule_id=?",
-      new ParameterizedRowMapper<Map<String, Integer>>() {
+      new RowMapper<Map<String, Integer>>() {
         @Override
         public Map<String, Integer> mapRow(ResultSet rs, int rowNum)
             throws SQLException {

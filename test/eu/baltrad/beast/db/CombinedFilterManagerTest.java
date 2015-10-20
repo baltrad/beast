@@ -24,17 +24,17 @@ import static org.easymock.EasyMock.expect;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 public class CombinedFilterManagerTest extends EasyMockSupport {
   private IFilterManager childManager;
-  private SimpleJdbcOperations jdbcOps;
+  private JdbcOperations jdbcOps;
   private CombinedFilterManager classUnderTest;
 
   @Before
   public void setUp() {
     childManager = createMock(IFilterManager.class);
-    jdbcOps = createMock(SimpleJdbcOperations.class);
+    jdbcOps = createMock(JdbcOperations.class);
     classUnderTest = new CombinedFilterManager();
     classUnderTest.setJdbcTemplate(jdbcOps);
     classUnderTest.setChildManager(childManager);

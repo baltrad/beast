@@ -22,20 +22,20 @@ package eu.baltrad.beast.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 public class AttributeFilterManager implements IFilterManager {
-  private SimpleJdbcOperations template;
+  private JdbcOperations template;
 
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
 
   @Override
   public AttributeFilter load(int id) {
-    ParameterizedRowMapper<AttributeFilter> mapper =
-      new ParameterizedRowMapper<AttributeFilter>() {
+    RowMapper<AttributeFilter> mapper =
+      new RowMapper<AttributeFilter>() {
         @Override
         public AttributeFilter mapRow(ResultSet rs, int rnum)
             throws SQLException {

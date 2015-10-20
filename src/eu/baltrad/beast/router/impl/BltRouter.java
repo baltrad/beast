@@ -27,8 +27,8 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +58,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   /**
    * The JDBC template managing the database connectivity.
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
 
   /**
    * The route definitions.
@@ -108,7 +108,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    * Sets the jdbc template.
    * @param template the template
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
   
@@ -404,9 +404,10 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
           " values (?,?,?,?,?)",
           new Object[]{def.getName(), type, def.getAuthor(), def.getDescription(), 
               def.isActive()});
-      int ruleid = template.queryForInt(
+      int ruleid = template.queryForObject(
           "select rule_id from beast_router_rules where name=?",
-          new Object[]{def.getName()});
+          int.class,
+          def.getName());
       manager.store(ruleid, rule);
       if (rule instanceof IRuleIdAware) {
         ((IRuleIdAware)rule).setRuleId(ruleid);
@@ -470,7 +471,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    */
   @Override
   public synchronized void afterPropertiesSet() throws Exception {
-    ParameterizedRowMapper<RouteDefinition> mapper = getRouteDefinitionMapper();
+    RowMapper<RouteDefinition> mapper = getRouteDefinitionMapper();
     definitions = template.query(
         "select rule_id, name,type,author,description,active from beast_router_rules",
         mapper);
@@ -498,7 +499,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    * @return a list of recipients.
    */
   protected synchronized List<String> getRecipients(int rule_id) {
-    ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
+    RowMapper<String> mapper = new RowMapper<String>() {
       public String mapRow(ResultSet rs, int rowNum) throws SQLException {
         return rs.getString("name");
       }
@@ -512,8 +513,8 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    * Returns the definition mapper
    * @return the definition mapper
    */
-  protected ParameterizedRowMapper<RouteDefinition> getRouteDefinitionMapper() {
-    return new ParameterizedRowMapper<RouteDefinition>() {
+  protected RowMapper<RouteDefinition> getRouteDefinitionMapper() {
+    return new RowMapper<RouteDefinition>() {
       public RouteDefinition mapRow(ResultSet rs, int rowNum) throws SQLException {
         int rule_id = rs.getInt("rule_id");
         String name = rs.getString("name");

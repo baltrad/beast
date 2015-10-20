@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -49,7 +49,7 @@ public class XmlRpcConfigurationManagerDBTest extends TestCase {
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.cleanInsert(this);
     classUnderTest = new XmlRpcConfigurationManager();
-    classUnderTest.setJdbcTemplate((SimpleJdbcOperations)context.getBean("jdbcTemplate"));
+    classUnderTest.setJdbcTemplate((JdbcOperations)context.getBean("jdbcTemplate"));
   }
   
   /**

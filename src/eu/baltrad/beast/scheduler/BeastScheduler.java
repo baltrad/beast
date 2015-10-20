@@ -25,21 +25,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.scheduling.quartz.CronTriggerBean;
-import org.springframework.scheduling.quartz.JobDetailBean;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +68,14 @@ import eu.baltrad.beast.manager.IBltMessageManager;
  * @author Anders Henja
  */
 public class BeastScheduler implements IBeastScheduler, InitializingBean, DisposableBean {
+//  static
+//  {
+//      Logger rootLogger = Logger.getRootLogger();
+//      rootLogger.setLevel(Level.DEBUG);
+//      rootLogger.addAppender(new ConsoleAppender(
+//                 new PatternLayout("%-6r [%p] %c - %m%n")));
+//  }
+  
   /**
    * The group to use for all scheduled jobs
    */
@@ -77,7 +94,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
   /**
    * The database access
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * If the scheduler factory bean has been created internally or comes from
@@ -111,7 +128,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
   /**
    * @param template the template
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
   
@@ -124,6 +141,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
       sf = createScheduleFactory();
       sf.afterPropertiesSet();
       internalSfb = true;
+      sf.start();
     }
     List<CronEntry> entries = template.query("select id, expression, name from beast_scheduled_jobs order by id",
         getScheduleMapper(),
@@ -205,7 +223,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
       Scheduler scheduler = sf.getScheduler();
       template.update("delete from beast_scheduled_jobs where id=?",
           new Object[]{id});
-      scheduler.unscheduleJob(""+id, GROUP_NAME);
+      scheduler.unscheduleJob(new TriggerKey(""+id, GROUP_NAME));
     } catch (org.quartz.SchedulerException e) {
       throw new SchedulerException(e);
     } catch (DataAccessException e) {
@@ -221,17 +239,18 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
     List<CronEntry> result = new ArrayList<CronEntry>();
     try {
       Scheduler scheduler = sf.getScheduler();
-      String[] jobnames = scheduler.getJobNames(GROUP_NAME);
-      for (String job : jobnames) {
-        Trigger[] triggers = scheduler.getTriggersOfJob(job, GROUP_NAME);
+      Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(GROUP_NAME));
+      for (JobKey k: keys) {
+        @SuppressWarnings("unchecked")
+        List<Trigger> triggers = (List<Trigger>)scheduler.getTriggersOfJob(k);
         for (Trigger trigger : triggers) {
           if (trigger instanceof CronTrigger) {
             CronEntry entry = new CronEntry();
             CronTrigger ct = (CronTrigger)trigger;
             try {
-              entry.setId(Integer.parseInt(ct.getName()));
+              entry.setId(Integer.parseInt(ct.getKey().getName()));
               entry.setExpression(ct.getCronExpression());
-              entry.setName(ct.getJobName());
+              entry.setName(ct.getJobKey().getName());
               result.add(entry);
             } catch (NumberFormatException e) {
               e.printStackTrace();
@@ -295,15 +314,16 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
    * @param entry the entry to create a cron trigger from
    * @return a cron trigger
    */
-  protected CronTriggerBean createTrigger(CronEntry entry) {
+  protected CronTrigger createTrigger(CronEntry entry, JobDetail jobDetail) {
     try {
-      CronTriggerBean result = new CronTriggerBean();
+      CronTriggerFactoryBean result = new CronTriggerFactoryBean();
       result.setName(""+entry.getId());
       result.setGroup(GROUP_NAME);
-      result.setJobName(entry.getName());
-      result.setJobGroup(GROUP_NAME);
       result.setCronExpression(entry.getExpression());
-      return result;
+      result.setStartDelay(0);
+      result.setJobDetail(jobDetail);
+      result.afterPropertiesSet();
+      return result.getObject();
     } catch (ParseException e) {
       throw new SchedulerException(e);
     }    
@@ -316,10 +336,8 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
    */
   protected void scheduleJob(CronEntry entry) {
     try {
-      CronTriggerBean trigger = createTrigger(entry);
-      
-      registerJob(entry.getName());
-      
+      JobDetail jobDetail = registerJob(entry.getName());
+      CronTrigger trigger = createTrigger(entry, jobDetail);
       sf.getScheduler().scheduleJob(trigger);
     } catch (org.quartz.SchedulerException e) {
       throw new SchedulerException(e);
@@ -335,9 +353,10 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
   protected void rescheduleJob(int id, CronEntry entry) {
     try {
       Scheduler scheduler = sf.getScheduler();
-      CronTriggerBean trigger = createTrigger(entry);
-      scheduler.unscheduleJob(""+id, "beast");
-      registerJob(entry.getName());
+      scheduler.unscheduleJob(new TriggerKey(""+id, GROUP_NAME));
+      
+      JobDetail jobDetail = registerJob(entry.getName());
+      CronTrigger trigger = createTrigger(entry, jobDetail);
       scheduler.scheduleJob(trigger);
     } catch (org.quartz.SchedulerException e) {
       throw new SchedulerException(e);
@@ -349,9 +368,11 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
    * @param jobName the beast job name
    * @throws SchedulerException 
    */
-  protected void registerJob(String jobName) throws org.quartz.SchedulerException {
-    JobDetailBean bean = createJob(jobName);
-    sf.getScheduler().addJob(bean, true);
+  protected JobDetail registerJob(String jobName) throws org.quartz.SchedulerException {
+    JobDetailFactoryBean bean = createJob(jobName);
+    JobDetail detail = bean.getObject();
+    sf.getScheduler().addJob(detail, true);
+    return detail;
   }
 
   /**
@@ -368,7 +389,7 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
    * @return the named parameter template
    */
   protected NamedParameterJdbcTemplate getNamedParameterTemplate() {
-    return new NamedParameterJdbcTemplate(template.getJdbcOperations());
+    return new NamedParameterJdbcTemplate(template);
   }
 
   /**
@@ -392,8 +413,8 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
    * @param jobName the job name
    * @return the bean
    */
-  protected JobDetailBean createJob(String jobName) {
-    JobDetailBean result = new JobDetailBean();
+  protected JobDetailFactoryBean createJob(String jobName) {
+    JobDetailFactoryBean result = new JobDetailFactoryBean();
     
     if (jobName == null) {
       throw new NullPointerException();
@@ -403,6 +424,10 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
     result.setGroup("beast");
     result.setJobClass(BeastJobInvoker.class);
     result.getJobDataMap().put("messageManager", messageManager);
+    result.setDurability(true);
+    result.setBeanName(jobName);
+    
+    result.afterPropertiesSet();
     
     return result;    
   }
@@ -410,8 +435,8 @@ public class BeastScheduler implements IBeastScheduler, InitializingBean, Dispos
   /**
    * @return the schedule mapper to use
    */
-  protected ParameterizedRowMapper<CronEntry> getScheduleMapper() {
-    return new ParameterizedRowMapper<CronEntry>() {
+  protected RowMapper<CronEntry> getScheduleMapper() {
+    return new RowMapper<CronEntry>() {
       @Override
       public CronEntry mapRow(ResultSet rs, int rownum) throws SQLException {
         return doMapRow(rs, rownum);

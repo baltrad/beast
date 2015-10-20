@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 
@@ -38,7 +38,7 @@ public class AttributeFilterManagerDBTest extends TestCase {
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.cleanInsert(this);
     classUnderTest = new AttributeFilterManager();
-    SimpleJdbcOperations template = (SimpleJdbcOperations)context.getBean("jdbcTemplate");
+    JdbcOperations template = (JdbcOperations)context.getBean("jdbcTemplate");
     classUnderTest.setJdbcTemplate(template);
   }
 

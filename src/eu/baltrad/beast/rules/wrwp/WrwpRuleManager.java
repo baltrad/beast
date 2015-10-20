@@ -23,8 +23,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.IRule;
@@ -38,7 +38,7 @@ public class WrwpRuleManager implements IRuleManager {
   /**
    * The jdbc template
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * The catalog
@@ -53,7 +53,7 @@ public class WrwpRuleManager implements IRuleManager {
   /**
    * @param template the jdbc template to set
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
   
@@ -177,8 +177,8 @@ public class WrwpRuleManager implements IRuleManager {
    * The mapper when reading a wrwp rule from the database
    * @return the mapper
    */
-  protected ParameterizedRowMapper<WrwpRule> getWrwpRuleMapper() {
-    return new ParameterizedRowMapper<WrwpRule>() {
+  protected RowMapper<WrwpRule> getWrwpRuleMapper() {
+    return new RowMapper<WrwpRule>() {
       @Override
       public WrwpRule mapRow(ResultSet rs, int ri) throws SQLException {
         WrwpRule result = (WrwpRule)createRule();
@@ -198,8 +198,8 @@ public class WrwpRuleManager implements IRuleManager {
   /**
    * @return the mapper when reading the wrwp sources from the database
    */
-  protected ParameterizedRowMapper<String> getSourceMapper() {
-    return new ParameterizedRowMapper<String>() {
+  protected RowMapper<String> getSourceMapper() {
+    return new RowMapper<String>() {
       @Override
       public String mapRow(ResultSet rs, int arg1) throws SQLException {
         return rs.getString("source");

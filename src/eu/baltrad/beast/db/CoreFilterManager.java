@@ -25,8 +25,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,9 +39,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class CoreFilterManager implements IFilterManager {
   private Map<String, IFilterManager> subManagers = null;
-  private SimpleJdbcOperations template;
+  private JdbcOperations template;
   private Map<Integer, IFilter> cachedFilters = new HashMap<Integer, IFilter>();
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
 
@@ -136,7 +136,7 @@ public class CoreFilterManager implements IFilterManager {
     final String type = filterType;
 
     KeyHolder keyHolder = new GeneratedKeyHolder();
-    template.getJdbcOperations().update(
+    template.update(
       new PreparedStatementCreator() {
         public PreparedStatement createPreparedStatement(Connection conn)
             throws SQLException {

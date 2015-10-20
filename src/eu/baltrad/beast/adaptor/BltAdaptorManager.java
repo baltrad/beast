@@ -30,8 +30,8 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +54,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
   /**
    * The database access
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * The list of registered adaptors.
@@ -104,7 +104,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    * Sets the jdbc template to be used by this class
    * @param template the template
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
   
@@ -149,7 +149,7 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
       try {
         template.update("insert into beast_adaptors (name,type) values (?,?)",
             new Object[]{name,type});
-        index = template.queryForInt("select adaptor_id from beast_adaptors where name=?", name);
+        index = template.queryForObject("select adaptor_id from beast_adaptors where name=?", int.class, name);
         IAdaptor result = mgr.store(index, configuration);
         adaptors.put(name, result);
         reporter.info("00001", "Registered adaptor '%s' of type %s", name, type);
@@ -394,8 +394,8 @@ public class BltAdaptorManager implements IBltAdaptorManager, InitializingBean {
    * database tables.
    * @return the parameterized row mapper
    */
-  protected ParameterizedRowMapper<IAdaptor> getAdaptorMapper() {
-    return new ParameterizedRowMapper<IAdaptor>() {
+  protected RowMapper<IAdaptor> getAdaptorMapper() {
+    return new RowMapper<IAdaptor>() {
       @Override
       public IAdaptor mapRow(ResultSet rs, int rownum) throws SQLException {
         return doMapAdaptorRow(rs, rownum);

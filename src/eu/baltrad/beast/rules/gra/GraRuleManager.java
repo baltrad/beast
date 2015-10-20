@@ -22,8 +22,8 @@ package eu.baltrad.beast.rules.gra;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.IRule;
@@ -38,7 +38,7 @@ public class GraRuleManager implements IRuleManager {
   /**
    * The jdbc template
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * The catalog
@@ -53,7 +53,7 @@ public class GraRuleManager implements IRuleManager {
   /**
    * @param template the jdbc template to set
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
   
@@ -150,8 +150,8 @@ public class GraRuleManager implements IRuleManager {
   /**
    * @return the gra rule mapper to use for creating a rule from the database result.
    */
-  protected ParameterizedRowMapper<GraRule> getGraRuleMapper() {
-    return new ParameterizedRowMapper<GraRule>() {
+  protected RowMapper<GraRule> getGraRuleMapper() {
+    return new RowMapper<GraRule>() {
       @Override
       public GraRule mapRow(ResultSet rs, int rnum)
           throws SQLException {

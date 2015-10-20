@@ -23,8 +23,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.IRule;
@@ -39,7 +39,7 @@ public class Site2DRuleManager implements IRuleManager {
   /**
    * The jdbc template
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * The rule utilities
@@ -146,11 +146,11 @@ public class Site2DRuleManager implements IRuleManager {
     return rule;
   }
 
-  public SimpleJdbcOperations getTemplate() {
+  public JdbcOperations getTemplate() {
     return template;
   }
 
-  public void setTemplate(SimpleJdbcOperations template) {
+  public void setTemplate(JdbcOperations template) {
     this.template = template;
   }
 
@@ -230,8 +230,8 @@ public class Site2DRuleManager implements IRuleManager {
   /**
    * @return the CompositingRule mapper
    */
-  protected ParameterizedRowMapper<Site2DRule> getSite2DRuleMapper() {
-    return new ParameterizedRowMapper<Site2DRule>() {
+  protected RowMapper<Site2DRule> getSite2DRuleMapper() {
+    return new RowMapper<Site2DRule>() {
       @Override
       public Site2DRule mapRow(ResultSet rs, int rnum)
           throws SQLException {
@@ -261,8 +261,8 @@ public class Site2DRuleManager implements IRuleManager {
   /**
    * @return the source mapper
    */
-  protected  ParameterizedRowMapper<String> getSourceMapper() { 
-    return new ParameterizedRowMapper<String>() {
+  protected  RowMapper<String> getSourceMapper() { 
+    return new RowMapper<String>() {
       public String mapRow(ResultSet rs, int rowNum) throws SQLException {
         return rs.getString("source");
       }
@@ -272,8 +272,8 @@ public class Site2DRuleManager implements IRuleManager {
   /**
    * @return the detector mapper
    */
-  protected  ParameterizedRowMapper<String> getDetectorMapper() { 
-    return new ParameterizedRowMapper<String>() {
+  protected  RowMapper<String> getDetectorMapper() { 
+    return new RowMapper<String>() {
       public String mapRow(ResultSet rs, int rowNum) throws SQLException {
         return rs.getString("name");
       }

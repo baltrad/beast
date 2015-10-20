@@ -33,8 +33,8 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.router.RouteDefinition;
@@ -51,14 +51,14 @@ public class BltRouterManagerDBTest extends EasyMockSupport {
   };
   
   private BltRouter classUnderTest = null;
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
   private IRuleManager ruleManager = null;
   private Map<String,IRuleManager> ruleManagerMap = null;
   private IMethods methods = null;
   
   @Before
   public void setUp() throws Exception {
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     ruleManager = createMock(IRuleManager.class);
     methods = createMock(IMethods.class);
     
@@ -138,8 +138,9 @@ public class BltRouterManagerDBTest extends EasyMockSupport {
         " values (?,?,?,?,?)",
         new Object[]{"some name", "sometype", "nisse", "some description", true})).andReturn(0);
     
-    expect(jdbc.queryForInt("select rule_id from beast_router_rules where name=?",
-        new Object[]{"some name"})).andReturn(13);
+    expect(jdbc.queryForObject("select rule_id from beast_router_rules where name=?",
+        int.class,
+        "some name")).andReturn(13);
 
     ruleManager.store(13, rule);
     methods.storeRecipients(13, recipients);
@@ -211,14 +212,14 @@ public class BltRouterManagerDBTest extends EasyMockSupport {
   public void testAfterPropertiesSet() throws Exception {
     List<RouteDefinition> definitions = new ArrayList<RouteDefinition>();
     
-    final ParameterizedRowMapper<RouteDefinition> mapper = new ParameterizedRowMapper<RouteDefinition>() {
+    final RowMapper<RouteDefinition> mapper = new RowMapper<RouteDefinition>() {
       public RouteDefinition mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
     };
     
     classUnderTest = new BltRouter() {
-      protected ParameterizedRowMapper<RouteDefinition> getRouteDefinitionMapper() {
+      protected RowMapper<RouteDefinition> getRouteDefinitionMapper() {
         return mapper;
       }
     };

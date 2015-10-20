@@ -33,8 +33,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 
 /**
@@ -46,11 +46,11 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
   };
 
   private AnomalyDetectorManager classUnderTest = null;
-  private SimpleJdbcOperations jdbcTemplate = null;
+  private JdbcOperations jdbcTemplate = null;
 
   @Before
   public void setUp() throws Exception {
-    jdbcTemplate = createMock(SimpleJdbcOperations.class);
+    jdbcTemplate = createMock(JdbcOperations.class);
     classUnderTest = new AnomalyDetectorManager();
     classUnderTest.setJdbcTemplate(jdbcTemplate);
   }
@@ -172,7 +172,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
   
   @Test
   public void testList() throws Exception {
-    final ParameterizedRowMapper<AnomalyDetector> mapper = new ParameterizedRowMapper<AnomalyDetector>() {
+    final RowMapper<AnomalyDetector> mapper = new RowMapper<AnomalyDetector>() {
       @Override
       public AnomalyDetector mapRow(ResultSet rs, int rownr) throws SQLException {
         return null;
@@ -185,7 +185,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
         (Object[])null)).andReturn(actual);
     
     classUnderTest = new AnomalyDetectorManager() {
-      protected ParameterizedRowMapper<AnomalyDetector> getMapper() {
+      protected RowMapper<AnomalyDetector> getMapper() {
         return mapper;
       }
     };
@@ -203,7 +203,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
   public void testGet() throws Exception {
     AnomalyDetector detector = new AnomalyDetector();
     
-    final ParameterizedRowMapper<AnomalyDetector> mapper = new ParameterizedRowMapper<AnomalyDetector>() {
+    final RowMapper<AnomalyDetector> mapper = new RowMapper<AnomalyDetector>() {
       @Override
       public AnomalyDetector mapRow(ResultSet rs, int rownr) throws SQLException {
         return null;
@@ -215,7 +215,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
         new Object[]{"nisse"})).andReturn(detector);
     
     classUnderTest = new AnomalyDetectorManager() {
-      protected ParameterizedRowMapper<AnomalyDetector> getMapper() {
+      protected RowMapper<AnomalyDetector> getMapper() {
         return mapper;
       }
     };
@@ -231,7 +231,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
 
   @Test
   public void testGet_notFound() throws Exception {
-    final ParameterizedRowMapper<AnomalyDetector> mapper = new ParameterizedRowMapper<AnomalyDetector>() {
+    final RowMapper<AnomalyDetector> mapper = new RowMapper<AnomalyDetector>() {
       @Override
       public AnomalyDetector mapRow(ResultSet rs, int rownr) throws SQLException {
         return null;
@@ -245,7 +245,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
         });
     
     classUnderTest = new AnomalyDetectorManager() {
-      protected ParameterizedRowMapper<AnomalyDetector> getMapper() {
+      protected RowMapper<AnomalyDetector> getMapper() {
         return mapper;
       }
     };
@@ -331,7 +331,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
     expect(resultSet.getString("description")).andReturn("the description");
     replayAll();
     
-    ParameterizedRowMapper<AnomalyDetector> mapper = classUnderTest.getMapper();
+    RowMapper<AnomalyDetector> mapper = classUnderTest.getMapper();
     AnomalyDetector result = mapper.mapRow(resultSet, 1);
 
     verifyAll();

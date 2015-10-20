@@ -23,15 +23,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 public class CombinedFilterManager implements IFilterManager {
-  private SimpleJdbcOperations template;
+  private JdbcOperations template;
   private IFilterManager childManager;
 
   private class CombinedFilterMapper
-      implements ParameterizedRowMapper<CombinedFilter> {
+      implements RowMapper<CombinedFilter> {
     @Override
     public CombinedFilter mapRow(ResultSet rs, int rnum)
         throws SQLException {
@@ -42,7 +42,7 @@ public class CombinedFilterManager implements IFilterManager {
   }
 
   private class ChildFilterMapper
-      implements ParameterizedRowMapper<IFilter> {
+      implements RowMapper<IFilter> {
     private IFilterManager childManager;
 
     ChildFilterMapper(IFilterManager childManager) {
@@ -56,7 +56,7 @@ public class CombinedFilterManager implements IFilterManager {
     }
   }
 
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
   

@@ -22,8 +22,8 @@ package eu.baltrad.beast.rules.gmap;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.IRule;
@@ -38,7 +38,7 @@ public class GoogleMapRuleManager implements IRuleManager {
   /**
    * The simple jdbc template
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * The catalog for database access
@@ -48,7 +48,7 @@ public class GoogleMapRuleManager implements IRuleManager {
   /**
    * @param template the jdbc template to set
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
 
@@ -115,8 +115,8 @@ public class GoogleMapRuleManager implements IRuleManager {
    * Creates a db mapper for the google map rule
    * @return the row mapper
    */
-  protected ParameterizedRowMapper<GoogleMapRule> getGmapRuleMapper() {
-    return new ParameterizedRowMapper<GoogleMapRule>() {
+  protected RowMapper<GoogleMapRule> getGmapRuleMapper() {
+    return new RowMapper<GoogleMapRule>() {
       @Override
       public GoogleMapRule mapRow(ResultSet rs, int row) throws SQLException {
         GoogleMapRule result = (GoogleMapRule)createRule();

@@ -23,8 +23,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
@@ -38,12 +38,12 @@ public class ScansunRuleManager implements IRuleManager {
   /**
    * The simple jdbc template
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * @param template the jdbc template to set
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
 
@@ -55,8 +55,9 @@ public class ScansunRuleManager implements IRuleManager {
     ScansunRule srule = (ScansunRule)rule;
     List<String> sources = srule.getSources();
 
-    if (template.queryForInt("SELECT COUNT(*) FROM beast_scansun_sources WHERE rule_id=?",
-        new Object[]{rule_id}) != 0) {
+    if (template.queryForObject("SELECT COUNT(*) FROM beast_scansun_sources WHERE rule_id=?",
+        int.class,
+        rule_id) != 0) {
       throw new RuleException("sources for scansun rule '" + rule_id + "' already existing");
     }
     
@@ -112,8 +113,8 @@ public class ScansunRuleManager implements IRuleManager {
   /**
    * @return the source mapper
    */
-  protected  ParameterizedRowMapper<String> getSourceMapper() { 
-    return new ParameterizedRowMapper<String>() {
+  protected  RowMapper<String> getSourceMapper() { 
+    return new RowMapper<String>() {
       public String mapRow(ResultSet rs, int rowNum) throws SQLException {
         return rs.getString("source");
       }

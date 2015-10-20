@@ -23,8 +23,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * @author Anders Henja
@@ -33,13 +33,13 @@ public class AnomalyDetectorManager implements IAnomalyDetectorManager {
   /**
    * The database access
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * Sets the jdbc template to be used by this class
    * @param template the template
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
   
@@ -124,8 +124,8 @@ public class AnomalyDetectorManager implements IAnomalyDetectorManager {
   /**
    * @return the row mapper for anomaly detectors
    */
-  protected ParameterizedRowMapper<AnomalyDetector> getMapper() {
-    return new ParameterizedRowMapper<AnomalyDetector>() {
+  protected RowMapper<AnomalyDetector> getMapper() {
+    return new RowMapper<AnomalyDetector>() {
       @Override
       public AnomalyDetector mapRow(ResultSet rs, int rownr) throws SQLException {
         AnomalyDetector result = new AnomalyDetector();

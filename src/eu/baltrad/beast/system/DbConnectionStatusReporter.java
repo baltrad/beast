@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 /**
  * @author Anders Henja
@@ -34,13 +34,13 @@ public class DbConnectionStatusReporter implements ISystemStatusReporter {
   /**
    * The jdbc template
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   
   /**
    * Sets the jdbc template, used for testing.
    * @param template the template to set
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
 
@@ -66,7 +66,7 @@ public class DbConnectionStatusReporter implements ISystemStatusReporter {
   @Override
   public Set<SystemStatus> getStatus(Map<String,Object> values) {
     try {
-      template.queryForInt("SELECT 1");
+      template.queryForObject("SELECT 1",int.class);
       return EnumSet.of(SystemStatus.OK);
     } catch (Exception e) {
       return EnumSet.of(SystemStatus.COMMUNICATION_PROBLEM);

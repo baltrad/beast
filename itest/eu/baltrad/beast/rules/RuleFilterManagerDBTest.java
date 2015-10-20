@@ -25,17 +25,14 @@ import junit.framework.TestCase;
 
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
-
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
-
-import eu.baltrad.beast.itest.BeastDBTestHelper;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.bdb.expr.Expression;
-
 import eu.baltrad.beast.db.CoreFilterManager;
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.db.IFilterManager;
+import eu.baltrad.beast.itest.BeastDBTestHelper;
 
 public class RuleFilterManagerDBTest extends TestCase {
   private RuleFilterManager classUnderTest = null;
@@ -87,7 +84,7 @@ public class RuleFilterManagerDBTest extends TestCase {
     context = BeastDBTestHelper.loadContext(this);
     helper = (BeastDBTestHelper)context.getBean("testHelper");
     helper.cleanInsert(this);
-    SimpleJdbcOperations template = (SimpleJdbcOperations)context.getBean("jdbcTemplate");
+    JdbcOperations template = (JdbcOperations)context.getBean("jdbcTemplate");
     coreFilterManager = new CoreFilterManager();
     Map<String, IFilterManager> subManagers = new HashMap<String, IFilterManager>();
     subManagers.put("fake", new FakeFilterManager());

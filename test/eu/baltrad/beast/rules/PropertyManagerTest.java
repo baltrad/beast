@@ -27,16 +27,16 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 public class PropertyManagerTest extends EasyMockSupport {
   private PropertyManager classUnderTest = null;
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
 
   @Before
   public void setUp() throws Exception {
     classUnderTest = new PropertyManager();
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     classUnderTest.setJdbcTemplate(jdbc);
   }
 

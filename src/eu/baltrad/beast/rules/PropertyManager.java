@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 /**
  * Manage rule properties stored in beast_rule_properties
@@ -34,13 +33,13 @@ public class PropertyManager {
   /**
    * The jdbc template
    */
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
 
   /**
    * @param template
    *          the jdbc template to set
    */
-  public void setJdbcTemplate(SimpleJdbcOperations template) {
+  public void setJdbcTemplate(JdbcOperations template) {
     this.template = template;
   }
 
@@ -67,8 +66,7 @@ public class PropertyManager {
       }
     };
 
-    JdbcOperations ops = template.getJdbcOperations();
-    ops.query("select * from beast_rule_properties where rule_id=?",
+    template.query("select * from beast_rule_properties where rule_id=?",
               new Object[]{ruleId}, rch);
     return props;
   }

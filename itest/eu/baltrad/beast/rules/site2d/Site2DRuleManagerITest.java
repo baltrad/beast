@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
@@ -42,7 +42,7 @@ public class Site2DRuleManagerITest extends TestCase {
   
   private BeastDBTestHelper helper = null;
   private Site2DRuleManager classUnderTest = null;
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
   private Catalog catalog = null;
   private IRuleUtilities utilities = null;
 
@@ -53,7 +53,7 @@ public class Site2DRuleManagerITest extends TestCase {
     helper.purgeBaltradDB();
     
     helper.cleanInsert(this);
-    template = (SimpleJdbcOperations)dbcontext.getBean("jdbcTemplate");
+    template = (JdbcOperations)dbcontext.getBean("jdbcTemplate");
     
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");

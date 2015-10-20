@@ -20,18 +20,18 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.acrr;
 
 import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import static org.junit.Assert.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
@@ -41,7 +41,7 @@ import eu.baltrad.beast.rules.util.RuleUtilities;
  * @author Anders Henja
  */
 public class AcrrRuleManagerTest extends EasyMockSupport {
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
   private AcrrRuleManager classUnderTest = null;
   
   /**
@@ -49,7 +49,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
    */
   @Before
   public void setUp() throws Exception {
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     classUnderTest = new AcrrRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
   }
@@ -94,7 +94,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
   public void test_load() {
     AcrrRule rule = new AcrrRule();
     
-    final ParameterizedRowMapper<AcrrRule> mapper = new ParameterizedRowMapper<AcrrRule>() {
+    final RowMapper<AcrrRule> mapper = new RowMapper<AcrrRule>() {
       public AcrrRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
@@ -102,7 +102,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
 
     classUnderTest = new AcrrRuleManager() {
       @Override
-      protected ParameterizedRowMapper<AcrrRule> getAcrrRuleMapper() {
+      protected RowMapper<AcrrRule> getAcrrRuleMapper() {
         return mapper;
       }
     };
@@ -193,7 +193,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     
     replayAll();
     
-    ParameterizedRowMapper<AcrrRule> mapper = classUnderTest.getAcrrRuleMapper();
+    RowMapper<AcrrRule> mapper = classUnderTest.getAcrrRuleMapper();
     
     AcrrRule result = mapper.mapRow(rs, 1);
     

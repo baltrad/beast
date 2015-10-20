@@ -30,8 +30,8 @@ import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
@@ -42,7 +42,7 @@ import eu.baltrad.beast.rules.util.RuleUtilities;
  *
  */
 public class GraRuleManagerTest extends EasyMockSupport {
-  private SimpleJdbcOperations jdbc = null;
+  private JdbcOperations jdbc = null;
   private GraRuleManager classUnderTest = null;
   
   /**
@@ -50,7 +50,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
    */
   @Before
   public void setUp() throws Exception {
-    jdbc = createMock(SimpleJdbcOperations.class);
+    jdbc = createMock(JdbcOperations.class);
     classUnderTest = new GraRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
   }
@@ -95,7 +95,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
   public void test_load() {
     GraRule rule = new GraRule();
     
-    final ParameterizedRowMapper<GraRule> mapper = new ParameterizedRowMapper<GraRule>() {
+    final RowMapper<GraRule> mapper = new RowMapper<GraRule>() {
       public GraRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
       }
@@ -103,7 +103,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
 
     classUnderTest = new GraRuleManager() {
       @Override
-      protected ParameterizedRowMapper<GraRule> getGraRuleMapper() {
+      protected RowMapper<GraRule> getGraRuleMapper() {
         return mapper;
       }
     };
@@ -196,7 +196,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
     
     replayAll();
     
-    ParameterizedRowMapper<GraRule> mapper = classUnderTest.getGraRuleMapper();
+    RowMapper<GraRule> mapper = classUnderTest.getGraRuleMapper();
     
     GraRule result = mapper.mapRow(rs, 1);
     

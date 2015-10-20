@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.manager.IBltMessageManager;
@@ -46,7 +46,7 @@ public class BeastSchedulerITest extends TestCase {
     helper.purgeBaltradDB();
     helper.cleanInsert(this);
     classUnderTest = new BeastScheduler();
-    classUnderTest.setJdbcTemplate((SimpleJdbcOperations)context.getBean("jdbcTemplate"));
+    classUnderTest.setJdbcTemplate((JdbcOperations)context.getBean("jdbcTemplate"));
     classUnderTest.setMessageManager(new IBltMessageManager() {
       public void shutdown() {
       }
@@ -147,12 +147,11 @@ public class BeastSchedulerITest extends TestCase {
     DummyManager mgr = new DummyManager();
     
     classUnderTest = new BeastScheduler();
-    classUnderTest.setJdbcTemplate((SimpleJdbcOperations)context.getBean("jdbcTemplate"));
+    classUnderTest.setJdbcTemplate((JdbcOperations)context.getBean("jdbcTemplate"));
     classUnderTest.setMessageManager(mgr);
     classUnderTest.afterPropertiesSet();
-    
     classUnderTest.register("* * * * * ?", "C");
-    boolean triggered = mgr.waitForManage(3000);
+    boolean triggered = mgr.waitForManage(5000);
     assertEquals(true, triggered);
   }
 

@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 import org.dbunit.Assertion;
 import org.dbunit.dataset.ITable;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.rules.RuleException;
@@ -42,7 +42,7 @@ public class ScansunRuleManagerITest extends TestCase {
   
   private BeastDBTestHelper helper = null;
   private ScansunRuleManager classUnderTest = null;
-  private SimpleJdbcOperations template = null;
+  private JdbcOperations template = null;
 
   public void setUp() throws Exception {
     dbcontext = BeastDBTestHelper.loadDbContext(this);
@@ -51,7 +51,7 @@ public class ScansunRuleManagerITest extends TestCase {
     helper.purgeBaltradDB();
     
     helper.cleanInsert(this);
-    template = (SimpleJdbcOperations)dbcontext.getBean("jdbcTemplate");
+    template = (JdbcOperations)dbcontext.getBean("jdbcTemplate");
     
     context = BeastDBTestHelper.loadContext(this);
     

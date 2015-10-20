@@ -31,7 +31,7 @@ import java.util.Map;
 import org.easymock.EasyMockSupport;
 import org.junit.Test;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.adaptor.AdaptorException;
 import eu.baltrad.beast.adaptor.IAdaptor;
@@ -59,7 +59,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
   
   @Test
   public void testStore() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
     
     IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
       public XmlRpcCommand generate(IBltMessage message) {return null;}
@@ -93,7 +93,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
   
   @Test
   public void testStore_cannotStore() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
     
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
@@ -121,7 +121,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
 
   @Test
   public void testStore_canNotCreateAdaptor() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
     
     IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
       public XmlRpcCommand generate(IBltMessage message) {return null;}
@@ -151,7 +151,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
   
   @Test
   public void testUpdate() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
 
     IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
       public XmlRpcCommand generate(IBltMessage message) {return null;}
@@ -185,7 +185,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
 
   @Test
   public void testUpdate_notDefined() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
 
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
@@ -213,7 +213,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
 
   @Test
   public void testUpdate_canNotUpdate() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
 
     IXmlRpcCommandGenerator generator = new IXmlRpcCommandGenerator() {
       public XmlRpcCommand generate(IBltMessage message) {return null;}
@@ -243,7 +243,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
   
   @Test
   public void testRemove() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
     
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
@@ -262,7 +262,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
   
   @Test
   public void testCannotRemove() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
     
     XmlRpcConfigurationManager classUnderTest = new XmlRpcConfigurationManager();
     classUnderTest.setJdbcTemplate(jdbc);
@@ -286,7 +286,7 @@ public class XmlRpcConfigurationManagerTest extends EasyMockSupport {
   
   @Test
   public void testRead() throws Exception {
-    SimpleJdbcOperations jdbc = createMock(SimpleJdbcOperations.class);
+    JdbcOperations jdbc = createMock(JdbcOperations.class);
 
     Map<String, Object> foundEntry = new HashMap<String, Object>();
     foundEntry.put("uri", "http://someurl");
