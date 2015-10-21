@@ -294,8 +294,8 @@ public class AcrrRuleTest extends EasyMockSupport {
     // Verify
     verifyAll();
     
-    String dateStr = new Formatter().format("%d%02d%02d",dtNow.getDate().year(), dtNow.getDate().month(), dtNow.getDate().day()).toString();
-    String timeStr = new Formatter().format("%02d%02d%02d",dtNow.getTime().hour(), dtNow.getTime().minute(), dtNow.getTime().second()).toString();
+    String dateStr = new Formatter().format("%d%02d%02d",nominalTime.getDate().year(), nominalTime.getDate().month(), nominalTime.getDate().day()).toString();
+    String timeStr = new Formatter().format("%02d%02d%02d",nominalTime.getTime().hour(), nominalTime.getTime().minute(), nominalTime.getTime().second()).toString();
     
     assertEquals("eu.baltrad.beast.GenerateAcrr", result.getAlgorithm());
     assertEquals(2, result.getFiles().length);

@@ -132,9 +132,6 @@ public class GraRule extends AcrrRule {
     Calendar c = getRuleUtilities().createCalendar(endDt);
     c.add(Calendar.HOUR, -interval);
     DateTime startDt = getRuleUtilities().createDateTime(c);
-    logger.info("startDt: "+startDt.getDate().toIsoString()+" "+startDt.getTime().toIsoString());
-    logger.info("endDt: "+endDt.getDate().toIsoString()+" "+endDt.getTime().toIsoString());
-    logger.info("Files per hour interval: " + getFilesPerHourInterval());
     TimeSelectionFilter filter = createFilter(startDt, endDt, getFilesPerHourInterval());
     return filterEntries(getCatalog().fetch(filter));
   }
