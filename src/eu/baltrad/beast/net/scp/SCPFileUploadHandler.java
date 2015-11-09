@@ -24,6 +24,7 @@ import java.net.URI;
 
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 import eu.baltrad.beast.net.FileUploadHandlerBase;
@@ -56,6 +57,7 @@ public class SCPFileUploadHandler extends FileUploadHandlerBase {
 
   protected SSHClient connect(URI uri) throws IOException {
     SSHClient client = acquireSSHClient();
+    client.addHostKeyVerifier(new PromiscuousVerifier());
     client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
     client.setTimeout(DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
