@@ -20,6 +20,7 @@ package eu.baltrad.beast.net.scp;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.isA;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 import org.easymock.EasyMockSupport;
@@ -173,6 +175,7 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
       @Override
       public SSHClient acquireSSHClient() { return client; };
     };
+    client.addHostKeyVerifier(isA(PromiscuousVerifier.class));
     client.setConnectTimeout(SCPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
     client.setTimeout(SCPFileUploadHandler.DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
@@ -191,6 +194,7 @@ public class SCPFileUploadHandlerTest extends EasyMockSupport {
       @Override
       public SSHClient acquireSSHClient() { return client; };
     };
+    client.addHostKeyVerifier(isA(PromiscuousVerifier.class));
     client.setConnectTimeout(SCPFileUploadHandler.DEFAULT_CONNECT_TIMEOUT);
     client.setTimeout(SCPFileUploadHandler.DEFAULT_SOCKET_TIMEOUT);
     client.loadKnownHosts();
