@@ -41,7 +41,6 @@ public class SFTPFileUploadHandler extends SCPFileUploadHandler {
     SFTPClient sftp = null;
     try {
       sftp=client.newSFTPClient();
-      //SCPFileTransfer xfer = client.newSCPFileTransfer();
       sftp.put(src.toString(), getPath(dst));
     } finally {
       if (sftp != null) {
