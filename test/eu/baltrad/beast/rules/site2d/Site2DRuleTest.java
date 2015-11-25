@@ -40,6 +40,7 @@ import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.oh5.Metadata;
 import eu.baltrad.bdb.oh5.Source;
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
@@ -53,6 +54,10 @@ public class Site2DRuleTest extends EasyMockSupport {
   private IRuleUtilities ruleUtil = null;
   
   private Site2DRule classUnderTest = null;
+  
+  private interface MethodMock {
+    CatalogEntry createCatalogEntry(FileEntry fe);
+  };
   
   @Before
   public void setUp() throws Exception {
@@ -165,6 +170,103 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals("--yscale=2000.0", result.getArguments()[9]);
   }
 
+  @Test
+  public void handle_scanBased_ProdparPPI() {
+    BltDataMessage msg = createMock(BltDataMessage.class);
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata md = createMock(Metadata.class);
+    Source source = createMock(Source.class);
+    UUID ruid = UUID.randomUUID();
+    final MethodMock methods = createMock(MethodMock.class);
+    CatalogEntry catalogEntry = createMock(CatalogEntry.class);
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("seses");
+    sources.add("nisse");
+    
+    classUnderTest = new Site2DRule() {
+      protected CatalogEntry createCatalogEntry(FileEntry fe) {
+        return methods.createCatalogEntry(fe);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    
+    classUnderTest.setArea("gnom_area");
+    classUnderTest.setPcsid(null);
+    classUnderTest.setSources(sources);
+    classUnderTest.setProdpar("0.5");
+    classUnderTest.setMethod(Site2DRule.PPI);
+    classUnderTest.setScanBased(true);
+    
+    expect(msg.getFileEntry()).andReturn(fe).anyTimes();
+    expect(fe.getMetadata()).andReturn(md).anyTimes();
+    expect(md.getWhatObject()).andReturn("SCAN");
+    expect(fe.getSource()).andReturn(source);
+    expect(source.getName()).andReturn("seses");
+    expect(methods.createCatalogEntry(fe)).andReturn(catalogEntry);
+    expect(catalogEntry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(fe.getUuid()).andReturn(ruid);
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertNotNull(result);
+    assertEquals(1, result.getFiles().length);
+    assertEquals(ruid.toString(), result.getFiles()[0]);
+    assertEquals(3, result.getArguments().length);
+    assertEquals("--area=gnom_area", result.getArguments()[0]);
+    assertEquals("--method=ppi", result.getArguments()[1]);
+    assertEquals("--prodpar=0.5", result.getArguments()[2]);
+  }
+
+  @Test
+  public void handle_scanBased_ProdparPPI_badElangle() {
+    BltDataMessage msg = createMock(BltDataMessage.class);
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata md = createMock(Metadata.class);
+    Source source = createMock(Source.class);
+    UUID ruid = UUID.randomUUID();
+    final MethodMock methods = createMock(MethodMock.class);
+    CatalogEntry catalogEntry = createMock(CatalogEntry.class);
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("seses");
+    sources.add("nisse");
+    
+    classUnderTest = new Site2DRule() {
+      protected CatalogEntry createCatalogEntry(FileEntry fe) {
+        return methods.createCatalogEntry(fe);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    
+    classUnderTest.setArea("gnom_area");
+    classUnderTest.setPcsid(null);
+    classUnderTest.setSources(sources);
+    classUnderTest.setProdpar("0.5");
+    classUnderTest.setMethod(Site2DRule.PPI);
+    classUnderTest.setScanBased(true);
+    
+    expect(msg.getFileEntry()).andReturn(fe).anyTimes();
+    expect(fe.getMetadata()).andReturn(md).anyTimes();
+    expect(md.getWhatObject()).andReturn("SCAN");
+    expect(fe.getSource()).andReturn(source);
+    expect(source.getName()).andReturn("seses");
+    expect(methods.createCatalogEntry(fe)).andReturn(catalogEntry);
+    expect(catalogEntry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.5));
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertNull(result);
+  }
+  
   @Test
   public void handle_without_pcsid() {
     BltDataMessage msg = createMock(BltDataMessage.class);

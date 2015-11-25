@@ -29,6 +29,20 @@ public class CatalogEntry {
   private FileEntry entry = null;
   
   /**
+   * Default constructor
+   */
+  public CatalogEntry() {
+  }
+
+  /**
+   * Constructor
+   * @param entry the file entry to wrap
+   */
+  public CatalogEntry(FileEntry entry) {
+    setFileEntry(entry);
+  }
+  
+  /**
    * @param entry the file entry to set
    */
   public void setFileEntry(FileEntry entry) {

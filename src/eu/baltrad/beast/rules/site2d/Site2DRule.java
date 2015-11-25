@@ -30,6 +30,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -218,6 +219,20 @@ public class Site2DRule implements IRule, InitializingBean {
       if (object != null && 
           ((scanBased && object.equals("SCAN")) || (!scanBased && object.equals("PVOL"))) && 
           src != null && sources.contains(src)) {
+        if (object.equals("SCAN") && method != null && method.equals(PPI)) {
+          double dprodpar = -9999.9;
+          double ceprodpar = -9999.9;
+          CatalogEntry ce = createCatalogEntry(file);
+          try {
+            dprodpar = Double.parseDouble(prodpar);
+            ceprodpar = (Double)ce.getAttribute("/dataset1/where/elangle");
+          } catch (NumberFormatException nfe) {
+            // NP
+          }
+          if (dprodpar == -9999.9 || dprodpar != ceprodpar) {
+            return null;
+          }
+        }
         return createMessage(file.getUuid().toString());
       }
     }
@@ -268,6 +283,15 @@ public class Site2DRule implements IRule, InitializingBean {
     result.setArguments(args.toArray(new String[0]));
 
     return result;
+  }
+  
+  /**
+   * Wraps a FileEntry in a CatalogEntry
+   * @param fe the file entry
+   * @return the catalog entry
+   */
+  protected CatalogEntry createCatalogEntry(FileEntry fe) {
+    return new CatalogEntry(fe);
   }
   
   /**
