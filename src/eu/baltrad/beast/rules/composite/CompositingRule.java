@@ -645,7 +645,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     if (isCtFilter()) {
       args.add("--ctfilter=True");
     }
-    if (getQitotalField() != null) {
+    if (getQitotalField() != null && !getQitotalField().equals("")) {
       args.add("--qitotal_field="+getQitotalField());
     }
     if (getQuantity() != null && !getQuantity().equals("")) {
