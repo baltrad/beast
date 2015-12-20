@@ -73,7 +73,8 @@ create table beast_composite_rules (
   ZR_b decimal NOT NULL,
   ignore_malfunc boolean NOT NULL,
   ctfilter boolean NOT NULL,
-  qitotal_field text
+  qitotal_field text,
+  quantity text
 );
 
 create table beast_composite_sources (

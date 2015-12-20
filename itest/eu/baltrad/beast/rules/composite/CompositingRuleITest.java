@@ -147,12 +147,12 @@ public class CompositingRuleITest extends TestCase {
     classUnderTest.setSources(sources);
     
     FileEntry f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES[0])));
-    String seang_path = f.getUuid().toString();//catalog.getCatalog().getLocalStorage().store(f).toString();
+    String seang_path = f.getUuid().toString();
     IBltMessage result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
     
     f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES[2])));
-    String searl_path = f.getUuid().toString();//catalog.getCatalog().getLocalStorage().store(f).toString();
+    String searl_path = f.getUuid().toString();
     result = classUnderTest.handle(createDataMessage(f));
     assertNull(result);
 
@@ -161,7 +161,7 @@ public class CompositingRuleITest extends TestCase {
     assertNull(result);
 
     f = catalog.getCatalog().store(new FileInputStream(getFilePath(FIXTURES[5])));
-    String sehud_path = f.getUuid().toString();//catalog.getCatalog().getLocalStorage().store(f).toString();
+    String sehud_path = f.getUuid().toString();
     result = classUnderTest.handle(createDataMessage(f));
     assertNotNull(result);
     

@@ -125,6 +125,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(true, ((CompositingRule)def.getRule()).isIgnoreMalfunc());
     assertEquals(true, ((CompositingRule)def.getRule()).isCtFilter());
     assertEquals("se.baltrad.something", ((CompositingRule)def.getRule()).getQitotalField());
+    assertEquals("VRAD", ((CompositingRule)def.getRule()).getQuantity());
     
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
     assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
@@ -181,6 +182,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setIgnoreMalfunc(false);
     rule.setCtFilter(false);
     rule.setQitotalField("se.someone.somewhere");
+    rule.setQuantity("NOOP");
     rule.setDetectors(detectors);
     rule.setSources(sources);
 

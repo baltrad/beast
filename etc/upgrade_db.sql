@@ -261,6 +261,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_quantity() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'quantity';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_composite_rules ADD COLUMN quantity text;
+    UPDATE beast_composite_rules SET quantity='DBZH';
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -274,6 +284,7 @@ select update_beast_composite_rules_with_qitotal_field();
 select create_beast_site2d_rules();
 select update_beast_volume_rules_with_elangles_field();
 select update_beast_acrr_rules_with_applygra();
+select update_beast_composite_rules_with_quantity();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -288,3 +299,5 @@ drop function update_beast_composite_rules_with_qitotal_field();
 drop function create_beast_site2d_rules();
 drop function update_beast_volume_rules_with_elangles_field();
 drop function update_beast_acrr_rules_with_applygra();
+drop function update_beast_composite_rules_with_quantity();
+

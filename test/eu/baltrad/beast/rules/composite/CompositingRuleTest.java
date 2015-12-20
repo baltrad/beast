@@ -39,7 +39,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
 import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
@@ -62,6 +65,9 @@ public class CompositingRuleTest extends EasyMockSupport {
   private Catalog catalog = null;
   private IRuleUtilities ruleUtil = null;
   private TimeoutManager timeoutManager = null;
+  private MetadataMatcher matcher = null;
+  private ExpressionFactory xpr = null;
+  
   private CompositingRule classUnderTest = null;
   
   private static interface ICompositingMethods {
@@ -79,10 +85,13 @@ public class CompositingRuleTest extends EasyMockSupport {
     catalog = createMock(Catalog.class);
     timeoutManager = createMock(TimeoutManager.class);
     ruleUtil = createMock(IRuleUtilities.class);
+    matcher = createMock(MetadataMatcher.class);
+    xpr = new ExpressionFactory();
     classUnderTest = new CompositingRule();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setTimeoutManager(timeoutManager);
     classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setMetadataMatcher(matcher);
   }
 
   @After
@@ -272,7 +281,46 @@ public class CompositingRuleTest extends EasyMockSupport {
     Date date = new Date(2010, 1, 1);
     Time time = new Time(10, 0, 0);
     DateTime nominalTime = new DateTime(date, time);
+    Expression e1 = createMock(Expression.class);
+    Expression e2 = createMock(Expression.class);
+    Expression e3 = createMock(Expression.class);
+    
+    FileEntry file = createMock(FileEntry.class);
+    Metadata metadata = createMock(Metadata.class);
 
+    BltDataMessage dataMessage = new BltDataMessage();
+    dataMessage.setFileEntry(file);
+
+    expect(file.getMetadata()).andReturn(metadata).times(4);
+    expect(metadata.getWhatObject()).andReturn("PVOL");
+    expect(metadata.getWhatDate()).andReturn(date);
+    expect(metadata.getWhatTime()).andReturn(time);
+    expect(ruleUtil.createNominalTime(date, time, 10)).andReturn(nominalTime);
+    expect(matcher.match(metadata, xpr.eq(xpr.attribute("what/quantity"), xpr.literal("VRAD")))).andReturn(true);
+    
+    expect(ruleUtil.isTriggered(25, nominalTime)).andReturn(false);
+    
+    classUnderTest.setRuleId(25);
+    classUnderTest.setInterval(10);
+    classUnderTest.setQuantity("VRAD");
+    replayAll();
+    
+    CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
+    
+    verifyAll();
+    assertSame(nominalTime, result.getDateTime());
+    assertEquals(25, result.getRuleId());
+  }
+
+  @Test
+  public void testCreateTimerData_noQuantity() throws Exception {
+    Date date = new Date(2010, 1, 1);
+    Time time = new Time(10, 0, 0);
+    DateTime nominalTime = new DateTime(date, time);
+    Expression e1 = createMock(Expression.class);
+    Expression e2 = createMock(Expression.class);
+    Expression e3 = createMock(Expression.class);
+    
     FileEntry file = createMock(FileEntry.class);
     Metadata metadata = createMock(Metadata.class);
 
@@ -284,11 +332,12 @@ public class CompositingRuleTest extends EasyMockSupport {
     expect(metadata.getWhatDate()).andReturn(date);
     expect(metadata.getWhatTime()).andReturn(time);
     expect(ruleUtil.createNominalTime(date, time, 10)).andReturn(nominalTime);
+    
     expect(ruleUtil.isTriggered(25, nominalTime)).andReturn(false);
     
     classUnderTest.setRuleId(25);
     classUnderTest.setInterval(10);
-    
+    classUnderTest.setQuantity(null);
     replayAll();
     
     CompositeTimerData result = classUnderTest.createTimerData(dataMessage);
@@ -297,7 +346,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertSame(nominalTime, result.getDateTime());
     assertEquals(25, result.getRuleId());
   }
-
+  
   @Test
   public void testCreateTimerData_alreadyTriggered() throws Exception {
     Date date = new Date(2010, 1, 1);
@@ -310,15 +359,17 @@ public class CompositingRuleTest extends EasyMockSupport {
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFileEntry(file);
     
-    expect(file.getMetadata()).andReturn(metadata).times(3);
+    expect(file.getMetadata()).andReturn(metadata).times(4);
     expect(metadata.getWhatObject()).andReturn("PVOL");
     expect(metadata.getWhatDate()).andReturn(date);
     expect(metadata.getWhatTime()).andReturn(time);
     expect(ruleUtil.createNominalTime(date, time, 10)).andReturn(nominalTime);
+    expect(matcher.match(metadata, xpr.eq(xpr.attribute("what/quantity"), xpr.literal("DBZH")))).andReturn(true);
     expect(ruleUtil.isTriggered(25, nominalTime)).andReturn(true);
     
     classUnderTest.setRuleId(25);
     classUnderTest.setInterval(10);
+    classUnderTest.setQuantity("DBZH");
     
     replayAll();
     
@@ -339,11 +390,12 @@ public class CompositingRuleTest extends EasyMockSupport {
     BltDataMessage dataMessage = new BltDataMessage();
     dataMessage.setFileEntry(file);
 
-    expect(file.getMetadata()).andReturn(metadata).times(3);
+    expect(file.getMetadata()).andReturn(metadata).times(4);
     expect(metadata.getWhatObject()).andReturn("IMAGE");
     expect(metadata.getWhatDate()).andReturn(d);
     expect(metadata.getWhatTime()).andReturn(t);
     expect(ruleUtil.createNominalTime(d, t, 10)).andReturn(dt);
+    expect(matcher.match(metadata, xpr.eq(xpr.attribute("what/quantity"), xpr.literal("DBZH")))).andReturn(true);
     expect(ruleUtil.isTriggered(25, dt)).andReturn(false);
     classUnderTest.setRuleId(25);
     classUnderTest.setInterval(10);
@@ -517,7 +569,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(7, arguments.length);
+    assertEquals(8, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -525,6 +577,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
     assertEquals("--method=ppi", arguments[5]);
     assertEquals("--prodpar=0.5", arguments[6]);
+    assertEquals("--quantity=DBZH", arguments[7]);
   }
 
   @Test
@@ -587,7 +640,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(10, arguments.length);
+    assertEquals(11, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -598,6 +651,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--applygra=true", arguments[7]);
     assertEquals("--zrA=100.0", arguments[8]);
     assertEquals("--zrb=1.4", arguments[9]);
+    assertEquals("--quantity=DBZH", arguments[10]);
   }
 
   @Test
@@ -661,7 +715,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(11, arguments.length);
+    assertEquals(12, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -673,6 +727,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--zrA=100.0", arguments[8]);
     assertEquals("--zrb=1.4", arguments[9]);
     assertEquals("--ignore-malfunc=true", arguments[10]);
+    assertEquals("--quantity=DBZH", arguments[11]);
   }
 
   @Test
@@ -737,7 +792,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(12, arguments.length);
+    assertEquals(13, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -750,6 +805,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--zrb=1.4", arguments[9]);
     assertEquals("--ignore-malfunc=true", arguments[10]);
     assertEquals("--ctfilter=True", arguments[11]);
+    assertEquals("--quantity=DBZH", arguments[12]);
   }
 
   @Test
@@ -815,7 +871,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(13, arguments.length);
+    assertEquals(14, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -829,6 +885,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--ignore-malfunc=true", arguments[10]);
     assertEquals("--ctfilter=True", arguments[11]);
     assertEquals("--qitotal_field=se.baltrad.some.field", arguments[12]);
+    assertEquals("--quantity=DBZH", arguments[13]);
   }  
   
   @Test
@@ -914,7 +971,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     CompositeTimerData data = new CompositeTimerData(1, dt);
     data.setPreviousAngles(prevAngles);
     expect(ruleUtil.createNextNominalTime(dt, 10)).andReturn(ndt);
-    expect(ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources)).andReturn(currAngles);
+    expect(ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources, "DBZH")).andReturn(currAngles);
 
     expect(methods.createMessage(dt, currEntries)).andReturn(createdMessage);
     expect(methods.fetchScanEntries(dt)).andReturn(currEntries);
@@ -941,7 +998,67 @@ public class CompositingRuleTest extends EasyMockSupport {
     verifyAll();
     assertSame(createdMessage, msg);
   }
+  
+  @Test
+  public void testCreateCompositeScanMessage_withOtherQuantity() throws Exception {
+    final ICompositingMethods methods = createMock(ICompositingMethods.class);
+    BltGenerateMessage createdMessage = new BltGenerateMessage();
+    
+    DateTime pdt = new DateTime();
+    DateTime dt = new DateTime();
+    DateTime ndt = new DateTime();
+    
+    Map<String, Double> prevAngles = new HashMap<String, Double>();
+    Map<String, Double> currAngles = new HashMap<String, Double>();
+    List<String> sources = new ArrayList<String>();
+    List<CatalogEntry> currEntries = new ArrayList<CatalogEntry>();
 
+    CatalogEntry e1 = createCatalogEntry("sekkr", pdt, 0.1);
+    currEntries.add(e1);
+    CatalogEntry e2 = createCatalogEntry("searl", pdt, 0.5);
+    currEntries.add(e2);
+
+    sources.add("sekkr");
+    sources.add("searl");
+    
+    prevAngles.put("sekkr", 0.1);
+    prevAngles.put("searl", 0.5);
+
+    currAngles.put("sekkr", 0.1);
+    currAngles.put("searl", 0.5);
+    
+    CompositeTimerData data = new CompositeTimerData(1, dt);
+    data.setPreviousAngles(prevAngles);
+    expect(ruleUtil.createNextNominalTime(dt, 10)).andReturn(ndt);
+    expect(ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources, "VRAD")).andReturn(currAngles);
+
+    expect(methods.createMessage(dt, currEntries)).andReturn(createdMessage);
+    expect(methods.fetchScanEntries(dt)).andReturn(currEntries);
+
+    replayAll();
+    
+    classUnderTest = new CompositingRule() {
+      protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
+        return methods.createMessage(nominalDT, entries);
+      }
+
+      protected List<CatalogEntry> fetchScanEntries(DateTime nominalTime) {
+        return methods.fetchScanEntries(nominalTime);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setSources(sources);
+    classUnderTest.setInterval(10);
+    classUnderTest.setQuantity("VRAD");
+    
+    BltGenerateMessage msg = (BltGenerateMessage)classUnderTest.createCompositeScanMessage(data);
+    
+    verifyAll();
+    assertSame(createdMessage, msg);
+  }
+  
   @Test
   public void testCreateCompositeScanMessage_missingSources() throws Exception {
     final ICompositingMethods methods = createMock(ICompositingMethods.class);
@@ -962,7 +1079,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     CompositeTimerData data = new CompositeTimerData(1, dt);
     data.setPreviousAngles(prevAngles);
     expect(ruleUtil.createNextNominalTime(dt, 10)).andReturn(ndt);
-    expect(ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources)).andReturn(currAngles);
+    expect(ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources, "DBZH")).andReturn(currAngles);
     
     replayAll();
     
@@ -1001,7 +1118,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     CompositeTimerData data = new CompositeTimerData(1, dt);
     data.setPreviousAngles(prevAngles);
     expect(ruleUtil.createNextNominalTime(dt, 10)).andReturn(ndt);
-    expect(ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources)).andReturn(currAngles);
+    expect(ruleUtil.fetchLowestSourceElevationAngle(dt, ndt, sources, "DBZH")).andReturn(currAngles);
     
     replayAll();
     

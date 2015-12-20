@@ -73,6 +73,11 @@ public class TimeIntervalFilter implements ICatalogFilter {
   private int limit = 0;
   
   /**
+   * The quantity to look for
+   */
+  private String quantity = null;
+  
+  /**
    * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.bdb.db.FileQuery)
    */
   @Override
@@ -96,7 +101,9 @@ public class TimeIntervalFilter implements ICatalogFilter {
     if (stopDT != null) {
       filters.add(xpr.lt(dtAttr, xpr.literal(this.stopDT)));
     }
-
+    if (quantity != null) {
+      filters.add(xpr.eq(xpr.attribute("what/quantity"), xpr.literal(quantity)));
+    }
     query.setFilter(xpr.and(filters));
     
     if (this.limit > 0) {
@@ -176,5 +183,19 @@ public class TimeIntervalFilter implements ICatalogFilter {
    */
   public int getLimit() {
     return limit;
+  }
+
+  /**
+   * @return the quantity
+   */
+  public String getQuantity() {
+    return quantity;
+  }
+
+  /**
+   * @param quantity the quantity to set
+   */
+  public void setQuantity(String quantity) {
+    this.quantity = quantity;
   }
 }

@@ -44,6 +44,9 @@ import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
@@ -204,10 +207,25 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   private String qitotalField = null;
   
   /**
+   * The quantity to use
+   */
+  private String quantity = "DBZH";
+  
+  /**
    * The recipients that are affected by this rule. Used
    * for generating timeout message
    */
   private List<String> recipients = new ArrayList<String>();
+
+  /**
+   * The metadata matcher
+   */
+  private MetadataMatcher matcher = null;
+  
+  /**
+   * The expression factory
+   */
+  private ExpressionFactory xpr = null;
   
   /**
    * The logger
@@ -218,6 +236,8 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * Default constructor,however, use manager for creation
    */
   protected CompositingRule() {
+    matcher = new MetadataMatcher();
+    xpr = new ExpressionFactory();
   }
   
   /**
@@ -407,7 +427,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
       if (tt == null) {
         DateTime prevDateTime = ruleUtil.createPrevNominalTime(data.getDateTime(), interval);
-        prevAngles = ruleUtil.fetchLowestSourceElevationAngle(prevDateTime, data.getDateTime(), sources);
+        prevAngles = ruleUtil.fetchLowestSourceElevationAngle(prevDateTime, data.getDateTime(), sources, quantity);
         data.setPreviousAngles(prevAngles);
       } else {
         data = (CompositeTimerData)tt.getData();
@@ -439,7 +459,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     logger.debug("ENTER: createCompositeScanMessage(CompositeTimerData)");
     try {
       DateTime nextTime = ruleUtil.createNextNominalTime(data.getDateTime(), interval);
-      Map<String, Double> currAngles = ruleUtil.fetchLowestSourceElevationAngle(data.getDateTime(), nextTime, sources);
+      Map<String, Double> currAngles = ruleUtil.fetchLowestSourceElevationAngle(data.getDateTime(), nextTime, sources, quantity);
       Map<String, Double> prevAngles = data.getPreviousAngles();
     
       for (String src : sources) {
@@ -534,6 +554,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       Time t = file.getMetadata().getWhatTime();
       Date d = file.getMetadata().getWhatDate();
       DateTime nominalTime = ruleUtil.createNominalTime(d, t, interval);
+      if (quantity != null && !quantity.equals("")) {
+        if (!matcher.match(file.getMetadata(), xpr.eq(xpr.attribute("what/quantity"), xpr.literal(quantity)))) {
+          return null;
+        }
+      }
       if (!ruleUtil.isTriggered(ruleid, nominalTime)) {
         if (!isScanBased() && object.equals("PVOL")) {
           result = new CompositeTimerData(ruleid, nominalTime);
@@ -623,6 +648,9 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     if (getQitotalField() != null) {
       args.add("--qitotal_field="+getQitotalField());
     }
+    if (getQuantity() != null && !getQuantity().equals("")) {
+      args.add("--quantity="+getQuantity());
+    }
     
     result.setArguments(args.toArray(new String[0]));
 
@@ -651,6 +679,9 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   protected TimeIntervalFilter createFilter(DateTime nominalDT) {
     TimeIntervalFilter filter = new TimeIntervalFilter();
     filter.setObject("PVOL");
+    if (quantity != null && !quantity.equals("")) {
+      filter.setQuantity(quantity);
+    }
     DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
     filter.setStartDateTime(nominalDT);
     filter.setStopDateTime(stopDT);
@@ -676,6 +707,10 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
 
   protected LowestAngleFilter createScanFilter(DateTime nominalDT) {
     LowestAngleFilter filter = new LowestAngleFilter();
+    if (quantity != null && !quantity.equals("")) {
+      filter.setQuantity(quantity);
+    }
+    
     filter.setStart(nominalDT);
     DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
     filter.setStop(stopDT);
@@ -829,19 +864,53 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     this.ignoreMalfunc = ignoreMalfunc;
   }
 
+  /**
+   * @return if ct filtering will be performed or not
+   */
   public boolean isCtFilter() {
     return ctFilter;
   }
 
+  /**
+   * @param ctFilter if ct filtering should be performed or not
+   */
   public void setCtFilter(boolean ctFilter) {
     this.ctFilter = ctFilter;
   }
 
+  /**
+   * @return the QI total field
+   */
   public String getQitotalField() {
     return qitotalField;
   }
 
+  /**
+   * @param qitotalField the QI total field to set
+   */
   public void setQitotalField(String qitotalField) {
     this.qitotalField = qitotalField;
+  }
+
+  /**
+   * @return the quantity
+   */
+  public String getQuantity() {
+    return quantity;
+  }
+
+  /**
+   * @param quantity the quantity to set
+   */
+  public void setQuantity(String quantity) {
+    this.quantity = quantity;
+  }
+
+  /**
+   * For test purspose
+   * @param matcher the matcher
+   */
+  protected void setMetadataMatcher(MetadataMatcher matcher) {
+    this.matcher = matcher;
   }
 }

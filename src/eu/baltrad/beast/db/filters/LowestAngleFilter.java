@@ -48,6 +48,11 @@ public class LowestAngleFilter implements ICatalogFilter {
   private String source = null;
   
   /**
+   * The quantity we are interested in
+   */
+  private String quantity = null;
+  
+  /**
    * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.bdb.db.FileQuery)
    */
   @Override
@@ -63,6 +68,10 @@ public class LowestAngleFilter implements ICatalogFilter {
 
     filters.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
     filters.add(xpr.eq(xpr.attribute("_bdb/source_name"), xpr.literal(source)));
+
+    if (quantity != null) {
+      filters.add(xpr.eq(xpr.attribute("what/quantity"), xpr.literal(quantity)));
+    }
     
     if (startDT != null) {
       filters.add(xpr.ge(dtAttr, xpr.literal(this.startDT)));
@@ -118,5 +127,19 @@ public class LowestAngleFilter implements ICatalogFilter {
    */
   public String getSource() {
     return source;
+  }
+
+  /**
+   * @return the quantity
+   */
+  public String getQuantity() {
+    return quantity;
+  }
+
+  /**
+   * @param quantity the quantity to set
+   */
+  public void setQuantity(String quantity) {
+    this.quantity = quantity;
   }
 }

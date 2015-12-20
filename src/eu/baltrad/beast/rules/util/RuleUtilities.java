@@ -114,6 +114,13 @@ public class RuleUtilities implements IRuleUtilities {
    */
   @Override
   public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources) {
+    return fetchLowestSourceElevationAngle(startDT, stopDT, sources, null);
+  }
+
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#fetchLowestSourceElevationAngle(eu.baltrad.bdb.util.DateTime, eu.baltrad.bdb.util.DateTime, java.util.List, java.lang.String)
+   */
+  public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources, String quantity) {
     Map<String, Double> result = new HashMap<String, Double>();
     if (sources.isEmpty()) {
       return result;
@@ -130,6 +137,9 @@ public class RuleUtilities implements IRuleUtilities {
 
     List<Expression> filter = new ArrayList<Expression>();
     filter.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("SCAN")));
+    if (quantity != null && !quantity.equals("")) {
+      filter.add(xpr.eq(xpr.attribute("what/quantity"), xpr.literal(quantity)));
+    }
     filter.add(xpr.ge(dtAttr, xpr.literal(startDT)));
     filter.add(xpr.lt(dtAttr, xpr.literal(stopDT)));
     filter.add(xpr.in(srcAttr, xpr.list(srcExpr)));
@@ -151,9 +161,9 @@ public class RuleUtilities implements IRuleUtilities {
       rset.close();
     }
 
-    return result;
+    return result;    
   }
-
+  
   /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#getEntryBySource(java.lang.String, java.util.List)
    */

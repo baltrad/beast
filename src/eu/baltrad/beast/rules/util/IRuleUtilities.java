@@ -45,6 +45,17 @@ public interface IRuleUtilities {
   public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources);
 
   /**
+   * Fetch the lowest scan for all provided sources. The elevation angle is accessible
+   * from the {@link eu.baltrad.beast.db.CatalogEntry#getAttribute(String)}.
+   * @param startDT the start time of the interval to search in
+   * @param stopDT the stop time of the interval to search in
+   * @param sources the node id of the sources
+   * @param quantity the quantity to look for in the files
+   * @return a map of source : elevation angle
+   */
+  public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources, String quantity);
+
+  /**
    * Returns an entry with the specified name. Note, it will always be the first match so
    * if there are more than one entry with the specified source name you will not be aware
    * of that if using this method.
