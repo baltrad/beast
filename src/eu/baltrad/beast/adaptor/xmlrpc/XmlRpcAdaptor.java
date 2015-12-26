@@ -269,4 +269,20 @@ public class XmlRpcAdaptor implements IAdaptor {
   protected TimingOutCallback createTimeout(long timeout) {
     return new TimingOutCallback(timeout);
   }
+  
+  public static void main(String[] args) throws Throwable {
+    XmlRpcClient client = new XmlRpcClient();
+    XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+    TimingOutCallback tcb = new TimingOutCallback(1000);
+    config.setServerURL(new URL("http://localhost:8085/RAVE"));
+    client.setConfig(config);
+    client.executeAsync("get_quality_controls", new Object[]{}, tcb);
+    Object result = tcb.waitForResponse();
+    Object[] controls = (Object[])result;
+    for (Object ctr: controls) {
+      Object[] x = (Object[])ctr;
+      System.out.println(""+x[0] + " => " + x[1]);
+    }
+    //System.out.println(result.toString());
+  }
 }
