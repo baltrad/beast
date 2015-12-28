@@ -17,33 +17,38 @@ You should have received a copy of the GNU Lesser General Public License
 along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
 
-package eu.baltrad.beast.pgf;
+package eu.baltrad.beast.message.mo;
 
-import java.util.List;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+
+import eu.baltrad.beast.message.IBltXmlMessage;
+import eu.baltrad.beast.message.MessageParserException;
 
 /**
  * @author Anders Henja
  *
  */
-public interface IPgfClientHelper {
+public class BltGetAreasMessage implements IBltXmlMessage {
+  public static final String BLT_GET_AREAS = "blt_get_areas";
+
   /**
-   * @return A list of all available quality controls from all registered adaptors.
+   * @see eu.baltrad.beast.message.IBltXmlMessage#fromDocument(org.dom4j.Document)
    */
-  public List<QualityControlInformation> getQualityControls();
-  
+  @Override
+  public void fromDocument(Document dom) {
+    if (!dom.getRootElement().getName().equals(BLT_GET_AREAS)) {
+      throw new MessageParserException("Atempting to create BltGetAreasMessage from: " + dom.asXML());
+    }
+  }
+
   /**
-   * @return a list of all available areas from all registered adaptors
+   * @see eu.baltrad.beast.message.IBltXmlMessage#toDocument()
    */
-  public List<AreaInformation> getAreas();
-  
-  /**
-   * @param adaptorName the name of the adaptor
-   * @return a list of all available areas for the specified adaptor
-   */
-  public List<AreaInformation> getAreas(String adaptorName);
-  
-  /**
-   * @return the unique area ids that are available in the PGFs.
-   */
-  public List<String> getUniqueAreaIds();
+  @Override
+  public Document toDocument() {
+    Document document = DocumentHelper.createDocument();
+    document.addElement(BLT_GET_AREAS);
+    return document;
+  }
 }
