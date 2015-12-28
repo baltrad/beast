@@ -30,6 +30,7 @@ import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.message.mo.BltGetAreasMessage;
+import eu.baltrad.beast.message.mo.BltGetPcsDefinitionsMessage;
 import eu.baltrad.beast.message.mo.BltGetQualityControlsMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 
@@ -123,6 +124,15 @@ public class XmlRpcCommandGeneratorTest{
     BltGetAreasMessage msg = new BltGetAreasMessage();
     XmlRpcCommand command = classUnderTest.generate(msg);
     assertEquals("get_areas", command.getMethod());
+    Object[] objs = command.getObjects();
+    assertEquals(0, objs.length);
+  }
+
+  @Test
+  public void testBltGetPcsDefinitionsMessage() throws Exception {
+    BltGetPcsDefinitionsMessage msg = new BltGetPcsDefinitionsMessage();
+    XmlRpcCommand command = classUnderTest.generate(msg);
+    assertEquals("get_pcs_definitions", command.getMethod());
     Object[] objs = command.getObjects();
     assertEquals(0, objs.length);
   }

@@ -23,6 +23,7 @@ import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltCommandMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.message.mo.BltGetAreasMessage;
+import eu.baltrad.beast.message.mo.BltGetPcsDefinitionsMessage;
 import eu.baltrad.beast.message.mo.BltGetQualityControlsMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 
@@ -47,6 +48,8 @@ public class XmlRpcCommandGenerator implements IXmlRpcCommandGenerator {
       return createCommand((BltGetQualityControlsMessage)message);
     } else if (message.getClass() == BltGetAreasMessage.class) {
       return createCommand((BltGetAreasMessage)message);
+    } else if (message.getClass() == BltGetPcsDefinitionsMessage.class) {
+      return createCommand((BltGetPcsDefinitionsMessage)message);
     }
     throw new XmlRpcCommandException("Can not handle message of type: " + message.getClass().getName());
   }
@@ -135,5 +138,17 @@ public class XmlRpcCommandGenerator implements IXmlRpcCommandGenerator {
     command.setMethod("get_areas");
     command.setObjects(new Object[]{});
     return command;    
-  }  
+  }
+
+  /**
+   * Creates an XmlRpcCommand for sending a get_quality_controls message.
+   * @param message the message
+   * @return the command
+   */
+  protected XmlRpcCommand createCommand(BltGetPcsDefinitionsMessage message) {
+    XmlRpcCommand command = new XmlRpcCommand();
+    command.setMethod("get_pcs_definitions");
+    command.setObjects(new Object[]{});
+    return command;    
+  }    
 }

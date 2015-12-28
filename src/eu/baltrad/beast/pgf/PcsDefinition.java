@@ -19,47 +19,55 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.pgf;
 
-import java.util.List;
-
 /**
  * @author Anders Henja
  *
  */
-public interface IPgfClientHelper {
+public class PcsDefinition {
+  private String id;
+  private String description;
+  private String definition;
+
   /**
-   * @return A list of all available quality controls from all registered adaptors.
+   * Constructor
+   * @param id the id of this pcs definition
    */
-  public List<QualityControlInformation> getQualityControls();
+  public PcsDefinition(String id) {
+    this.id = id;
+  }
   
   /**
-   * @return a list of all available areas from all registered adaptors
+   * @return the id of this definition
    */
-  public List<AreaInformation> getAreas();
+  public String getId() {
+    return id;
+  }
   
   /**
-   * @param adaptorName the name of the adaptor
-   * @return a list of all available areas for the specified adaptor
+   * @return the description of this definition
    */
-  public List<AreaInformation> getAreas(String adaptorName);
+  public String getDescription() {
+    return description;
+  }
   
   /**
-   * @return the unique area ids that are available in the PGFs.
+   * @param description the description to set
    */
-  public List<String> getUniqueAreaIds();
+  public void setDescription(String description) {
+    this.description = description;
+  }
   
   /**
-   * @return the pcs definitions for all available adaptors
+   * @return the definition
    */
-  public List<PcsDefinition> getPcsDefinitions();
+  public String getDefinition() {
+    return definition;
+  }
   
   /**
-   * @param adaptorName the name of the adaptor
-   * @return the pcs definitions for all the specified adaptor
+   * @param definition the pcs definition
    */
-  public List<PcsDefinition> getPcsDefinitions(String adaptorName);
-  
-  /**
-   * @return the unique pcs definition ids that are available in the PGFs.
-   */
-  public List<String> getUniquePcsIds();
+  public void setDefinition(String definition) {
+    this.definition = definition;
+  }
 }

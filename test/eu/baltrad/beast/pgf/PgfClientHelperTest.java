@@ -33,6 +33,7 @@ import eu.baltrad.beast.adaptor.IAdaptor;
 import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.message.mo.BltGetAreasMessage;
+import eu.baltrad.beast.message.mo.BltGetPcsDefinitionsMessage;
 import eu.baltrad.beast.message.mo.BltGetQualityControlsMessage;
 import eu.baltrad.beast.pgf.PgfClientHelper.QCAdaptorCallback;
 
@@ -48,6 +49,10 @@ public class PgfClientHelperTest extends EasyMockSupport {
     List<AreaInformation> createAreaInformationList();
     List<AreaInformation> getAreas(String adaptorName);
     List<AreaInformation> getAreas();
+    IAdaptorCallback createPcsDefinitionCallback(String adaptorName, List<PcsDefinition> pcs);
+    List<PcsDefinition> createPcsDefinitionList();
+    List<PcsDefinition> getPcsDefinitions(String adaptorName);
+    List<PcsDefinition> getPcsDefinitions();
   }
   private PgfClientHelper classUnderTest = null;
   private IBltAdaptorManager adaptorManager = null;
@@ -75,6 +80,14 @@ public class PgfClientHelperTest extends EasyMockSupport {
       protected List<AreaInformation> createAreaInformationList() {
         return methods.createAreaInformationList();
       }
+      @Override
+      protected IAdaptorCallback createPcsDefinitionCallback(String adaptorName, List<PcsDefinition> pcs) {
+        return methods.createPcsDefinitionCallback(adaptorName, pcs);
+      }
+      @Override
+      protected List<PcsDefinition> createPcsDefinitionList() {
+        return methods.createPcsDefinitionList();
+      }      
     };
     classUnderTest.setAdaptorManager(adaptorManager);
   }
@@ -87,7 +100,6 @@ public class PgfClientHelperTest extends EasyMockSupport {
     IAdaptorCallback cb2 = createMock(IAdaptorCallback.class);
     
     List<QualityControlInformation> qcs = new ArrayList<QualityControlInformation>();
-    BltGetQualityControlsMessage bltmsg = new BltGetQualityControlsMessage();
     List<String> names = new ArrayList<String>();
     names.add("adaptor1");
     names.add("adaptor2");
@@ -231,4 +243,111 @@ public class PgfClientHelperTest extends EasyMockSupport {
     verifyAll();
     assertEquals(0, result.size());
   }
+  
+  @Test 
+  public void getPcsDefinition_forAdaptorName() {
+    List<PcsDefinition> pcs = new ArrayList<PcsDefinition>();
+    IAdaptor adaptor = createMock(IAdaptor.class);
+    IAdaptorCallback cb = createMock(IAdaptorCallback.class);
+    expect(methods.createPcsDefinitionList()).andReturn(pcs);
+    expect(adaptorManager.getAdaptor("adaptor1")).andReturn(adaptor);
+    expect(methods.createPcsDefinitionCallback("adaptor1", pcs)).andReturn(cb);
+    adaptor.handle(anyObject(BltGetPcsDefinitionsMessage.class), same(cb));
+    
+    replayAll();
+    
+    List<PcsDefinition> result = classUnderTest.getPcsDefinitions("adaptor1");
+    
+    verifyAll();
+    assertSame(pcs, result);
+  }
+  
+  @Test
+  public void getPcsDefinitions() {
+    List<PcsDefinition> p1 = new ArrayList<PcsDefinition>();
+    List<PcsDefinition> p2 = new ArrayList<PcsDefinition>();
+    
+    List<String> adaptorNames = new ArrayList<String>();
+    adaptorNames.add("adaptor1");
+    adaptorNames.add("adaptor2");
+    
+    p1.add(new PcsDefinition("pcs1"));
+    p1.add(new PcsDefinition("pcs2"));
+    p2.add(new PcsDefinition("pcs3"));
+    p2.add(new PcsDefinition("pcs4"));
+    
+    expect(adaptorManager.getAdaptorNames()).andReturn(adaptorNames);
+    expect(methods.getPcsDefinitions("adaptor1")).andReturn(p1);
+    expect(methods.getPcsDefinitions("adaptor2")).andReturn(p2);
+    
+    classUnderTest = new PgfClientHelper() {
+      @Override
+      public List<PcsDefinition> getPcsDefinitions(String adaptorName) {
+        return methods.getPcsDefinitions(adaptorName);
+      }
+    };
+    classUnderTest.setAdaptorManager(adaptorManager);
+    
+    replayAll();
+    
+    List<PcsDefinition> result = classUnderTest.getPcsDefinitions();
+    
+    verifyAll();
+    assertEquals(4, result.size());
+    assertEquals("pcs1", result.get(0).getId());
+    assertEquals("pcs2", result.get(1).getId());
+    assertEquals("pcs3", result.get(2).getId());
+    assertEquals("pcs4", result.get(3).getId());
+  }
+  
+  @Test
+  public void getUniquePcsIds() {
+    List<PcsDefinition> pcs = new ArrayList<PcsDefinition>();
+    pcs.add(new PcsDefinition("pcs1"));
+    pcs.add(new PcsDefinition("pcs2"));
+    pcs.add(new PcsDefinition("pcs3"));
+    pcs.add(new PcsDefinition("pcs1"));
+    pcs.add(new PcsDefinition("pcs4"));
+    
+    expect(methods.getPcsDefinitions()).andReturn(pcs);
+    
+    classUnderTest = new PgfClientHelper() {
+      @Override
+      public List<PcsDefinition> getPcsDefinitions() {
+        return methods.getPcsDefinitions();
+      }
+    };
+    classUnderTest.setAdaptorManager(adaptorManager);
+    
+    replayAll();
+    
+    List<String> result = classUnderTest.getUniquePcsIds();
+    
+    verifyAll();
+    assertEquals(4, result.size());
+    assertEquals("pcs1", result.get(0));
+    assertEquals("pcs2", result.get(1));
+    assertEquals("pcs3", result.get(2));
+    assertEquals("pcs4", result.get(3));
+  }
+  
+  @Test
+  public void getUniquePcsIds_withException() {
+    expect(methods.getPcsDefinitions()).andThrow(new RuntimeException());
+    
+    classUnderTest = new PgfClientHelper() {
+      @Override
+      public List<PcsDefinition> getPcsDefinitions() {
+        return methods.getPcsDefinitions();
+      }
+    };
+    classUnderTest.setAdaptorManager(adaptorManager);
+    
+    replayAll();
+    
+    List<String> result = classUnderTest.getUniquePcsIds();
+    
+    verifyAll();
+    assertEquals(0, result.size());
+  }  
 }

@@ -32,6 +32,7 @@ import eu.baltrad.beast.adaptor.IAdaptorCallback;
 import eu.baltrad.beast.adaptor.IBltAdaptorManager;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltGetAreasMessage;
+import eu.baltrad.beast.message.mo.BltGetPcsDefinitionsMessage;
 import eu.baltrad.beast.message.mo.BltGetQualityControlsMessage;
 
 /**
@@ -163,6 +164,49 @@ public class PgfClientHelper implements IPgfClientHelper {
   }
   
   /**
+   * Callback for taking care of the quality control information 
+   */
+  protected static class PcsDefinitionAdaptorCallback implements IAdaptorCallback {
+    private String adaptorName;
+    private List<PcsDefinition> pcs;
+    public PcsDefinitionAdaptorCallback(String adaptorName, List<PcsDefinition> pcs) {
+      this.adaptorName = adaptorName;
+      this.pcs = pcs;
+    }
+    
+    /**
+     * @see eu.baltrad.beast.adaptor.IAdaptorCallback#success(eu.baltrad.beast.message.IBltMessage, java.lang.Object)
+     */
+    @Override
+    public void success(IBltMessage arg0, Object arg) {
+      synchronized(pcs) {
+        try {
+          HashMap<String, HashMap<String,Object>> hm = (HashMap<String, HashMap<String,Object>>)arg;
+          for (String k : hm.keySet()) {
+            HashMap<String, Object> v = hm.get(k);
+            PcsDefinition pdef = new PcsDefinition(k);
+            if (v.containsKey("description")) {
+              pdef.setDescription((String)v.get("description"));
+            }
+            if (v.containsKey("definition")) {
+              pdef.setDefinition((String)v.get("definition"));
+            }
+            pcs.add(pdef);
+          }
+        } catch (Exception e) {
+          logger.error("Failed to get pcs definition for " + adaptorName, e);
+        }
+      }
+    }
+
+    @Override
+    public void error(IBltMessage arg0, Throwable arg1) {}
+
+    @Override
+    public void timeout(IBltMessage arg0) {}
+  }
+  
+  /**
    * @see eu.baltrad.beast.pgf.IPgfClientHelper#getQualityControls()
    */
   @Override
@@ -223,6 +267,51 @@ public class PgfClientHelper implements IPgfClientHelper {
     }
     return result;
   }
+
+  /**
+   * @see eu.baltrad.beast.pgf.IPgfClientHelper#getPcsDefinitions()
+   */
+  @Override
+  public List<PcsDefinition> getPcsDefinitions() {
+    List<String> adaptorNames = adaptorManager.getAdaptorNames();
+    List<PcsDefinition> pcs = createPcsDefinitionList();
+    for (String name : adaptorNames) {
+      List<PcsDefinition> adaptorPcs = getPcsDefinitions(name);
+      pcs.addAll(adaptorPcs);
+    }
+    return pcs;
+  }
+
+  /**
+   * @see eu.baltrad.beast.pgf.IPgfClientHelper#getPcsDefinitions(java.lang.String)
+   */
+  @Override
+  public List<PcsDefinition> getPcsDefinitions(String adaptorName) {
+    List<PcsDefinition> pcs = createPcsDefinitionList();
+    BltGetPcsDefinitionsMessage message = new BltGetPcsDefinitionsMessage();
+    IAdaptor adaptor = adaptorManager.getAdaptor(adaptorName);
+    adaptor.handle(message, createPcsDefinitionCallback(adaptorName, pcs));
+    return pcs;
+  }
+
+  /**
+   * @see eu.baltrad.beast.pgf.IPgfClientHelper#getUniquePcsIds()
+   */
+  @Override
+  public List<String> getUniquePcsIds() {
+    List<String> result = new ArrayList<String>();
+    try {
+      List<PcsDefinition> pcs = getPcsDefinitions();
+      for (PcsDefinition pid : pcs) {
+        if (!result.contains(pid.getId())) {
+          result.add(pid.getId());
+        }
+      }
+    } catch (Exception e) {
+      logger.warn("Failed to get unique pcs ids", e);
+    }
+    return result;
+  }
   
   /**
    * @param adaptorManager the adaptor manager
@@ -245,13 +334,22 @@ public class PgfClientHelper implements IPgfClientHelper {
   /**
    * Creates and returns an instance of the adaptor callback 
    * @param adaptorName
-   * @param qualityControlInformation
+   * @param areas
    * @return
    */
   protected IAdaptorCallback createAreaCallback(String adaptorName, List<AreaInformation> areas) {
     return new AreaAdaptorCallback(adaptorName, areas);
   }
 
+  /**
+   * Creates and returns an instance of the adaptor callback 
+   * @param adaptorName
+   * @param qualityControlInformation
+   * @return
+   */
+  protected IAdaptorCallback createPcsDefinitionCallback(String adaptorName, List<PcsDefinition> pcs) {
+    return new PcsDefinitionAdaptorCallback(adaptorName, pcs);
+  }
   
   /**
    * @return the list to be filled with QC information
@@ -267,6 +365,12 @@ public class PgfClientHelper implements IPgfClientHelper {
     return new ArrayList<AreaInformation>();
   }
 
+  /**
+   * @return the list to be filled with pcs definitions
+   */
+  protected List<PcsDefinition> createPcsDefinitionList() {
+    return new ArrayList<PcsDefinition>();
+  }
 
 //  public static void main(String[] args) {
 //    XmlRpcAdaptor adaptor = new XmlRpcAdaptor();
