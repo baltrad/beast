@@ -27,6 +27,7 @@ import java.util.Map;
 
 import eu.baltrad.beast.net.ftp.FTPFileUploadHandler;
 import eu.baltrad.beast.net.scp.SCPFileUploadHandler;
+import eu.baltrad.beast.net.scp.SCPOnlyFileUploadHandler;
 import eu.baltrad.beast.net.sftp.SFTPFileUploadHandler;
 
 public class FileUploader {
@@ -55,6 +56,7 @@ public class FileUploader {
     Map<String, FileUploadHandler> handlers = new HashMap<String, FileUploadHandler>();
     handlers.put("ftp", new FTPFileUploadHandler());
     handlers.put("scp", new SCPFileUploadHandler());
+    handlers.put("scponly", new SCPOnlyFileUploadHandler());
     handlers.put("copy", new CopyFileUploadHandler());
     handlers.put("sftp", new SFTPFileUploadHandler());
     return new FileUploader(handlers);

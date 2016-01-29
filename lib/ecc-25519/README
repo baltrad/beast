@@ -1,0 +1,5 @@
+This version of ecc-25519 is built using JDK 1.6 even though the master version requires JDK 1.7. This might
+cause problems but I have not investigated this further so use at your own risc.
+
+2016-01-29
+Anders
