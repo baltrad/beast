@@ -570,7 +570,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(9, arguments.length);
+    assertEquals(10, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -580,6 +580,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--prodpar=0.5", arguments[6]);
     assertEquals("--quantity=DBZH", arguments[7]);
     assertEquals("--algorithm_id=10", arguments[8]);
+    assertEquals("--merge=true", arguments[9]);
   }
 
   @Test
@@ -642,7 +643,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(12, arguments.length);
+    assertEquals(13, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -655,6 +656,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--zrb=1.4", arguments[9]);
     assertEquals("--quantity=DBZH", arguments[10]);
     assertEquals("--algorithm_id=10", arguments[11]);
+    assertEquals("--merge=true", arguments[12]);
   }
 
   @Test
@@ -718,7 +720,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(13, arguments.length);
+    assertEquals(14, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -732,6 +734,8 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--ignore-malfunc=true", arguments[10]);
     assertEquals("--quantity=DBZH", arguments[11]);
     assertEquals("--algorithm_id=10", arguments[12]);
+    assertEquals("--merge=true", arguments[13]);
+    
   }
 
   @Test
@@ -796,7 +800,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(14, arguments.length);
+    assertEquals(15, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -811,6 +815,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--ctfilter=True", arguments[11]);
     assertEquals("--quantity=DBZH", arguments[12]);
     assertEquals("--algorithm_id=10", arguments[13]);
+    assertEquals("--merge=true", arguments[14]);
   }
 
   @Test
@@ -876,7 +881,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(15, arguments.length);
+    assertEquals(16, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -892,6 +897,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--qitotal_field=se.baltrad.some.field", arguments[12]);
     assertEquals("--quantity=DBZH", arguments[13]);
     assertEquals("--algorithm_id=10", arguments[14]);
+    assertEquals("--merge=true", arguments[15]);
   }  
 
   @Test
@@ -957,7 +963,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(14, arguments.length);
+    assertEquals(15, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -972,6 +978,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--ctfilter=True", arguments[11]);
     assertEquals("--quantity=DBZH", arguments[12]);
     assertEquals("--algorithm_id=10", arguments[13]);
+    assertEquals("--merge=true", arguments[14]);
   }
   
   @Test
