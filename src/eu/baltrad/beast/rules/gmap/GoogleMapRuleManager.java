@@ -69,6 +69,7 @@ public class GoogleMapRuleManager implements IRuleManager {
     String path = grule.getPath();
     template.update("insert into beast_gmap_rules (rule_id, area, path) values (?,?,?)",
         new Object[]{rule_id, area, path});
+    grule.setRuleId(rule_id);    
   }
 
   /**
@@ -90,6 +91,7 @@ public class GoogleMapRuleManager implements IRuleManager {
     GoogleMapRule grule = (GoogleMapRule)rule;
     template.update("update beast_gmap_rules set area=?, path=? where rule_id=?",
         new Object[]{grule.getArea(), grule.getPath(), rule_id});
+    grule.setRuleId(rule_id);    
   }
 
   /**
@@ -120,6 +122,7 @@ public class GoogleMapRuleManager implements IRuleManager {
       @Override
       public GoogleMapRule mapRow(ResultSet rs, int row) throws SQLException {
         GoogleMapRule result = (GoogleMapRule)createRule();
+        result.setRuleId(rs.getInt("rule_id"));
         result.setArea(rs.getString("area"));
         result.setPath(rs.getString("path"));
         return result;

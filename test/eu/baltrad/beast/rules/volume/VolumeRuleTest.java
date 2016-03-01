@@ -78,6 +78,7 @@ public class VolumeRuleTest extends EasyMockSupport {
     classUnderTest.setTimeoutManager(timeoutManager);
     classUnderTest.setRuleUtilities(utilities);
     classUnderTest.setTimeout(0); // No timeout initially
+    classUnderTest.setRuleId(10);
   }
 
   @After
@@ -292,11 +293,12 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals(files[1], "uuid-2");
     assertEquals(files[2], "uuid-3");
     String[] arguments = result.getArguments();
-    assertEquals(4, arguments.length);
+    assertEquals(5, arguments.length);
     assertEquals("--source=searl", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--anomaly-qc=ropo,nisse", arguments[3]);
+    assertEquals("--algorithm_id=10",arguments[4]);
   }
 
   @Test
@@ -329,10 +331,11 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals(files[1], "uuid-2");
     assertEquals(files[2], "uuid-3");
     String[] arguments = result.getArguments();
-    assertEquals(3, arguments.length);
+    assertEquals(4, arguments.length);
     assertEquals("--source=searl", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
+    assertEquals("--algorithm_id=10",arguments[3]);
   }
   
   @Test

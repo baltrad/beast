@@ -39,6 +39,8 @@ import org.springframework.beans.factory.BeanInitializationException;
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.oh5.Metadata;
 import eu.baltrad.bdb.oh5.Source;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.message.mo.BltDataMessage;
@@ -80,7 +82,6 @@ public class Site2DRuleTest extends EasyMockSupport {
     Metadata md = createMock(Metadata.class);
     Source source = createMock(Source.class);
     UUID ruid = UUID.randomUUID();
-    
     List<String> sources = new ArrayList<String>();
     sources.add("seses");
     sources.add("nisse");
@@ -92,10 +93,13 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.setSources(sources);
     classUnderTest.setApplyGRA(true);
     classUnderTest.setDetectors(detectors);
+    classUnderTest.setRuleId(10);
     
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("PVOL");
+    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
+    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(fe.getUuid()).andReturn(ruid);
@@ -108,7 +112,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertNotNull(result);
     assertEquals(1, result.getFiles().length);
     assertEquals(ruid.toString(), result.getFiles()[0]);
-    assertEquals(10, result.getArguments().length);
+    assertEquals(13, result.getArguments().length);
     assertEquals("--area=gnom_area", result.getArguments()[0]);
     assertEquals("--anomaly-qc=piff,puff", result.getArguments()[1]);
     assertEquals("--method=pcappi", result.getArguments()[2]);
@@ -119,6 +123,9 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals("--pcsid=gmaps", result.getArguments()[7]);
     assertEquals("--xscale=2000.0", result.getArguments()[8]);
     assertEquals("--yscale=2000.0", result.getArguments()[9]);
+    assertEquals("--date=20150203", result.getArguments()[10]);
+    assertEquals("--time=111500", result.getArguments()[11]);
+    assertEquals("--algorithm_id=10", result.getArguments()[12]);
   }
 
   @Test
@@ -141,10 +148,13 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.setApplyGRA(true);
     classUnderTest.setDetectors(detectors);
     classUnderTest.setScanBased(true);
+    classUnderTest.setRuleId(10);
     
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("SCAN");
+    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
+    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(fe.getUuid()).andReturn(ruid);
@@ -157,7 +167,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertNotNull(result);
     assertEquals(1, result.getFiles().length);
     assertEquals(ruid.toString(), result.getFiles()[0]);
-    assertEquals(10, result.getArguments().length);
+    assertEquals(13, result.getArguments().length);
     assertEquals("--area=gnom_area", result.getArguments()[0]);
     assertEquals("--anomaly-qc=piff,puff", result.getArguments()[1]);
     assertEquals("--method=pcappi", result.getArguments()[2]);
@@ -168,6 +178,9 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals("--pcsid=gmaps", result.getArguments()[7]);
     assertEquals("--xscale=2000.0", result.getArguments()[8]);
     assertEquals("--yscale=2000.0", result.getArguments()[9]);
+    assertEquals("--date=20150203", result.getArguments()[10]);
+    assertEquals("--time=111500", result.getArguments()[11]);
+    assertEquals("--algorithm_id=10", result.getArguments()[12]);
   }
 
   @Test
@@ -198,10 +211,13 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.setProdpar("0.5");
     classUnderTest.setMethod(Site2DRule.PPI);
     classUnderTest.setScanBased(true);
+    classUnderTest.setRuleId(10);
     
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("SCAN");
+    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
+    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(methods.createCatalogEntry(fe)).andReturn(catalogEntry);
@@ -216,10 +232,13 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertNotNull(result);
     assertEquals(1, result.getFiles().length);
     assertEquals(ruid.toString(), result.getFiles()[0]);
-    assertEquals(3, result.getArguments().length);
+    assertEquals(6, result.getArguments().length);
     assertEquals("--area=gnom_area", result.getArguments()[0]);
     assertEquals("--method=ppi", result.getArguments()[1]);
     assertEquals("--prodpar=0.5", result.getArguments()[2]);
+    assertEquals("--date=20150203", result.getArguments()[3]);
+    assertEquals("--time=111500", result.getArguments()[4]);
+    assertEquals("--algorithm_id=10", result.getArguments()[5]);
   }
 
   @Test
@@ -250,10 +269,13 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.setProdpar("0.5");
     classUnderTest.setMethod(Site2DRule.PPI);
     classUnderTest.setScanBased(true);
+    classUnderTest.setRuleId(10);
     
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("SCAN");
+    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
+    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(methods.createCatalogEntry(fe)).andReturn(catalogEntry);
@@ -288,10 +310,13 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.setDetectors(detectors);
     classUnderTest.setScanBased(true);
     classUnderTest.setPcsid(null);
+    classUnderTest.setRuleId(10);
     
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("SCAN");
+    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
+    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(fe.getUuid()).andReturn(ruid);
@@ -304,7 +329,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertNotNull(result);
     assertEquals(1, result.getFiles().length);
     assertEquals(ruid.toString(), result.getFiles()[0]);
-    assertEquals(7, result.getArguments().length);
+    assertEquals(10, result.getArguments().length);
     assertEquals("--area=gnom_area", result.getArguments()[0]);
     assertEquals("--anomaly-qc=piff,puff", result.getArguments()[1]);
     assertEquals("--method=pcappi", result.getArguments()[2]);
@@ -312,6 +337,9 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals("--applygra=true", result.getArguments()[4]);
     assertEquals("--zrA=200.0", result.getArguments()[5]);
     assertEquals("--zrb=1.6", result.getArguments()[6]);
+    assertEquals("--date=20150203", result.getArguments()[7]);
+    assertEquals("--time=111500", result.getArguments()[8]);
+    assertEquals("--algorithm_id=10", result.getArguments()[9]);
   }
 
   @Test
@@ -334,9 +362,12 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.setApplyGRA(true);
     classUnderTest.setDetectors(detectors);
     classUnderTest.setScanBased(true);
+    classUnderTest.setRuleId(10);
     
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
+    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
+    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(md.getWhatObject()).andReturn("PVOL");

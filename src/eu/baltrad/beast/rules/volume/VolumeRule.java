@@ -527,7 +527,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
       }
       args.add("--anomaly-qc="+dstr.toString());
     }
-    
+    args.add("--algorithm_id="+getRuleId());
     result.setArguments(args.toArray(new String[0]));
     
     return result;

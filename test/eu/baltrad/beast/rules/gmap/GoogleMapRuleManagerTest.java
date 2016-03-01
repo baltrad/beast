@@ -75,6 +75,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     classUnderTest.store(10, rule);
     
     verifyAll();
+    assertEquals(10, rule.getRuleId());
   }
 
   @Test
@@ -119,6 +120,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     classUnderTest.update(10, rule);
     
     verifyAll();
+    assertEquals(10, rule.getRuleId());
   }
   
   @Test
@@ -144,6 +146,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     RowMapper<GoogleMapRule> mapper = classUnderTest.getGmapRuleMapper();
     ResultSet rs = createMock(ResultSet.class);
     
+    expect(rs.getInt("rule_id")).andReturn(10);
     expect(rs.getString("area")).andReturn("sswe");
     expect(rs.getString("path")).andReturn("/tmp/path");
     
@@ -155,5 +158,6 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     assertEquals("sswe", result.getArea());
     assertEquals("/tmp/path", result.getPath());
     assertSame(catalog, result.getCatalog());
+    assertEquals(10, result.getRuleId());
   }
 }

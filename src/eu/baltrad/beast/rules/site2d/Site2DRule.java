@@ -20,6 +20,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.site2d;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.message.IBltMessage;
@@ -215,6 +218,8 @@ public class Site2DRule implements IRule, InitializingBean {
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
       String object = file.getMetadata().getWhatObject();
+      Date date = file.getMetadata().getWhatDate();
+      Time time = file.getMetadata().getWhatTime();
       String src = file.getSource().getName();
       if (object != null && 
           ((scanBased && object.equals("SCAN")) || (!scanBased && object.equals("PVOL"))) && 
@@ -233,13 +238,13 @@ public class Site2DRule implements IRule, InitializingBean {
             return null;
           }
         }
-        return createMessage(file.getUuid().toString());
+        return createMessage(file.getUuid().toString(), date, time);
       }
     }
     return null;
   }
 
-  protected BltGenerateMessage createMessage(String filename) {
+  protected BltGenerateMessage createMessage(String filename, Date date, Time time) {
     BltGenerateMessage result = new BltGenerateMessage();
     result.setAlgorithm("eu.baltrad.beast.GenerateSite2D");
     result.setFiles(new String[]{filename});
@@ -279,7 +284,9 @@ public class Site2DRule implements IRule, InitializingBean {
       args.add("--xscale="+this.xscale);
       args.add("--yscale="+this.yscale);
     }
-    
+    args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
+    args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
+    args.add("--algorithm_id="+getRuleId());
     result.setArguments(args.toArray(new String[0]));
 
     return result;

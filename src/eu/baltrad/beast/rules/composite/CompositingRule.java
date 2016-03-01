@@ -651,7 +651,8 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     if (getQuantity() != null && !getQuantity().equals("")) {
       args.add("--quantity="+getQuantity());
     }
-    
+    args.add("--algorithm_id="+getRuleId());
+
     result.setArguments(args.toArray(new String[0]));
 
     logger.debug("createMessage: Returning algorithm " + result.getAlgorithm());

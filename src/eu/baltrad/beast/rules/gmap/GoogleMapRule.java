@@ -19,6 +19,10 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.gmap;
 
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -62,6 +66,11 @@ public class GoogleMapRule implements IRule, InitializingBean {
   private Catalog catalog = null;
   
   /**
+   * The unique rule id separating this compositing rule from the others.
+   */
+  private int ruleid = -1;
+  
+  /**
    * The logger
    */
   private static Logger logger = LogManager.getLogger(GoogleMapRule.class);
@@ -75,7 +84,20 @@ public class GoogleMapRule implements IRule, InitializingBean {
       throw new BeanInitializationException("catalog missing");
     }
 	}
+	
+  /**
+   * @param ruleid the ruleid to set
+   */
+  public void setRuleId(int ruleid) {
+    this.ruleid = ruleid;
+  }
 
+  /**
+   * @return the ruleid
+   */
+  public int getRuleId() {
+    return ruleid;
+  }
 	/**
 	 * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
 	 */
@@ -98,7 +120,12 @@ public class GoogleMapRule implements IRule, InitializingBean {
 	          result = new BltGenerateMessage();
 	          result.setAlgorithm(BEAST_GMAP_ALGORITHM);
 	          result.setFiles(new String[]{fe.getUuid().toString()});
-	          result.setArguments(new String[]{"--outfile="+oname});
+	          List<String> args = new ArrayList<String>();
+	          args.add("--outfile="+oname);
+	          args.add("--date="+new Formatter().format("%d%02d%02d",d.year(), d.month(), d.day()).toString()); 
+	          args.add("--time="+new Formatter().format("%02d%02d%02d",t.hour(), t.minute(), t.second()).toString());
+	          args.add("--algorithm_id="+getRuleId());
+	          result.setArguments(args.toArray(new String[0]));
 	        }
 	      }
 	    }
