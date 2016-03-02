@@ -298,7 +298,7 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--anomaly-qc=ropo,nisse", arguments[3]);
-    assertEquals("--algorithm_id=10",arguments[4]);
+    assertEquals("--algorithm_id=10-searl",arguments[4]);
     assertEquals("--merge=true", arguments[5]);
   }
 
@@ -336,7 +336,7 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals("--source=searl", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
-    assertEquals("--algorithm_id=10",arguments[3]);
+    assertEquals("--algorithm_id=10-searl",arguments[3]);
     assertEquals("--merge=true", arguments[4]);
   }
   

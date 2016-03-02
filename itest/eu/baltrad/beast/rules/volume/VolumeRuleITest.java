@@ -232,25 +232,25 @@ public class VolumeRuleITest extends TestCase {
     assertEquals(1, h_1845.triggeringFiles.size());
     assertEquals(1, h_1845.messages.size());
     assertEquals("fixtures/scan_sehud_40.0_20110126T184700Z.h5", h_1845.triggeringFiles.get(0));
-    String[] expected_1845_args = new String[]{"--source=sehud", "--date=20110126", "--time=184500", "--algorithm_id=10", "--merge=true"};
+    String[] expected_1845_args = new String[]{"--source=sehud", "--date=20110126", "--time=184500", "--algorithm_id=10-sehud", "--merge=true"};
     validateMessage(h_1845.messages.get(0), expected_1845_args, h_1845.filemap.values());
     
     assertEquals(1, h_1900.triggeringFiles.size());
     assertEquals(1, h_1900.messages.size());
     assertEquals("fixtures/scan_sehud_40.0_20110126T190200Z.h5", h_1900.triggeringFiles.get(0));
-    String[] expected_1900_args = new String[]{"--source=sehud", "--date=20110126", "--time=190000", "--algorithm_id=10", "--merge=true"};
+    String[] expected_1900_args = new String[]{"--source=sehud", "--date=20110126", "--time=190000", "--algorithm_id=10-sehud", "--merge=true"};
     validateMessage(h_1900.messages.get(0), expected_1900_args, h_1900.filemap.values());
 
     assertEquals(1, h_1915.triggeringFiles.size());
     assertEquals(1, h_1915.messages.size());
     assertEquals("fixtures/scan_sehud_40.0_20110126T191700Z.h5", h_1915.triggeringFiles.get(0));
-    String[] expected_1915_args = new String[]{"--source=sehud", "--date=20110126", "--time=191500", "--algorithm_id=10", "--merge=true"};
+    String[] expected_1915_args = new String[]{"--source=sehud", "--date=20110126", "--time=191500", "--algorithm_id=10-sehud", "--merge=true"};
     validateMessage(h_1915.messages.get(0), expected_1915_args, h_1915.filemap.values());
 
     assertEquals(1, h_1930.triggeringFiles.size());
     assertEquals(1, h_1930.messages.size());
     assertEquals("fixtures/scan_sehud_40.0_20110126T193200Z.h5", h_1930.triggeringFiles.get(0));
-    String[] expected_1930_args = new String[]{"--source=sehud", "--date=20110126", "--time=193000", "--algorithm_id=10", "--merge=true"};
+    String[] expected_1930_args = new String[]{"--source=sehud", "--date=20110126", "--time=193000", "--algorithm_id=10-sehud", "--merge=true"};
     validateMessage(h_1930.messages.get(0), expected_1930_args, h_1930.filemap.values());
   }
 
@@ -280,13 +280,13 @@ public class VolumeRuleITest extends TestCase {
     assertEquals(1, h_1845.triggeringFiles.size());
     assertEquals(1, h_1845.messages.size());
     assertEquals("fixtures/scan_sehud_24.0_20110126T184700Z.h5", h_1845.triggeringFiles.get(0));
-    String[] expected_1845_args = new String[]{"--source=sehud", "--date=20110126", "--time=184500", "--algorithm_id=10", "--merge=true"};
+    String[] expected_1845_args = new String[]{"--source=sehud", "--date=20110126", "--time=184500", "--algorithm_id=10-sehud", "--merge=true"};
     validateMessage(h_1845.messages.get(0), expected_1845_args, h_1845.filemap.values());
 
     assertEquals(1, h_1930.triggeringFiles.size());
     assertEquals(1, h_1930.messages.size());
     assertEquals("fixtures/scan_sehud_24.0_20110126T193200Z.h5", h_1930.triggeringFiles.get(0));
-    String[] expected_1930_args = new String[]{"--source=sehud", "--date=20110126", "--time=193000", "--algorithm_id=10", "--merge=true"};
+    String[] expected_1930_args = new String[]{"--source=sehud", "--date=20110126", "--time=193000", "--algorithm_id=10-sehud", "--merge=true"};
     validateMessage(h_1930.messages.get(0), expected_1930_args, h_1930.filemap.values());
   }  
   

@@ -130,6 +130,7 @@ public class VolumeRuleManager implements IRuleManager {
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
+    vrule.setRuleId(ruleId);
   }
 
   /**
@@ -154,6 +155,7 @@ public class VolumeRuleManager implements IRuleManager {
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
+    vrule.setRuleId(ruleId);    
   }
 
   /**

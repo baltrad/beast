@@ -158,6 +158,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     classUnderTest.store(13, rule);
     
     verifyAll();
+    assertEquals(13, rule.getRuleId());
   }
 
   @Test
@@ -198,6 +199,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     classUnderTest.update(13, rule);
     
     verifyAll();
+    assertEquals(13, rule.getRuleId());
   }
   
   @Test
