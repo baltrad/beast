@@ -203,4 +203,16 @@ public class AttributeFilterTest {
     assertEquals("PVOL, SCAN", classUnderTest.getValue());
     assertTrue(classUnderTest.isNegated());
   }
+  
+  @Test
+  public void testGetExpression_like_string() {
+    Expression expected = xpr.like(
+      xpr.attribute("how/task"), xpr.literal("*_hdr")
+    );
+    classUnderTest.setAttribute("how/task");
+    classUnderTest.setOperator(AttributeFilter.Operator.LIKE);
+    classUnderTest.setValueType(AttributeFilter.ValueType.STRING);
+    classUnderTest.setValue("*_hdr");
+    assertEquals(expected, classUnderTest.getExpression());
+  }
 }

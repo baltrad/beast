@@ -127,8 +127,10 @@ public class AttributeFilter implements IFilter {
     IN() {
       @Override
       public boolean isMultiValued() { return true; }
+    },
+    LIKE() {
+      @Override public String toBdbBinaryOperatorType() { return "like"; }
     };
-  
     /**
      * return true if this operator can handle a list of values
      */
