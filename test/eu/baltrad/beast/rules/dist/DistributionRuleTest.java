@@ -89,12 +89,12 @@ public class DistributionRuleTest extends EasyMockSupport {
 
     classUnderTest = new DistributionRule(localStorage) {
       @Override
-      protected boolean match(FileEntry entry) {
+      public boolean match(FileEntry entry) {
         return methods.match(entry);
       }
 
       @Override
-      protected void upload(FileEntry entry) {
+      public void upload(FileEntry entry) {
         methods.upload(entry);
       }
     };
@@ -116,12 +116,12 @@ public class DistributionRuleTest extends EasyMockSupport {
 
     classUnderTest = new DistributionRule(localStorage) {
       @Override
-      protected boolean match(FileEntry entry) {
+      public boolean match(FileEntry entry) {
         return methods.match(entry);
       }
 
       @Override
-      protected void upload(FileEntry entry) {
+      public void upload(FileEntry entry) {
         methods.upload(entry);
       }
     };
