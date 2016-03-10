@@ -208,18 +208,22 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     return null;
   }
 
-  protected boolean match(FileEntry entry) {
+  public boolean match(FileEntry entry) {
     return matcher.match(entry.getMetadata(), filter.getExpression());
   }
 
-  protected void upload(FileEntry entry) {
+  public void upload(FileEntry entry) {
     File src = localStorage.store(entry);
-    String entryName = namer.name(entry);
     try {
-      URI fullDestination = uploader.appendPath(destination, entryName);
-      uploader.upload(src, fullDestination);
+      upload(src, entry);
     } catch (IOException e) {
       logger.error("upload failed", e);
     }
+  }
+  
+  public void upload(File src, FileEntry entry) throws IOException {
+    String entryName = namer.name(entry);
+    URI fullDestination = uploader.appendPath(destination, entryName);
+    uploader.upload(src, fullDestination);
   }
 }
