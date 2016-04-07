@@ -715,6 +715,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     filter.setStart(nominalDT);
     DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
     filter.setStop(stopDT);
+    filter.setClosestToStartDate(true);
     return filter;
   }
 

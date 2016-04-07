@@ -53,6 +53,11 @@ public class LowestAngleFilter implements ICatalogFilter {
   private String quantity = null;
   
   /**
+   * If item located should be closed to the start date (ascending sort by date/time
+   */
+  private boolean closestToStartDate = false;
+  
+  /**
    * @see eu.baltrad.beast.db.ICatalogFilter#apply(eu.baltrad.bdb.db.FileQuery)
    */
   @Override
@@ -84,6 +89,9 @@ public class LowestAngleFilter implements ICatalogFilter {
     query.setFilter(xpr.and(filters));
     
     query.appendOrderClause(xpr.asc(xpr.attribute("where/elangle")));
+    if (closestToStartDate) {
+      query.appendOrderClause(xpr.asc(dtAttr));
+    }
     query.setLimit(1);
   }
 
@@ -141,5 +149,19 @@ public class LowestAngleFilter implements ICatalogFilter {
    */
   public void setQuantity(String quantity) {
     this.quantity = quantity;
+  }
+
+  /**
+   * If ordering also should consider if closest to start time or not
+   */
+  public boolean isClosestToStartDate() {
+    return closestToStartDate;
+  }
+
+  /**
+   * If ordering also should consider if closest to start time or not
+   */
+  public void setClosestToStartDate(boolean closestToStartDate) {
+    this.closestToStartDate = closestToStartDate;
   }
 }
