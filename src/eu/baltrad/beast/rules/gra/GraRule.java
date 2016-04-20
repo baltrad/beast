@@ -104,14 +104,10 @@ public class GraRule extends AcrrRule {
         
         result.setAlgorithm("eu.baltrad.beast.CreateGraCoefficient");
         result.setFiles(uuids.toArray(new String[0]));
-        Formatter dateTimeFormatter = new Formatter();
-        String dateString = dateTimeFormatter.format("%d%02d%02d",date.year(), date.month(), date.day()).toString();
-        String timeString = dateTimeFormatter.format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString();
-        dateTimeFormatter.close();
         List<String> args = new ArrayList<String>();
         args.add("--area="+getArea());
-        args.add("--date="+dateString); 
-        args.add("--time="+timeString);
+        args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
+        args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
         args.add("--zra="+getZrA());
         args.add("--zrb="+getZrB());
         args.add("--interval="+getHours());
