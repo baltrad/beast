@@ -166,7 +166,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	      RouteDefinition d = getDefinition(job);
 	      result.addAll(getMultiRoutedMessages(msg, d));
 	    } else {
-	      for (RouteDefinition d : definitions) {
+	      // definitions might be updated while adding/executing all routes. Therefore, use a copy with current state
+	      List<RouteDefinition> currentDefinitions = new ArrayList<RouteDefinition>(definitions);
+	      for (RouteDefinition d : currentDefinitions) {
 	        result.addAll(getMultiRoutedMessages(msg, d));
 	      }
 	    }
