@@ -114,9 +114,9 @@ public class CompositingRuleITest extends TestCase {
     classUnderTest.setTimeoutManager(timeoutManager);
     classUnderTest.setTimeout(0); // no timeouts
     
-//    for (String s: SCAN_DATA_0) {
-//      catalog.getCatalog().store(new FileInputStream(getFilePath(s)));
-//    }
+    for (String s: SCAN_DATA_0) {
+      catalog.getCatalog().store(new FileInputStream(getFilePath(s)));
+    }
   }
   
   public void tearDown() throws Exception {
@@ -142,7 +142,7 @@ public class CompositingRuleITest extends TestCase {
     return false;
   }
   
-  public void XtestHandleVolume() throws Exception {
+  public void testHandleVolume() throws Exception {
     List<String> sources = new ArrayList<String>();
     sources.add("seang");
     sources.add("searl");
@@ -180,7 +180,7 @@ public class CompositingRuleITest extends TestCase {
     assertTrue(arrayContains(files, seang_path));
   }
   
-  public void XtestHandleScans() throws Exception {
+  public void testHandleScans() throws Exception {
     FileEntry f = null;
     IBltMessage result = null;
     List<String> sources = new ArrayList<String>();
@@ -210,7 +210,7 @@ public class CompositingRuleITest extends TestCase {
     assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
   }
 
-  public void XtestHandle_alreadyHandled() throws Exception {
+  public void testHandle_alreadyHandled() throws Exception {
     List<String> sources = new ArrayList<String>();
     sources.add("seang");
     sources.add("searl");
