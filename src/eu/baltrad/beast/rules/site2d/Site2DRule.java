@@ -215,12 +215,16 @@ public class Site2DRule implements IRule, InitializingBean {
   @Override
   public IBltMessage handle(IBltMessage message) {
     logger.debug("ENTER: handle(IBltMessage)");
+    BltGenerateMessage generatedMessage = null;
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
+      logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+          ", file: " + file.getUuid());
       String object = file.getMetadata().getWhatObject();
       Date date = file.getMetadata().getWhatDate();
       Time time = file.getMetadata().getWhatTime();
       String src = file.getSource().getName();
+      boolean createMessage = true;
       if (object != null && 
           ((scanBased && object.equals("SCAN")) || (!scanBased && object.equals("PVOL"))) && 
           src != null && sources.contains(src)) {
@@ -235,13 +239,18 @@ public class Site2DRule implements IRule, InitializingBean {
             // NP
           }
           if (dprodpar == -9999.9 || dprodpar != ceprodpar) {
-            return null;
+            createMessage = false;
           }
         }
-        return createMessage(file.getUuid().toString(), date, time);
+        if (createMessage) {
+          generatedMessage = createMessage(file.getUuid().toString(), date, time);          
+        }
       }
+      logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+          ", file: " + file.getUuid());
     }
-    return null;
+    logger.debug("EXIT: handle(IBltMessage)");
+    return generatedMessage;
   }
 
   protected BltGenerateMessage createMessage(String filename, Date date, Time time) {

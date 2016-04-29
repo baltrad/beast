@@ -66,6 +66,8 @@ public class ScansunRule implements IRule {
     try {
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
+        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+            ", file: " + file.getUuid());
         String object = file.getMetadata().getWhatObject();
         String src = file.getSource().getName();
         
@@ -73,6 +75,8 @@ public class ScansunRule implements IRule {
           BltGenerateMessage result = new BltGenerateMessage();
           result.setAlgorithm("eu.baltrad.beast.GenerateScansun");
           result.setFiles(new String[]{file.getUuid().toString()});
+          logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+              ", file: " + file.getUuid());
           return result;
         }
       }

@@ -367,6 +367,7 @@ public class AcrrRule implements IRule, InitializingBean {
     logger.debug("ENTER: handle(IBltMessage)");
     try {
       if (message instanceof BltTriggerJobMessage) {
+        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         DateTime nowdt = ruleUtil.nowDT();
         DateTime nt = ruleUtil.createNominalTime(nowdt, getFilesPerHourInterval());
         List<CatalogEntry> entries = findFiles(nowdt);
@@ -393,6 +394,8 @@ public class AcrrRule implements IRule, InitializingBean {
           args.add("--applygra=true");
         }
         result.setArguments(args.toArray(new String[0]));
+        
+        logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         
         return result;
       }

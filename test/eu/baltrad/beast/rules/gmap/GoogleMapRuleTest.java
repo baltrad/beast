@@ -169,7 +169,7 @@ public class GoogleMapRuleTest extends EasyMockSupport {
     expect(metadata.getWhatSource()).andReturn("ORG:82,CMT:swegmaps");
     expect(metadata.getWhatDate()).andReturn(date);
     expect(metadata.getWhatTime()).andReturn(time);
-    expect(fe.getUuid()).andReturn(uuid);
+    expect(fe.getUuid()).andReturn(uuid).anyTimes();
     
     replayAll();
     
@@ -221,12 +221,14 @@ public class GoogleMapRuleTest extends EasyMockSupport {
     BltDataMessage message = createMock(BltDataMessage.class);
     FileEntry fe = createMock(FileEntry.class);
     Metadata metadata = createMock(Metadata.class);
+    UUID uuid = UUID.randomUUID();
 
     classUnderTest.setArea("swegmaps");
 
     expect(message.getFileEntry()).andReturn(fe);
     expect(fe.getMetadata()).andReturn(metadata).times(1);
     expect(metadata.getWhatObject()).andReturn("PVOL");
+    expect(fe.getUuid()).andReturn(uuid).anyTimes();
     
     replayAll();
     
@@ -243,6 +245,7 @@ public class GoogleMapRuleTest extends EasyMockSupport {
     BltDataMessage message = createMock(BltDataMessage.class);
     Metadata metadata = createMock(Metadata.class);
     FileEntry fe = createMock(FileEntry.class);
+    UUID uuid = UUID.randomUUID();
 
     classUnderTest.setArea("swegmaps");
     classUnderTest.setPath("/tmp/data");
@@ -253,6 +256,7 @@ public class GoogleMapRuleTest extends EasyMockSupport {
     expect(metadata.getWhatSource()).andReturn("ORG:82,CMT:swegmaps_2000");
     expect(metadata.getWhatDate()).andReturn(date);
     expect(metadata.getWhatTime()).andReturn(time);
+    expect(fe.getUuid()).andReturn(uuid).anyTimes();
     
     replayAll();
     

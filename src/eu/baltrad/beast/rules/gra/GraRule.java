@@ -94,6 +94,7 @@ public class GraRule extends AcrrRule {
     logger.debug("ENTER: handle(IBltMessage)");
     try {
       if (message instanceof BltTriggerJobMessage) {
+        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         DateTime nt = getNominalTime(getNowDT());
         List<CatalogEntry> entries = findFiles(nt);
         List<String> uuids = getRuleUtilities().getUuidStringsFromEntries(entries);
@@ -117,6 +118,8 @@ public class GraRule extends AcrrRule {
         args.add("--distancefield=" + getDistancefield());
         
         result.setArguments(args.toArray(new String[0]));
+        
+        logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         
         return result;
       }

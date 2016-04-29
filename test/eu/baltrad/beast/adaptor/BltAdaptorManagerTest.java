@@ -399,6 +399,7 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
   @Test
   public void testRedefineAdaptorConfiguration_failedToRemoveOldConfig() throws Exception {
     IAdaptorConfigurationManager oldtypeManager = createMock(IAdaptorConfigurationManager.class);
+    AdaptorException exceptionMock = createMock(AdaptorException.class);
     
     IAdaptor adaptor = new IAdaptor(){
       public String getName() {return "SA1";}
@@ -411,7 +412,9 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
     expect(jdbcTemplate.update("update beast_adaptors set type=? where adaptor_id=?", 
         new Object[]{"XYZ", 2})).andReturn(0);
     oldtypeManager.remove(2);
-    EasyMock.expectLastCall().andThrow(new AdaptorException());
+    EasyMock.expectLastCall().andThrow(exceptionMock);
+    exceptionMock.printStackTrace();
+    EasyMock.expectLastCall();
 
     classUnderTest.getTypeRegistry().put("OLDTYPE", oldtypeManager);
     

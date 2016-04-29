@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.adaptor;
 
 import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,6 +118,7 @@ public class BltAdaptorManagerHandleTest extends EasyMockSupport {
   @Test
   public void testHandle_MultiRouted_adaptorThrowsException() throws Exception {
     IMultiRoutedMessage message = createMock(IMultiRoutedMessage.class);
+    AdaptorException exceptionMock = createMock(AdaptorException.class);
 
     List<String> destinations = new ArrayList<String>();
     destinations.add("A1");
@@ -128,10 +130,12 @@ public class BltAdaptorManagerHandleTest extends EasyMockSupport {
     expect(message.getMessage()).andReturn(msg);
     adaptor1.handle(msg);
     adaptor2.handle(msg);
-    EasyMock.expectLastCall().andThrow(new AdaptorException());
+    EasyMock.expectLastCall().andThrow(exceptionMock);
+    exceptionMock.printStackTrace();
+    EasyMock.expectLastCall();
 
     replayAll();
-    
+
     classUnderTest.handle(message);
     
     verifyAll();

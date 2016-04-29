@@ -102,7 +102,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
-    expect(fe.getUuid()).andReturn(ruid);
+    expect(fe.getUuid()).andReturn(ruid).anyTimes();
     
     replayAll();
     
@@ -157,7 +157,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
-    expect(fe.getUuid()).andReturn(ruid);
+    expect(fe.getUuid()).andReturn(ruid).anyTimes();
     
     replayAll();
     
@@ -222,7 +222,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     expect(source.getName()).andReturn("seses");
     expect(methods.createCatalogEntry(fe)).andReturn(catalogEntry);
     expect(catalogEntry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
-    expect(fe.getUuid()).andReturn(ruid);
+    expect(fe.getUuid()).andReturn(ruid).anyTimes();
     
     replayAll();
     
@@ -280,6 +280,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     expect(source.getName()).andReturn("seses");
     expect(methods.createCatalogEntry(fe)).andReturn(catalogEntry);
     expect(catalogEntry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.5));
+    expect(fe.getUuid()).andReturn(ruid).anyTimes();
     
     replayAll();
     
@@ -319,7 +320,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
-    expect(fe.getUuid()).andReturn(ruid);
+    expect(fe.getUuid()).andReturn(ruid).anyTimes();
     
     replayAll();
     
@@ -371,6 +372,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(md.getWhatObject()).andReturn("PVOL");
+    expect(fe.getUuid()).andReturn(ruid).anyTimes();
     
     replayAll();
     

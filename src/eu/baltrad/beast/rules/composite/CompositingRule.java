@@ -397,16 +397,21 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   public synchronized IBltMessage handle(IBltMessage message) {
     logger.debug("ENTER: handle(IBltMessage)");
     try {
+      IBltMessage generatedMessage = null;
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
+        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+            ", file: " + file.getUuid());
         String object = file.getMetadata().getWhatObject();
         if (object != null && object.equals("SCAN") && isScanBased()) {
-          return handleCompositeFromScans(message);
+          generatedMessage = handleCompositeFromScans(message);
         } else if (object != null && object.equals("PVOL") && !isScanBased()) {
-          return handleCompositeFromVolume(message);
+          generatedMessage = handleCompositeFromVolume(message);
         }
+        logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+            ", file: " + file.getUuid());
       }
-      return null;
+      return generatedMessage;
     } finally {
       logger.debug("EXIT: handle(IBltMessage)");
     }
