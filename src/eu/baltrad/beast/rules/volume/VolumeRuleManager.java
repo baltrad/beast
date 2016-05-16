@@ -20,14 +20,18 @@ package eu.baltrad.beast.rules.volume;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
@@ -57,6 +61,11 @@ public class VolumeRuleManager implements IRuleManager {
    */
   private TimeoutManager timeoutManager = null;
 
+  /**
+   * filter manager
+   */
+  private RuleFilterManager filterManager;
+  
   /**
    * @param template
    *          the jdbc template to set
@@ -92,7 +101,8 @@ public class VolumeRuleManager implements IRuleManager {
   @Override
   public void delete(int ruleId) {
     storeSources(ruleId, null);
-    storeDetectors(ruleId, null);    
+    storeDetectors(ruleId, null);
+    storeFilter(ruleId, null);
     template.update("delete from beast_volume_rules where rule_id=?",
         new Object[] { ruleId });
   }
@@ -102,9 +112,11 @@ public class VolumeRuleManager implements IRuleManager {
    */
   @Override
   public IRule load(int ruleId) {
-    return template.queryForObject(
+    VolumeRule rule = template.queryForObject(
         "select * from beast_volume_rules where rule_id=?",
         getVolumeRuleMapper(), new Object[] { ruleId });
+    rule.setFilter(loadFilter(ruleId));
+    return rule;
   }
 
   /**
@@ -130,6 +142,7 @@ public class VolumeRuleManager implements IRuleManager {
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
+    storeFilter(ruleId, vrule.getFilter());
     vrule.setRuleId(ruleId);
   }
 
@@ -155,6 +168,7 @@ public class VolumeRuleManager implements IRuleManager {
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
+    storeFilter(ruleId, vrule.getFilter());
     vrule.setRuleId(ruleId);    
   }
 
@@ -202,6 +216,35 @@ public class VolumeRuleManager implements IRuleManager {
     }    
   }
 
+  /**
+   * Stores the associated filter
+   * @param rule_id the rule_id
+   * @param filter the filter to store
+   */
+  protected void storeFilter(int rule_id, IFilter filter) {
+    if (filter != null) {
+      Map<String, IFilter> filters = new HashMap<String, IFilter>();
+      filters.put("match", filter);
+      filterManager.storeFilters(rule_id, filters);
+    } else {
+      filterManager.deleteFilters(rule_id);
+    }
+  }
+  
+  /**
+   * Loads the filter for the rule
+   * @param rule_id the rule
+   * @return the filter if any otherwise null
+   */
+  protected IFilter loadFilter(int rule_id) {
+    IFilter result = null;
+    Map<String, IFilter> filters = filterManager.loadFilters(rule_id);
+    if (filters.containsKey("match")) {
+      result = filters.get("match");
+    }
+    return result;
+  }
+  
   /**
    * Returns a list of sources connected to the rule_id
    * @param rule_id the rule id
@@ -278,5 +321,19 @@ public class VolumeRuleManager implements IRuleManager {
     result.setTimeoutManager(timeoutManager);
     result.afterPropertiesSet();
     return result;
+  }
+
+  /**
+   * @return the filter manager
+   */
+  public RuleFilterManager getFilterManager() {
+    return filterManager;
+  }
+
+  /**
+   * @param filterManager the filter manager
+   */
+  public void setFilterManager(RuleFilterManager filterManager) {
+    this.filterManager = filterManager;
   }
 }

@@ -243,7 +243,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="execute.test" depends="prepare.test">
 	<mkdir dir="${dist.dir}/junit-reports" />
 	<junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
-	  <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+	  <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m -noverify"/>
 	  <formatter type="xml"/> 
 	  <formatter type="brief" usefile="false" if="test.format.brief" />
 	  <classpath refid="test.lib.path"/>
@@ -349,7 +349,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	
   <target name="execute.itest" depends="prepare.itest,start-baltrad-bdb-server">
     <junit dir="${build.itest.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
-      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m -noverify"/>
       <formatter type="xml"/> 
       <formatter type="brief" usefile="false" if="test.format.brief" />
       <classpath refid="test.lib.path"/>
@@ -360,7 +360,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<fileset dir="${build.itest.dir}" includes="**/*Test.class"
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
       	<!--
-      	<fileset dir="${build.itest.dir}" includes="**/CompositingRuleITest.class"
+      	<fileset dir="${build.itest.dir}" includes="**/VolumeRuleITest.class"
                  excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
         -->         
       </batchtest>
@@ -399,7 +399,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="unittest.coverage" depends="instrument.coverage">
     <mkdir dir="${dist.dir}/coverage-reports" />
     <junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
-      <jvmarg line="-d64 -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+      <jvmarg line="-d64 -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m -noverify"/>
       <sysproperty key="emma.coverage.out.file" file="${build.coverage.dir}/coverage.ec" /> <!-- So I know where ec file is placed -->
       <formatter type="xml"/> 
       <classpath location="${build.instrument.dir}" /> <!-- For instrumentation -->
@@ -431,7 +431,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     <mkdir dir="${dist.dir}/coverage-reports" />
 
 	<junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
-      <jvmarg line="-d64 -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m"/>
+      <jvmarg line="-d64 -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m -noverify"/>
       <sysproperty key="emma.coverage.out.file" file="${build.coverage.dir}/coverage.ec" /> <!-- So I know where ec file is placed -->
       <formatter type="xml"/> 
       <classpath location="${build.instrument.dir}" /> <!-- For instrumentation -->

@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.easymock.EasyMockSupport;
@@ -37,6 +38,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.RuleUtilities;
 
@@ -53,13 +56,16 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
   };
   
   private VolumeRuleManager classUnderTest = null;
+  private RuleFilterManager filterManager = null;
   private JdbcOperations jdbc = null;
 
   @Before
   public void setUp() throws Exception {
     jdbc = createMock(JdbcOperations.class);
+    filterManager = createMock(RuleFilterManager.class);
     classUnderTest = new VolumeRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
   }
 
   @After
@@ -81,11 +87,14 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
       }      
     };
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
     
     methods.storeSources(13, null);
     methods.storeDetectors(13, null);
+    
     expect(jdbc.update("delete from beast_volume_rules where rule_id=?",
         new Object[] { 13 })).andReturn(1);
+    filterManager.deleteFilters(13);
 
     replayAll();
     
@@ -97,6 +106,9 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
   @Test
   public void testLoad() throws Exception {
     VolumeRule rule = new VolumeRule();
+    HashMap<String, IFilter> filters = new HashMap<String, IFilter>();
+    IFilter filter = createMock(IFilter.class);
+    filters.put("match", filter);
     final RowMapper<VolumeRule> mapper = new RowMapper<VolumeRule>() {
       public VolumeRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
@@ -108,10 +120,11 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
       }
     };
     classUnderTest.setJdbcTemplate(jdbc);
-
+    classUnderTest.setFilterManager(filterManager);
+    
     expect(jdbc.queryForObject("select * from beast_volume_rules where rule_id=?",
         mapper, new Object[] { 13 })).andReturn(rule);
-
+    expect(filterManager.loadFilters(13)).andReturn(filters);
     replayAll();
     
     VolumeRule result = (VolumeRule) classUnderTest.load(13);
@@ -142,6 +155,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
 
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
+    filterManager.deleteFilters(13);
     
     classUnderTest = new VolumeRuleManager() {
       protected void storeSources(int rule_id, List<String> sources) {
@@ -152,6 +166,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
       }
     };
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
     
     replayAll();
     
@@ -183,6 +198,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
         .andReturn(1);
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
+    filterManager.deleteFilters(13);
     
     classUnderTest = new VolumeRuleManager() {
       protected void storeSources(int rule_id, List<String> sources) {
@@ -193,6 +209,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
       }      
     };
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
     
     replayAll();
     

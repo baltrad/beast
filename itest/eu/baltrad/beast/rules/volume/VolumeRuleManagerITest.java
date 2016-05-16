@@ -35,6 +35,7 @@ import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
@@ -51,6 +52,7 @@ public class VolumeRuleManagerITest extends TestCase {
   private JdbcOperations template = null;
   private Catalog catalog = null;
   private TimeoutManager timeoutManager = null;
+  private RuleFilterManager filterManager = null;
   private IRuleUtilities utilities = null;
   
   private static String FIXTURE = "fixtures/scan_sehud_0.5_20110126T184500Z.h5";
@@ -67,6 +69,7 @@ public class VolumeRuleManagerITest extends TestCase {
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");
     timeoutManager = (TimeoutManager)context.getBean("timeoutmanager");
+    filterManager = (RuleFilterManager)context.getBean("filterManager");
     utilities = (IRuleUtilities)context.getBean("ruleutil");
     
     classUnderTest = new VolumeRuleManager();
@@ -74,6 +77,7 @@ public class VolumeRuleManagerITest extends TestCase {
     classUnderTest.setCatalog(catalog);
     classUnderTest.setRuleUtilities(utilities);
     classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setFilterManager(filterManager);
   }
   
   public void tearDown() throws Exception {
@@ -83,6 +87,7 @@ public class VolumeRuleManagerITest extends TestCase {
     catalog = null;
     utilities = null;
     timeoutManager = null;
+    filterManager = null;
     context.close();
     dbcontext.close();
   }

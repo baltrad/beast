@@ -30,12 +30,14 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
@@ -137,9 +139,20 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   private List<Double> elevationAngles = new ArrayList<Double>();
   
   /**
+   * The filter used for matching files
+   */
+  private IFilter filter = null;
+
+  /**
+   * The matcher used for verifying the filter
+   */
+  private MetadataMatcher matcher;
+  
+  /**
    * Default constructor, however use manager for creation.
    */
   protected VolumeRule() {
+    matcher = new MetadataMatcher();
   }
   
   /**
@@ -482,7 +495,9 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
         String s = file.getSource().getName();
         DateTime nominalTime = ruleUtilities.createNominalTime(d, t, interval);
         if (sources.size() == 0 || sources.contains(s)) {
-          result = new VolumeTimerData(ruleid, nominalTime, s);
+          if (filter == null || matcher.match(file.getMetadata(), filter.getExpression())) {
+            result = new VolumeTimerData(ruleid, nominalTime, s);
+          }
         }
       }
     }
@@ -556,6 +571,15 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   protected List<CatalogEntry> fetchAllCurrentEntries(DateTime nominalTime, String source) {
     TimeIntervalFilter filter = createFilter(nominalTime, source);
     List<CatalogEntry> entries = catalog.fetch(filter);
+    if (this.filter != null) {
+      List<CatalogEntry> nentries = new ArrayList<CatalogEntry>(); 
+      for (CatalogEntry ce : entries) {
+        if (matcher.match(ce.getFileEntry().getMetadata(), this.filter.getExpression())) {
+          nentries.add(ce);
+        }
+      }
+      entries = nentries;
+    }
     return entries;
   }
   
@@ -647,5 +671,21 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   
   public List<Double> getElevationAnglesAsDoubles() {
     return elevationAngles;
+  }
+
+  public IFilter getFilter() {
+    return filter;
+  }
+
+  public void setFilter(IFilter filter) {
+    this.filter = filter;
+  }
+
+  public MetadataMatcher getMatcher() {
+    return matcher;
+  }
+
+  public void setMatcher(MetadataMatcher matcher) {
+    this.matcher = matcher;
   }
 }

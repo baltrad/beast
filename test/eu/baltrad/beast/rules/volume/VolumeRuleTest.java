@@ -21,6 +21,7 @@ package eu.baltrad.beast.rules.volume;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
@@ -33,13 +34,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
+import eu.baltrad.bdb.oh5.Source;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.db.filters.TimeIntervalFilter;
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
@@ -54,6 +62,7 @@ public class VolumeRuleTest extends EasyMockSupport {
   private Catalog catalog = null;
   private TimeoutManager timeoutManager = null;
   private IRuleUtilities utilities = null;
+  private MetadataMatcher matcher = null;
   
   private static interface VolumeRuleMethods {
     public TimeIntervalFilter createFilter(DateTime nominalTime, String source);
@@ -73,10 +82,13 @@ public class VolumeRuleTest extends EasyMockSupport {
     catalog = createMock(Catalog.class);
     timeoutManager = createMock(TimeoutManager.class);
     utilities = createMock(IRuleUtilities.class);
+    matcher = createMock(MetadataMatcher.class);
+    
     classUnderTest = new VolumeRule();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setTimeoutManager(timeoutManager);
     classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setMatcher(matcher);
     classUnderTest.setTimeout(0); // No timeout initially
     classUnderTest.setRuleId(10);
   }
@@ -197,6 +209,117 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals(false, result);
   }
 
+  @Test
+  public void createTimerData_noFilter() throws Exception {
+    Time t = new Time();
+    Date d = new Date();
+    Source s = new Source("aname");
+    DateTime dt = new DateTime();
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata m = createMock(Metadata.class);
+
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fe);
+    
+    expect(fe.getMetadata()).andReturn(m).anyTimes();
+    expect(m.getWhatObject()).andReturn("SCAN");
+    expect(m.getWhatTime()).andReturn(t);
+    expect(m.getWhatDate()).andReturn(d);
+    expect(fe.getSource()).andReturn(s);
+    expect(utilities.createNominalTime(d, t, 15)).andReturn(dt);
+    
+    classUnderTest = new VolumeRule();
+    classUnderTest.setRuleId(99);
+    classUnderTest.setRuleUtilities(utilities);
+    
+    replayAll();
+    
+    VolumeTimerData result = classUnderTest.createTimerData(msg);
+    
+    verifyAll();
+    assertNotNull(result);
+    assertSame(dt, result.getDateTime());
+    assertEquals(99, result.getRuleId());
+    assertEquals("aname", result.getSource());
+  }
+
+  @Test
+  public void createTimerData_filter() throws Exception {
+    Time t = new Time();
+    Date d = new Date();
+    Source s = new Source("aname");
+    DateTime dt = new DateTime();
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata m = createMock(Metadata.class);
+    IFilter filter = createMock(IFilter.class);
+    Expression xpr = createMock(Expression.class);
+    
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fe);
+    
+    expect(fe.getMetadata()).andReturn(m).anyTimes();
+    expect(m.getWhatObject()).andReturn("SCAN");
+    expect(m.getWhatTime()).andReturn(t);
+    expect(m.getWhatDate()).andReturn(d);
+    expect(fe.getSource()).andReturn(s);
+    expect(utilities.createNominalTime(d, t, 15)).andReturn(dt);
+    expect(filter.getExpression()).andReturn(xpr);
+    expect(matcher.match(m, xpr)).andReturn(true);
+    
+    classUnderTest = new VolumeRule();
+    classUnderTest.setRuleId(99);
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setFilter(filter);
+    classUnderTest.setMatcher(matcher);
+    
+    replayAll();
+    
+    VolumeTimerData result = classUnderTest.createTimerData(msg);
+    
+    verifyAll();
+    assertNotNull(result);
+    assertSame(dt, result.getDateTime());
+    assertEquals(99, result.getRuleId());
+    assertEquals("aname", result.getSource());
+  }  
+
+  @Test
+  public void createTimerData_filterNotMatching() throws Exception {
+    Time t = new Time();
+    Date d = new Date();
+    Source s = new Source("aname");
+    DateTime dt = new DateTime();
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata m = createMock(Metadata.class);
+    IFilter filter = createMock(IFilter.class);
+    Expression xpr = createMock(Expression.class);
+    
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fe);
+    
+    expect(fe.getMetadata()).andReturn(m).anyTimes();
+    expect(m.getWhatObject()).andReturn("SCAN");
+    expect(m.getWhatTime()).andReturn(t);
+    expect(m.getWhatDate()).andReturn(d);
+    expect(fe.getSource()).andReturn(s);
+    expect(utilities.createNominalTime(d, t, 15)).andReturn(dt);
+    expect(filter.getExpression()).andReturn(xpr);
+    expect(matcher.match(m, xpr)).andReturn(false);
+    
+    classUnderTest = new VolumeRule();
+    classUnderTest.setRuleId(99);
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setFilter(filter);
+    classUnderTest.setMatcher(matcher);
+    
+    replayAll();
+    
+    VolumeTimerData result = classUnderTest.createTimerData(msg);
+    
+    verifyAll();
+    assertNull(result);
+  }  
+  
   @Test
   public void testAreCriteriasMet_hit() throws Exception {
     DateTime now = new DateTime();

@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.volume;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -31,8 +33,10 @@ import junit.framework.TestCase;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.bdb.db.FileEntry;
-
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.beast.db.AttributeFilter;
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
@@ -117,6 +121,15 @@ public class VolumeRuleITest extends TestCase {
     "fixtures/scan_sehud_0.5_20110126T194000Z.h5"
   };  
 
+  private static String[] FIXTURES_MIXED_LDR_ZDR = {
+      "fixtures/scan_sehud_0.5_ldr_20110126T184500Z.h5",
+      "fixtures/scan_sehud_0.5_zdr_20110126T184500Z.h5",
+      "fixtures/scan_sehud_1.0_ldr_20110126T184500Z.h5",
+      "fixtures/scan_sehud_1.0_zdr_20110126T184500Z.h5",
+      "fixtures/scan_sehud_2.0_ldr_20110126T184600Z.h5",
+      "fixtures/scan_sehud_2.0_zdr_20110126T184700Z.h5"
+  };
+  
   public void setUp() throws Exception {
     context = BeastDBTestHelper.loadContext(this);
     BeastDBTestHelper helper = (BeastDBTestHelper)context.getBean("helper");
@@ -346,6 +359,44 @@ public class VolumeRuleITest extends TestCase {
     assertEquals("fixtures/scan_sehud_0.5_20110126T190000Z.h5", h_1900.triggeringFiles.get(0));
   }
 
+  public void testHandle_onlyLDR() throws Exception {
+    AttributeFilter filter = new AttributeFilter();
+    filter.setAttribute("how/task");
+    filter.setValueType(AttributeFilter.ValueType.STRING);
+    filter.setValue("ldr");
+    filter.setOperator(AttributeFilter.Operator.EQ);
+    classUnderTest.setFilter(filter);
+    classUnderTest.setElevationMax(2.0);
+
+    HandleHelper h = storeFiles(classUnderTest, FIXTURES_MIXED_LDR_ZDR);
+    assertEquals(1, h.triggeringFiles.size());
+    assertEquals(FIXTURES_MIXED_LDR_ZDR[4], h.triggeringFiles.get(0));
+    BltGenerateMessage m = h.messages.get(0);
+    assertEquals(3, m.getFiles().length);
+    assertTrue(containsFile(m.getFiles(), h.filemap.get(FIXTURES_MIXED_LDR_ZDR[0])));
+    assertTrue(containsFile(m.getFiles(), h.filemap.get(FIXTURES_MIXED_LDR_ZDR[2])));
+    assertTrue(containsFile(m.getFiles(), h.filemap.get(FIXTURES_MIXED_LDR_ZDR[4])));
+  }
+
+  public void testHandle_onlyZDR() throws Exception {
+    AttributeFilter filter = new AttributeFilter();
+    filter.setAttribute("how/task");
+    filter.setValueType(AttributeFilter.ValueType.STRING);
+    filter.setValue("zdr");
+    filter.setOperator(AttributeFilter.Operator.EQ);
+    classUnderTest.setFilter(filter);
+    classUnderTest.setElevationMax(2.0);
+
+    HandleHelper h = storeFiles(classUnderTest, FIXTURES_MIXED_LDR_ZDR);
+    assertEquals(1, h.triggeringFiles.size());
+    assertEquals(FIXTURES_MIXED_LDR_ZDR[5], h.triggeringFiles.get(0));
+    BltGenerateMessage m = h.messages.get(0);
+    assertEquals(3, m.getFiles().length);
+    assertTrue(containsFile(m.getFiles(), h.filemap.get(FIXTURES_MIXED_LDR_ZDR[1])));
+    assertTrue(containsFile(m.getFiles(), h.filemap.get(FIXTURES_MIXED_LDR_ZDR[3])));
+    assertTrue(containsFile(m.getFiles(), h.filemap.get(FIXTURES_MIXED_LDR_ZDR[5])));
+  }
+  
   protected void storeOneFile(VolumeRule testclass, HandleHelper handled, String filename) throws Exception  {
     FileEntry f = catalog.getCatalog().store(new FileInputStream(getFilePath(filename)));
     String path = f.getUuid().toString();
