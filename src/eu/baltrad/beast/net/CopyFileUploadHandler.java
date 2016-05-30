@@ -23,8 +23,13 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class CopyFileUploadHandler extends FileUploadHandlerBase {
+  
+  private static Logger logger = LogManager.getLogger(CopyFileUploadHandler.class);
+  
   @Override
   public void upload(File src, URI dst) throws IOException {
     File dstPath = getPath(dst);
@@ -51,6 +56,10 @@ public class CopyFileUploadHandler extends FileUploadHandlerBase {
   }
 
   protected void copyFile(File src, File dst) throws IOException {
+    if (dst.exists()) {
+      logger.warn("Copying file " + src.getName() + " to a destination that already exists: " + 
+                  dst.getName() + ". Contents will be overwritten.");
+    }
     FileUtils.copyFile(src, dst);
   }
 }

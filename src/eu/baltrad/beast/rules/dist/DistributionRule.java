@@ -38,8 +38,6 @@ import eu.baltrad.beast.rules.namer.TemplateNameCreatorMetadataNamer;
 
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.oh5.MetadataMatcher;
-import eu.baltrad.bdb.oh5.MetadataNamer;
-import eu.baltrad.bdb.oh5.TemplateMetadataNamer;
 import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.FileEntryNamer;
 import eu.baltrad.bdb.util.MetadataFileEntryNamer;
@@ -52,7 +50,14 @@ import eu.baltrad.bdb.util.UuidFileEntryNamer;
  */
 public class DistributionRule implements IRule, IRulePropertyAccess {
   public final static String TYPE = "distribution";
+  
+  private static HashMap<URI, String> currentUploads = new HashMap<URI, String>();
 
+  /**
+   * The unique rule id separating this rule from the others
+   */
+  private int ruleid = -1;
+  
   private IFilter filter;
   private MetadataMatcher matcher;
   private URI destination;
@@ -191,20 +196,45 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   @Override
   public boolean isValid() {
     return true;
-  }  
+  }
+  
+  /**
+   * @param ruleid the ruleid to set
+   */
+  public void setRuleId(int ruleid) {
+    this.ruleid = ruleid;
+  }
+
+  /**
+   * @return the ruleid
+   */
+  public int getRuleId() {
+    return ruleid;
+  }
+  
+  public static HashMap<URI, String> getCurrentUploads() {
+    return currentUploads;
+  }
+
+  public static void setCurrentUploads(HashMap<URI, String> currentUploads) {
+    DistributionRule.currentUploads = currentUploads;
+  }
   
   /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
   @Override
   public IBltMessage handle(IBltMessage message) {
-    logger.debug("handle(IBltMessage)");
+    logger.debug("ENTER: handle(IBltMessage)");
     if (message instanceof BltDataMessage) {
       FileEntry entry = ((BltDataMessage)message).getFileEntry();
       if (match(entry)) {
+        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         upload(entry);
+        logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
       }
     }
+    logger.debug("EXIT: handle(IBltMessage)");
     return null;
   }
 
@@ -224,6 +254,44 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   public void upload(File src, FileEntry entry) throws IOException {
     String entryName = namer.name(entry);
     URI fullDestination = uploader.appendPath(destination, entryName);
-    uploader.upload(src, fullDestination);
+    
+    boolean dstAlreadyLocked = lockUpload(src, fullDestination);
+    if (dstAlreadyLocked) {
+      warnAboutOngoingUpload(src, fullDestination);
+    } else {
+      try {
+        uploader.upload(src, fullDestination);
+      } finally {
+        unlockUpload(fullDestination);          
+      }
+    }
   }
+  
+  protected boolean lockUpload(File src, URI destination) {
+    boolean alreadyLocked = false;
+    
+    synchronized(getCurrentUploads()) {
+      if (getCurrentUploads().containsKey(destination)) {
+        alreadyLocked = true;
+      } else {
+        getCurrentUploads().put(destination, src.getName());
+      }
+    }
+    
+    return alreadyLocked;
+  }
+  
+  protected void unlockUpload(URI destination) {   
+    synchronized(getCurrentUploads()) {
+      getCurrentUploads().remove(destination);
+    }
+  }
+  
+  protected void warnAboutOngoingUpload(File src, URI fullDestination) {
+    String ongoingSrc = getCurrentUploads().get(fullDestination);
+    logger.warn("Upload already ongoing to " + fullDestination.toString() + 
+                "! Src for ongoing upload: " + ongoingSrc + 
+                ", New src: " + src.getName());
+  }
+
 }

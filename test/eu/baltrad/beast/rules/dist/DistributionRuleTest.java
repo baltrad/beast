@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.dist;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +30,11 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.spi.LoggingEvent;
+import org.easymock.Capture;
+import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
@@ -49,6 +55,7 @@ public class DistributionRuleTest extends EasyMockSupport {
   private static interface DistributionRuleMethods {
     boolean match(FileEntry entry);
     void upload(FileEntry entry);
+    void warnAboutOngoingUpload(File src, URI fullDestination);
   };
 
   private DistributionRuleMethods methods;
@@ -59,6 +66,12 @@ public class DistributionRuleTest extends EasyMockSupport {
   private LocalStorage localStorage;
   private IFilter filter;
   private FileUploader uploader;
+  
+  private String dstBase;
+  private String dstEntryName;
+  private String dst;
+  private File src;
+  private URI destination;
 
   private DistributionRule classUnderTest;
 
@@ -76,6 +89,13 @@ public class DistributionRuleTest extends EasyMockSupport {
     classUnderTest.setMatcher(matcher);
     classUnderTest.setFilter(filter);
     classUnderTest.setNamer(namer);
+    
+    dstBase = "ftp://u:p@h/d";
+    dstEntryName = "entryName";
+    dst = dstBase + "/" + dstEntryName;
+    
+    src = new File("/path/to/file");
+    destination = URI.create(dst);
   }
 
   @After
@@ -138,7 +158,6 @@ public class DistributionRuleTest extends EasyMockSupport {
   @Test
   public void testMatch() {
     Expression expression = new BooleanExpression(true);
-
     expect(filter.getExpression()).andReturn(expression);
     expect(entry.getMetadata()).andReturn(metadata);
     expect(matcher.match(metadata, expression)).andReturn(true);
@@ -151,21 +170,91 @@ public class DistributionRuleTest extends EasyMockSupport {
 
   @Test
   public void testUpload() throws IOException {
-    File file = new File("/path/to/file");
     classUnderTest.setUploader(uploader);
-    classUnderTest.setDestination("ftp://u:p@h/d");
+    classUnderTest.setDestination(dstBase);
 
-    expect(localStorage.store(entry)).andReturn(file);
-    expect(namer.name(entry)).andReturn("entryName");
-    expect(uploader.appendPath(URI.create("ftp://u:p@h/d"), "entryName"))
-      .andReturn(URI.create("ftp://u:p@h/d/entryName"));
-    uploader.upload(file, URI.create("ftp://u:p@h/d/entryName"));
+    expect(localStorage.store(entry)).andReturn(src);
+    expect(namer.name(entry)).andReturn(dstEntryName);
+    expect(uploader.appendPath(URI.create(dstBase), dstEntryName))
+      .andReturn(destination);
+    uploader.upload(src, destination);
     
     replayAll();
 
     classUnderTest.upload(entry);
     
     verifyAll();
+    
+    assertEquals(DistributionRule.getCurrentUploads().size(), 0);
+  }
+
+  @Test
+  public void testUploadAlreadyOngoing() throws IOException {
+    classUnderTest = new DistributionRule(localStorage) {
+      @Override
+      protected void warnAboutOngoingUpload(File src, URI fullDestination) {
+        methods.warnAboutOngoingUpload(src, fullDestination);
+      }
+    };
+    classUnderTest.setMatcher(matcher);
+    classUnderTest.setFilter(filter);
+    classUnderTest.setNamer(namer);
+    
+    DistributionRule concurrentRule = new DistributionRule(localStorage);
+    concurrentRule.lockUpload(src, destination);
+
+    classUnderTest.setUploader(uploader);
+    classUnderTest.setDestination(dstBase);
+
+    expect(localStorage.store(entry)).andReturn(src);
+    expect(namer.name(entry)).andReturn(dstEntryName);
+    expect(uploader.appendPath(URI.create(dstBase), dstEntryName))
+      .andReturn(URI.create(dst));
+    methods.warnAboutOngoingUpload(src, destination);
+    
+    replayAll();
+
+    classUnderTest.upload(entry);
+    
+    verifyAll();
+    
+    assertEquals(DistributionRule.getCurrentUploads().size(), 1);
+    concurrentRule.unlockUpload(destination);
+    assertEquals(DistributionRule.getCurrentUploads().size(), 0);
+  }
+  
+  @Test
+  public void testUploadThrowsException() throws IOException {
+    classUnderTest.setUploader(uploader);
+    classUnderTest.setDestination(dstBase);
+    
+    Appender mockAppender = createMock(Appender.class);
+    LogManager.getRootLogger().addAppender(mockAppender);
+
+    expect(localStorage.store(entry)).andReturn(src);
+    expect(namer.name(entry)).andReturn(dstEntryName);
+    expect(uploader.appendPath(URI.create(dstBase), dstEntryName))
+      .andReturn(destination);
+    uploader.upload(src, destination);
+    
+    expectLastCall().andThrow(new IOException("Something terrible happened"));
+    
+    Capture<LoggingEvent> capturedArgument = new Capture<LoggingEvent>();
+    mockAppender.doAppend(EasyMock.capture(capturedArgument));
+    
+    replayAll();
+
+    classUnderTest.upload(entry);
+    
+    // clean up an remove temporary appender to not cause problems for other tests
+    LogManager.getRootLogger().removeAppender(mockAppender);
+    
+    verifyAll();
+    
+    LoggingEvent logEvent = capturedArgument.getValue();    
+    assertEquals(logEvent.getRenderedMessage(), "upload failed");
+    
+    assertEquals(DistributionRule.getCurrentUploads().size(), 0);
   }
 
   @Test

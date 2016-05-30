@@ -117,6 +117,7 @@ public class DistributionRuleManager implements IRuleManager,
   @Override
   public void store(int ruleId, IRule rule_) {
     DistributionRule rule = (DistributionRule)rule_;
+    rule.setRuleId(ruleId);
     propManager.storeProperties(ruleId, rule.getProperties());
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
     filters.put("match", rule.getFilter());
