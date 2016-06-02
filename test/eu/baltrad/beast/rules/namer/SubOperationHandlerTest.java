@@ -101,6 +101,16 @@ public class SubOperationHandlerTest {
   }
   
   @Test
+  public void interval_l() {
+    assertEquals("00", classUnderTest.handle(".interval_l(15)", "10")); 
+  }
+  
+  @Test
+  public void interval_u() {
+    assertEquals("15", classUnderTest.handle(".interval_u(15)", "10")); 
+  }
+  
+  @Test
   public void combined_suboperations() {
     assertEquals("ABCdefgh", classUnderTest.handle(".tolower().toupper(0,4).tolower(3)", "ABCDEFGH"));
     assertEquals("Cde", classUnderTest.handle(".tolower().toupper(0,4).tolower(3).substring(2,5)", "ABCDEFGH"));

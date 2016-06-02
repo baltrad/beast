@@ -31,7 +31,7 @@ public class SubOperationHandler {
   private static final Pattern RTRIM = Pattern.compile("\\s+$");
   
   static {
-    SUBOPERATION_PATTERN = Pattern.compile(".(tolower|toupper|substring|trim|rtrim|ltrim)(\\((([0-9]+)(,([0-9]+))?)?\\))",Pattern.CASE_INSENSITIVE);
+    SUBOPERATION_PATTERN = Pattern.compile(".(tolower|toupper|substring|trim|rtrim|ltrim|interval_l|interval_u)(\\((([0-9]+)(,([0-9]+))?)?\\))",Pattern.CASE_INSENSITIVE);
   }
 
   public SubOperationHandler() {
@@ -106,6 +106,28 @@ public class SubOperationHandler {
           result = LTRIM.matcher(result).replaceAll("");
         } else if (op.equalsIgnoreCase("rtrim") && result != null) {
           result = RTRIM.matcher(result).replaceAll("");
+        } else if ((op.equalsIgnoreCase("interval_l") || op.equalsIgnoreCase("interval_u")) && result != null) {
+          SubopGroupInfo info = getBeginEndIndex(m, 4, 6);
+          if (info.eiAvailable && !info.biAvailable) {
+            try {
+              int interval = info.endIndex;
+              if (interval != 0 && 60%interval == 0) {
+                int minute = Integer.parseInt(result);
+                int period = minute / interval;
+                int nminute = (period) * interval;
+                if (op.equalsIgnoreCase("interval_u")) {
+                  nminute = (period + 1) * interval;
+                }
+                if (nminute < 10) {
+                  result = "0" + nminute;
+                } else {
+                  result = "" + nminute;
+                }
+              }
+            } catch (Exception e) {
+              
+            }
+          }
         }
       }
     }
