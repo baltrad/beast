@@ -172,6 +172,7 @@ public class DistributionRuleTest extends EasyMockSupport {
 
     expect(localStorage.store(entry)).andReturn(src);
     expect(namer.name(entry)).andReturn(dstEntryName);
+    expect(distributionExecutor.isShutdown()).andReturn(false);
 
     Capture<FileDistribution> capturedArgument = new Capture<FileDistribution>();
     distributionExecutor.execute(EasyMock.capture(capturedArgument));

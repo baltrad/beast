@@ -130,24 +130,18 @@ public class FileDistribution implements Runnable {
       throw new UnknownServiceException("No scheme found");
     }
     
-    switch (scheme) {
-    case "ftp":
+    if (scheme.equalsIgnoreCase("ftp")) {
       uploadHandler = new FTPFileUploadHandler();
-      break;
-    case "scp":
-      uploadHandler = new SCPFileUploadHandler();
-      break;
-    case "scponly":
-      uploadHandler = new SCPOnlyFileUploadHandler();
-      break;
-    case "copy":
-      uploadHandler = new CopyFileUploadHandler();
-      break;
-    case "sftp":
-      uploadHandler = new SFTPFileUploadHandler();
-      break;
-    default:
-      throw new UnknownServiceException(scheme);
+    } else if (scheme.equalsIgnoreCase("scp")) {
+      uploadHandler = new SCPFileUploadHandler();      
+    } else if (scheme.equalsIgnoreCase("scponly")) {
+      uploadHandler = new SCPOnlyFileUploadHandler();      
+    } else if (scheme.equalsIgnoreCase("copy")) {
+      uploadHandler = new CopyFileUploadHandler();      
+    } else if (scheme.equalsIgnoreCase("sftp")) {
+      uploadHandler = new SFTPFileUploadHandler();      
+    } else {
+      throw new UnknownServiceException(scheme);      
     }
     
     return uploadHandler;
