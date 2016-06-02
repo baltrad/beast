@@ -20,8 +20,13 @@ package eu.baltrad.beast.rules.dist;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.storage.LocalStorage;
@@ -36,7 +41,8 @@ import eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory;
 /**
  */
 public class DistributionRuleManager implements IRuleManager,
-                                                InitializingBean {
+                                                InitializingBean, 
+                                                DisposableBean {
   /**
    * property manager
    */
@@ -58,6 +64,16 @@ public class DistributionRuleManager implements IRuleManager,
   private MetadataNameCreatorFactory factory;
   
   /**
+   * The executor
+   */
+  private int noOfParallelDistributions = 5;
+  
+  /**
+   * The executor for distributions
+   */
+  private ExecutorService distributionExecutor = null;
+  
+  /**
    * @param manager the manager to set
    */
   public void setPropertyManager(PropertyManager manager) {
@@ -76,6 +92,14 @@ public class DistributionRuleManager implements IRuleManager,
    */
   public void setLocalStorage(LocalStorage localStorage) {
     this.localStorage = localStorage;
+  }
+
+  public int getNoOfParallelDistributions() {
+    return noOfParallelDistributions;
+  }
+
+  public void setNoOfParallelDistributions(int noOfParallelDistributions) {
+    this.noOfParallelDistributions = noOfParallelDistributions;
   }
 
   /**
@@ -105,7 +129,7 @@ public class DistributionRuleManager implements IRuleManager,
    */
   @Override
   public DistributionRule createRule() {
-    DistributionRule result = new DistributionRule(localStorage);
+    DistributionRule result = new DistributionRule(localStorage, distributionExecutor);
     result.setNameCreatorFactory(factory);
     return result;
   }
@@ -142,6 +166,17 @@ public class DistributionRuleManager implements IRuleManager,
     if (localStorage == null) {
       throw new BeanInitializationException("missing LocalStorage");
     }
+    
+    if (distributionExecutor == null) {
+      distributionExecutor = Executors.newFixedThreadPool(noOfParallelDistributions, new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable runnable) {
+          Thread thread = new Thread(runnable);
+          thread.setDaemon(true);
+          return thread;
+        }
+      });
+    }
   }
 
   public MetadataNameCreatorFactory getMetadataNameCreatorFactory() {
@@ -151,4 +186,33 @@ public class DistributionRuleManager implements IRuleManager,
   public void setMetadataNameCreatorFactory(MetadataNameCreatorFactory factory) {
     this.factory = factory;
   }
+
+  public synchronized void shutdown() {
+    if (distributionExecutor != null) {
+      distributionExecutor.shutdown();
+      
+      try {
+        if (!distributionExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+          distributionExecutor.shutdownNow();
+          if (!distributionExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+            System.out.println("Failed to terminate all pending jobs");
+          }
+        }
+      } catch (InterruptedException e) {
+        distributionExecutor.shutdownNow();
+        Thread.currentThread().interrupt();
+      }
+      
+      distributionExecutor = null;
+    }
+  }
+
+  /**
+   * @see org.springframework.beans.factory.DisposableBean#destroy()
+   */
+  @Override
+  public void destroy() throws Exception {
+    shutdown();
+  }
+  
 }

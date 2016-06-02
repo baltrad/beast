@@ -19,7 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.dist;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -29,10 +28,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.spi.LoggingEvent;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
@@ -49,7 +46,7 @@ import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.FileEntryNamer;
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.mo.BltDataMessage;
-import eu.baltrad.beast.net.FileUploader;
+import eu.baltrad.beast.net.FileDistribution;
 
 public class DistributionRuleTest extends EasyMockSupport {
   private static interface DistributionRuleMethods {
@@ -65,7 +62,7 @@ public class DistributionRuleTest extends EasyMockSupport {
   private FileEntryNamer namer;
   private LocalStorage localStorage;
   private IFilter filter;
-  private FileUploader uploader;
+  private ExecutorService distributionExecutor;
   
   private String dstBase;
   private String dstEntryName;
@@ -84,8 +81,9 @@ public class DistributionRuleTest extends EasyMockSupport {
     namer = createMock(FileEntryNamer.class);
     localStorage = createMock(LocalStorage.class);
     filter = createMock(IFilter.class);
-    uploader = createMock(FileUploader.class);
-    classUnderTest = new DistributionRule(localStorage);
+    distributionExecutor = createMock(ExecutorService.class);
+
+    classUnderTest = new DistributionRule(localStorage, distributionExecutor);
     classUnderTest.setMatcher(matcher);
     classUnderTest.setFilter(filter);
     classUnderTest.setNamer(namer);
@@ -107,7 +105,7 @@ public class DistributionRuleTest extends EasyMockSupport {
     BltDataMessage msg = new BltDataMessage();
     msg.setFileEntry(entry);
 
-    classUnderTest = new DistributionRule(localStorage) {
+    classUnderTest = new DistributionRule(localStorage, distributionExecutor) {
       @Override
       public boolean match(FileEntry entry) {
         return methods.match(entry);
@@ -134,7 +132,7 @@ public class DistributionRuleTest extends EasyMockSupport {
     BltDataMessage msg = new BltDataMessage();
     msg.setFileEntry(entry);
 
-    classUnderTest = new DistributionRule(localStorage) {
+    classUnderTest = new DistributionRule(localStorage, distributionExecutor) {
       @Override
       public boolean match(FileEntry entry) {
         return methods.match(entry);
@@ -170,14 +168,13 @@ public class DistributionRuleTest extends EasyMockSupport {
 
   @Test
   public void testUpload() throws IOException {
-    classUnderTest.setUploader(uploader);
     classUnderTest.setDestination(dstBase);
 
     expect(localStorage.store(entry)).andReturn(src);
     expect(namer.name(entry)).andReturn(dstEntryName);
-    expect(uploader.appendPath(URI.create(dstBase), dstEntryName))
-      .andReturn(destination);
-    uploader.upload(src, destination);
+
+    Capture<FileDistribution> capturedArgument = new Capture<FileDistribution>();
+    distributionExecutor.execute(EasyMock.capture(capturedArgument));
     
     replayAll();
 
@@ -185,76 +182,10 @@ public class DistributionRuleTest extends EasyMockSupport {
     
     verifyAll();
     
-    assertEquals(DistributionRule.getCurrentUploads().size(), 0);
-  }
-
-  @Test
-  public void testUploadAlreadyOngoing() throws IOException {
-    classUnderTest = new DistributionRule(localStorage) {
-      @Override
-      protected void warnAboutOngoingUpload(File src, URI fullDestination) {
-        methods.warnAboutOngoingUpload(src, fullDestination);
-      }
-    };
-    classUnderTest.setMatcher(matcher);
-    classUnderTest.setFilter(filter);
-    classUnderTest.setNamer(namer);
+    FileDistribution fileDistribution = capturedArgument.getValue();
+    assertEquals(src, fileDistribution.getSourceFile());
+    assertEquals(destination, fileDistribution.getFullDestination());
     
-    DistributionRule concurrentRule = new DistributionRule(localStorage);
-    concurrentRule.lockUpload(src, destination);
-
-    classUnderTest.setUploader(uploader);
-    classUnderTest.setDestination(dstBase);
-
-    expect(localStorage.store(entry)).andReturn(src);
-    expect(namer.name(entry)).andReturn(dstEntryName);
-    expect(uploader.appendPath(URI.create(dstBase), dstEntryName))
-      .andReturn(URI.create(dst));
-    methods.warnAboutOngoingUpload(src, destination);
-    
-    replayAll();
-
-    classUnderTest.upload(entry);
-    
-    verifyAll();
-    
-    assertEquals(DistributionRule.getCurrentUploads().size(), 1);
-    concurrentRule.unlockUpload(destination);
-    assertEquals(DistributionRule.getCurrentUploads().size(), 0);
-  }
-  
-  @Test
-  public void testUploadThrowsException() throws IOException {
-    classUnderTest.setUploader(uploader);
-    classUnderTest.setDestination(dstBase);
-    
-    Appender mockAppender = createMock(Appender.class);
-    LogManager.getRootLogger().addAppender(mockAppender);
-
-    expect(localStorage.store(entry)).andReturn(src);
-    expect(namer.name(entry)).andReturn(dstEntryName);
-    expect(uploader.appendPath(URI.create(dstBase), dstEntryName))
-      .andReturn(destination);
-    uploader.upload(src, destination);
-    
-    expectLastCall().andThrow(new IOException("Something terrible happened"));
-    
-    Capture<LoggingEvent> capturedArgument = new Capture<LoggingEvent>();
-    mockAppender.doAppend(EasyMock.capture(capturedArgument));
-    
-    replayAll();
-
-    classUnderTest.upload(entry);
-    
-    // clean up an remove temporary appender to not cause problems for other tests
-    LogManager.getRootLogger().removeAppender(mockAppender);
-    
-    verifyAll();
-    
-    LoggingEvent logEvent = capturedArgument.getValue();    
-    assertEquals(logEvent.getRenderedMessage(), "upload failed");
-    
-    assertEquals(DistributionRule.getCurrentUploads().size(), 0);
   }
 
   @Test

@@ -23,18 +23,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import eu.baltrad.beast.db.IFilter;
-import eu.baltrad.beast.message.IBltMessage;
-import eu.baltrad.beast.message.mo.BltDataMessage;
-import eu.baltrad.beast.net.FileUploader;
-import eu.baltrad.beast.rules.IRule;
-import eu.baltrad.beast.rules.IRulePropertyAccess;
-import eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory;
-import eu.baltrad.beast.rules.namer.TemplateNameCreatorMetadataNamer;
 
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.oh5.MetadataMatcher;
@@ -42,6 +34,14 @@ import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.FileEntryNamer;
 import eu.baltrad.bdb.util.MetadataFileEntryNamer;
 import eu.baltrad.bdb.util.UuidFileEntryNamer;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.mo.BltDataMessage;
+import eu.baltrad.beast.net.FileDistribution;
+import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.IRulePropertyAccess;
+import eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory;
+import eu.baltrad.beast.rules.namer.TemplateNameCreatorMetadataNamer;
 
 /**
  * Distribute incoming data to remote destinations. Incoming files that match
@@ -50,8 +50,6 @@ import eu.baltrad.bdb.util.UuidFileEntryNamer;
  */
 public class DistributionRule implements IRule, IRulePropertyAccess {
   public final static String TYPE = "distribution";
-  
-  private static HashMap<URI, String> currentUploads = new HashMap<URI, String>();
 
   /**
    * The unique rule id separating this rule from the others
@@ -61,10 +59,11 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   private IFilter filter;
   private MetadataMatcher matcher;
   private URI destination;
-  private FileUploader uploader;
   private LocalStorage localStorage;
   private FileEntryNamer namer;
   private MetadataNameCreatorFactory nameCreatorFactory;
+  
+  private ExecutorService distributionExecutor;
   
   /**
    * The logger
@@ -74,19 +73,15 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
   /**
    * Constructor.
    */
-  protected DistributionRule(LocalStorage localStorage) {
+  protected DistributionRule(LocalStorage localStorage, ExecutorService distributionExecutor) {
     this.matcher = new MetadataMatcher();
-    this.uploader = FileUploader.createDefault();
     this.localStorage = localStorage;
+    this.distributionExecutor = distributionExecutor;
     this.setNameCreatorFactory(new MetadataNameCreatorFactory());
   }
 
   protected void setMatcher(MetadataMatcher matcher) {
     this.matcher = matcher;
-  }
-
-  protected void setUploader(FileUploader uploader) {
-    this.uploader = uploader;
   }
 
   public MetadataNameCreatorFactory getNameCreatorFactory() {
@@ -212,14 +207,6 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     return ruleid;
   }
   
-  public static HashMap<URI, String> getCurrentUploads() {
-    return currentUploads;
-  }
-
-  public static void setCurrentUploads(HashMap<URI, String> currentUploads) {
-    DistributionRule.currentUploads = currentUploads;
-  }
-  
   /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
@@ -247,51 +234,18 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     try {
       upload(src, entry);
     } catch (IOException e) {
-      logger.error("upload failed", e);
+      logger.error("Upload failed", e);
     }
   }
   
   public void upload(File src, FileEntry entry) throws IOException {
-    String entryName = namer.name(entry);
-    URI fullDestination = uploader.appendPath(destination, entryName);
-    
-    boolean dstAlreadyLocked = lockUpload(src, fullDestination);
-    if (dstAlreadyLocked) {
-      warnAboutOngoingUpload(src, fullDestination);
+    if (!distributionExecutor.isShutdown()) {
+      String entryName = namer.name(entry);
+      FileDistribution fileDistribution = new FileDistribution(src, destination, entryName);
+      distributionExecutor.execute(fileDistribution);
     } else {
-      try {
-        uploader.upload(src, fullDestination);
-      } finally {
-        unlockUpload(fullDestination);          
-      }
+      logger.warn("Could not distribute file " + src.getName() + ". Executor is shutdown.");
     }
-  }
-  
-  protected boolean lockUpload(File src, URI destination) {
-    boolean alreadyLocked = false;
-    
-    synchronized(getCurrentUploads()) {
-      if (getCurrentUploads().containsKey(destination)) {
-        alreadyLocked = true;
-      } else {
-        getCurrentUploads().put(destination, src.getName());
-      }
-    }
-    
-    return alreadyLocked;
-  }
-  
-  protected void unlockUpload(URI destination) {   
-    synchronized(getCurrentUploads()) {
-      getCurrentUploads().remove(destination);
-    }
-  }
-  
-  protected void warnAboutOngoingUpload(File src, URI fullDestination) {
-    String ongoingSrc = getCurrentUploads().get(fullDestination);
-    logger.warn("Upload already ongoing to " + fullDestination.toString() + 
-                "! Src for ongoing upload: " + ongoingSrc + 
-                ", New src: " + src.getName());
   }
 
 }

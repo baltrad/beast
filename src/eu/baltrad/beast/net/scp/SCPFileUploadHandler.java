@@ -39,6 +39,12 @@ import eu.baltrad.beast.net.FileUploadHandlerBase;
  * the future.
  */
 public class SCPFileUploadHandler extends FileUploadHandlerBase {
+  
+  protected static final int DEFAULT_CONNECT_TIMEOUT = 10000;
+  protected static final int DEFAULT_SOCKET_TIMEOUT = 60000;
+  private DefaultConfig sshDefaultConfig = null;
+  private Object sshDefaultConfigLock = new Object();
+  
   /**
    * Default constructor.
    */
@@ -132,8 +138,5 @@ public class SCPFileUploadHandler extends FileUploadHandlerBase {
     return sshDefaultConfig;
   }
   
-  protected static final int DEFAULT_CONNECT_TIMEOUT = 10000;
-  protected static final int DEFAULT_SOCKET_TIMEOUT = 60000;
-  private DefaultConfig sshDefaultConfig = null;
-  private Object sshDefaultConfigLock = new Object();
+
 }

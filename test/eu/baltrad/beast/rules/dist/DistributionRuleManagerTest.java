@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
@@ -44,6 +45,7 @@ public class DistributionRuleManagerTest extends EasyMockSupport {
   private LocalStorage localStorage;
   private DistributionRuleManager classUnderTest;
   private MetadataNameCreatorFactory factory;
+  private ExecutorService distributionExecutor;
   
   @Before
   public void setUp() {
@@ -52,11 +54,13 @@ public class DistributionRuleManagerTest extends EasyMockSupport {
     filter = createMock(IFilter.class);
     localStorage = createMock(LocalStorage.class);
     factory = createMock(MetadataNameCreatorFactory.class);
+    distributionExecutor = createMock(ExecutorService.class);
     classUnderTest = new DistributionRuleManager();
     classUnderTest.setPropertyManager(propertyManager);
     classUnderTest.setRuleFilterManager(filterManager);
     classUnderTest.setLocalStorage(localStorage);
     classUnderTest.setMetadataNameCreatorFactory(factory);
+    
   }
 
   @Test
@@ -95,7 +99,7 @@ public class DistributionRuleManagerTest extends EasyMockSupport {
     props.put("destination", "ftp://u:p@h/d");
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
     filters.put("match", filter);
-    DistributionRule rule = new DistributionRule(localStorage);
+    DistributionRule rule = new DistributionRule(localStorage, distributionExecutor);
     rule.setDestination("ftp://u:p@h/d");
     rule.setFilter(filter);
     
@@ -115,7 +119,7 @@ public class DistributionRuleManagerTest extends EasyMockSupport {
     props.put("destination", "ftp://u:p@h/d");
     Map<String, IFilter> filters = new HashMap<String, IFilter>();
     filters.put("match", filter);
-    DistributionRule rule = new DistributionRule(localStorage);
+    DistributionRule rule = new DistributionRule(localStorage, distributionExecutor);
     rule.setDestination("ftp://u:p@h/d");
     rule.setFilter(filter);
     propertyManager.updateProperties(1, props);

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
@@ -81,7 +82,7 @@ public class FTPFileUploadHandler extends FileUploadHandlerBase {
     }
     if (!client.changeWorkingDirectory(dstPath.toString()))
       throw new IOException("Failed to cwd: " + dstPath);
-    if (!client.setFileType(client.BINARY_FILE_TYPE))
+    if (!client.setFileType(FTP.BINARY_FILE_TYPE))
       throw new IOException("Failed to set binary transfer mode");
     InputStream is = openStream(src);
     try {

@@ -358,21 +358,22 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <classpath location="${build.itest.dir}" />
       <batchtest fork="yes" todir="${dist.dir}/junit-reports">
       	<fileset dir="${build.itest.dir}" includes="**/*Test.class"
-                 excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
+                 excludes="eu/baltrad/beast/net/FileDistributionITest.class"/>
       	<!--
       	<fileset dir="${build.itest.dir}" includes="**/VolumeRuleITest.class"
-                 excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
+                 excludes="eu/baltrad/beast/net/FileDistributionITest.class"/>
         -->         
       </batchtest>
     </junit>
     <antcall target="stop-baltrad-bdb-server" />
   </target>
 
-  <!-- target that can be used to manually test FileUploader -->
-  <target name="execute.itest.fileuploader" depends="compile.itest">
-    <java classname="eu.baltrad.beast.net.FileUploaderITest" fork="true">
-      <arg value="${itest.fileuploader.src}"/>
-      <arg value="${itest.fileuploader.dst}"/>
+  <!-- target that can be used to manually test FileDistribution -->
+  <target name="execute.itest.filedistribution" depends="compile.itest">
+    <java classname="eu.baltrad.beast.net.FileDistributionITest" fork="true">
+      <arg value="${itest.filedistribution.src}"/>
+      <arg value="${itest.filedistribution.dst}"/>
+      <arg value="${itest.filedistribution.entry}"/>
       <classpath refid="test.lib.path"/>
       <classpath location="${build.classes.dir}"/>
       <classpath refid="lib.path"/>
@@ -445,7 +446,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <batchtest fork="true" todir="${dist.dir}/junit-reports">
         <fileset dir="${build.test.dir}" includes="**/*Test.class"/>
         <fileset dir="${build.itest.dir}" includes="**/*Test.class"
-                 excludes="eu/baltrad/beast/net/FileUploaderITest.class"/>
+                 excludes="eu/baltrad/beast/net/FileDistributionITest.class"/>
       </batchtest>
     </junit>
 
