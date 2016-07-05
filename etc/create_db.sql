@@ -64,6 +64,7 @@ create table beast_composite_rules (
   area text NOT NULL,
   interval integer NOT NULL,
   timeout integer NOT NULL,
+  nominal_timeout boolean NOT NULL,
   byscan boolean NOT NULL,
   selection_method integer NOT NULL,
   method text NOT NULL,

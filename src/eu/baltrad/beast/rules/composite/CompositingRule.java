@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
@@ -138,6 +139,12 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * The timeout, if 0, no timeout
    */
   private int timeout = 0;
+  
+  /**
+   * If the timeout should be calculated from the nominal time or from the arrival of the first file
+   * belonging to this product.
+   */
+  private boolean nominalTimeout = false;
   
   /**
    * A list of sources (e.g. seang, sekkr, ...)
@@ -446,7 +453,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
         }
       } else {
         if (tt == null && timeout > 0) {
-          timeoutManager.register(this, timeout*1000, data);
+          timeoutManager.register(this, getTimeoutTime(data.getDateTime()), data);
         }
       }
     }
@@ -454,7 +461,33 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     return result;
   }
 
+  /**
+   * Returns the time in milliseconds that should be used for registering the timeout. If the nominal time should be used
+   * as base for the timeout. The passed nominalTime will be used for calculating the time from now.
+   * @param nominalTime the time we should as offset if nominal time timeouts are wanted
+   * @return the timeout in milliseconds
+   */
+  protected long getTimeoutTime(DateTime nominalTime) {
+    if (nominalTimeout) {
+      Calendar nominalCal = ruleUtil.createCalendar(nominalTime);
+      Calendar currentCal = ruleUtil.createCalendar(getCurrentTime());
+      long to = currentCal.getTimeInMillis() - nominalCal.getTimeInMillis();
+      if (to >= timeout*1000) {
+        return 0;
+      } else {
+        return timeout*1000 - to;
+      }
+    }
+    return timeout*1000;
+  }
 
+  /**
+   * @return the current UTC time
+   */
+  protected DateTime getCurrentTime() {
+    return new DateTime();
+  }
+  
   /**
    * Creates a composite scan message if criterias are met.
    * @param data the composite timer data
@@ -919,5 +952,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    */
   protected void setMetadataMatcher(MetadataMatcher matcher) {
     this.matcher = matcher;
+  }
+
+  public boolean isNominalTimeout() {
+    return nominalTimeout;
+  }
+
+  public void setNominalTimeout(boolean nominalTimeout) {
+    this.nominalTimeout = nominalTimeout;
   }
 }

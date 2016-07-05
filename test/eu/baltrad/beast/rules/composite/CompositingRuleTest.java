@@ -46,6 +46,7 @@ import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
+import eu.baltrad.bdb.util.TimeDelta;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.LowestAngleFilter;
@@ -57,6 +58,7 @@ import eu.baltrad.beast.router.IMultiRoutedMessage;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
+import eu.baltrad.beast.rules.util.RuleUtilities;
 
 /**
  * @author Anders Henja
@@ -78,6 +80,8 @@ public class CompositingRuleTest extends EasyMockSupport {
     public LowestAngleFilter createScanFilter(DateTime nominalTime);
     public IBltMessage createMessage(DateTime nominalTime, List<CatalogEntry> entries);
     public boolean areCriteriasMet(List<CatalogEntry> entries);
+    public IBltMessage createCompositeScanMessage(CompositeTimerData data);
+    public long getTimeoutTime(DateTime nominalTime);
   };
 
   @Before
@@ -1028,11 +1032,138 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertSame(stopDT, result.getStopDateTime());
     assertEquals("PVOL", result.getObject());
   }
+
+  @Test
+  public void handleCompositeFromScans() throws Exception {
+    final ICompositingMethods methods = createMock(ICompositingMethods.class);
+    DateTime dt = new DateTime(2016, 1, 2, 3, 30);
+    DateTime prevDt = new DateTime(2016, 1, 2, 3, 15);
+    Map<String, Double> angles = new HashMap<String, Double>();
+    List<String> sources = new ArrayList<String>();
+    FileEntry fileEntry = createMock(FileEntry.class);
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fileEntry);
+    CompositeTimerData timerData = new CompositeTimerData(1, dt);
+    
+    classUnderTest = new CompositingRule() {
+      @Override
+      protected CompositeTimerData createTimerData(IBltMessage message) {
+        return methods.createTimerData(message);
+      }
+      @Override
+      protected IBltMessage createCompositeScanMessage(CompositeTimerData data) {
+        return methods.createCompositeScanMessage(data);
+      }
+      @Override
+      protected long getTimeoutTime(DateTime nominalTime) {
+        return methods.getTimeoutTime(nominalTime);
+      }
+    };
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setQuantity("DBZH");
+    classUnderTest.setInterval(15);
+    classUnderTest.setSources(sources);
+    classUnderTest.setTimeout(2);
+    
+    expect(methods.createTimerData(msg)).andReturn(timerData);
+    expect(timeoutManager.getRegisteredTask(timerData)).andReturn(null);
+    expect(ruleUtil.createPrevNominalTime(dt, 15)).andReturn(prevDt);
+    expect(ruleUtil.fetchLowestSourceElevationAngle(prevDt, dt, sources, "DBZH")).andReturn(angles);
+    expect(methods.createCompositeScanMessage(timerData)).andReturn(null);
+    expect(methods.getTimeoutTime(dt)).andReturn(10L);
+    expect(timeoutManager.register(classUnderTest, 10L, timerData)).andReturn(123L);
+    
+    replayAll();
+
+    IBltMessage result = classUnderTest.handleCompositeFromScans(msg);
+    
+    verifyAll();
+    assertNull(result);
+    assertSame(angles, timerData.getPreviousAngles());
+  }
+  
+  @Test
+  public void getTimeoutTime() {
+    classUnderTest.setNominalTimeout(false);
+    classUnderTest.setTimeout(10);
+    for (int i = 0; i < 15; i++) {
+      assertEquals(10000, classUnderTest.getTimeoutTime(new DateTime(2016,1,2,12,i,0)));
+    }
+  }
+  
+  @Test
+  public void getTimeoutTime_nominal() {
+    final DateTime currentTime = new DateTime();
+    DateTime nominalTime = currentTime.add(new TimeDelta().addSeconds(-180));
+    classUnderTest = new CompositingRule() {
+      @Override
+      protected DateTime getCurrentTime() {
+        return currentTime;
+      }
+    };
+    classUnderTest.setNominalTimeout(true);
+    classUnderTest.setTimeout(600);
+    classUnderTest.setRuleUtilities(new RuleUtilities());
+    long result = classUnderTest.getTimeoutTime(nominalTime);
+    assertEquals(7*60*1000, result); /* nominal time was 3 minutes ago and timeout is 10 minutes, then we should get a timeout of 7 minutes */ 
+  }
+
+  @Test
+  public void getTimeoutTime_nominalAfterNow() {
+    final DateTime currentTime = new DateTime();
+    DateTime nominalTime = currentTime.add(new TimeDelta().addSeconds(+180));
+    classUnderTest = new CompositingRule() {
+      @Override
+      protected DateTime getCurrentTime() {
+        return currentTime;
+      }
+    };
+    classUnderTest.setNominalTimeout(true);
+    classUnderTest.setTimeout(600);
+    classUnderTest.setRuleUtilities(new RuleUtilities());
+    long result = classUnderTest.getTimeoutTime(nominalTime);
+    assertEquals(13*60*1000, result); /* nominal time was 3 minutes from now and timeout is 10 minutes, then we should get a timeout of 7 minutes */ 
+  }
+  
+  @Test
+  public void getTimeoutTime_nominal_alreadyPassed() {
+    final DateTime currentTime = new DateTime();
+    DateTime nominalTime = currentTime.add(new TimeDelta().addSeconds(-180));
+    classUnderTest = new CompositingRule() {
+      @Override
+      protected DateTime getCurrentTime() {
+        return currentTime;
+      }
+    };
+    classUnderTest.setNominalTimeout(true);
+    classUnderTest.setTimeout(120);
+    classUnderTest.setRuleUtilities(new RuleUtilities());
+    long result = classUnderTest.getTimeoutTime(nominalTime);
+    assertEquals(0, result); /* nominal time was 3 minutes ago and timeout is 2 minutes, then we should get a timeout of 0 minutes */ 
+  }
+  
+  @Test
+  public void getTimeoutTime_nominal_timeoutSameAsPassed() {
+    final DateTime currentTime = new DateTime();
+    DateTime nominalTime = currentTime.add(new TimeDelta().addSeconds(-180));
+    classUnderTest = new CompositingRule() {
+      @Override
+      protected DateTime getCurrentTime() {
+        return currentTime;
+      }
+    };
+    classUnderTest.setNominalTimeout(true);
+    classUnderTest.setTimeout(180);
+    classUnderTest.setRuleUtilities(new RuleUtilities());
+    long result = classUnderTest.getTimeoutTime(nominalTime);
+    assertEquals(0, result); /* nominal time was 3 minutes ago and timeout is 3 minutes, then we should get a timeout of 0 minutes */ 
+  }
   
   protected boolean compareDT(DateTime o1, DateTime o2) {
     return o1.equals(o2);
   }
-
+  
   @Test
   public void testCreateCompositeScanMessage() throws Exception {
     final ICompositingMethods methods = createMock(ICompositingMethods.class);

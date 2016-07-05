@@ -126,9 +126,43 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(true, ((CompositingRule)def.getRule()).isCtFilter());
     assertEquals("se.baltrad.something", ((CompositingRule)def.getRule()).getQitotalField());
     assertEquals("VRAD", ((CompositingRule)def.getRule()).getQuantity());
-    
+    assertEquals(true, ((CompositingRule)def.getRule()).isNominalTimeout());
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
     assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
+  }
+
+  public void testUpdateCompositingDef() throws Exception {
+    List<String> recipients = new ArrayList<String>();
+    recipients.add("A2");
+    List<String> sources = new ArrayList<String>();
+    sources.add("src1");
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("dmi");
+    detectors.add("beamb");
+    
+    RouteDefinition def = classUnderTest.getDefinition("admin");
+    assertNotNull(def);
+    def.setAuthor("Per");
+    
+    ((CompositingRule)def.getRule()).setInterval(20);
+    ((CompositingRule)def.getRule()).setTimeout(15);
+    ((CompositingRule)def.getRule()).setScanBased(false);
+    ((CompositingRule)def.getRule()).setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    ((CompositingRule)def.getRule()).setMethod(CompositingRule.CAPPI);
+    ((CompositingRule)def.getRule()).setProdpar("500.0");
+    ((CompositingRule)def.getRule()).setApplyGRA(true);
+    ((CompositingRule)def.getRule()).setZR_A(200.0);
+    ((CompositingRule)def.getRule()).setZR_b(1.6);
+    ((CompositingRule)def.getRule()).setIgnoreMalfunc(false);
+    ((CompositingRule)def.getRule()).setCtFilter(false);
+    ((CompositingRule)def.getRule()).setQitotalField("se.smhi.something");
+    ((CompositingRule)def.getRule()).setQuantity("TH");
+    ((CompositingRule)def.getRule()).setNominalTimeout(false);
+    ((CompositingRule)def.getRule()).setDetectors(detectors);
+    
+    classUnderTest.updateDefinition(def);
+    
+    verifyDatabaseTables("updatecomposite");
   }
   
   public void testRemoveCompositeWithScheduledJob() throws Exception {
@@ -183,6 +217,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setCtFilter(false);
     rule.setQitotalField("se.someone.somewhere");
     rule.setQuantity("NOOP");
+    rule.setNominalTimeout(false);
     rule.setDetectors(detectors);
     rule.setSources(sources);
 
@@ -190,7 +225,6 @@ public class BltRouterCompositeDBITest extends TestCase {
     classUnderTest.storeDefinition(def);
     
     verifyDatabaseTables("createcomposite");
-    verifyDetectorTables("createcomposite");
   }
   
   public void testCreateAndStoreCompositeWithBadDetector() throws Exception {
