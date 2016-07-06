@@ -340,7 +340,7 @@ public class RuleUtilitiesTest extends EasyMockSupport {
         return currentTime;
       }
     };
-    assertEquals(13*60000L, classUnderTest.getTimeoutTime(nominalTime, true, 600000L));
+    assertEquals(13*60000L, classUnderTest.getTimeoutTime(nominalTime, true, 600000L), 1000L);
   }
 
   @Test
@@ -353,7 +353,7 @@ public class RuleUtilitiesTest extends EasyMockSupport {
         return currentTime;
       }
     };
-    assertEquals(0L, classUnderTest.getTimeoutTime(nominalTime, true, 120000L));
+    assertEquals(0L, classUnderTest.getTimeoutTime(nominalTime, true, 120000L), 1000L);
   }
 
   @Test
@@ -366,7 +366,7 @@ public class RuleUtilitiesTest extends EasyMockSupport {
         return currentTime;
       }
     };
-    assertEquals(0L, classUnderTest.getTimeoutTime(nominalTime, true, 180000L));
+    assertEquals(0L, classUnderTest.getTimeoutTime(nominalTime, true, 180000L), 1000L);
   }
   
   @Test
