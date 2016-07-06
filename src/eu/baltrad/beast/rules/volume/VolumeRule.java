@@ -70,6 +70,12 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   private TimeoutManager timeoutManager = null;
   
   /**
+   * If the timeout should be calculated from the nominal time or from the arrival of the first file
+   * belonging to this product.
+   */
+  private boolean nominalTimeout = false;
+  
+  /**
    * The rule utilities
    */
   private IRuleUtilities ruleUtilities = null;
@@ -342,7 +348,6 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     if (data != null && !isHandled(data)) {
       List<CatalogEntry> entries = fetchAllCurrentEntries(data.getDateTime(), data.getSource());
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
-      
       if (areCriteriasMet(entries, data.getDateTime(), data.getSource())) {
         List<CatalogEntry> newentries = filterEntries(entries, data.getDateTime().getTime());
         result = createMessage(data.getDateTime(), newentries);
@@ -352,7 +357,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
       } else {
         if (tt == null) {
           if (timeout > 0) {
-            timeoutManager.register(this, timeout*1000, data);
+            timeoutManager.register(this, ruleUtilities.getTimeoutTime(data.getDateTime(), nominalTimeout, timeout*1000), data);
           }
         }
       }
@@ -687,5 +692,13 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
 
   public void setMatcher(MetadataMatcher matcher) {
     this.matcher = matcher;
+  }
+
+  public boolean isNominalTimeout() {
+    return nominalTimeout;
+  }
+
+  public void setNominalTimeout(boolean nominalTimeout) {
+    this.nominalTimeout = nominalTimeout;
   }
 }

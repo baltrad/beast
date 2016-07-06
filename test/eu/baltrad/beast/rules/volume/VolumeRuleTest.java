@@ -189,6 +189,49 @@ public class VolumeRuleTest extends EasyMockSupport {
     verifyAll();
     assertSame(message, result);
   }
+
+  @Test
+  public void testHandle_registerTimeout() throws Exception {
+    IBltMessage msg = new IBltMessage() {};
+    DateTime nominalTime = new DateTime();
+    VolumeTimerData data = new VolumeTimerData(1, nominalTime, "some");
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    
+    VolumeRule classUnderTest = new VolumeRule() {
+      public VolumeTimerData createTimerData(IBltMessage msg) {
+        return methods.createTimerData(msg);
+      }
+      public boolean isHandled(VolumeTimerData data) {
+        return methods.isHandled(data);
+      }
+      protected List<CatalogEntry> fetchAllCurrentEntries(DateTime nominalTime, String source) {
+        return methods.fetchAllCurrentEntries(nominalTime, source);
+      }
+      protected boolean areCriteriasMet(List<CatalogEntry> entries, DateTime dt, String source) {
+        return methods.areCriteriasMet(entries, dt, source);
+      }
+    };
+
+    expect(methods.createTimerData(msg)).andReturn(data);
+    expect(methods.isHandled(data)).andReturn(false);
+    expect(methods.fetchAllCurrentEntries(nominalTime, "some")).andReturn(entries);
+    expect(timeoutManager.getRegisteredTask(data)).andReturn(null);
+    expect(methods.areCriteriasMet(entries, nominalTime, "some")).andReturn(false);
+    expect(utilities.getTimeoutTime(nominalTime, true, 10000)).andReturn(10000L);
+    expect(timeoutManager.register(classUnderTest, 10000L, data)).andReturn(1L);
+    
+    classUnderTest.setTimeoutManager(timeoutManager);
+    classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setTimeout(10);
+    classUnderTest.setNominalTimeout(true);
+    
+    replayAll();
+    
+    IBltMessage result = classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertNull(result);
+  }
   
   @Test
   public void testAreCriteriasMet_noHit() throws Exception {

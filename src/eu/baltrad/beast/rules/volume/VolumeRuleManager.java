@@ -128,6 +128,7 @@ public class VolumeRuleManager implements IRuleManager {
     VolumeRule vrule = (VolumeRule)rule;
     int interval = vrule.getInterval();
     int timeout = vrule.getTimeout();
+    boolean nominal_timeout = vrule.isNominalTimeout();
     boolean ascending = vrule.isAscending();
     double minelev = vrule.getElevationMin();
     double maxelev = vrule.getElevationMax();
@@ -136,9 +137,9 @@ public class VolumeRuleManager implements IRuleManager {
     List<String> detectors = vrule.getDetectors();
     
     template.update("insert into beast_volume_rules" +
-                    " (rule_id, interval, timeout, ascending, minelev, maxelev, elangles) values" +
-                    " (?,?,?,?,?,?,?)", 
-                    new Object[]{ruleId, interval, timeout, ascending, minelev, maxelev, elangles});
+                    " (rule_id, interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles) values" +
+                    " (?,?,?,?,?,?,?,?)", 
+                    new Object[]{ruleId, interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles});
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
@@ -155,6 +156,7 @@ public class VolumeRuleManager implements IRuleManager {
     VolumeRule vrule = (VolumeRule)rule;
     int interval = vrule.getInterval();
     int timeout = vrule.getTimeout();
+    boolean nominal_timeout = vrule.isNominalTimeout();
     boolean ascending = vrule.isAscending();
     double minelev = vrule.getElevationMin();
     double maxelev = vrule.getElevationMax();
@@ -163,8 +165,8 @@ public class VolumeRuleManager implements IRuleManager {
     List<String> detectors = vrule.getDetectors();
     
     template.update("update beast_volume_rules set" +
-                    " interval=?, timeout=?, ascending=?, minelev=?, maxelev=?, elangles=? where rule_id=?", 
-                    new Object[]{interval, timeout, ascending, minelev, maxelev, elangles, ruleId});
+                    " interval=?, timeout=?, nominal_timeout=?, ascending=?, minelev=?, maxelev=?, elangles=? where rule_id=?", 
+                    new Object[]{interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles, ruleId});
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
@@ -268,6 +270,7 @@ public class VolumeRuleManager implements IRuleManager {
         int rule_id = rs.getInt("rule_id");
         int interval = rs.getInt("interval");
         int timeout = rs.getInt("timeout");
+        boolean nominal_timeout = rs.getBoolean("nominal_timeout");
         boolean ascending = rs.getBoolean("ascending");
         double mine = rs.getDouble("minelev");
         double maxe = rs.getDouble("maxelev");
@@ -277,6 +280,7 @@ public class VolumeRuleManager implements IRuleManager {
         result.setRuleId(rule_id);
         result.setInterval(interval);
         result.setTimeout(timeout);
+        result.setNominalTimeout(nominal_timeout);
         result.setAscending(ascending);
         result.setElevationMin(mine);
         result.setElevationMax(maxe);

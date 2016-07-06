@@ -147,11 +147,12 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setElevationAngles("1.0,2.0,3.0");
     rule.setInterval(6);
     rule.setTimeout(20);
+    rule.setNominalTimeout(true);
     rule.setSources(sources);
     rule.setDetectors(detectors);
     
-    expect(jdbc.update("insert into beast_volume_rules (rule_id, interval, timeout, " +
-        "ascending, minelev, maxelev, elangles) values (?,?,?,?,?,?,?)", new Object[]{13, 6, 20, false, 2.0, 10.0, "1.0,2.0,3.0"})).andReturn(0);
+    expect(jdbc.update("insert into beast_volume_rules (rule_id, interval, timeout, nominal_timeout, " +
+        "ascending, minelev, maxelev, elangles) values (?,?,?,?,?,?,?,?)", new Object[]{13, 6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0"})).andReturn(0);
 
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
@@ -190,11 +191,12 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setElevationAngles("1.0,2.0,3.0");
     rule.setInterval(6);
     rule.setTimeout(20);
+    rule.setNominalTimeout(true);
     rule.setSources(sources);
     rule.setDetectors(detectors);
     
-    expect(jdbc.update("update beast_volume_rules set interval=?, timeout=?, " +
-        "ascending=?, minelev=?, maxelev=?, elangles=? where rule_id=?", new Object[]{6, 20, false, 2.0, 10.0, "1.0,2.0,3.0", 13}))
+    expect(jdbc.update("update beast_volume_rules set interval=?, timeout=?, nominal_timeout=?, " +
+        "ascending=?, minelev=?, maxelev=?, elangles=? where rule_id=?", new Object[]{6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0", 13}))
         .andReturn(1);
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
@@ -295,6 +297,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     expect(rs.getInt("rule_id")).andReturn(10);
     expect(rs.getInt("interval")).andReturn(6);
     expect(rs.getInt("timeout")).andReturn(15);
+    expect(rs.getBoolean("nominal_timeout")).andReturn(true);
     expect(rs.getBoolean("ascending")).andReturn(false);
     expect(rs.getDouble("minelev")).andReturn(2.0);
     expect(rs.getDouble("maxelev")).andReturn(10.0);
@@ -324,6 +327,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     assertEquals(10, result.getRuleId());
     assertEquals(6, result.getInterval());
     assertEquals(15, result.getTimeout());
+    assertEquals(true, result.isNominalTimeout());
     assertEquals(false, result.isAscending());
     assertEquals(2.0, result.getElevationMin(), 4);
     assertEquals(10.0, result.getElevationMax(), 4);

@@ -354,6 +354,31 @@ public class RuleUtilities implements IRuleUtilities {
   }
   
   /**
+   * @return The current UTC date time
+   */
+  protected DateTime getCurrentDateTimeUTC() {
+    return new DateTime();
+  }
+  
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getTimeoutTime(eu.baltrad.bdb.util.DateTime, boolean, long)
+   */
+  @Override
+  public long getTimeoutTime(DateTime nominalTime, boolean nominalTimeout, long timeout) {
+    if (nominalTimeout) {
+      Calendar nominalCal = createCalendar(nominalTime);
+      Calendar currentCal = createCalendar(getCurrentDateTimeUTC());
+      long to = currentCal.getTimeInMillis() - nominalCal.getTimeInMillis();
+      if (to >= timeout) {
+        return 0;
+      } else {
+        return timeout - to;
+      }
+    }
+    return timeout;
+  }
+  
+  /**
    * This function will keep a backlog of 100 entries.
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#trigger(int, eu.baltrad.bdb.util.DateTime)
    */
@@ -439,4 +464,5 @@ public class RuleUtilities implements IRuleUtilities {
       }
     }
   }
+
 }

@@ -360,7 +360,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<fileset dir="${build.itest.dir}" includes="**/*Test.class"
                  excludes="eu/baltrad/beast/net/FileDistributionITest.class"/>
       	<!--
-      	<fileset dir="${build.itest.dir}" includes="**/BltRouterCompositeDBITest.class"
+      	<fileset dir="${build.itest.dir}" includes="**/VolumeRuleManagerITest.class"
                  excludes="eu/baltrad/beast/net/FileDistributionITest.class"/>
         -->         
       </batchtest>

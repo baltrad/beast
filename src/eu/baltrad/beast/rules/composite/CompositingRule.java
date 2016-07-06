@@ -19,7 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +30,12 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.expr.ExpressionFactory;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
+import eu.baltrad.bdb.util.Date;
+import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.filters.LowestAngleFilter;
@@ -44,13 +49,6 @@ import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.bdb.db.FileEntry;
-import eu.baltrad.bdb.expr.Expression;
-import eu.baltrad.bdb.expr.ExpressionFactory;
-import eu.baltrad.bdb.oh5.MetadataMatcher;
-import eu.baltrad.bdb.util.Date;
-import eu.baltrad.bdb.util.DateTime;
-import eu.baltrad.bdb.util.Time;
 
 /**
  * Compositing rule for beeing able to generate composites both from
@@ -453,39 +451,12 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
         }
       } else {
         if (tt == null && timeout > 0) {
-          timeoutManager.register(this, getTimeoutTime(data.getDateTime()), data);
+          timeoutManager.register(this, ruleUtil.getTimeoutTime(data.getDateTime(), nominalTimeout, timeout*1000), data);
         }
       }
     }
     logger.debug("EXIT: handleCompositeFromScans(IBltMessage)");
     return result;
-  }
-
-  /**
-   * Returns the time in milliseconds that should be used for registering the timeout. If the nominal time should be used
-   * as base for the timeout. The passed nominalTime will be used for calculating the time from now.
-   * @param nominalTime the time we should as offset if nominal time timeouts are wanted
-   * @return the timeout in milliseconds
-   */
-  protected long getTimeoutTime(DateTime nominalTime) {
-    if (nominalTimeout) {
-      Calendar nominalCal = ruleUtil.createCalendar(nominalTime);
-      Calendar currentCal = ruleUtil.createCalendar(getCurrentTime());
-      long to = currentCal.getTimeInMillis() - nominalCal.getTimeInMillis();
-      if (to >= timeout*1000) {
-        return 0;
-      } else {
-        return timeout*1000 - to;
-      }
-    }
-    return timeout*1000;
-  }
-
-  /**
-   * @return the current UTC time
-   */
-  protected DateTime getCurrentTime() {
-    return new DateTime();
   }
   
   /**
@@ -541,7 +512,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       } else {
         if (tt == null) {
           if (timeout > 0) {
-            timeoutManager.register(this, timeout*1000, data);
+            timeoutManager.register(this, ruleUtil.getTimeoutTime(data.getDateTime(), nominalTimeout, timeout*1000), data);
           }
         }
       }

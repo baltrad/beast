@@ -133,6 +133,7 @@ create table beast_volume_rules (
   rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
   interval integer NOT NULL,
   timeout integer NOT NULL,
+  nominal_timeout boolean NOT NULL,  
   ascending boolean NOT NULL,
   minelev decimal NOT NULL,
   maxelev decimal NOT NULL,

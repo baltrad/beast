@@ -185,6 +185,18 @@ public interface IRuleUtilities {
   public DateTime createPrevNominalTime(DateTime now, int interval);
   
   /**
+   * Calculates the timeout in ms that should be used. If nominalTimeout = false, then the returned value
+   * will be timeout regardless of nominal time. However, if nominalTimeout is specified then
+   * the difference between now and nominal time will be used and the difference will either be substracted or added to
+   * the timeout value
+   * @param nominalTime the nominal time that we are aiming for
+   * @param nominalTimeout if timeout should be based on nominal time or not
+   * @param timeout the timeout in milliseconds
+   * @return the timeout in ms
+   */
+  public long getTimeoutTime(DateTime nominalTime, boolean nominalTimeout, long timeout);
+  
+  /**
    * This is a way of indicating if a rule has been triggered or not
    * for a specific time period. This can be quite useful if you know
    * that a rule will be triggered more than once and only want to

@@ -137,6 +137,7 @@ public class VolumeRuleManagerITest extends TestCase {
     VolumeRule rule = (VolumeRule)classUnderTest.load(1);
     assertEquals(6, rule.getInterval());
     assertEquals(10, rule.getTimeout());
+    assertEquals(true, rule.isNominalTimeout());
     assertEquals(true, rule.isAscending());
     assertEquals(0.1, rule.getElevationMin());
     assertEquals(45.0, rule.getElevationMax());
@@ -155,6 +156,7 @@ public class VolumeRuleManagerITest extends TestCase {
     VolumeRule rule = (VolumeRule)classUnderTest.load(2);
     assertEquals(12, rule.getInterval());
     assertEquals(20, rule.getTimeout());
+    assertEquals(false, rule.isNominalTimeout());
     assertEquals(true, rule.isAscending());
     assertEquals(1.0, rule.getElevationMin());
     assertEquals(10.0, rule.getElevationMax());
@@ -173,6 +175,7 @@ public class VolumeRuleManagerITest extends TestCase {
     VolumeRule rule = (VolumeRule)classUnderTest.load(3);
     assertEquals(10, rule.getInterval());
     assertEquals(30, rule.getTimeout());
+    assertEquals(true, rule.isNominalTimeout());
     assertEquals(false, rule.isAscending());
     assertEquals(2.5, rule.getElevationMin());
     assertEquals(24.1, rule.getElevationMax());
@@ -192,6 +195,7 @@ public class VolumeRuleManagerITest extends TestCase {
     VolumeRule rule = new VolumeRule();
     rule.setInterval(10);
     rule.setTimeout(20);
+    rule.setNominalTimeout(true);
     rule.setAscending(false);
     rule.setElevationMin(2.0);
     rule.setElevationMax(20.0);
@@ -218,6 +222,7 @@ public class VolumeRuleManagerITest extends TestCase {
     VolumeRule rule = (VolumeRule)classUnderTest.load(2);
     rule.setInterval(15);
     rule.setTimeout(10);
+    rule.setNominalTimeout(true);
     rule.setAscending(false);
     rule.setElevationMin(2.0);
     rule.setElevationMax(24.0);

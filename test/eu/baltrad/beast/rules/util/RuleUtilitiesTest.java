@@ -40,8 +40,10 @@ import eu.baltrad.bdb.db.SourceManager;
 import eu.baltrad.bdb.oh5.Source;
 import eu.baltrad.bdb.storage.LocalStorage;
 import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.bdb.util.TimeDelta;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.rules.composite.CompositingRule;
 import eu.baltrad.beast.system.RadarConnectionStatusReporter;
 import eu.baltrad.beast.system.SystemStatus;
 
@@ -307,7 +309,66 @@ public class RuleUtilitiesTest extends EasyMockSupport {
       assertTrue("TT["+i+"] not as expected", dtResult.equals(TIME_TABLE[i][1]));
     }
   }
+  
+  @Test
+  public void getTimeoutTime() {
+    for (int i = 0; i < 15; i++) {
+      assertEquals(10000, classUnderTest.getTimeoutTime(new DateTime(2016,1,2,12,i,0), false, 10000));
+    }
+  }
+  
+  @Test
+  public void getTimeoutTime_nominal() {
+    final DateTime currentTime = new DateTime();
+    DateTime nominalTime = currentTime.add(new TimeDelta().addSeconds(-180));
+    classUnderTest = new RuleUtilities() {
+      @Override
+      protected DateTime getCurrentDateTimeUTC() {
+        return currentTime;
+      }
+    };
+    assertEquals(7*60000, classUnderTest.getTimeoutTime(nominalTime, true, 600000));
+  }
 
+  @Test
+  public void getTimeoutTime_nominalAfterNow() {
+    final DateTime currentTime = new DateTime();
+    DateTime nominalTime = currentTime.add(new TimeDelta().addSeconds(+180));
+    classUnderTest = new RuleUtilities() {
+      @Override
+      protected DateTime getCurrentDateTimeUTC() {
+        return currentTime;
+      }
+    };
+    assertEquals(13*60000, classUnderTest.getTimeoutTime(nominalTime, true, 600000));
+  }
+
+  @Test
+  public void getTimeoutTime_nominal_alreadyPassed() {
+    final DateTime currentTime = new DateTime();
+    DateTime nominalTime = currentTime.add(new TimeDelta().addSeconds(-180));
+    classUnderTest = new RuleUtilities() {
+      @Override
+      protected DateTime getCurrentDateTimeUTC() {
+        return currentTime;
+      }
+    };
+    assertEquals(0, classUnderTest.getTimeoutTime(nominalTime, true, 120000));
+  }
+
+  @Test
+  public void getTimeoutTime_nominal_timeoutSameAsPassed() {
+    final DateTime currentTime = new DateTime();
+    DateTime nominalTime = currentTime.add(new TimeDelta().addSeconds(-180));
+    classUnderTest = new RuleUtilities() {
+      @Override
+      protected DateTime getCurrentDateTimeUTC() {
+        return currentTime;
+      }
+    };
+    assertEquals(0, classUnderTest.getTimeoutTime(nominalTime, true, 180000));
+  }
+  
   @Test
   public void testTrigger() throws Exception {
     DateTime d1 = new DateTime(2010,1,1,1,1,1);

@@ -282,6 +282,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_volume_rules_with_nominal_timeout() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_volume_rules' AND column_name = 'nominal_timeout';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_volume_rules ADD COLUMN nominal_timeout boolean;
+    UPDATE beast_volume_rules SET nominal_timeout='false';
+    ALTER TABLE beast_volume_rules ALTER COLUMN nominal_timeout SET NOT NULL;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
