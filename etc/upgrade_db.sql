@@ -308,6 +308,7 @@ select update_beast_volume_rules_with_elangles_field();
 select update_beast_acrr_rules_with_applygra();
 select update_beast_composite_rules_with_quantity();
 select update_beast_composite_rules_with_nominal_timeout();
+select update_beast_volume_rules_with_nominal_timeout();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -324,3 +325,4 @@ drop function update_beast_volume_rules_with_elangles_field();
 drop function update_beast_acrr_rules_with_applygra();
 drop function update_beast_composite_rules_with_quantity();
 drop function update_beast_composite_rules_with_nominal_timeout();
+drop function update_beast_volume_rules_with_nominal_timeout();
