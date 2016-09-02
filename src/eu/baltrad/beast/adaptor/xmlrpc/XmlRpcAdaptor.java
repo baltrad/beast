@@ -20,6 +20,7 @@ package eu.baltrad.beast.adaptor.xmlrpc;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -209,7 +210,8 @@ public class XmlRpcAdaptor implements IAdaptor {
     try {
       XmlRpcCommand command = generator.generate(message);
       TimingOutCallback tcb = createTimeout(timeout);
-      logger.debug("handle: executeAsync("+command.getMethod()+" to " + this.url);
+      logger.debug("handle: executeAsync(" + command.getMethod() + " - " + Arrays.toString(command.getObjects()) + 
+                   " to " + this.url + ")");
       client.executeAsync(command.getMethod(), command.getObjects(), tcb);
       try {
         Object result = tcb.waitForResponse();

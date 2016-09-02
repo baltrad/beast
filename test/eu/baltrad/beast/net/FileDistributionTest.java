@@ -1,10 +1,9 @@
 package eu.baltrad.beast.net;
 
+import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import static org.easymock.EasyMock.expectLastCall;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +21,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.baltrad.beast.net.FileDistribution.FileDistributionStateContainer;
+
 public class FileDistributionTest extends EasyMockSupport {
   
   private static interface FileDistributionMethods {
@@ -38,6 +39,7 @@ public class FileDistributionTest extends EasyMockSupport {
   private File defaultSrc;
   private URI defaultDestination;
   private URI defaultFullDestination;
+  private FileDistributionStateContainer distributionState;
 
   @Before
   public void setUp() throws Exception {
@@ -48,8 +50,10 @@ public class FileDistributionTest extends EasyMockSupport {
     methods = createMock(FileDistributionMethods.class);
 
     uploadHandler = createMock(FileUploadHandler.class);
+    
+    distributionState = createMock(FileDistributionStateContainer.class);
 
-    classUnderTest = new FileDistribution(defaultSrc, defaultDestination, defaultEntryName) {
+    classUnderTest = new FileDistribution(defaultSrc, defaultDestination, defaultEntryName, distributionState) {
       @Override
       protected void warnAboutOngoingUpload(File src, URI fullDestination) {
         methods.warnAboutOngoingUpload(src, fullDestination);
@@ -91,7 +95,7 @@ public class FileDistributionTest extends EasyMockSupport {
   @Test
   public void testNonAbsoluteSourcePath() throws IOException {
     
-    classUnderTest = new FileDistribution(new File("../non/absolute/path"), defaultDestination, defaultEntryName);
+    classUnderTest = new FileDistribution(new File("../non/absolute/path"), defaultDestination, defaultEntryName, distributionState);
         
     boolean exceptionCaught = false;
     try {
@@ -108,6 +112,8 @@ public class FileDistributionTest extends EasyMockSupport {
   public void testUpload() throws IOException {
     
     uploadHandler.upload(defaultSrc, defaultFullDestination);
+    distributionState.uploadDone(true);
+    
     replayAll();
     
     classUnderTest.run();
@@ -117,10 +123,12 @@ public class FileDistributionTest extends EasyMockSupport {
   
   @Test
   public void testUploadAlreadyOngoing() throws IOException {
-    FileDistribution concurrentDistribution = new FileDistribution(defaultSrc, defaultDestination, defaultEntryName);
+    FileDistribution concurrentDistribution = new FileDistribution(defaultSrc, defaultDestination, defaultEntryName, distributionState);
     concurrentDistribution.lockUpload(defaultSrc, defaultFullDestination);
 
     methods.warnAboutOngoingUpload(defaultSrc, defaultFullDestination);
+    distributionState.uploadDone(false);
+    
     replayAll();
 
     classUnderTest.run();
@@ -140,7 +148,7 @@ public class FileDistributionTest extends EasyMockSupport {
     
     boolean exceptionCaught = false;
     try {
-      classUnderTest = new FileDistribution(defaultSrc, invalidDestination, defaultEntryName);
+      classUnderTest = new FileDistribution(defaultSrc, invalidDestination, defaultEntryName, distributionState);
     } catch (UnknownServiceException e) {
       exceptionCaught = true;
     }
@@ -150,12 +158,15 @@ public class FileDistributionTest extends EasyMockSupport {
   @Test
   public void testUploadThrowsException() throws IOException {
     
+    final String exceptionMsg = "Something terrible happened";
+    
     Appender mockAppender = createMock(Appender.class);
     LogManager.getRootLogger().addAppender(mockAppender);
   
+    distributionState.uploadDone(false);
     uploadHandler.upload(defaultSrc, defaultFullDestination);
     
-    expectLastCall().andThrow(new IOException("Something terrible happened"));
+    expectLastCall().andThrow(new IOException(exceptionMsg));
     
     Capture<LoggingEvent> capturedArgument = new Capture<LoggingEvent>();
     mockAppender.doAppend(EasyMock.capture(capturedArgument));
@@ -170,7 +181,8 @@ public class FileDistributionTest extends EasyMockSupport {
     verifyAll();
     
     LoggingEvent logEvent = capturedArgument.getValue();    
-    assertEquals(logEvent.getRenderedMessage(), "File distribution failed!");
+    assertTrue(logEvent.getRenderedMessage().startsWith("File distribution failed!"));
+    assertTrue(logEvent.getRenderedMessage().endsWith(exceptionMsg));
     
     assertEquals(FileDistribution.getCurrentUploads().size(), 0);
   }
