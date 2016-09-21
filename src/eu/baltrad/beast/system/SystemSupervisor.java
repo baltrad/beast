@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import eu.baltrad.beast.log.message.MessageSeverity;
 
 /**
@@ -43,7 +46,9 @@ public class SystemSupervisor implements ISystemSupervisor {
    * A list of status reporters.
    */
   private Map<String, ISystemStatusReporter> reporters = new HashMap<String, ISystemStatusReporter>();
-      
+  
+  private final static Logger logger = LogManager.getLogger(SystemSupervisor.class);
+  
   /**
    * @see eu.baltrad.beast.system.ISystemSupervisor#add(SystemMessage)
    */
@@ -116,5 +121,33 @@ public class SystemSupervisor implements ISystemSupervisor {
       return reporters.get(component).getStatus(values);
     }
     return EnumSet.of(SystemStatus.UNDEFINED);
+  }
+
+  /**
+   * @see eu.baltrad.beast.system.ISystemSupervisor#supportsMappableStatus(java.lang.String)
+   */
+  @Override
+  public boolean supportsMappableStatus(String component) {
+    logger.info("supportsMappableStatus("+component+")");
+    boolean result = false;
+    if (reporters.containsKey(component)) {
+      logger.info("supportsMappableStatus: Checking instance");
+      result = reporters.get(component) instanceof IMappableStatusReporter;
+    }
+    logger.info("supportsMappableStatus("+component+") = " + result);
+    return result;
+  }
+
+  /**
+   * @see eu.baltrad.beast.system.ISystemSupervisor#getMappedStatus(java.lang.String, java.util.Map)
+   */
+  @Override
+  public Map<String, Map<Object, SystemStatus>> getMappedStatus(String component, Map<String, Object> values) {
+    logger.info("getMappedStatus");
+    if (reporters.containsKey(component) && supportsMappableStatus(component)) {
+      logger.info("Returning mapped status values");
+      return ((IMappableStatusReporter)reporters.get(component)).getMappedStatus(values);
+    }
+    return null;
   }
 }

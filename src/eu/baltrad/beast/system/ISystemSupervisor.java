@@ -53,5 +53,20 @@ public interface ISystemSupervisor {
    * @return the system status as a set. That means that the status can be combined
    */
   public Set<SystemStatus> getStatus(String component, Map<String,Object> values);
+  
+  /**
+   * Returns true if the specified component supports the IMappableStatusReporter interface.
+   * @param component the component
+   * @return true if the component supports the mappable reporter
+   */
+  public boolean supportsMappableStatus(String component);
+  
+  /**
+   * Returns the status as a mapped list of <string, status>
+   * @param component the component
+   * @param values a value mapping between keys - values
+   * @return the result for <component, <key, status>>
+   */
+  public Map<String, Map<Object, SystemStatus> > getMappedStatus(String component, Map<String, Object> values);
 
 }

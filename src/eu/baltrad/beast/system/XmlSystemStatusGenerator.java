@@ -22,7 +22,9 @@ package eu.baltrad.beast.system;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Document;
@@ -36,30 +38,52 @@ import org.dom4j.io.XMLWriter;
  */
 public class XmlSystemStatusGenerator {
 
+  static interface StatusItem {
+    public String getComponent();
+  }
   /**
    * Each status is represented as
    * component | value | status. For example radars | seang | OK.
    */
-  static class StatusItem {
+  static class ValueItem implements StatusItem {
     private String component;
     private String value;
     private String status;
-    StatusItem(String component, String value, String status) {
+    public ValueItem(String component, String value, String status) {
       this.component = component;
       this.value = value;
       this.status = status;
     }
-    String getComponent() {
+    @Override
+    public String getComponent() {
       return this.component;
     }
-    String getValue() {
+    public String getValue() {
       return this.value;
     }
-    String getStatus() {
+    public String getStatus() {
       return this.status;
     }
   }
 
+  static class GroupItem implements StatusItem {
+    private List<ValueItem> items = new ArrayList<XmlSystemStatusGenerator.ValueItem>();
+    private String component = null;
+    GroupItem(String component) {
+      this.component = component;
+    }
+    @Override
+    public String getComponent() {
+      return this.component;
+    }
+    public void add(ValueItem item) {
+      this.items.add(item);
+    }
+    public List<ValueItem> group() {
+      return this.items;
+    }
+  }
+  
   /**
    * The status components
    */
@@ -80,9 +104,23 @@ public class XmlSystemStatusGenerator {
    * @param status the status of the component with specified value
    */
   public void add(String component, String value, Set<SystemStatus> status) {
-    this.components.add(new StatusItem(component, value, generateStatusString(status)));
+    this.components.add(new ValueItem(component, value, generateStatusString(status)));
   }
 
+  /**
+   * Adds a value mapping where each individual value maps to a status. Useful when querying for example
+   * peers for connectivity
+   * @param component the component queried
+   * @param mapping the value - status mapping
+   */
+  public void add(String component, Map<Object, SystemStatus> mapping) {
+    GroupItem gi = new GroupItem(component);
+    for (Object k : mapping.keySet()) {
+      gi.add(new ValueItem(component, k.toString(), mapping.get(k).toString()));
+    }
+    this.components.add(gi);
+  }
+  
   /**
    * @return the xml string with UTF-8 encoding
    */
@@ -117,10 +155,22 @@ public class XmlSystemStatusGenerator {
     Element el = document.addElement("system-status");
     
     for (StatusItem item : components) {
-      Element comp = el.addElement("reporter");
-      comp.addAttribute("name", item.getComponent());
-      comp.addAttribute("value", item.getValue());
-      comp.addAttribute("status", item.getStatus());
+      if (item instanceof GroupItem) {
+        GroupItem gi = (GroupItem)item;
+        Element g = el.addElement("reporter");
+        g.addAttribute("name", gi.getComponent());
+        for (ValueItem vi : gi.group()) {
+          Element v = g.addElement("reporter-status");
+          v.addAttribute("value", vi.getValue());
+          v.addAttribute("status", vi.getStatus());
+        }
+      } else {
+        ValueItem vi = (ValueItem)item;
+        Element comp = el.addElement("reporter");
+        comp.addAttribute("name", vi.getComponent());
+        comp.addAttribute("value", vi.getValue());
+        comp.addAttribute("status", vi.getStatus());
+      }
     }
     
     return document;

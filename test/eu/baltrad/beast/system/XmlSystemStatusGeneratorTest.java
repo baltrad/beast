@@ -22,6 +22,10 @@ package eu.baltrad.beast.system;
 import static org.junit.Assert.assertEquals;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dom4j.Document;
 import org.junit.After;
@@ -109,6 +113,40 @@ public class XmlSystemStatusGeneratorTest {
         "<reporter name=\"products\" value=\"ghi,jkl\" status=\"OK|COMMUNICATION_PROBLEM\"/>\n" +
         "</system-status>\n", result);
   }
-
+  
+  @Test
+  public void testAdd_WithMapping() {
+    boolean r1=false,r2=false,r3=false;
+    Map<Object, SystemStatus> map = new HashMap<Object, SystemStatus>();
+    map.put("se.oksite", SystemStatus.OK);
+    map.put("se.badsite", SystemStatus.COMMUNICATION_PROBLEM);
+    map.put("se.somesite", SystemStatus.PROCESSING_PROBLEM);
+    
+    classUnderTest.add("status", map);
+    String result = classUnderTest.getXmlString("ISO-8859-1");
+    String[] tokens = result.split("\n");
+    
+    Assert.assertEquals("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", tokens[0]);
+    Assert.assertEquals("", tokens[1]);
+    Assert.assertEquals("<system-status>", tokens[2]);
+    Assert.assertEquals("<reporter name=\"status\">", tokens[3]);
+    
+    for (int i = 4; i < 7; i++) {
+      if (tokens[i].equals("<reporter-status value=\"se.badsite\" status=\"COMMUNICATION_PROBLEM\"/>")) {
+        r1=true;
+      } else if (tokens[i].equals("<reporter-status value=\"se.somesite\" status=\"PROCESSING_PROBLEM\"/>")) {
+        r2=true;
+      } else if (tokens[i].equals("<reporter-status value=\"se.oksite\" status=\"OK\"/>")) {
+        r3=true;
+      }
+    }
+    
+    Assert.assertTrue(r1);
+    Assert.assertTrue(r2);
+    Assert.assertTrue(r3);
+    
+    Assert.assertEquals("</reporter>", tokens[7]);
+    Assert.assertEquals("</system-status>", tokens[8]);
+  }
 }
 

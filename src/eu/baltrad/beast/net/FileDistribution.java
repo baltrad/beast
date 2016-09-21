@@ -68,6 +68,7 @@ public class FileDistribution implements Runnable {
     uploadHandler = getHandlerByScheme(destination.getScheme());
     sourceFile = src;
     fullDestination = appendPath(destination, entryName);
+    logger.info("HANDLER: " + uploadHandler.getClass().getName() + ", sourceFile = " + sourceFile.getName() + ", DEST="+fullDestination.toString());
   }
   
   public FileUploadHandler getUploadHandler() {
@@ -113,6 +114,8 @@ public class FileDistribution implements Runnable {
       warnAboutOngoingUpload(sourceFile, fullDestination);
     } else {
       try {
+        logger.info("UPLOADING " + sourceFile.getName() + ", DEST="+fullDestination.toString());
+
         uploadHandler.upload(sourceFile, fullDestination);
         logger.info("File " + sourceFile.getName() + " distributed with " + fullDestination.getScheme() + " to: " + fullDestination.getPath());
       } catch (IOException e) {
