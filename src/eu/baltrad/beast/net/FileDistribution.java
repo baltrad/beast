@@ -19,7 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.net;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.UnknownServiceException;
 import java.util.HashMap;
@@ -48,13 +47,54 @@ public class FileDistribution implements Runnable {
   private URI fullDestination;
   private File sourceFile;
   
+  private FileDistributionStateContainer distributionState;
+  
   private static HashMap<URI, String> currentUploads = new HashMap<URI, String>();
   
   /**
    * The logger
    */
   private static Logger logger = LogManager.getLogger(FileDistribution.class);
-
+  
+  
+  public static class FileDistributionStateContainer {
+    
+    private volatile FileDistributionState state;
+    
+    private enum FileDistributionState {
+      NOT_STARTED,
+      ONGOING,
+      FAILED,
+      SUCCESSFUL
+    }
+    
+    public FileDistributionStateContainer() {
+      state = FileDistributionState.NOT_STARTED;
+    }
+    
+    public void uploadStarted() {
+      state = FileDistributionState.ONGOING;
+    }
+    
+    public void uploadDone(boolean uploadSuccessful) {
+      if (uploadSuccessful) {
+        state = FileDistributionState.SUCCESSFUL;
+      } else {
+        state = FileDistributionState.FAILED;
+      }
+    }
+    
+    public boolean isDone() {
+      return state == FileDistributionState.SUCCESSFUL ||
+             state == FileDistributionState.FAILED;
+    }
+    
+    public boolean isSuccessful() {
+      return state == FileDistributionState.SUCCESSFUL;
+    }
+  
+  }
+  
   /**
    * @param src
    * @param destination
@@ -63,12 +103,12 @@ public class FileDistribution implements Runnable {
    * @throws UnknownServiceException thrown if the scheme in the destination URI 
    *                                 is invalid/unknown 
    */
-  public FileDistribution(File src, URI destination, String entryName) 
+  public FileDistribution(File src, URI destination, String entryName, FileDistributionStateContainer state) 
       throws UnknownServiceException {
     uploadHandler = getHandlerByScheme(destination.getScheme());
     sourceFile = src;
     fullDestination = appendPath(destination, entryName);
-    logger.info("HANDLER: " + uploadHandler.getClass().getName() + ", sourceFile = " + sourceFile.getName() + ", DEST="+fullDestination.toString());
+    this.distributionState = state;
   }
   
   public FileUploadHandler getUploadHandler() {
@@ -106,24 +146,28 @@ public class FileDistribution implements Runnable {
   @Override
   public void run() {
     if (!sourceFile.isAbsolute()) {
+      uploadDone(false);
+      
       throw new IllegalArgumentException("Source path must be absolute");      
     }
+    
+    boolean uploadSuccessful = false;
     
     boolean dstAlreadyLocked = lockUpload(sourceFile, fullDestination);
     if (dstAlreadyLocked) {
       warnAboutOngoingUpload(sourceFile, fullDestination);
     } else {
       try {
-        logger.info("UPLOADING " + sourceFile.getName() + ", DEST="+fullDestination.toString());
-
         uploadHandler.upload(sourceFile, fullDestination);
-        logger.info("File " + sourceFile.getName() + " distributed with " + fullDestination.getScheme() + " to: " + fullDestination.getPath());
-      } catch (IOException e) {
-        logger.error("File distribution failed!", e);
+        uploadSuccessful = true;
+      } catch (Throwable e) {
+        logger.error("File distribution failed! " + e.toString(), e);
       } finally {
-        unlockUpload(fullDestination);          
+        unlockUpload(fullDestination);
       }
     }
+    
+    uploadDone(uploadSuccessful);
   }
   
   protected FileUploadHandler getHandlerByScheme(String scheme) throws UnknownServiceException {
@@ -186,6 +230,12 @@ public class FileDistribution implements Runnable {
     logger.warn("Upload already ongoing to " + fullDestination.toString() + 
                 ". Aborting! Src for ongoing upload: " + ongoingSrc + 
                 ", New src: " + src.getName());
+  }
+  
+  protected void uploadDone(boolean uploadSuccessful) {
+    if (distributionState != null) {      
+      distributionState.uploadDone(uploadSuccessful);
+    }
   }
 
 }

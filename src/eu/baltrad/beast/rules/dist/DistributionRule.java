@@ -19,7 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.dist;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +37,7 @@ import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.net.FileDistribution;
+import eu.baltrad.beast.net.FileDistribution.FileDistributionStateContainer;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRulePropertyAccess;
 import eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory;
@@ -229,23 +229,33 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     return matcher.match(entry.getMetadata(), filter.getExpression());
   }
 
-  public void upload(FileEntry entry) {
+  public FileDistributionStateContainer upload(FileEntry entry) {
     File src = localStorage.store(entry);
-    try {
-      upload(src, entry);
-    } catch (IOException e) {
-      logger.error("Upload failed", e);
-    }
+    
+    FileDistributionStateContainer distributionState = upload(src, entry);
+    
+    return distributionState;
   }
   
-  public void upload(File src, FileEntry entry) throws IOException {
-    if (!distributionExecutor.isShutdown()) {
-      String entryName = namer.name(entry);
-      FileDistribution fileDistribution = new FileDistribution(src, destination, entryName);
-      distributionExecutor.execute(fileDistribution);
-    } else {
-      logger.warn("Could not distribute file " + src.getName() + ". Executor is shutdown.");
+  public FileDistributionStateContainer upload(File src, FileEntry entry) {
+
+    FileDistributionStateContainer distributionState = new FileDistributionStateContainer();
+    
+    try {
+      if (!distributionExecutor.isShutdown()) {
+        String entryName = namer.name(entry);
+        FileDistribution fileDistribution = new FileDistribution(src, destination, entryName, distributionState);
+        distributionExecutor.execute(fileDistribution);
+      } else {
+        distributionState.uploadDone(false);
+        logger.warn("Could not distribute file " + src.getName() + ". Executor is shutdown.");
+      }      
+    } catch (Exception e) {
+      distributionState.uploadDone(false);
+      logger.error("Upload failed", e);
     }
+    
+    return distributionState;
   }
 
 }

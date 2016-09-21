@@ -29,6 +29,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
@@ -47,11 +48,12 @@ import eu.baltrad.bdb.util.FileEntryNamer;
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.net.FileDistribution;
+import eu.baltrad.beast.net.FileDistribution.FileDistributionStateContainer;
 
 public class DistributionRuleTest extends EasyMockSupport {
   private static interface DistributionRuleMethods {
     boolean match(FileEntry entry);
-    void upload(FileEntry entry);
+    FileDistributionStateContainer upload(FileEntry entry);
     void warnAboutOngoingUpload(File src, URI fullDestination);
   };
 
@@ -112,13 +114,13 @@ public class DistributionRuleTest extends EasyMockSupport {
       }
 
       @Override
-      public void upload(FileEntry entry) {
-        methods.upload(entry);
+      public FileDistributionStateContainer upload(FileEntry entry) {
+        return methods.upload(entry);
       }
     };
     
     expect(methods.match(entry)).andReturn(true);
-    methods.upload(entry);
+    expect(methods.upload(entry)).andReturn(null);
 
     replayAll();
     
@@ -139,8 +141,8 @@ public class DistributionRuleTest extends EasyMockSupport {
       }
 
       @Override
-      public void upload(FileEntry entry) {
-        methods.upload(entry);
+      public FileDistributionStateContainer upload(FileEntry entry) {
+        return methods.upload(entry);
       }
     };
     
@@ -179,13 +181,59 @@ public class DistributionRuleTest extends EasyMockSupport {
     
     replayAll();
 
-    classUnderTest.upload(entry);
+    FileDistributionStateContainer distributionState = classUnderTest.upload(entry);
     
     verifyAll();
     
     FileDistribution fileDistribution = capturedArgument.getValue();
     assertEquals(src, fileDistribution.getSourceFile());
     assertEquals(destination, fileDistribution.getFullDestination());
+    assertEquals(distributionState.isDone(), false);
+    
+  }
+  
+  @Test
+  public void testExecutorShutdown() throws IOException {
+    classUnderTest.setDestination(dstBase);
+
+    expect(localStorage.store(entry)).andReturn(src);
+    expect(distributionExecutor.isShutdown()).andReturn(true);
+    
+    replayAll();
+
+    FileDistributionStateContainer distributionState = classUnderTest.upload(entry);
+    
+    verifyAll();
+    
+    assertEquals(distributionState.isDone(), true);
+    assertEquals(distributionState.isSuccessful(), false);
+    
+  }
+  
+  @Test
+  public void testUploadFails() throws IOException {
+    classUnderTest.setDestination(dstBase);
+
+    expect(localStorage.store(entry)).andReturn(src);
+    expect(namer.name(entry)).andReturn(dstEntryName);
+    expect(distributionExecutor.isShutdown()).andReturn(false);
+
+    Capture<FileDistribution> capturedArgument = new Capture<FileDistribution>();
+    distributionExecutor.execute(EasyMock.capture(capturedArgument));
+    
+    EasyMock.expectLastCall().andThrow(new RejectedExecutionException());
+    
+    replayAll();
+
+    FileDistributionStateContainer distributionState = classUnderTest.upload(entry);
+    
+    verifyAll();
+    
+    FileDistribution fileDistribution = capturedArgument.getValue();
+    assertEquals(src, fileDistribution.getSourceFile());
+    assertEquals(destination, fileDistribution.getFullDestination());
+    assertEquals(distributionState.isDone(), true);
+    assertEquals(distributionState.isSuccessful(), false);
     
   }
 
