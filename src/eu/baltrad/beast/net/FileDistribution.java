@@ -159,6 +159,7 @@ public class FileDistribution implements Runnable {
     } else {
       try {
         uploadHandler.upload(sourceFile, fullDestination);
+        logger.info("File " + sourceFile.getName() + " distributed with " + fullDestination.getScheme() + " to: " + fullDestination.getPath());
         uploadSuccessful = true;
       } catch (Throwable e) {
         logger.error("File distribution failed! " + e.toString(), e);
