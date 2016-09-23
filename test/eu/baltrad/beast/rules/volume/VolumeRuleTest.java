@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -145,7 +146,9 @@ public class VolumeRuleTest extends EasyMockSupport {
   
   @Test
   public void testHandle() throws Exception {
-    IBltMessage msg = new IBltMessage() {};
+    BltDataMessage msg = createMock(BltDataMessage.class);
+    FileEntry fileEntry = createMock(FileEntry.class);
+    UUID ruid = UUID.randomUUID();
     DateTime nominalTime = new DateTime();
     VolumeTimerData data = new VolumeTimerData(1, nominalTime, "some");
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
@@ -159,6 +162,8 @@ public class VolumeRuleTest extends EasyMockSupport {
     expect(methods.areCriteriasMet(entries, nominalTime, "some")).andReturn(true);
     expect(methods.filterEntries(entries, nominalTime.getTime())).andReturn(newentries);
     expect(methods.createMessage(nominalTime, newentries)).andReturn(message);
+    expect(msg.getFileEntry()).andReturn(fileEntry).anyTimes();
+    expect(fileEntry.getUuid()).andReturn(ruid).anyTimes();
     
     VolumeRule classUnderTest = new VolumeRule() {
       public VolumeTimerData createTimerData(IBltMessage msg) {
@@ -192,7 +197,9 @@ public class VolumeRuleTest extends EasyMockSupport {
 
   @Test
   public void testHandle_registerTimeout() throws Exception {
-    IBltMessage msg = new IBltMessage() {};
+    BltDataMessage msg = createMock(BltDataMessage.class);
+    FileEntry fileEntry = createMock(FileEntry.class);
+    UUID ruid = UUID.randomUUID();
     DateTime nominalTime = new DateTime();
     VolumeTimerData data = new VolumeTimerData(1, nominalTime, "some");
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
@@ -219,6 +226,8 @@ public class VolumeRuleTest extends EasyMockSupport {
     expect(methods.areCriteriasMet(entries, nominalTime, "some")).andReturn(false);
     expect(utilities.getTimeoutTime(nominalTime, true, 10000)).andReturn(10000L);
     expect(timeoutManager.register(classUnderTest, 10000L, data)).andReturn(1L);
+    expect(msg.getFileEntry()).andReturn(fileEntry).anyTimes();
+    expect(fileEntry.getUuid()).andReturn(ruid).anyTimes();
     
     classUnderTest.setTimeoutManager(timeoutManager);
     classUnderTest.setRuleUtilities(utilities);

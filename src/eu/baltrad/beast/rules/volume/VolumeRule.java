@@ -352,6 +352,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     VolumeTimerData data = createTimerData(message);
     
     if (data != null && !isHandled(data)) {
+      // if data != null, message is an instance of BltDataMessage - therefore safe to cast
       FileEntry file = ((BltDataMessage)message).getFileEntry();
       logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
           ", file: " + file.getUuid());
