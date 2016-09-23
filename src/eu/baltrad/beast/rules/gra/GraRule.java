@@ -21,11 +21,11 @@ package eu.baltrad.beast.rules.gra;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Formatter;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
@@ -36,6 +36,7 @@ import eu.baltrad.beast.db.filters.TimeSelectionFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
+import eu.baltrad.beast.rules.RuleUtils;
 import eu.baltrad.beast.rules.acrr.AcrrRule;
 
 /**
@@ -107,8 +108,8 @@ public class GraRule extends AcrrRule {
         result.setFiles(uuids.toArray(new String[0]));
         List<String> args = new ArrayList<String>();
         args.add("--area="+getArea());
-        args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
-        args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
+        args.add("--date="+RuleUtils.getFormattedDate(date));
+        args.add("--time="+RuleUtils.getFormattedTime(time));
         args.add("--zra="+getZrA());
         args.add("--zrb="+getZrB());
         args.add("--interval="+getHours());
@@ -118,6 +119,9 @@ public class GraRule extends AcrrRule {
         args.add("--distancefield=" + getDistancefield());
         
         result.setArguments(args.toArray(new String[0]));
+        
+        logger.debug("GraRule createMessage - entries: " +
+            StringUtils.collectionToDelimitedString(uuids, " "));
         
         logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         

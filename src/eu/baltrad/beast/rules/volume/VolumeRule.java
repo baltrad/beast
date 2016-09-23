@@ -19,13 +19,14 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.volume;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -34,7 +35,6 @@ import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
-
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.IFilter;
@@ -44,6 +44,7 @@ import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.RuleUtils;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
@@ -153,6 +154,11 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
    * The matcher used for verifying the filter
    */
   private MetadataMatcher matcher;
+  
+  /**
+   * The logger
+   */
+  private static Logger logger = LogManager.getLogger(VolumeRule.class);
   
   /**
    * Default constructor, however use manager for creation.
@@ -346,6 +352,9 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     VolumeTimerData data = createTimerData(message);
     
     if (data != null && !isHandled(data)) {
+      FileEntry file = ((BltDataMessage)message).getFileEntry();
+      logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+          ", file: " + file.getUuid());
       List<CatalogEntry> entries = fetchAllCurrentEntries(data.getDateTime(), data.getSource());
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
       if (areCriteriasMet(entries, data.getDateTime(), data.getSource())) {
@@ -361,11 +370,14 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
           }
         }
       }
+      logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+          ", file: " + file.getUuid());
     }
     
     if (result != null) {
       setHandled(data);
     }
+    
     return result;
   }
 
@@ -529,12 +541,13 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     
     result.setAlgorithm("eu.baltrad.beast.GenerateVolume");
     
-    result.setFiles(ruleUtilities.getUuidStringsFromEntries(entries).toArray(new String[0]));
+    List<String> uuids = ruleUtilities.getUuidStringsFromEntries(entries);
+    result.setFiles(uuids.toArray(new String[0]));
 
     List<String> args = new ArrayList<String>();
     args.add("--source="+source);
-    args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
-    args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
+    args.add("--date="+RuleUtils.getFormattedDate(date));
+    args.add("--time="+RuleUtils.getFormattedTime(time));
 
     if (detectors.size() > 0) {
       StringBuffer dstr = new StringBuffer();
@@ -551,6 +564,9 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     args.add("--merge=true");
 
     result.setArguments(args.toArray(new String[0]));
+    
+    logger.debug("VolumeRule createMessage - entries: " +
+        StringUtils.join(uuids, " "));
     
     return result;
   }

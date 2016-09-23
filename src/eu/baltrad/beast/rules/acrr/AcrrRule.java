@@ -21,7 +21,6 @@ package eu.baltrad.beast.rules.acrr;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.StringUtils;
 
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.util.Date;
@@ -43,6 +43,7 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.RuleUtils;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -381,8 +382,8 @@ public class AcrrRule implements IRule, InitializingBean {
         result.setFiles(uuids.toArray(new String[0]));
         List<String> args = new ArrayList<String>();
         args.add("--area="+area);
-        args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
-        args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
+        args.add("--date="+RuleUtils.getFormattedDate(date));
+        args.add("--time="+RuleUtils.getFormattedTime(time));
         args.add("--zra="+zrA);
         args.add("--zrb="+zrB);
         args.add("--hours="+hours);
@@ -394,6 +395,9 @@ public class AcrrRule implements IRule, InitializingBean {
           args.add("--applygra=true");
         }
         result.setArguments(args.toArray(new String[0]));
+        
+        logger.debug("AcrrRule createMessage - entries: " +
+            StringUtils.collectionToDelimitedString(uuids, " "));
         
         logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         

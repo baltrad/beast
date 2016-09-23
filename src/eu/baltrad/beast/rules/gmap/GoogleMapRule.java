@@ -20,7 +20,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.gmap;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
@@ -36,6 +35,7 @@ import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.RuleUtils;
 
 /**
  * The google map rule
@@ -124,8 +124,8 @@ public class GoogleMapRule implements IRule, InitializingBean {
 	          result.setFiles(new String[]{fe.getUuid().toString()});
 	          List<String> args = new ArrayList<String>();
 	          args.add("--outfile="+oname);
-	          args.add("--date="+new Formatter().format("%d%02d%02d",d.year(), d.month(), d.day()).toString()); 
-	          args.add("--time="+new Formatter().format("%02d%02d%02d",t.hour(), t.minute(), t.second()).toString());
+	          args.add("--date="+RuleUtils.getFormattedDate(d)); 
+	          args.add("--time="+RuleUtils.getFormattedTime(t));
 	          args.add("--algorithm_id="+getRuleId());
 	          result.setArguments(args.toArray(new String[0]));
 	        }

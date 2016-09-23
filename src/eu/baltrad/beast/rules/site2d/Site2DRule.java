@@ -20,7 +20,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.site2d;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,14 +29,17 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.RuleUtils;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -182,6 +184,20 @@ public class Site2DRule implements IRule, InitializingBean {
   private static Logger logger = LogManager.getLogger(Site2DRule.class);
   
   /**
+   * The filter used for matching files
+   */
+  private IFilter filter = null;
+
+  /**
+   * The matcher used for verifying the filter
+   */
+  private MetadataMatcher matcher;
+  
+  protected Site2DRule() {
+    matcher = new MetadataMatcher();
+  }
+  
+  /**
    * @param catalog the catalog to set
    */
   protected void setCatalog(Catalog catalog) {
@@ -220,37 +236,63 @@ public class Site2DRule implements IRule, InitializingBean {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
       logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
           ", file: " + file.getUuid());
-      String object = file.getMetadata().getWhatObject();
-      Date date = file.getMetadata().getWhatDate();
-      Time time = file.getMetadata().getWhatTime();
-      String src = file.getSource().getName();
-      boolean createMessage = true;
-      if (object != null && 
-          ((scanBased && object.equals("SCAN")) || (!scanBased && object.equals("PVOL"))) && 
-          src != null && sources.contains(src)) {
-        if (object.equals("SCAN") && method != null && method.equals(PPI)) {
-          double dprodpar = -9999.9;
-          double ceprodpar = -9999.9;
-          CatalogEntry ce = createCatalogEntry(file);
-          try {
-            dprodpar = Double.parseDouble(prodpar);
-            ceprodpar = (Double)ce.getAttribute("/dataset1/where/elangle");
-          } catch (NumberFormatException nfe) {
-            // NP
-          }
-          if (dprodpar == -9999.9 || dprodpar != ceprodpar) {
-            createMessage = false;
-          }
-        }
-        if (createMessage) {
-          generatedMessage = createMessage(file.getUuid().toString(), date, time);          
-        }
+      
+      if (fileMatchesRule(file)) {
+        Date date = file.getMetadata().getWhatDate();
+        Time time = file.getMetadata().getWhatTime();
+        generatedMessage = createMessage(file.getUuid().toString(), date, time);
       }
+      
       logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
           ", file: " + file.getUuid());
+      
     }
     logger.debug("EXIT: handle(IBltMessage)");
     return generatedMessage;
+  }
+  
+  private boolean fileMatchesRule(FileEntry file) {
+    if (filter != null && !matcher.match(file.getMetadata(), filter.getExpression())) {
+      return false;
+    }
+    
+    String object = file.getMetadata().getWhatObject();
+    String src = file.getSource().getName();
+    
+    if (object == null || src == null) {
+      return false;
+    }
+    
+    if (!sources.contains(src)) {
+      return false;
+    }
+    
+    if (scanBased) {
+      if (!object.equals("SCAN")) {
+        return false;
+      }
+    } else {
+      if (!object.equals("PVOL")) {
+        return false;    
+      }
+    }
+
+    if (object.equals("SCAN") && method != null && method.equals(PPI)) {
+      double dprodpar = -9999.9;
+      double ceprodpar = -9999.9;
+      CatalogEntry ce = createCatalogEntry(file);
+      try {
+        dprodpar = Double.parseDouble(prodpar);
+        ceprodpar = (Double)ce.getAttribute("/dataset1/where/elangle");
+      } catch (NumberFormatException nfe) {
+        // NP
+      }
+      if (dprodpar == -9999.9 || dprodpar != ceprodpar) {
+        return false;
+      }
+    }
+    
+    return true;
   }
 
   protected BltGenerateMessage createMessage(String filename, Date date, Time time) {
@@ -293,10 +335,12 @@ public class Site2DRule implements IRule, InitializingBean {
       args.add("--xscale="+this.xscale);
       args.add("--yscale="+this.yscale);
     }
-    args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
-    args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
+    args.add("--date="+RuleUtils.getFormattedDate(date));
+    args.add("--time="+RuleUtils.getFormattedTime(time));
     args.add("--algorithm_id="+getRuleId());
     result.setArguments(args.toArray(new String[0]));
+    
+    logger.debug("Site2DRule createMessage - entries: " + filename);
 
     return result;
   }
@@ -575,5 +619,21 @@ public class Site2DRule implements IRule, InitializingBean {
    */
   public void setYscale(double yscale) {
     this.yscale = yscale;
+  }
+  
+  public IFilter getFilter() {
+    return filter;
+  }
+
+  public void setFilter(IFilter filter) {
+    this.filter = filter;
+  }
+
+  public MetadataMatcher getMatcher() {
+    return matcher;
+  }
+
+  public void setMatcher(MetadataMatcher matcher) {
+    this.matcher = matcher;
   }
 }
