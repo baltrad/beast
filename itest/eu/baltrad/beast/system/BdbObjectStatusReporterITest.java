@@ -24,6 +24,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -77,7 +78,7 @@ public class BdbObjectStatusReporterITest {
   @Test
   public void testGetStatus_searl() {
     GregorianCalendar c = new GregorianCalendar();
-
+    c.setTimeZone(TimeZone.getTimeZone("UTC"));
     c.set(Calendar.YEAR, 2010);
     c.set(Calendar.MONTH, 9);
     c.set(Calendar.DAY_OF_MONTH, 16);
