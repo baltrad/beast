@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -212,7 +213,9 @@ public class BdbObjectStatusReporter implements ISystemStatusReporter{
    * @return the gregorian calendar
    */
   protected GregorianCalendar createCalendar() {
-    return new GregorianCalendar();
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return calendar;
   }
   
   /**

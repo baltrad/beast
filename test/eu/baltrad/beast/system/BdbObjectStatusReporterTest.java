@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import junit.framework.Assert;
 
@@ -365,5 +366,12 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     Assert.assertEquals(e2, result.get(1));
     Assert.assertEquals(e3, result.get(2));
     
+  }
+  
+  @Test
+  public void testCreateCalendar_isUTC() {
+    BdbObjectStatusReporter classUnderTest = new BdbObjectStatusReporter();
+    GregorianCalendar result = classUnderTest.createCalendar();
+    Assert.assertEquals(TimeZone.getTimeZone("UTC"), result.getTimeZone());
   }
 }
