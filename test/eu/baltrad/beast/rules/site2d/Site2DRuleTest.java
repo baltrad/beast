@@ -37,12 +37,15 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.oh5.Source;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
@@ -57,6 +60,8 @@ public class Site2DRuleTest extends EasyMockSupport {
   
   private Site2DRule classUnderTest = null;
   
+  private MetadataMatcher matcher = null;
+  
   private interface MethodMock {
     CatalogEntry createCatalogEntry(FileEntry fe);
   };
@@ -65,9 +70,11 @@ public class Site2DRuleTest extends EasyMockSupport {
   public void setUp() throws Exception {
     catalog = createMock(Catalog.class);
     ruleUtil = createMock(IRuleUtilities.class);
+    matcher = createMock(MetadataMatcher.class);
     classUnderTest = new Site2DRule();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setMatcher(matcher);
   }
    
   @After
@@ -274,8 +281,6 @@ public class Site2DRuleTest extends EasyMockSupport {
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
     expect(md.getWhatObject()).andReturn("SCAN");
-    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
-    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(methods.createCatalogEntry(fe)).andReturn(catalogEntry);
@@ -367,12 +372,94 @@ public class Site2DRuleTest extends EasyMockSupport {
     
     expect(msg.getFileEntry()).andReturn(fe).anyTimes();
     expect(fe.getMetadata()).andReturn(md).anyTimes();
-    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
-    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
     expect(fe.getSource()).andReturn(source);
     expect(source.getName()).andReturn("seses");
     expect(md.getWhatObject()).andReturn("PVOL");
     expect(fe.getUuid()).andReturn(ruid).anyTimes();
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertNull(result);
+  }
+  
+  @Test
+  public void handle_filter_matching() {
+    BltDataMessage msg = createMock(BltDataMessage.class);
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata md = createMock(Metadata.class);
+    Source source = createMock(Source.class);
+    UUID ruid = UUID.randomUUID();
+    IFilter filter = createMock(IFilter.class);
+    Expression xpr = createMock(Expression.class);    
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("seses");
+    sources.add("nisse");
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("piff");
+    detectors.add("puff");
+    
+    classUnderTest.setArea("gnom_area");
+    classUnderTest.setSources(sources);
+    classUnderTest.setApplyGRA(true);
+    classUnderTest.setDetectors(detectors);
+    classUnderTest.setScanBased(true);
+    classUnderTest.setRuleId(10);
+    classUnderTest.setFilter(filter);
+    classUnderTest.setMatcher(matcher);
+    
+    expect(msg.getFileEntry()).andReturn(fe).anyTimes();
+    expect(fe.getMetadata()).andReturn(md).anyTimes();
+    expect(md.getWhatObject()).andReturn("SCAN");
+    expect(md.getWhatDate()).andReturn(new Date(2015,2,3));
+    expect(md.getWhatTime()).andReturn(new Time(11,15,0));
+    expect(fe.getSource()).andReturn(source);
+    expect(source.getName()).andReturn("seses");
+    expect(fe.getUuid()).andReturn(ruid).anyTimes();
+    expect(filter.getExpression()).andReturn(xpr);
+    expect(matcher.match(md, xpr)).andReturn(true);
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertNotNull(result);
+  }
+  
+  @Test
+  public void handle_filter_not_matching() {
+    BltDataMessage msg = createMock(BltDataMessage.class);
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata md = createMock(Metadata.class);
+    UUID ruid = UUID.randomUUID();
+    IFilter filter = createMock(IFilter.class);
+    Expression xpr = createMock(Expression.class);
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("seses");
+    sources.add("nisse");
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("piff");
+    detectors.add("puff");
+    
+    classUnderTest.setArea("gnom_area");
+    classUnderTest.setSources(sources);
+    classUnderTest.setApplyGRA(true);
+    classUnderTest.setDetectors(detectors);
+    classUnderTest.setScanBased(true);
+    classUnderTest.setRuleId(10);
+    classUnderTest.setFilter(filter);
+    classUnderTest.setMatcher(matcher);
+    
+    expect(msg.getFileEntry()).andReturn(fe).anyTimes();
+    expect(fe.getMetadata()).andReturn(md).anyTimes();
+    expect(fe.getUuid()).andReturn(ruid).anyTimes();
+    expect(filter.getExpression()).andReturn(xpr);
+    expect(matcher.match(md, xpr)).andReturn(false);
     
     replayAll();
     

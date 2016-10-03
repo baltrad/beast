@@ -19,7 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +44,7 @@ import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.rules.IRule;
+import eu.baltrad.beast.rules.RuleUtils;
 import eu.baltrad.beast.rules.timer.ITimeoutRule;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.timer.TimeoutTask;
@@ -405,16 +405,30 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       IBltMessage generatedMessage = null;
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
-        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
-            ", file: " + file.getUuid());
         String object = file.getMetadata().getWhatObject();
+        
+        boolean handleScan = false;
+        boolean handlePvol = false;
         if (object != null && object.equals("SCAN") && isScanBased()) {
-          generatedMessage = handleCompositeFromScans(message);
+          handleScan = true;
         } else if (object != null && object.equals("PVOL") && !isScanBased()) {
-          generatedMessage = handleCompositeFromVolume(message);
+          handlePvol = true;
         }
-        logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
-            ", file: " + file.getUuid());
+        
+        if (handleScan || handlePvol) {
+          logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+              ", file: " + file.getUuid());
+          
+          if (handleScan) {
+            generatedMessage = handleCompositeFromScans(message);
+          } else if (handlePvol) {
+            generatedMessage = handleCompositeFromVolume(message);
+          }
+          
+          logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+              ", file: " + file.getUuid());          
+        }
+        
       }
       return generatedMessage;
     } finally {
@@ -614,15 +628,12 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     List<String> usedSources = ruleUtil.getSourcesFromEntries(entries);
     ruleUtil.reportRadarSourceUsage(sources, usedSources);
     
-    logger.debug("createMessage: entries: " +
-                 StringUtils.collectionToDelimitedString(uuids, " "));
-    
     result.setFiles(uuids.toArray(new String[0]));
 
     List<String> args = new ArrayList<String>();
     args.add("--area="+area);
-    args.add("--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString()); 
-    args.add("--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString());
+    args.add("--date="+RuleUtils.getFormattedDate(date));
+    args.add("--time="+RuleUtils.getFormattedTime(time));
     if (selectionMethod == SelectionMethod_NEAREST_RADAR) {
       args.add("--selection=NEAREST_RADAR");
     } else if (selectionMethod == SelectionMethod_HEIGHT_ABOVE_SEALEVEL) {
@@ -664,7 +675,8 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     args.add("--merge=true");
     result.setArguments(args.toArray(new String[0]));
 
-    logger.debug("createMessage: Returning algorithm " + result.getAlgorithm());
+    logger.debug("CompositingRule createMessage - entries: " +
+                 StringUtils.collectionToDelimitedString(uuids, " "));
 
     return result;
   }
