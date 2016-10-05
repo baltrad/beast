@@ -60,6 +60,42 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
   }
   
   @Test
+  public void testEightQuantities() {
+    Metadata metadata = createBaseMetadata();
+    
+    metadata.addNode("/dataset1", new Group("data3"));
+    metadata.addNode("/dataset1", new Group("data4"));
+    metadata.addNode("/dataset1", new Group("data5"));
+    metadata.addNode("/dataset1", new Group("data6"));
+    metadata.addNode("/dataset1", new Group("data7"));
+    metadata.addNode("/dataset1", new Group("data8"));
+    
+    metadata.addNode("/dataset1/data1", new Group("what"));
+    metadata.addNode("/dataset1/data2", new Group("what"));
+    metadata.addNode("/dataset1/data3", new Group("what"));
+    metadata.addNode("/dataset1/data4", new Group("what"));
+    metadata.addNode("/dataset1/data5", new Group("what"));
+    metadata.addNode("/dataset1/data6", new Group("what"));
+    metadata.addNode("/dataset1/data7", new Group("what"));
+    metadata.addNode("/dataset1/data8", new Group("what"));
+    
+    metadata.addNode("/dataset1/data1/what", new Attribute("quantity", "DBZH")); // 63
+    metadata.addNode("/dataset1/data2/what", new Attribute("quantity", "LDR")); // 40
+    metadata.addNode("/dataset1/data3/what", new Attribute("quantity", "WRADH")); // 53
+    metadata.addNode("/dataset1/data4/what", new Attribute("quantity", "SNRH")); // 49
+    metadata.addNode("/dataset1/data5/what", new Attribute("quantity", "SQIH"));  // 51
+    metadata.addNode("/dataset1/data6/what", new Attribute("quantity", "VRADH")); // 60
+    metadata.addNode("/dataset1/data7/what", new Attribute("quantity", "CCORH")); // 47
+    metadata.addNode("/dataset1/data8/what", new Attribute("quantity", "TH"));  // 62
+
+    classUnderTest = new QuantityHexNameCreator(new File(getClass().getResource("quantities_fixture.xml").getFile()));
+    
+    String result = classUnderTest.createName("_beast/hexcode", metadata);
+    
+    assertEquals("0x81540b", result);
+  }
+  
+  @Test
   public void testCreate_1_shiftRight() {
     Metadata metadata = createBaseMetadata();
     metadata.addNode("/dataset1/data1/what", new Attribute("quantity", "DBZH"));
@@ -207,6 +243,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     result.put("BRDR", 21);
     result.put("TH", 62);
     result.put("DBZH", 63);
+    
     return result;
   }
 }

@@ -226,6 +226,10 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
     for (Element e : nodes) {
       String v = e.getText();
       int index = Integer.parseInt(e.attribute("index").getValue());
+      if (result.values().contains(index)) {
+        throw new RuntimeException("Invalid odim-quantities xml file. Same index-value (" 
+                                   + new Integer(index).toString() + ") specified more than once.");
+      }
       result.put(v, index);
     }
 
