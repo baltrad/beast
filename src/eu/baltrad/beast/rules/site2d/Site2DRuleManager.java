@@ -21,14 +21,18 @@ package eu.baltrad.beast.rules.site2d;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -52,10 +56,15 @@ public class Site2DRuleManager implements IRuleManager {
   private Catalog catalog = null;
   
   /**
+   * filter manager
+   */
+  private RuleFilterManager filterManager;
+  
+  /**
    * @see eu.baltrad.beast.rules.IRuleManager#store(int, eu.baltrad.beast.rules.IRule)
    */
   @Override
-  public void store(int rule_id, IRule rule) {
+  public void store(int ruleId, IRule rule) {
     Site2DRule srule = (Site2DRule)rule;
     String area = srule.getArea();
     int interval = srule.getInterval();
@@ -75,29 +84,33 @@ public class Site2DRuleManager implements IRuleManager {
     
     template.update(
         "INSERT INTO beast_site2d_rules (rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale)"+
-        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{rule_id, area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale});
+        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale});
     
-    storeSources(rule_id, sources);
-    storeDetectors(rule_id, detectors);
-    srule.setRuleId(rule_id);
+    storeSources(ruleId, sources);
+    storeDetectors(ruleId, detectors);
+    storeFilter(ruleId, srule.getFilter());
+    srule.setRuleId(ruleId);
   }
 
   /**
    * @see eu.baltrad.beast.rules.IRuleManager#load(int)
    */
   @Override
-  public IRule load(int rule_id) {
-    return template.queryForObject(
+  public IRule load(int ruleId) {
+    Site2DRule rule = template.queryForObject(
         "select * from beast_site2d_rules where rule_id=?",
         getSite2DRuleMapper(),
-        new Object[]{rule_id});
+        new Object[]{ruleId});
+    
+    rule.setFilter(loadFilter(ruleId));
+    return rule;
   }
 
   /**
    * @see eu.baltrad.beast.rules.IRuleManager#update(int, eu.baltrad.beast.rules.IRule)
    */
   @Override
-  public void update(int rule_id, IRule rule) {
+  public void update(int ruleId, IRule rule) {
     Site2DRule srule = (Site2DRule)rule;
     String area = srule.getArea();
     int interval = srule.getInterval();
@@ -117,21 +130,23 @@ public class Site2DRuleManager implements IRuleManager {
 
     template.update("UPDATE beast_site2d_rules" +
         " SET area=?, interval=?, byscan=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, pcsid=?, xscale=?, yscale=?" +
-        " WHERE rule_id=?", new Object[]{area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale, rule_id});
-    storeSources(rule_id, sources);
-    storeDetectors(rule_id, detectors);
-    srule.setRuleId(rule_id);
+        " WHERE rule_id=?", new Object[]{area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale, ruleId});
+    storeSources(ruleId, sources);
+    storeDetectors(ruleId, detectors);
+    storeFilter(ruleId, srule.getFilter());
+    srule.setRuleId(ruleId);
   }
 
   /**
    * @see eu.baltrad.beast.rules.IRuleManager#delete(int)
    */
   @Override
-  public void delete(int rule_id) {
-    storeSources(rule_id, null);
-    storeDetectors(rule_id, null);
+  public void delete(int ruleId) {
+    storeSources(ruleId, null);
+    storeDetectors(ruleId, null);
+    storeFilter(ruleId, null);
     template.update("delete from beast_site2d_rules where rule_id=?",
-        new Object[]{rule_id});
+        new Object[]{ruleId});
   }
 
   /**
@@ -173,58 +188,87 @@ public class Site2DRuleManager implements IRuleManager {
   /**
    * Stores the sources. The previous sources will be removed before
    * setting the new ones.
-   * @param rule_id
+   * @param ruleId
    * @param sources
    */
-  protected void storeSources(int rule_id, List<String> sources) {
+  protected void storeSources(int ruleId, List<String> sources) {
     template.update("delete from beast_site2d_sources where rule_id=?",
-        new Object[]{rule_id});
+        new Object[]{ruleId});
     if (sources != null) {
       for (String src : sources) {
         template.update("insert into beast_site2d_sources (rule_id, source)"+
-            " values (?,?)", new Object[]{rule_id, src});
+            " values (?,?)", new Object[]{ruleId, src});
       }
     }
   }
   
   /**
    * Returns a list of sources connected to the rule_id
-   * @param rule_id the rule id
+   * @param ruleId the rule id
    * @return a list of sources
    */
-  protected List<String> getSources(int rule_id) {
+  protected List<String> getSources(int ruleId) {
     return template.query(
         "select source from beast_site2d_sources where rule_id=?",
         getSourceMapper(),
-        new Object[]{rule_id});
+        new Object[]{ruleId});
   }
   
   /**
    * Stores the detectors for this compositing rule
-   * @param rule_id the rule id these detectors should belong to
+   * @param ruleId the rule id these detectors should belong to
    * @param detectors the detectors
    */
-  protected void storeDetectors(int rule_id, List<String> detectors) {
+  protected void storeDetectors(int ruleId, List<String> detectors) {
     template.update("delete from beast_site2d_detectors where rule_id=?",
-        new Object[]{rule_id});
+        new Object[]{ruleId});
     if (detectors != null) {
       for (String src : detectors) {
         template.update("insert into beast_site2d_detectors (rule_id, name)"+
-            " values (?,?)", new Object[]{rule_id, src});
+            " values (?,?)", new Object[]{ruleId, src});
       }
     }    
+  }
+  
+  /**
+   * Stores the associated filter
+   * @param ruleId the rule_id
+   * @param filter the filter to store
+   */
+  protected void storeFilter(int ruleId, IFilter filter) {
+    if (filter != null) {
+      Map<String, IFilter> filters = new HashMap<String, IFilter>();
+      filters.put("match", filter);
+      filterManager.storeFilters(ruleId, filters);
+    } else {
+      filterManager.deleteFilters(ruleId);
+    }
+  }
+  
+  /**
+   * Loads the filter for the rule
+   * @param ruleId the rule
+   * @return the filter if any otherwise null
+   */
+  protected IFilter loadFilter(int ruleId) {
+    IFilter result = null;
+    Map<String, IFilter> filters = filterManager.loadFilters(ruleId);
+    if (filters.containsKey("match")) {
+      result = filters.get("match");
+    }
+    return result;
   }
  
   /**
    * Returns a list of sources connected to the rule_id
-   * @param rule_id the rule id
+   * @param ruleId the rule id
    * @return a list of sources
    */
-  protected List<String> getDetectors(int rule_id) {
+  protected List<String> getDetectors(int ruleId) {
     return template.query(
         "select name from beast_site2d_detectors where rule_id=?",
         getDetectorMapper(),
-        new Object[]{rule_id});
+        new Object[]{ruleId});
   }
   
   /**
@@ -236,8 +280,8 @@ public class Site2DRuleManager implements IRuleManager {
       public Site2DRule mapRow(ResultSet rs, int rnum)
           throws SQLException {
         Site2DRule result = createRule();
-        int rule_id = rs.getInt("rule_id");
-        result.setRuleId(rule_id);
+        int ruleId = rs.getInt("rule_id");
+        result.setRuleId(ruleId);
         result.setArea(rs.getString("area"));
         result.setInterval(rs.getInt("interval"));
         result.setScanBased(rs.getBoolean("byscan"));
@@ -251,8 +295,8 @@ public class Site2DRuleManager implements IRuleManager {
         result.setPcsid(rs.getString("pcsid"));
         result.setXscale(rs.getDouble("xscale"));
         result.setYscale(rs.getDouble("yscale"));
-        result.setSources(getSources(rule_id));
-        result.setDetectors(getDetectors(rule_id));
+        result.setSources(getSources(ruleId));
+        result.setDetectors(getDetectors(ruleId));
         return result;
       }
     };
@@ -279,4 +323,19 @@ public class Site2DRuleManager implements IRuleManager {
       }
     };
   }
+  
+  /**
+   * @return the filter manager
+   */
+  public RuleFilterManager getFilterManager() {
+    return filterManager;
+  }
+
+  /**
+   * @param filterManager the filter manager
+   */
+  public void setFilterManager(RuleFilterManager filterManager) {
+    this.filterManager = filterManager;
+  }
+  
 }

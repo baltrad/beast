@@ -58,5 +58,7 @@
   <bean id="catalog" class="eu.baltrad.beast.db.Catalog" autowire="byType"/>
   
   <bean id="ruleUtilities" class="eu.baltrad.beast.rules.util.RuleUtilities" autowire="byType"/>
+  
+  <bean id="filterManager" class="eu.baltrad.beast.rules.RuleFilterManager" autowire="byType" />
 </beans>
 

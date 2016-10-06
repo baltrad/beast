@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.easymock.EasyMockSupport;
@@ -37,6 +38,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -56,6 +59,7 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
   private IRuleUtilities ruleUtilities = null;
   private Catalog catalog = null;
   private Methods methods = null;
+  private RuleFilterManager filterManager = null;
   private Site2DRuleManager classUnderTest = null;
   
   @Before
@@ -86,9 +90,11 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     template = createMock(JdbcOperations.class);
     ruleUtilities = createMock(IRuleUtilities.class);
     catalog = createMock(Catalog.class);
+    filterManager = createMock(RuleFilterManager.class);
     classUnderTest.setTemplate(template);
     classUnderTest.setRuleUtilities(ruleUtilities);
     classUnderTest.setCatalog(catalog);
+    classUnderTest.setFilterManager(filterManager);
   }
   
   @After
@@ -101,6 +107,7 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
   
   @Test
   public void store() {
+    int ruleId = 11;
     Site2DRule rule = new Site2DRule();
     List<String> detectors = new ArrayList<String>();
     List<String> sources = new ArrayList<String>();
@@ -119,18 +126,21 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     rule.setPcsid("apcs");
     rule.setXscale(3000.0);
     rule.setYscale(1000.0);
+    
+    classUnderTest.setFilterManager(filterManager);
 
     expect(template.update("INSERT INTO beast_site2d_rules " +
       "(rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale) " +
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 11, "nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0)).andReturn(0);
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", ruleId, "nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0)).andReturn(0);
+    filterManager.deleteFilters(ruleId);
     
-    methods.storeSources(11, sources);
+    methods.storeSources(ruleId, sources);
     
-    methods.storeDetectors(11, detectors);
+    methods.storeDetectors(ruleId, detectors);
     
     replayAll();
     
-    classUnderTest.store(11, rule);
+    classUnderTest.store(ruleId, rule);
     
     verifyAll();
   }
@@ -175,6 +185,7 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
   
   @Test
   public void update() {
+    int ruleId = 11;
     Site2DRule rule = new Site2DRule();
     List<String> detectors = new ArrayList<String>();
     List<String> sources = new ArrayList<String>();
@@ -193,39 +204,50 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     rule.setPcsid("apcs");
     rule.setXscale(3000.0);
     rule.setYscale(1000.0);
+    
+    classUnderTest.setFilterManager(filterManager);
 
     expect(template.update("UPDATE beast_site2d_rules" +
       " SET area=?, interval=?, byscan=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, pcsid=?, xscale=?, yscale=?" +
-      " WHERE rule_id=?", new Object[]{"nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0, 11})).andReturn(1);
-
-    methods.storeSources(11, sources);
+      " WHERE rule_id=?", new Object[]{"nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0, ruleId})).andReturn(1);
+    filterManager.deleteFilters(ruleId);
     
-    methods.storeDetectors(11, detectors);
+    methods.storeSources(ruleId, sources);
+    
+    methods.storeDetectors(ruleId, detectors);
     
     replayAll();
     
-    classUnderTest.update(11, rule);
+    classUnderTest.update(ruleId, rule);
     
     verifyAll();
   }
   
   @Test
   public void delete() {
-    methods.storeSources(13, null);
-    methods.storeDetectors(13, null);
+    int ruleId = 13;
+    methods.storeSources(ruleId, null);
+    methods.storeDetectors(ruleId, null);
     
-    expect(template.update("delete from beast_site2d_rules where rule_id=?", new Object[]{13})).andReturn(0);
+    classUnderTest.setFilterManager(filterManager);
+    
+    expect(template.update("delete from beast_site2d_rules where rule_id=?", new Object[]{ruleId})).andReturn(0);
+    filterManager.deleteFilters(ruleId);
     
     replayAll();
     
-    classUnderTest.delete(13);
+    classUnderTest.delete(ruleId);
     
     verifyAll();
   }
   
   @Test
   public void load() {
+    int ruleId = 15;
     Site2DRule rule = new Site2DRule();
+    HashMap<String, IFilter> filters = new HashMap<String, IFilter>();
+    IFilter filter = createMock(IFilter.class);
+    filters.put("match", filter);
     final RowMapper<Site2DRule> mapper = new RowMapper<Site2DRule>() {
       public Site2DRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
@@ -238,14 +260,16 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
       }
     };
     classUnderTest.setTemplate(template);
+    classUnderTest.setFilterManager(filterManager);
     
     expect(template.queryForObject("select * from beast_site2d_rules where rule_id=?",
         mapper,
-        new Object[]{13})).andReturn(rule);
+        new Object[]{ruleId})).andReturn(rule);
+    expect(filterManager.loadFilters(ruleId)).andReturn(filters);
     
     replayAll();
     
-    Site2DRule result = (Site2DRule)classUnderTest.load(13);
+    Site2DRule result = (Site2DRule)classUnderTest.load(ruleId);
     
     verifyAll();
     assertSame(rule, result);    
