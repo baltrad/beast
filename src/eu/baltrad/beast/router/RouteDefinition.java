@@ -112,7 +112,7 @@ public class RouteDefinition {
   
   public static class ActiveComparator extends RouteComparator {
     public int doCompare(RouteDefinition route1, RouteDefinition route2) {
-      return 0 - Boolean.compare(route1.isActive(),route2.isActive());
+      return (route1.isActive() ==  route2.isActive() ? 0 : (route2.isActive() ? 1 : -1));
     }
   }
   
