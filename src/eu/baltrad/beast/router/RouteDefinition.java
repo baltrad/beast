@@ -19,13 +19,14 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.router;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.rules.IRule;
 
 /**
- * Defines a routing definition, i.e. if a rule evaulates to true, what
+ * Defines a routing definition, i.e. if a rule evaluates to true, what
  * route(s) that should be affected.
  * @author Anders Henja
  */
@@ -59,6 +60,70 @@ public class RouteDefinition {
    * Description of this route definition.
    */
   private String description = null;
+  
+  public static abstract class RouteComparator implements Comparator<RouteDefinition> {
+    
+    protected boolean sortAscending;
+    
+    public RouteComparator() {
+      super();
+      sortAscending = true;
+    }
+    
+    public void switchOrder() {
+      sortAscending = !sortAscending;
+    }
+    
+    public boolean isAscendingSort() {
+      return sortAscending;
+    }
+    
+    protected abstract int doCompare(RouteDefinition route1, RouteDefinition route2);
+    
+    @Override
+    public int compare(RouteDefinition route1, RouteDefinition route2) {
+      if (sortAscending) {
+        return doCompare(route1, route2);
+      } else {
+        return doCompare(route2, route1);
+      }
+    }
+  }
+  
+  public static class NameComparator extends RouteComparator {
+    public int doCompare(RouteDefinition route1, RouteDefinition route2) {
+      if (route1.getName() == null || route2.getName() == null) {
+        return 0;
+      }
+      
+      return route1.getName().compareTo(route2.getName());
+    }
+  }
+  
+  public static class DescriptionComparator extends RouteComparator {
+    public int doCompare(RouteDefinition route1, RouteDefinition route2) {
+      if (route1.getDescription() == null || route2.getDescription() == null) {
+        return 0;
+      }
+      
+      return route1.getDescription().compareTo(route2.getDescription());
+    }
+  }
+  
+  public static class ActiveComparator extends RouteComparator {
+    public int doCompare(RouteDefinition route1, RouteDefinition route2) {
+      return 0 - Boolean.compare(route1.isActive(),route2.isActive());
+    }
+  }
+  
+  public static class TypeComparator extends RouteComparator {
+    public int doCompare(RouteDefinition route1, RouteDefinition route2) {
+      if (route1.getRuleType() == null || route2.getRuleType() == null) {
+        return 0;
+      }
+      return route1.getRuleType().compareTo(route2.getRuleType());
+    }
+  }
   
   public IBltMessage handle(IBltMessage msg) {
     if (msg == null) {
@@ -176,4 +241,5 @@ public class RouteDefinition {
     }
     return false;
   }
+
 }
