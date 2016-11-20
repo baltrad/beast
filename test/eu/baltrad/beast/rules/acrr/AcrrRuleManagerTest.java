@@ -25,6 +25,8 @@ import static org.junit.Assert.assertSame;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -33,7 +35,10 @@ import org.junit.Test;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.beast.rules.util.RuleUtilities;
 
@@ -43,6 +48,10 @@ import eu.baltrad.beast.rules.util.RuleUtilities;
 public class AcrrRuleManagerTest extends EasyMockSupport {
   private JdbcOperations jdbc = null;
   private AcrrRuleManager classUnderTest = null;
+  private RuleFilterManager filterManager = null;
+  private interface Methods {
+    public Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter);
+  };
   
   /**
    * @throws java.lang.Exception
@@ -50,8 +59,10 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
   @Before
   public void setUp() throws Exception {
     jdbc = createMock(JdbcOperations.class);
+    filterManager = createMock(RuleFilterManager.class);
     classUnderTest = new AcrrRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
   }
 
   /**
@@ -60,6 +71,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
   @After
   public void tearDown() throws Exception {
     jdbc = null;
+    filterManager = null;
     classUnderTest = null;
   }
 
@@ -81,6 +93,49 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
         "INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra) " +
         "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         new Object[]{3,"nrd_swe","eu.d.field",6,2,10,"COMP","DBZH",100.0,0.5,true})).andReturn(0);
+    filterManager.deleteFilters(3);
+    
+    replayAll();
+    
+    classUnderTest.store(3, rule);
+    
+    verifyAll();
+    assertEquals(3, rule.getRuleId());
+  }
+  
+  @Test
+  public void test_store_with_filter() {
+    AcrrRule rule = new AcrrRule();
+    IFilter filter = createMock(IFilter.class);
+    final Methods methodsMock = createMock(Methods.class);
+    final Map<String, IFilter> filters = new HashMap<String, IFilter>();
+    
+    rule.setArea("nrd_swe");
+    rule.setDistancefield("eu.d.field");
+    rule.setFilesPerHour(6);
+    rule.setHours(2);
+    rule.setAcceptableLoss(10);
+    rule.setObjectType("COMP");
+    rule.setQuantity("DBZH");
+    rule.setZrA(100.0);
+    rule.setZrB(0.5);
+    rule.setApplyGRA(true);
+    rule.setFilter(filter);
+    
+    expect(jdbc.update(
+        "INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        new Object[]{3,"nrd_swe","eu.d.field",6,2,10,"COMP","DBZH",100.0,0.5,true})).andReturn(0);
+    expect(methodsMock.createMatchFilter(3, filter)).andReturn(filters);
+    filterManager.updateFilters(3, filters);
+
+    classUnderTest = new AcrrRuleManager() {
+      protected Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter) {
+        return methodsMock.createMatchFilter(rule_id, filter);
+      };
+    };
+    classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
     
     replayAll();
     
@@ -93,6 +148,9 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
   @Test
   public void test_load() {
     AcrrRule rule = new AcrrRule();
+    HashMap<String, IFilter> filters = new HashMap<String, IFilter>();
+    IFilter filter = createMock(IFilter.class);
+    filters.put("match", filter);
     
     final RowMapper<AcrrRule> mapper = new RowMapper<AcrrRule>() {
       public AcrrRule mapRow(ResultSet arg0, int arg1) throws SQLException {
@@ -107,9 +165,11 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
       }
     };
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
     
     expect(jdbc.queryForObject("SELECT * FROM beast_acrr_rules WHERE rule_id=?",
         mapper, new Object[]{3})).andReturn(rule);
+    expect(filterManager.loadFilters(3)).andReturn(filters);
     
     replayAll();
     
@@ -117,6 +177,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     
     verifyAll();
     assertSame(rule, result);
+    assertSame(filter, result.getFilter());
   }
   
   @Test
@@ -136,6 +197,48 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     expect(jdbc.update("UPDATE beast_acrr_rules SET "+
       "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=? WHERE rule_id=?", 
         new Object[]{"nrd_swe", "eu.d.field", 6, 2, 10, "COMP", "DBZH", 100.0, 0.5, true, 3})).andReturn(0);
+    filterManager.deleteFilters(3);
+    
+    replayAll();
+    
+    classUnderTest.update(3, rule);
+    
+    verifyAll();
+    assertEquals(3, rule.getRuleId());
+  }
+  
+  @Test
+  public void test_update_with_filter() {
+    AcrrRule rule = new AcrrRule();
+    IFilter filter = createMock(IFilter.class);
+    final Methods methodsMock = createMock(Methods.class);
+    final Map<String, IFilter> filters = new HashMap<String, IFilter>();
+    
+    rule.setArea("nrd_swe");
+    rule.setDistancefield("eu.d.field");
+    rule.setFilesPerHour(6);
+    rule.setHours(2);
+    rule.setAcceptableLoss(10);
+    rule.setObjectType("COMP");
+    rule.setQuantity("DBZH");
+    rule.setZrA(100.0);
+    rule.setZrB(0.5);
+    rule.setApplyGRA(true);
+    rule.setFilter(filter);
+    
+    expect(jdbc.update("UPDATE beast_acrr_rules SET "+
+      "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=? WHERE rule_id=?", 
+        new Object[]{"nrd_swe", "eu.d.field", 6, 2, 10, "COMP", "DBZH", 100.0, 0.5, true, 3})).andReturn(0);
+    expect(methodsMock.createMatchFilter(3, filter)).andReturn(filters);
+    filterManager.updateFilters(3, filters);
+    
+    classUnderTest = new AcrrRuleManager() {
+      protected Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter) {
+        return methodsMock.createMatchFilter(rule_id, filter);
+      };
+    };
+    classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
     
     replayAll();
     

@@ -28,6 +28,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -43,6 +44,7 @@ public class AcrrRuleManagerITest extends TestCase {
   private JdbcOperations template = null;
   private Catalog catalog = null;
   private IRuleUtilities utilities = null;
+  private RuleFilterManager filterManager = null;
 
   public void setUp() throws Exception {
     dbcontext = BeastDBTestHelper.loadDbContext(this);
@@ -55,12 +57,14 @@ public class AcrrRuleManagerITest extends TestCase {
     
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");
+    filterManager = (RuleFilterManager)context.getBean("filterManager");
     utilities = (IRuleUtilities)context.getBean("ruleutil");
     
     classUnderTest = new AcrrRuleManager();
     classUnderTest.setJdbcTemplate(template);
     classUnderTest.setCatalog(catalog);
     classUnderTest.setRuleUtilities(utilities);
+    classUnderTest.setFilterManager(filterManager);
   }
   
   public void tearDown() throws Exception {
@@ -69,6 +73,7 @@ public class AcrrRuleManagerITest extends TestCase {
     template = null;
     catalog = null;
     utilities = null;
+    filterManager = null;
     context.close();
     dbcontext.close();
   }

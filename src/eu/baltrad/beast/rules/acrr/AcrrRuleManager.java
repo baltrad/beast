@@ -21,13 +21,17 @@ package eu.baltrad.beast.rules.acrr;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -49,6 +53,11 @@ public class AcrrRuleManager implements IRuleManager {
    * The rule utilities
    */
   private IRuleUtilities ruleUtilities = null;
+  
+  /**
+   * filter manager
+   */
+  private RuleFilterManager filterManager;
   
   /**
    * @param template the jdbc template to set
@@ -92,6 +101,7 @@ public class AcrrRuleManager implements IRuleManager {
         new Object[]{rule_id, area, dfield, fhours, hours, aloss, otype, quantity, zrA, zrB, applygra});
     
     arule.setRuleId(rule_id);
+    storeFilter(rule_id, arule.getFilter());
   }
 
   /**
@@ -99,9 +109,11 @@ public class AcrrRuleManager implements IRuleManager {
    */
   @Override
   public IRule load(int rule_id) {
-    return template.queryForObject("SELECT * FROM beast_acrr_rules WHERE rule_id=?", 
+    AcrrRule rule = template.queryForObject("SELECT * FROM beast_acrr_rules WHERE rule_id=?", 
         getAcrrRuleMapper(),
         new Object[]{rule_id});
+    rule.setFilter(loadFilter(rule_id));
+    return rule;
   }
 
   /**
@@ -126,6 +138,7 @@ public class AcrrRuleManager implements IRuleManager {
         new Object[]{area, dfield, fhours, hours, acceptable_loss, otype, quantity, zra, zrb, applygra, rule_id});
     
     arule.setRuleId(rule_id);
+    storeFilter(rule_id, arule.getFilter());    
   }
 
   /**
@@ -171,5 +184,58 @@ public class AcrrRuleManager implements IRuleManager {
         return result;
       }
     };
+  }
+  
+  /**
+   * Stores the associated filter
+   * @param rule_id the rule_id
+   * @param filter the filter to store
+   */
+  protected void storeFilter(int rule_id, IFilter filter) {
+    if (filter != null) {
+      filterManager.updateFilters(rule_id, createMatchFilter(rule_id, filter));
+    } else {
+      filterManager.deleteFilters(rule_id);
+    }
+  }
+
+  /**
+   * Creates a match filter
+   * @param rule_id the rule id
+   * @param filter the filter
+   * @return a map with match as filter
+   */
+  protected Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter) {
+    Map<String, IFilter> filters = new HashMap<String, IFilter>();
+    filters.put("match", filter);
+    return filters;
+  }
+  
+  /**
+   * Loads the filter for the rule
+   * @param rule_id the rule
+   * @return the filter if any otherwise null
+   */
+  protected IFilter loadFilter(int rule_id) {
+    IFilter result = null;
+    Map<String, IFilter> filters = filterManager.loadFilters(rule_id);
+    if (filters.containsKey("match")) {
+      result = filters.get("match");
+    }
+    return result;
+  }
+  
+  /**
+   * @return the filter manager
+   */
+  public RuleFilterManager getFilterManager() {
+    return filterManager;
+  }
+
+  /**
+   * @param filterManager the filter manager
+   */
+  public void setFilterManager(RuleFilterManager filterManager) {
+    this.filterManager = filterManager;
   }
 }

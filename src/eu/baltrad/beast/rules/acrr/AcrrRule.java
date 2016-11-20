@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.acrr;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -27,17 +28,20 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
 import eu.baltrad.bdb.util.TimeDelta;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.db.filters.TimeSelectionFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -125,6 +129,16 @@ public class AcrrRule implements IRule, InitializingBean {
   private boolean applyGRA = false;
   
   /**
+   * The filter used for matching files
+   */
+  private IFilter filter = null;
+
+  /**
+   * The matcher used for verifying the filter
+   */
+  private MetadataMatcher matcher;
+  
+  /**
    * The logger
    */
   private static Logger logger = LogManager.getLogger(AcrrRule.class);
@@ -133,7 +147,7 @@ public class AcrrRule implements IRule, InitializingBean {
    * Constructor
    */
   protected AcrrRule() {
-    
+    matcher = new MetadataMatcher();
   }
   
   /**
@@ -433,6 +447,11 @@ public class AcrrRule implements IRule, InitializingBean {
   protected List<CatalogEntry> filterEntries(List<CatalogEntry> entries) {
     Map<DateTime, CatalogEntry> remembered = new HashMap<DateTime, CatalogEntry>();
     for (CatalogEntry e : entries) {
+      if (this.filter != null) {
+        if (!matcher.match(e.getFileEntry().getMetadata(), this.filter.getExpression())) {
+          continue;
+        }
+      }
       DateTime dt = e.getDateTime();
       if (remembered.containsKey(dt)) {
         CatalogEntry r = remembered.get(dt);
@@ -550,5 +569,34 @@ public class AcrrRule implements IRule, InitializingBean {
    */
   public void setApplyGRA(boolean applyGRA) {
     this.applyGRA = applyGRA;
+  }
+  
+
+  /**
+   * @returns the filter to use when trying out if files are matching
+   */
+  public IFilter getFilter() {
+    return filter;
+  }
+
+  /**
+   * @param filter the filter to use
+   */
+  public void setFilter(IFilter filter) {
+    this.filter = filter;
+  }
+
+  /**
+   * @return the metadata matcher
+   */
+  public MetadataMatcher getMatcher() {
+    return matcher;
+  }
+
+  /**
+   * @param matcher the metadata matcher
+   */
+  public void setMatcher(MetadataMatcher matcher) {
+    this.matcher = matcher;
   }
 }
