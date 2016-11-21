@@ -25,6 +25,8 @@ import static org.junit.Assert.assertSame;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -34,6 +36,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.beast.rules.util.RuleUtilities;
 
@@ -44,6 +48,10 @@ import eu.baltrad.beast.rules.util.RuleUtilities;
 public class GraRuleManagerTest extends EasyMockSupport {
   private JdbcOperations jdbc = null;
   private GraRuleManager classUnderTest = null;
+  private RuleFilterManager filterManager = null;
+  private interface Methods {
+    public Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter);
+  };
   
   /**
    * @throws java.lang.Exception
@@ -51,8 +59,10 @@ public class GraRuleManagerTest extends EasyMockSupport {
   @Before
   public void setUp() throws Exception {
     jdbc = createMock(JdbcOperations.class);
+    filterManager = createMock(RuleFilterManager.class);
     classUnderTest = new GraRuleManager();
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
   }
 
   /**
@@ -61,6 +71,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
   @After
   public void tearDown() throws Exception {
     jdbc = null;
+    filterManager = null;
     classUnderTest = null;
   }
 
@@ -82,6 +93,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
         "INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) " +
         "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         new Object[]{3,"nrd_swe","eu.d.field",6,10,"COMP","DBZH",100.0,0.5,10,12})).andReturn(0);
+    filterManager.deleteFilters(3);
     
     replayAll();
     
@@ -94,6 +106,9 @@ public class GraRuleManagerTest extends EasyMockSupport {
   @Test
   public void test_load() {
     GraRule rule = new GraRule();
+    HashMap<String, IFilter> filters = new HashMap<String, IFilter>();
+    IFilter filter = createMock(IFilter.class);
+    filters.put("match", filter);
     
     final RowMapper<GraRule> mapper = new RowMapper<GraRule>() {
       public GraRule mapRow(ResultSet arg0, int arg1) throws SQLException {
@@ -108,9 +123,11 @@ public class GraRuleManagerTest extends EasyMockSupport {
       }
     };
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
     
     expect(jdbc.queryForObject("SELECT * FROM beast_gra_rules WHERE rule_id=?",
         mapper, new Object[]{3})).andReturn(rule);
+    expect(filterManager.loadFilters(3)).andReturn(filters);
     
     replayAll();
     
@@ -118,6 +135,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
     
     verifyAll();
     assertSame(rule, result);
+    assertSame(filter, result.getFilter());
   }
   
   @Test
@@ -137,6 +155,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
     expect(jdbc.update("UPDATE beast_gra_rules SET "+
       "area=?, distancefield=?, files_per_hour=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=? WHERE rule_id=?", 
         new Object[]{"nrd_swe", "eu.d.field", 6, 10, "COMP", "DBZH", 100.0, 0.5, 12, 8, 3})).andReturn(0);
+    filterManager.deleteFilters(3);
     
     replayAll();
     
@@ -150,11 +169,11 @@ public class GraRuleManagerTest extends EasyMockSupport {
   public void test_delete() {
     expect(jdbc.update("DELETE FROM beast_gra_rules WHERE rule_id=?",
         new Object[]{3})).andReturn(0);
+    filterManager.deleteFilters(3);
     
     replayAll();
     
     classUnderTest.delete(3);
-    
     verifyAll();
   }
   

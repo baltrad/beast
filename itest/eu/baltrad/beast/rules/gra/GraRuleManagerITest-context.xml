@@ -54,6 +54,8 @@
 
   <bean id="ruleutil" class="eu.baltrad.beast.rules.util.RuleUtilities" autowire="byType"/>
   
+  <bean id="filterManager" class="eu.baltrad.beast.rules.RuleFilterManager" autowire="byType" />
+  
   <bean id="bltacrrmgr" class="eu.baltrad.beast.rules.acrr.AcrrRuleManager" autowire="byType" />
 </beans>
 

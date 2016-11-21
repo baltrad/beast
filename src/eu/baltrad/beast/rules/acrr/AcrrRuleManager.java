@@ -100,8 +100,8 @@ public class AcrrRuleManager implements IRuleManager {
     template.update("INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra) VALUES (?,?,?,?,?,?,?,?,?,?,?)", 
         new Object[]{rule_id, area, dfield, fhours, hours, aloss, otype, quantity, zrA, zrB, applygra});
     
-    arule.setRuleId(rule_id);
     storeFilter(rule_id, arule.getFilter());
+    arule.setRuleId(rule_id);
   }
 
   /**
@@ -137,8 +137,8 @@ public class AcrrRuleManager implements IRuleManager {
         "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=? WHERE rule_id=?",
         new Object[]{area, dfield, fhours, hours, acceptable_loss, otype, quantity, zra, zrb, applygra, rule_id});
     
-    arule.setRuleId(rule_id);
     storeFilter(rule_id, arule.getFilter());    
+    arule.setRuleId(rule_id);
   }
 
   /**
@@ -147,6 +147,7 @@ public class AcrrRuleManager implements IRuleManager {
   @Override
   public void delete(int rule_id) {
     template.update("DELETE FROM beast_acrr_rules WHERE rule_id=?", new Object[]{rule_id});
+    storeFilter(rule_id, null);
   }
 
   /**

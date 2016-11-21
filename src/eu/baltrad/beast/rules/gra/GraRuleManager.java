@@ -21,13 +21,17 @@ package eu.baltrad.beast.rules.gra;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -49,6 +53,11 @@ public class GraRuleManager implements IRuleManager {
    * The rule utilities
    */
   private IRuleUtilities ruleUtilities = null;
+  
+  /**
+   * filter manager
+   */
+  private RuleFilterManager filterManager;
   
   /**
    * @param template the jdbc template to set
@@ -91,6 +100,7 @@ public class GraRuleManager implements IRuleManager {
     template.update("INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) VALUES (?,?,?,?,?,?,?,?,?,?,?)", 
         new Object[]{rule_id, area, dfield, fhours, aloss, otype, quantity, zrA, zrB, firstTermUTC, interval});
     
+    storeFilter(rule_id, arule.getFilter());
     arule.setRuleId(rule_id);
   }
 
@@ -99,9 +109,11 @@ public class GraRuleManager implements IRuleManager {
    */
   @Override
   public IRule load(int rule_id) {
-    return template.queryForObject("SELECT * FROM beast_gra_rules WHERE rule_id=?", 
+    GraRule rule = template.queryForObject("SELECT * FROM beast_gra_rules WHERE rule_id=?", 
         getGraRuleMapper(),
         new Object[]{rule_id});
+    rule.setFilter(loadFilter(rule_id));
+    return rule;
   }
 
   /**
@@ -125,6 +137,7 @@ public class GraRuleManager implements IRuleManager {
         "area=?, distancefield=?, files_per_hour=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=? WHERE rule_id=?",
         new Object[]{area, dfield, fhours, acceptable_loss, otype, quantity, zra, zrb, firstTermUTC, interval, rule_id});
     
+    storeFilter(rule_id, arule.getFilter());    
     arule.setRuleId(rule_id);
   }
 
@@ -134,6 +147,7 @@ public class GraRuleManager implements IRuleManager {
   @Override
   public void delete(int rule_id) {
     template.update("DELETE FROM beast_gra_rules WHERE rule_id=?", new Object[]{rule_id});
+    storeFilter(rule_id, null);
   }
 
   /**
@@ -172,4 +186,57 @@ public class GraRuleManager implements IRuleManager {
       }
     };
   }
+  
+  /**
+   * Stores the associated filter
+   * @param rule_id the rule_id
+   * @param filter the filter to store
+   */
+  protected void storeFilter(int rule_id, IFilter filter) {
+    if (filter != null) {
+      filterManager.updateFilters(rule_id, createMatchFilter(rule_id, filter));
+    } else {
+      filterManager.deleteFilters(rule_id);
+    }
+  }
+
+  /**
+   * Creates a match filter
+   * @param rule_id the rule id
+   * @param filter the filter
+   * @return a map with match as filter
+   */
+  protected Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter) {
+    Map<String, IFilter> filters = new HashMap<String, IFilter>();
+    filters.put("match", filter);
+    return filters;
+  }
+  
+  /**
+   * Loads the filter for the rule
+   * @param rule_id the rule
+   * @return the filter if any otherwise null
+   */
+  protected IFilter loadFilter(int rule_id) {
+    IFilter result = null;
+    Map<String, IFilter> filters = filterManager.loadFilters(rule_id);
+    if (filters.containsKey("match")) {
+      result = filters.get("match");
+    }
+    return result;
+  }
+  
+  /**
+   * @return the filter manager
+   */
+  public RuleFilterManager getFilterManager() {
+    return filterManager;
+  }
+
+  /**
+   * @param filterManager the filter manager
+   */
+  public void setFilterManager(RuleFilterManager filterManager) {
+    this.filterManager = filterManager;
+  }  
 }

@@ -252,6 +252,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
   public void test_delete() {
     expect(jdbc.update("DELETE FROM beast_acrr_rules WHERE rule_id=?",
         new Object[]{3})).andReturn(0);
+    filterManager.deleteFilters(3);
     
     replayAll();
     
