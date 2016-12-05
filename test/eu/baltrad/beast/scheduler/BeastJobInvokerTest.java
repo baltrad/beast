@@ -20,6 +20,8 @@ package eu.baltrad.beast.scheduler;
 
 import static org.easymock.EasyMock.expect;
 
+import java.util.Date;
+
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Assert;
@@ -40,7 +42,7 @@ import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
  */
 public class BeastJobInvokerTest extends EasyMockSupport {
   private static interface MockMethods {
-    public BltTriggerJobMessage createMessage(String id, String name);
+    public BltTriggerJobMessage createMessage(String id, String name, Date scheduledTime, Date fireTime, Date prevTime, Date nextTime);
   };
   private JobExecutionContext ctx = null;
   private IBltMessageManager msgManager = null;
@@ -53,8 +55,8 @@ public class BeastJobInvokerTest extends EasyMockSupport {
     ctx = createMock(JobExecutionContext.class);
     msgManager = createMock(IBltMessageManager.class);
     classUnderTest = new BeastJobInvoker() {
-      protected BltTriggerJobMessage createMessage(String id, String name) {
-        return methods.createMessage(id, name);
+      protected BltTriggerJobMessage createMessage(String id, String name, Date scheduledTime, Date fireTime, Date prevTime, Date nextTime) {
+        return methods.createMessage(id, name, scheduledTime, fireTime, prevTime, nextTime);
       }
     };
   }
@@ -67,7 +69,12 @@ public class BeastJobInvokerTest extends EasyMockSupport {
   @Test
   public void testExecute() throws Exception {
     CronTrigger trigger = createMock(CronTrigger.class);
-    JobDetail detail = createMock(JobDetail.class); //new JobDetail();
+    JobDetail detail = createMock(JobDetail.class);
+    Date scheduledFireTime = new Date();
+    Date prevFireTime = new Date();
+    Date nextFireTime = new Date();
+    Date fireTime = new Date();
+    
     TriggerKey key = new TriggerKey("a.id","beast");
     JobKey jobKey = new JobKey("a.name", "beast");
     JobDataMap jobDataMap = new JobDataMap();
@@ -81,7 +88,12 @@ public class BeastJobInvokerTest extends EasyMockSupport {
     
     expect(ctx.getTrigger()).andReturn(trigger);
     expect(trigger.getKey()).andReturn(key);
-    expect(methods.createMessage("a.id","a.name")).andReturn(msg);
+    expect(ctx.getScheduledFireTime()).andReturn(scheduledFireTime);
+    expect(ctx.getFireTime()).andReturn(fireTime);
+    expect(ctx.getPreviousFireTime()).andReturn(prevFireTime);
+    expect(ctx.getNextFireTime()).andReturn(nextFireTime);
+    
+    expect(methods.createMessage("a.id","a.name", scheduledFireTime, fireTime, prevFireTime, nextFireTime)).andReturn(msg);
     
     msgManager.manage(msg);
 
@@ -95,8 +107,16 @@ public class BeastJobInvokerTest extends EasyMockSupport {
   @Test
   public void testCreateMessage() throws Exception {
     classUnderTest = new BeastJobInvoker();
-    BltTriggerJobMessage result = classUnderTest.createMessage("a.id", "a.name");
+    Date scheduledFireTime = new Date();
+    Date fireTime = new Date();
+    Date prevFireTime = new Date();
+    Date nextFireTime = new Date();
+    BltTriggerJobMessage result = classUnderTest.createMessage("a.id", "a.name", scheduledFireTime, fireTime, prevFireTime, nextFireTime);
     Assert.assertEquals("a.id", result.getId());
     Assert.assertEquals("a.name", result.getName());
+    Assert.assertSame(scheduledFireTime, result.getScheduledFireTime());
+    Assert.assertSame(fireTime, result.getFireTime());
+    Assert.assertSame(prevFireTime, result.getPrevFireTime());
+    Assert.assertSame(nextFireTime, result.getNextFireTime());
   }
 }

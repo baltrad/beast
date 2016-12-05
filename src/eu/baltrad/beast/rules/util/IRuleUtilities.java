@@ -141,6 +141,13 @@ public interface IRuleUtilities {
   public DateTime createDateTime(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second);
   
   /**
+   * Creates a date time instance from a util date.
+   * @param date the date
+   * @return the date time
+   */
+  public DateTime createDateTime(java.util.Date date);
+  
+  /**
    * Creates the nominal time from current time and an interval.
    * 
    * The interval must be evenly dividable by 60. E.g. 1,2,3,4,...,15,..30,60.

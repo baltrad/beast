@@ -279,6 +279,12 @@ public class RuleUtilities implements IRuleUtilities {
     return new DateTime(year, month, dayOfMonth, hourOfDay, minute, second);
   }
   
+  @Override
+  public DateTime createDateTime(java.util.Date date) {
+    GregorianCalendar c = new GregorianCalendar();
+    c.setTime(date);
+    return createDateTime(c);
+  }
   
   /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#getSourcesFromEntries(java.util.List)

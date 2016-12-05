@@ -19,7 +19,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.acrr;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
@@ -384,6 +382,9 @@ public class AcrrRule implements IRule, InitializingBean {
       if (message instanceof BltTriggerJobMessage) {
         logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         DateTime nowdt = ruleUtil.nowDT();
+        if (((BltTriggerJobMessage)message).getScheduledFireTime() != null) {
+          nowdt = ruleUtil.createDateTime(((BltTriggerJobMessage)message).getScheduledFireTime());
+        }
         DateTime nt = ruleUtil.createNominalTime(nowdt, getFilesPerHourInterval());
         List<CatalogEntry> entries = findFiles(nowdt);
         List<String> uuids = ruleUtil.getUuidStringsFromEntries(entries);

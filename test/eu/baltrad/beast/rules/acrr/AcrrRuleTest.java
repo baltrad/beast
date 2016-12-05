@@ -316,6 +316,77 @@ public class AcrrRuleTest extends EasyMockSupport {
   }
   
   @Test
+  public void handle_withScheduledTime() {
+    java.util.Date scheduledDate = new java.util.Date();
+    BltTriggerJobMessage message = new BltTriggerJobMessage();
+    message.setScheduledFireTime(scheduledDate);
+    
+    // Setup
+    final Methods methods = createMock(Methods.class);
+
+    DateTime dtNow = new DateTime();
+    DateTime dtOther = new DateTime();
+    DateTime nominalTime = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    List<String> uuids = new ArrayList<String>();
+    uuids.add("A");
+    uuids.add("B");
+    
+    expect(ruleUtil.nowDT()).andReturn(dtNow);
+    expect(ruleUtil.createDateTime(scheduledDate)).andReturn(dtOther);
+    expect(ruleUtil.createNominalTime(dtOther, 15)).andReturn(nominalTime);
+    expect(methods.findFiles(dtOther)).andReturn(entries);
+    expect(ruleUtil.getUuidStringsFromEntries(entries)).andReturn(uuids);
+    
+    classUnderTest = new AcrrRule() {
+      @Override
+      protected List<CatalogEntry> findFiles(DateTime now) {
+        return methods.findFiles(now);
+      }
+    };
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setArea("swegmaps");
+    classUnderTest.setZrA(10.0);
+    classUnderTest.setZrB(11.0);
+    classUnderTest.setFilesPerHour(4);
+    classUnderTest.setHours(6);
+    classUnderTest.setAcceptableLoss(20);
+    classUnderTest.setQuantity("DBZH");
+    classUnderTest.setDistancefield("se.distancefield");
+    classUnderTest.setApplyGRA(true);
+    
+    
+    replayAll();
+    
+    // Test
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(message);
+    
+    // Verify
+    verifyAll();
+    
+    String dateStr = new Formatter().format("%d%02d%02d",nominalTime.getDate().year(), nominalTime.getDate().month(), nominalTime.getDate().day()).toString();
+    String timeStr = new Formatter().format("%02d%02d%02d",nominalTime.getTime().hour(), nominalTime.getTime().minute(), nominalTime.getTime().second()).toString();
+    
+    assertEquals("eu.baltrad.beast.GenerateAcrr", result.getAlgorithm());
+    assertEquals(2, result.getFiles().length);
+    assertEquals("A", result.getFiles()[0]);
+    assertEquals("B", result.getFiles()[1]);
+    assertEquals(11, result.getArguments().length);
+    assertEquals("--area=swegmaps", result.getArguments()[0]);
+    assertEquals("--date="+dateStr, result.getArguments()[1]);
+    assertEquals("--time="+timeStr, result.getArguments()[2]);
+    assertEquals("--zra=10.0", result.getArguments()[3]);
+    assertEquals("--zrb=11.0", result.getArguments()[4]);
+    assertEquals("--hours=6", result.getArguments()[5]);
+    assertEquals("--N=25", result.getArguments()[6]);
+    assertEquals("--accept=20", result.getArguments()[7]);
+    assertEquals("--quantity=DBZH", result.getArguments()[8]);
+    assertEquals("--distancefield=se.distancefield", result.getArguments()[9]);
+    assertEquals("--applygra=true", result.getArguments()[10]);
+  }
+  
+  @Test
   public void test_filterEntries() {
     final Methods methods = createMock(Methods.class);
 

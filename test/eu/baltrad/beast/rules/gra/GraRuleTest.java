@@ -21,13 +21,24 @@ package eu.baltrad.beast.rules.gra;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -38,6 +49,12 @@ public class GraRuleTest extends EasyMockSupport {
   private Catalog catalog = null;
   private IRuleUtilities ruleUtil = null;
   private GraRule classUnderTest = null;
+
+  private interface Methods {
+    DateTime getNominalTime(DateTime now);
+
+    List<CatalogEntry> findFiles(DateTime now);
+  };
 
   /**
    * @throws java.lang.Exception
@@ -71,7 +88,7 @@ public class GraRuleTest extends EasyMockSupport {
   public void testGetType() {
     assertEquals("blt_gra", classUnderTest.getType());
   }
-  
+
   @Test
   public void testSetGetFirstTermUTC() {
     assertEquals(6, classUnderTest.getFirstTermUTC());
@@ -80,7 +97,7 @@ public class GraRuleTest extends EasyMockSupport {
       assertEquals(i, classUnderTest.getFirstTermUTC());
     }
   }
-  
+
   @Test
   public void testSetFirstTermUTC_invalid() {
     try {
@@ -91,7 +108,7 @@ public class GraRuleTest extends EasyMockSupport {
     }
     assertEquals(6, classUnderTest.getFirstTermUTC());
   }
-  
+
   @Test
   public void testSetGetInterval() {
     assertEquals(12, classUnderTest.getInterval());
@@ -112,7 +129,7 @@ public class GraRuleTest extends EasyMockSupport {
     classUnderTest.setInterval(24);
     assertEquals(24, classUnderTest.getInterval());
   }
-  
+
   @Test
   public void testSetInterval_invalid() {
     try {
@@ -123,7 +140,7 @@ public class GraRuleTest extends EasyMockSupport {
     }
     assertEquals(12, classUnderTest.getInterval());
   }
-  
+
   @Test
   public void testIntervalHoursSame() {
     assertEquals(12, classUnderTest.getHours());
@@ -149,36 +166,97 @@ public class GraRuleTest extends EasyMockSupport {
     assertEquals(12, classUnderTest.getHours());
     assertEquals(12, classUnderTest.getInterval());
   }
-  
+
+  @Test
+  public void handle() {
+    final Methods methods = createMock(Methods.class);
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    List<String> uuids = new ArrayList<String>();
+    uuids.add("abc-def-ghi");
+    Date scheduledDate = new Date();
+    DateTime nowDt = new DateTime();
+    DateTime newDt = new DateTime();
+    DateTime nominalDt = new DateTime(2016,2,3,10,15,0);
+    BltTriggerJobMessage message = new BltTriggerJobMessage();
+    message.setScheduledFireTime(scheduledDate);
+
+    classUnderTest = new GraRule() {
+      @Override
+      protected DateTime getNominalTime(DateTime dt) {
+        return methods.getNominalTime(dt);
+      }
+
+      @Override
+      protected List<CatalogEntry> findFiles(DateTime now) {
+        return methods.findFiles(now);
+      }
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setArea("myarea");
+    classUnderTest.setZrA(1.1);
+    classUnderTest.setZrB(2.2);
+    classUnderTest.setFilesPerHour(4);
+    classUnderTest.setHours(12);
+    classUnderTest.setAcceptableLoss(2);
+    expect(ruleUtil.nowDT()).andReturn(nowDt);
+    expect(ruleUtil.createDateTime(scheduledDate)).andReturn(newDt);
+    expect(methods.getNominalTime(newDt)).andReturn(nominalDt);
+    expect(methods.findFiles(nominalDt)).andReturn(entries);
+    expect(ruleUtil.getUuidStringsFromEntries(entries)).andReturn(uuids);
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(message);
+    
+    verifyAll();
+    assertEquals("eu.baltrad.beast.CreateGraCoefficient", result.getAlgorithm());
+    assertEquals(10, result.getArguments().length);
+    assertEquals("--area=myarea", result.getArguments()[0]);
+    assertEquals("--date=20160203", result.getArguments()[1]);
+    assertEquals("--time=101500", result.getArguments()[2]);
+    assertEquals("--zra=1.1", result.getArguments()[3]);
+    assertEquals("--zrb=2.2", result.getArguments()[4]);
+    assertEquals("--interval=12", result.getArguments()[5]);
+    assertEquals("--N=49", result.getArguments()[6]);
+    assertEquals("--accept=2", result.getArguments()[7]);
+    assertEquals("--quantity=DBZH", result.getArguments()[8]);
+    assertEquals("--distancefield=eu.baltrad.composite.quality.distance.radar", result.getArguments()[9]);
+    
+    assertEquals(1,result.getFiles().length);
+    assertEquals("abc-def-ghi", result.getFiles()[0]);
+    
+  }
+
   @Test
   public void testGetNominalTime() {
     classUnderTest.setInterval(12);
     classUnderTest.setFirstTermUTC(6);
-    
-    assertEquals(new DateTime(2013,5,3,18,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,5,5,4)));
-    assertEquals(new DateTime(2013,5,4,6,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,6,5,4)));
-    assertEquals(new DateTime(2013,5,4,6,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,7,5,4)));
-    assertEquals(new DateTime(2013,5,4,6,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,8,5,4)));
-    assertEquals(new DateTime(2013,5,4,6,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,17,5,4)));
-    assertEquals(new DateTime(2013,5,4,18,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,19,5,4)));
+
+    assertEquals(new DateTime(2013, 5, 3, 18, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 5, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 6, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 6, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 6, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 7, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 6, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 8, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 6, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 17, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 18, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 19, 5, 4)));
 
     classUnderTest.setInterval(12);
     classUnderTest.setFirstTermUTC(18);
-    assertEquals(new DateTime(2013,5,3,18,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,5,5,4)));
-    assertEquals(new DateTime(2013,5,4,6,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,6,5,4)));
-    assertEquals(new DateTime(2013,5,4,6,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,7,5,4)));
-    assertEquals(new DateTime(2013,5,4,6,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,8,5,4)));
-    assertEquals(new DateTime(2013,5,4,6,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,17,5,4)));
-    assertEquals(new DateTime(2013,5,4,18,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,19,5,4)));
+    assertEquals(new DateTime(2013, 5, 3, 18, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 5, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 6, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 6, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 6, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 7, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 6, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 8, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 6, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 17, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 18, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 19, 5, 4)));
 
     classUnderTest.setInterval(6);
     classUnderTest.setFirstTermUTC(23);
-    assertEquals(new DateTime(2013,5,3,23,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,0,5,4)));
-    assertEquals(new DateTime(2013,5,3,23,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,1,5,4)));
-    assertEquals(new DateTime(2013,5,3,23,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,2,5,4)));
-    assertEquals(new DateTime(2013,5,3,23,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,3,5,4)));
-    assertEquals(new DateTime(2013,5,3,23,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,4,5,4)));
-    assertEquals(new DateTime(2013,5,4,5,0,0), classUnderTest.getNominalTime(new DateTime(2013,5,4,5,5,4)));
+    assertEquals(new DateTime(2013, 5, 3, 23, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 0, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 3, 23, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 1, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 3, 23, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 2, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 3, 23, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 3, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 3, 23, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 4, 5, 4)));
+    assertEquals(new DateTime(2013, 5, 4, 5, 0, 0), classUnderTest.getNominalTime(new DateTime(2013, 5, 4, 5, 5, 4)));
   }
-  
+
 }

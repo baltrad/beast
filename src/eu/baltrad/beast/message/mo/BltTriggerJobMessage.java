@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.message.mo;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -40,6 +42,8 @@ public class BltTriggerJobMessage implements IBltXmlMessage {
    */
   public static final String BLT_TRIGGER_JOB = "blttriggerjob";
 
+  private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  
   /**
    * The id for this message
    */
@@ -49,6 +53,15 @@ public class BltTriggerJobMessage implements IBltXmlMessage {
    * The name of the scheduled job
    */
   private String name = null;
+  
+  
+  private Date scheduledFireTime = null;
+  
+  private Date fireTime = null;
+  
+  private Date nextFireTime = null;
+  
+  private Date prevFireTime = null;
   
   /**
    * Optional information 
@@ -67,6 +80,14 @@ public class BltTriggerJobMessage implements IBltXmlMessage {
     }
     setId(dom.valueOf("//blttriggerjob/id"));
     setName(dom.valueOf("//blttriggerjob/name"));
+    Node schedule = dom.selectSingleNode("//blttriggerjob/schedule");
+    if (schedule != null) {
+      setPrevFireTime(convertToDate(dom.valueOf("//blttriggerjob/schedule/@prevFireTime")));
+      setScheduledFireTime(convertToDate(dom.valueOf("//blttriggerjob/schedule/@scheduledFireTime")));
+      setFireTime(convertToDate(dom.valueOf("//blttriggerjob/schedule/@fireTime")));
+      setNextFireTime(convertToDate(dom.valueOf("//blttriggerjob/schedule/@nextFireTime")));
+    }
+    
     List<Node> nodes = dom.selectNodes("//blttriggerjob/arguments/arg");
     this.args = new String[nodes.size()];
     for (Node node : nodes) {
@@ -84,6 +105,14 @@ public class BltTriggerJobMessage implements IBltXmlMessage {
     el.addElement("id").addText(this.id);
     el.addElement("name").addText(this.name);
 
+    if (this.prevFireTime != null || this.scheduledFireTime != null || this.fireTime != null || this.nextFireTime != null) {
+      Element schedule = el.addElement("schedule");
+      addDateStringAttribute(schedule, "prevFireTime", this.prevFireTime);
+      addDateStringAttribute(schedule, "scheduledFireTime", this.scheduledFireTime);
+      addDateStringAttribute(schedule, "fireTime", this.fireTime);
+      addDateStringAttribute(schedule, "nextFireTime", this.nextFireTime);
+    }
+    
     Element elArgs = el.addElement("arguments");
     for (int i = 0; i < this.args.length; i++) {
       if (this.args[i] != null) {
@@ -93,7 +122,41 @@ public class BltTriggerJobMessage implements IBltXmlMessage {
     
     return document;
   }
+  
+  /**
+   * Creates a UTC formatted date string
+   * @param date the date to format
+   * @return the utc formatted string
+   */
+  protected void addDateStringAttribute(Element el, String attrname, Date date) {
+    if (date != null) {
+      String dtstr = null;
+      synchronized(DATE_FORMAT) {
+        dtstr = DATE_FORMAT.format(date);
+      }
+      el.addAttribute(attrname, dtstr);
+    }
+  }
 
+  /**
+   * Converts a UTC formatted string (yyyy-MM-ddTHH:mm:ssZ) into a date object
+   * @param str the utc formatted string
+   * @return the date
+   */
+  protected Date convertToDate(String str) {
+    if (str != null && !str.equals("")) {
+      try {
+        synchronized (DATE_FORMAT) {
+          return DATE_FORMAT.parse(str);
+        }
+      } catch (Exception e) {
+        throw new MessageParserException("Failed to parse date format string: " + str, e);
+      }
+    }
+    return null;
+  }
+  
+  
   /**
    * @param id the id to set
    */
@@ -138,5 +201,37 @@ public class BltTriggerJobMessage implements IBltXmlMessage {
    */
   public String[] getArgs() {
     return args;
+  }
+
+  public Date getScheduledFireTime() {
+    return scheduledFireTime;
+  }
+
+  public void setScheduledFireTime(Date scheduledFireTime) {
+    this.scheduledFireTime = scheduledFireTime;
+  }
+
+  public Date getFireTime() {
+    return fireTime;
+  }
+
+  public void setFireTime(Date fireTime) {
+    this.fireTime = fireTime;
+  }
+
+  public Date getNextFireTime() {
+    return nextFireTime;
+  }
+
+  public void setNextFireTime(Date nextFireTime) {
+    this.nextFireTime = nextFireTime;
+  }
+
+  public Date getPrevFireTime() {
+    return prevFireTime;
+  }
+
+  public void setPrevFireTime(Date prevFireTime) {
+    this.prevFireTime = prevFireTime;
   }
 }

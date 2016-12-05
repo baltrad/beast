@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.scheduler;
 
+import java.util.Date;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
@@ -45,7 +47,12 @@ public class BeastJobInvoker implements Job {
     String id = ctx.getTrigger().getKey().getName();
     String name = detail.getKey().getName();
     logger.debug("Running triggered job message with id="+id+" and name="+name);
-    BltTriggerJobMessage msg = createMessage(id, name);
+    Date scheduledFireTime = ctx.getScheduledFireTime();
+    Date fireTime = ctx.getFireTime();
+    Date prevFireTime = ctx.getPreviousFireTime();
+    Date nextFireTime = ctx.getNextFireTime();
+    
+    BltTriggerJobMessage msg = createMessage(id, name, scheduledFireTime, fireTime, prevFireTime, nextFireTime);
     mgr.manage(msg);
   }
   
@@ -55,10 +62,14 @@ public class BeastJobInvoker implements Job {
    * @param name the name
    * @return the message
    */
-  protected BltTriggerJobMessage createMessage(String id, String name) {
+  protected BltTriggerJobMessage createMessage(String id, String name, Date scheduledFireTime, Date fireTime, Date prevFireTime, Date nextFireTime) {
     BltTriggerJobMessage result = new BltTriggerJobMessage();
     result.setId(id);
     result.setName(name);
+    result.setScheduledFireTime(scheduledFireTime);
+    result.setFireTime(fireTime);
+    result.setPrevFireTime(prevFireTime);
+    result.setNextFireTime(nextFireTime);
     return result;
   }
 }

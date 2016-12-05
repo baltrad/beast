@@ -96,7 +96,11 @@ public class GraRule extends AcrrRule {
     try {
       if (message instanceof BltTriggerJobMessage) {
         logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
-        DateTime nt = getNominalTime(getNowDT());
+        DateTime nowdt = getNowDT();
+        if (((BltTriggerJobMessage)message).getScheduledFireTime() != null) {
+          nowdt = getRuleUtilities().createDateTime(((BltTriggerJobMessage)message).getScheduledFireTime());
+        }        
+        DateTime nt = getNominalTime(nowdt);
         List<CatalogEntry> entries = findFiles(nt);
         List<String> uuids = getRuleUtilities().getUuidStringsFromEntries(entries);
         
