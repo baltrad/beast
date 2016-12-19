@@ -294,7 +294,9 @@ public class AcrrRuleTest extends EasyMockSupport {
     // Verify
     verifyAll();
     
+    @SuppressWarnings("resource")
     String dateStr = new Formatter().format("%d%02d%02d",nominalTime.getDate().year(), nominalTime.getDate().month(), nominalTime.getDate().day()).toString();
+    @SuppressWarnings("resource")
     String timeStr = new Formatter().format("%02d%02d%02d",nominalTime.getTime().hour(), nominalTime.getTime().minute(), nominalTime.getTime().second()).toString();
     
     assertEquals("eu.baltrad.beast.GenerateAcrr", result.getAlgorithm());
@@ -365,7 +367,9 @@ public class AcrrRuleTest extends EasyMockSupport {
     // Verify
     verifyAll();
     
+    @SuppressWarnings("resource")
     String dateStr = new Formatter().format("%d%02d%02d",nominalTime.getDate().year(), nominalTime.getDate().month(), nominalTime.getDate().day()).toString();
+    @SuppressWarnings("resource")
     String timeStr = new Formatter().format("%02d%02d%02d",nominalTime.getTime().hour(), nominalTime.getTime().minute(), nominalTime.getTime().second()).toString();
     
     assertEquals("eu.baltrad.beast.GenerateAcrr", result.getAlgorithm());
@@ -483,6 +487,41 @@ public class AcrrRuleTest extends EasyMockSupport {
     assertEquals(2, result.size());
     assertSame(e2,result.get(0));
     assertSame(e3,result.get(1));
+  }
+  
+  @Test
+  public void test_filterEntries_notAllValidEntries() {
+    CatalogEntry e1 = createMock(CatalogEntry.class);
+    CatalogEntry e2 = createMock(CatalogEntry.class);
+    CatalogEntry e3 = createMock(CatalogEntry.class);
+    DateTime d1 = new DateTime(2013,1,1,10,0,0);
+    DateTime d2 = new DateTime(2013,1,1,10,15,0);
+    DateTime d3 = new DateTime(2013,1,1,10,30,0);
+    
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    Map<DateTime,CatalogEntry> validEntries = new HashMap<DateTime, CatalogEntry>();
+    entries.add(e1);
+    entries.add(e2);
+    entries.add(e3);
+    
+    validEntries.put(d1, e1);
+    validEntries.put(d2, e2);
+    // d3/e3 is not added as a valid entry
+    
+    expect(e1.getDateTime()).andReturn(d1);
+    expect(e1.getUuid()).andReturn("00000-00001").times(2);
+    expect(e2.getDateTime()).andReturn(d2);
+    expect(e2.getUuid()).andReturn("00000-00002").times(2);
+    expect(e3.getDateTime()).andReturn(d3);
+    
+    replayAll();
+    
+    List<CatalogEntry> result = classUnderTest.filterEntries(entries, validEntries);
+    
+    verifyAll();
+    assertEquals(2, result.size());
+    assertSame(e1,result.get(0));
+    assertSame(e2,result.get(1));
   }
   
   @Test

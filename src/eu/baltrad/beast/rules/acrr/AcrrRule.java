@@ -418,7 +418,11 @@ public class AcrrRule implements IRule, InitializingBean {
         
         return result;
       }
-    } finally {
+    } 
+    catch (Exception e) {
+      logger.error("FAIL: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName(), e);
+    }
+    finally {
       logger.debug("EXIT: handle(IBltMessage)");
     }
     return null;
@@ -477,7 +481,7 @@ public class AcrrRule implements IRule, InitializingBean {
     List<CatalogEntry> filtered = new ArrayList<CatalogEntry>();
     for (CatalogEntry e : entries) {
       CatalogEntry re = validEntries.get(e.getDateTime());
-      if (re.getUuid().equals(e.getUuid())) {
+      if (re != null && re.getUuid().equals(e.getUuid())) {
         filtered.add(e);
       }
     }
