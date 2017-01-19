@@ -571,17 +571,18 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(10, arguments.length);
+    assertEquals(11, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
     assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
-    assertEquals("--method=ppi", arguments[5]);
-    assertEquals("--prodpar=0.5", arguments[6]);
-    assertEquals("--quantity=DBZH", arguments[7]);
-    assertEquals("--algorithm_id=10", arguments[8]);
-    assertEquals("--merge=true", arguments[9]);
+    assertEquals("--qc-mode=ANALYZE_AND_APPLY", arguments[5]);
+    assertEquals("--method=ppi", arguments[6]);
+    assertEquals("--prodpar=0.5", arguments[7]);
+    assertEquals("--quantity=DBZH", arguments[8]);
+    assertEquals("--algorithm_id=10", arguments[9]);
+    assertEquals("--merge=true", arguments[10]);
   }
 
   @Test
@@ -622,7 +623,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     
     classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     classUnderTest.setDetectors(detectors);
-    
+    classUnderTest.setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE);
     classUnderTest.setMethod(CompositingRule.PPI);
     classUnderTest.setProdpar("0.5");
     classUnderTest.setApplyGRA(true);
@@ -644,20 +645,21 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(13, arguments.length);
+    assertEquals(14, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
     assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
-    assertEquals("--method=ppi", arguments[5]);
-    assertEquals("--prodpar=0.5", arguments[6]);
-    assertEquals("--applygra=true", arguments[7]);
-    assertEquals("--zrA=100.0", arguments[8]);
-    assertEquals("--zrb=1.4", arguments[9]);
-    assertEquals("--quantity=DBZH", arguments[10]);
-    assertEquals("--algorithm_id=10", arguments[11]);
-    assertEquals("--merge=true", arguments[12]);
+    assertEquals("--qc-mode=ANALYZE", arguments[5]);
+    assertEquals("--method=ppi", arguments[6]);
+    assertEquals("--prodpar=0.5", arguments[7]);
+    assertEquals("--applygra=true", arguments[8]);
+    assertEquals("--zrA=100.0", arguments[9]);
+    assertEquals("--zrb=1.4", arguments[10]);
+    assertEquals("--quantity=DBZH", arguments[11]);
+    assertEquals("--algorithm_id=10", arguments[12]);
+    assertEquals("--merge=true", arguments[13]);
   }
 
   @Test
@@ -721,21 +723,22 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(14, arguments.length);
+    assertEquals(15, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
     assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
-    assertEquals("--method=ppi", arguments[5]);
-    assertEquals("--prodpar=0.5", arguments[6]);
-    assertEquals("--applygra=true", arguments[7]);
-    assertEquals("--zrA=100.0", arguments[8]);
-    assertEquals("--zrb=1.4", arguments[9]);
-    assertEquals("--ignore-malfunc=true", arguments[10]);
-    assertEquals("--quantity=DBZH", arguments[11]);
-    assertEquals("--algorithm_id=10", arguments[12]);
-    assertEquals("--merge=true", arguments[13]);
+    assertEquals("--qc-mode=ANALYZE_AND_APPLY", arguments[5]);
+    assertEquals("--method=ppi", arguments[6]);
+    assertEquals("--prodpar=0.5", arguments[7]);
+    assertEquals("--applygra=true", arguments[8]);
+    assertEquals("--zrA=100.0", arguments[9]);
+    assertEquals("--zrb=1.4", arguments[10]);
+    assertEquals("--ignore-malfunc=true", arguments[11]);
+    assertEquals("--quantity=DBZH", arguments[12]);
+    assertEquals("--algorithm_id=10", arguments[13]);
+    assertEquals("--merge=true", arguments[14]);
     
   }
 
@@ -801,22 +804,23 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(15, arguments.length);
+    assertEquals(16, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
     assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
-    assertEquals("--method=ppi", arguments[5]);
-    assertEquals("--prodpar=0.5", arguments[6]);
-    assertEquals("--applygra=true", arguments[7]);
-    assertEquals("--zrA=100.0", arguments[8]);
-    assertEquals("--zrb=1.4", arguments[9]);
-    assertEquals("--ignore-malfunc=true", arguments[10]);
-    assertEquals("--ctfilter=True", arguments[11]);
-    assertEquals("--quantity=DBZH", arguments[12]);
-    assertEquals("--algorithm_id=10", arguments[13]);
-    assertEquals("--merge=true", arguments[14]);
+    assertEquals("--qc-mode=ANALYZE_AND_APPLY", arguments[5]);
+    assertEquals("--method=ppi", arguments[6]);
+    assertEquals("--prodpar=0.5", arguments[7]);
+    assertEquals("--applygra=true", arguments[8]);
+    assertEquals("--zrA=100.0", arguments[9]);
+    assertEquals("--zrb=1.4", arguments[10]);
+    assertEquals("--ignore-malfunc=true", arguments[11]);
+    assertEquals("--ctfilter=True", arguments[12]);
+    assertEquals("--quantity=DBZH", arguments[13]);
+    assertEquals("--algorithm_id=10", arguments[14]);
+    assertEquals("--merge=true", arguments[15]);
   }
 
   @Test
@@ -882,23 +886,24 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(16, arguments.length);
+    assertEquals(17, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
     assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
-    assertEquals("--method=ppi", arguments[5]);
-    assertEquals("--prodpar=0.5", arguments[6]);
-    assertEquals("--applygra=true", arguments[7]);
-    assertEquals("--zrA=100.0", arguments[8]);
-    assertEquals("--zrb=1.4", arguments[9]);
-    assertEquals("--ignore-malfunc=true", arguments[10]);
-    assertEquals("--ctfilter=True", arguments[11]);
-    assertEquals("--qitotal_field=se.baltrad.some.field", arguments[12]);
-    assertEquals("--quantity=DBZH", arguments[13]);
-    assertEquals("--algorithm_id=10", arguments[14]);
-    assertEquals("--merge=true", arguments[15]);
+    assertEquals("--qc-mode=ANALYZE_AND_APPLY", arguments[5]);
+    assertEquals("--method=ppi", arguments[6]);
+    assertEquals("--prodpar=0.5", arguments[7]);
+    assertEquals("--applygra=true", arguments[8]);
+    assertEquals("--zrA=100.0", arguments[9]);
+    assertEquals("--zrb=1.4", arguments[10]);
+    assertEquals("--ignore-malfunc=true", arguments[11]);
+    assertEquals("--ctfilter=True", arguments[12]);
+    assertEquals("--qitotal_field=se.baltrad.some.field", arguments[13]);
+    assertEquals("--quantity=DBZH", arguments[14]);
+    assertEquals("--algorithm_id=10", arguments[15]);
+    assertEquals("--merge=true", arguments[16]);
   }  
 
   @Test
@@ -964,22 +969,23 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(15, arguments.length);
+    assertEquals(16, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
     assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
-    assertEquals("--method=ppi", arguments[5]);
-    assertEquals("--prodpar=0.5", arguments[6]);
-    assertEquals("--applygra=true", arguments[7]);
-    assertEquals("--zrA=100.0", arguments[8]);
-    assertEquals("--zrb=1.4", arguments[9]);
-    assertEquals("--ignore-malfunc=true", arguments[10]);
-    assertEquals("--ctfilter=True", arguments[11]);
-    assertEquals("--quantity=DBZH", arguments[12]);
-    assertEquals("--algorithm_id=10", arguments[13]);
-    assertEquals("--merge=true", arguments[14]);
+    assertEquals("--qc-mode=ANALYZE_AND_APPLY", arguments[5]);
+    assertEquals("--method=ppi", arguments[6]);
+    assertEquals("--prodpar=0.5", arguments[7]);
+    assertEquals("--applygra=true", arguments[8]);
+    assertEquals("--zrA=100.0", arguments[9]);
+    assertEquals("--zrb=1.4", arguments[10]);
+    assertEquals("--ignore-malfunc=true", arguments[11]);
+    assertEquals("--ctfilter=True", arguments[12]);
+    assertEquals("--quantity=DBZH", arguments[13]);
+    assertEquals("--algorithm_id=10", arguments[14]);
+    assertEquals("--merge=true", arguments[15]);
   }
   
   @Test

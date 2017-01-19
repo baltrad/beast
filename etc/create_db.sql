@@ -75,7 +75,8 @@ create table beast_composite_rules (
   ignore_malfunc boolean NOT NULL,
   ctfilter boolean NOT NULL,
   qitotal_field text,
-  quantity text
+  quantity text,
+  qc_mode integer NOT NULL  
 );
 
 create table beast_composite_sources (
@@ -102,7 +103,8 @@ create table beast_site2d_rules (
   ctfilter boolean NOT NULL,
   pcsid text,
   xscale decimal NOT NULL,
-  yscale decimal NOT NULL
+  yscale decimal NOT NULL,
+  qc_mode integer NOT NULL  
 );
 
 create table beast_site2d_sources (
@@ -137,7 +139,8 @@ create table beast_volume_rules (
   ascending boolean NOT NULL,
   minelev decimal NOT NULL,
   maxelev decimal NOT NULL,
-  elangles text
+  elangles text,
+  qc_mode integer NOT NULL
 );
 
 create table beast_volume_sources (

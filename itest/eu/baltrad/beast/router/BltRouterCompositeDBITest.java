@@ -127,6 +127,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals("se.baltrad.something", ((CompositingRule)def.getRule()).getQitotalField());
     assertEquals("VRAD", ((CompositingRule)def.getRule()).getQuantity());
     assertEquals(true, ((CompositingRule)def.getRule()).isNominalTimeout());
+    assertEquals(CompositingRule.QualityControlMode_ANALYZE, ((CompositingRule)def.getRule()).getQualityControlMode());
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
     assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
   }
@@ -158,6 +159,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     ((CompositingRule)def.getRule()).setQitotalField("se.smhi.something");
     ((CompositingRule)def.getRule()).setQuantity("TH");
     ((CompositingRule)def.getRule()).setNominalTimeout(false);
+    ((CompositingRule)def.getRule()).setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE_AND_APPLY);
     ((CompositingRule)def.getRule()).setDetectors(detectors);
     
     classUnderTest.updateDefinition(def);
@@ -218,6 +220,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setQitotalField("se.someone.somewhere");
     rule.setQuantity("NOOP");
     rule.setNominalTimeout(false);
+    rule.setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE);
     rule.setDetectors(detectors);
     rule.setSources(sources);
 

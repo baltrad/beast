@@ -145,9 +145,11 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setQitotalField("se.baltrad.something");
     rule.setQuantity("VRAD");
     rule.setNominalTimeout(true);
+    rule.setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE);
+    
     expect(jdbc.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field, quantity, nominal_timeout)"+
-        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, "se.baltrad.something", "VRAD", true}))
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field, quantity, nominal_timeout, qc_mode)"+
+        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, "se.baltrad.something", "VRAD", true, CompositingRule.QualityControlMode_ANALYZE}))
           .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -195,9 +197,10 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setQitotalField("se.baltrad.something");
     rule.setQuantity("NOOP");
     rule.setNominalTimeout(true);
+    rule.setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE);
     
-    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=?, quantity=?, nominal_timeout=? where rule_id=?",
-        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, "se.baltrad.something", "NOOP", true, 13}))
+    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=?, quantity=?, nominal_timeout=?, qc_mode=? where rule_id=?",
+        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, "se.baltrad.something", "NOOP", true, CompositingRule.QualityControlMode_ANALYZE, 13}))
         .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -376,6 +379,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     expect(rs.getString("qitotal_field")).andReturn("se.baltrad.something");
     expect(rs.getString("quantity")).andReturn("VRAD");
     expect(rs.getBoolean("nominal_timeout")).andReturn(true);
+    expect(rs.getInt("qc_mode")).andReturn(1);
 
     expect(method.getSources(10)).andReturn(sources);
     expect(method.getDetectors(10)).andReturn(detectors);
@@ -416,6 +420,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     assertEquals("se.baltrad.something", result.getQitotalField());
     assertEquals("VRAD", result.getQuantity());
     assertEquals(true, result.isNominalTimeout());
+    assertEquals(CompositingRule.QualityControlMode_ANALYZE, result.getQualityControlMode());
   }  
   
   @Test

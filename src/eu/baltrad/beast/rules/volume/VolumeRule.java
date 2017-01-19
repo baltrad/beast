@@ -59,6 +59,12 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
    * The name of this static composite type
    */
   public final static String TYPE = "blt_volume";
+
+  /** Performs the quality analysis and then applies the result to the original set */
+  public final static int QualityControlMode_ANALYZE_AND_APPLY = 0;
+  
+  /** Only performs the quality analysis */
+  public final static int QualityControlMode_ANALYZE = 1;  
   
   /**
    * The catalog for database access
@@ -118,6 +124,11 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
    * If the scans are done in ascending order or not
    */
   private boolean ascending = true;
+  
+  /**
+   * How the quality controls should be handled and used
+   */
+  private int qualityControlMode = QualityControlMode_ANALYZE_AND_APPLY;
   
   /**
    * The sources for which this rule applies
@@ -560,6 +571,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
         }
       }
       args.add("--anomaly-qc="+dstr.toString());
+      args.add("--qc-mode="+getQualityControlModeAsString());
     }
     args.add("--algorithm_id="+getRuleId()+"-"+source);
     args.add("--merge=true");
@@ -717,5 +729,22 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
 
   public void setNominalTimeout(boolean nominalTimeout) {
     this.nominalTimeout = nominalTimeout;
+  }
+
+  public int getQualityControlMode() {
+    return qualityControlMode;
+  }
+
+  public String getQualityControlModeAsString() {
+    if (getQualityControlMode() == QualityControlMode_ANALYZE) {
+      return "ANALYZE";
+    } else if (getQualityControlMode() == QualityControlMode_ANALYZE_AND_APPLY) {
+      return "ANALYZE_AND_APPLY";
+    }
+    return "UNKNOWN";
+  }
+  
+  public void setQualityControlMode(int qualityControlMode) {
+    this.qualityControlMode = qualityControlMode;
   }
 }

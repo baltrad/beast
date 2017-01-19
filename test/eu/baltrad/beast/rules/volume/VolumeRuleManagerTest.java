@@ -150,9 +150,10 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setNominalTimeout(true);
     rule.setSources(sources);
     rule.setDetectors(detectors);
+    rule.setQualityControlMode(VolumeRule.QualityControlMode_ANALYZE);
     
     expect(jdbc.update("insert into beast_volume_rules (rule_id, interval, timeout, nominal_timeout, " +
-        "ascending, minelev, maxelev, elangles) values (?,?,?,?,?,?,?,?)", new Object[]{13, 6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0"})).andReturn(0);
+        "ascending, minelev, maxelev, elangles, qc_mode) values (?,?,?,?,?,?,?,?,?)", new Object[]{13, 6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0", 1})).andReturn(0);
 
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
@@ -194,9 +195,9 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setNominalTimeout(true);
     rule.setSources(sources);
     rule.setDetectors(detectors);
-    
+    rule.setQualityControlMode(VolumeRule.QualityControlMode_ANALYZE);
     expect(jdbc.update("update beast_volume_rules set interval=?, timeout=?, nominal_timeout=?, " +
-        "ascending=?, minelev=?, maxelev=?, elangles=? where rule_id=?", new Object[]{6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0", 13}))
+        "ascending=?, minelev=?, maxelev=?, elangles=?, qc_mode=? where rule_id=?", new Object[]{6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0", 1, 13}))
         .andReturn(1);
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
@@ -302,6 +303,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     expect(rs.getDouble("minelev")).andReturn(2.0);
     expect(rs.getDouble("maxelev")).andReturn(10.0);
     expect(rs.getString("elangles")).andReturn("1.0,2.0,3.0");
+    expect(rs.getInt("qc_mode")).andReturn(1);
     expect(method.getSources(10)).andReturn(sources);
     expect(method.getDetectors(10)).andReturn(detectors);
     
@@ -332,6 +334,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     assertEquals(2.0, result.getElevationMin(), 4);
     assertEquals(10.0, result.getElevationMax(), 4);
     assertEquals("1.0,2.0,3.0", result.getElevationAngles());
+    assertEquals(VolumeRule.QualityControlMode_ANALYZE, result.getQualityControlMode());
     assertSame(sources, result.getSources());
   }
   

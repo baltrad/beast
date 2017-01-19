@@ -468,13 +468,14 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals(files[1], "uuid-2");
     assertEquals(files[2], "uuid-3");
     String[] arguments = result.getArguments();
-    assertEquals(6, arguments.length);
+    assertEquals(7, arguments.length);
     assertEquals("--source=searl", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--anomaly-qc=ropo,nisse", arguments[3]);
-    assertEquals("--algorithm_id=10-searl",arguments[4]);
-    assertEquals("--merge=true", arguments[5]);
+    assertEquals("--qc-mode=ANALYZE_AND_APPLY", arguments[4]);
+    assertEquals("--algorithm_id=10-searl",arguments[5]);
+    assertEquals("--merge=true", arguments[6]);
   }
 
   @Test
@@ -513,6 +514,52 @@ public class VolumeRuleTest extends EasyMockSupport {
     assertEquals("--time=010000", arguments[2]);
     assertEquals("--algorithm_id=10-searl",arguments[3]);
     assertEquals("--merge=true", arguments[4]);
+  }
+  
+  @Test
+  public void testCreateMessage_withAnalyse() throws Exception {
+    Date date = new Date(2010, 2, 1);
+    Time time = new Time(1, 0, 0);
+    DateTime nt = new DateTime(date, time);
+    
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("searl"));
+    entries.add(createCatalogEntry("searl"));
+    entries.add(createCatalogEntry("searl"));
+
+    List<String> fileEntries = new ArrayList<String>();
+    fileEntries.add("uuid-1");
+    fileEntries.add("uuid-2");
+    fileEntries.add("uuid-3");
+
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("ropo");
+    detectors.add("nisse");
+    
+    classUnderTest.setDetectors(detectors);
+    classUnderTest.setQualityControlMode(VolumeRule.QualityControlMode_ANALYZE);
+    expect(utilities.getUuidStringsFromEntries(entries)).andReturn(fileEntries);
+
+    replayAll();
+
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.createMessage(nt, entries);
+
+    verifyAll();
+    assertEquals("eu.baltrad.beast.GenerateVolume", result.getAlgorithm());
+    String[] files = result.getFiles();
+    assertEquals(3, files.length);
+    assertEquals(files[0], "uuid-1");
+    assertEquals(files[1], "uuid-2");
+    assertEquals(files[2], "uuid-3");
+    String[] arguments = result.getArguments();
+    assertEquals(7, arguments.length);
+    assertEquals("--source=searl", arguments[0]);
+    assertEquals("--date=20100201", arguments[1]);
+    assertEquals("--time=010000", arguments[2]);
+    assertEquals("--anomaly-qc=ropo,nisse", arguments[3]);
+    assertEquals("--qc-mode=ANALYZE", arguments[4]);
+    assertEquals("--algorithm_id=10-searl",arguments[5]);
+    assertEquals("--merge=true", arguments[6]);
   }
   
   @Test

@@ -115,6 +115,7 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     rule.setArea("nisse");
     rule.setCtFilter(false);
     rule.setDetectors(detectors);
+    rule.setQualityControlMode(Site2DRule.QualityControlMode_ANALYZE);
     rule.setIgnoreMalfunc(true);
     rule.setInterval(15);
     rule.setMethod(Site2DRule.CAPPI);
@@ -130,8 +131,8 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     classUnderTest.setFilterManager(filterManager);
 
     expect(template.update("INSERT INTO beast_site2d_rules " +
-      "(rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale) " +
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", ruleId, "nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0)).andReturn(0);
+      "(rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale, qc_mode) " +
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", ruleId, "nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0, 1)).andReturn(0);
     filterManager.deleteFilters(ruleId);
     
     methods.storeSources(ruleId, sources);
@@ -154,6 +155,7 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     rule.setArea("nisse");
     rule.setCtFilter(false);
     rule.setDetectors(detectors);
+    rule.setQualityControlMode(Site2DRule.QualityControlMode_ANALYZE);
     rule.setIgnoreMalfunc(true);
     rule.setInterval(15);
     rule.setMethod(Site2DRule.CAPPI);
@@ -167,8 +169,8 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     rule.setYscale(1000.0);
 
     expect(template.update("INSERT INTO beast_site2d_rules " +
-      "(rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale) " +
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 11, "nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0)).andThrow(new DataAccessException("X"){
+      "(rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale, qc_mode) " +
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 11, "nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0, 1)).andThrow(new DataAccessException("X"){
         private static final long serialVersionUID = 1L;});
     
     replayAll();
@@ -204,12 +206,12 @@ public class Site2DRuleManagerTest extends EasyMockSupport {
     rule.setPcsid("apcs");
     rule.setXscale(3000.0);
     rule.setYscale(1000.0);
-    
+    rule.setQualityControlMode(Site2DRule.QualityControlMode_ANALYZE);
     classUnderTest.setFilterManager(filterManager);
 
     expect(template.update("UPDATE beast_site2d_rules" +
-      " SET area=?, interval=?, byscan=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, pcsid=?, xscale=?, yscale=?" +
-      " WHERE rule_id=?", new Object[]{"nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0, ruleId})).andReturn(1);
+      " SET area=?, interval=?, byscan=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, pcsid=?, xscale=?, yscale=?, qc_mode=?" +
+      " WHERE rule_id=?", new Object[]{"nisse", 15, true, "cappi", "10,10", true, 1.1, 0.1, true, false, "apcs", 3000.0, 1000.0, 1, ruleId})).andReturn(1);
     filterManager.deleteFilters(ruleId);
     
     methods.storeSources(ruleId, sources);

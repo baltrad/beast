@@ -65,6 +65,12 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    */
   public final static String TYPE = "blt_composite";
   
+  /** Performs the quality analysis and then applies the result to the original set */
+  public final static int QualityControlMode_ANALYZE_AND_APPLY = 0;
+  
+  /** Only performs the quality analysis */
+  public final static int QualityControlMode_ANALYZE = 1;  
+  
   /**
    * If pixel should be determined by "closest to radar"
    */
@@ -215,6 +221,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * The quantity to use
    */
   private String quantity = "DBZH";
+  
+  /**
+   * How the quality controls should be handled and used
+   */
+  private int qualityControlMode = QualityControlMode_ANALYZE_AND_APPLY;
   
   /**
    * The recipients that are affected by this rule. Used
@@ -650,6 +661,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
         }
       }
       args.add("--anomaly-qc="+dstr.toString());
+      args.add("--qc-mode="+getQualityControlModeAsString());      
     }
     args.add("--method="+this.method);
     args.add("--prodpar="+this.prodpar);
@@ -943,5 +955,22 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
 
   public void setNominalTimeout(boolean nominalTimeout) {
     this.nominalTimeout = nominalTimeout;
+  }
+
+  public int getQualityControlMode() {
+    return qualityControlMode;
+  }
+  
+  public String getQualityControlModeAsString() {
+    if (getQualityControlMode() == QualityControlMode_ANALYZE) {
+      return "ANALYZE";
+    } else if (getQualityControlMode() == QualityControlMode_ANALYZE_AND_APPLY) {
+      return "ANALYZE_AND_APPLY";
+    }
+    return "UNKNOWN";
+  }
+  
+  public void setQualityControlMode(int qualityControlMode) {
+    this.qualityControlMode = qualityControlMode;
   }
 }

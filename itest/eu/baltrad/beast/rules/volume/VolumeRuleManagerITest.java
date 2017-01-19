@@ -142,6 +142,7 @@ public class VolumeRuleManagerITest extends TestCase {
     assertEquals(0.1, rule.getElevationMin());
     assertEquals(45.0, rule.getElevationMax());
     assertEquals("1.0,2.0,3.0", rule.getElevationAngles());
+    assertEquals(1, rule.getQualityControlMode());
     List<String> sources = rule.getSources();
     assertEquals(2, sources.size());
     assertTrue(sources.contains("S1"));
@@ -161,6 +162,7 @@ public class VolumeRuleManagerITest extends TestCase {
     assertEquals(1.0, rule.getElevationMin());
     assertEquals(10.0, rule.getElevationMax());
     assertEquals(null, rule.getElevationAngles());
+    assertEquals(0, rule.getQualityControlMode());
     List<String> sources = rule.getSources();
     assertEquals(3, sources.size());
     assertTrue(sources.contains("S3"));
@@ -180,6 +182,7 @@ public class VolumeRuleManagerITest extends TestCase {
     assertEquals(2.5, rule.getElevationMin());
     assertEquals(24.1, rule.getElevationMax());
     assertEquals("1.5,3.0", rule.getElevationAngles());
+    assertEquals(1, rule.getQualityControlMode());    
     List<String> sources = rule.getSources();
     assertEquals(0, sources.size());
     List<String> detectors = rule.getDetectors();
@@ -202,6 +205,7 @@ public class VolumeRuleManagerITest extends TestCase {
     rule.setElevationAngles("3.0,4.0");
     rule.setSources(sources);
     rule.setDetectors(detectors);
+    rule.setQualityControlMode(VolumeRule.QualityControlMode_ANALYZE);
     
     classUnderTest.store(4, rule);
     
@@ -227,6 +231,7 @@ public class VolumeRuleManagerITest extends TestCase {
     rule.setElevationMin(2.0);
     rule.setElevationMax(24.0);
     rule.setElevationAngles("1.0,5.0,10.0");
+    rule.setQualityControlMode(VolumeRule.QualityControlMode_ANALYZE);
     rule.setSources(sources);
     rule.setDetectors(detectors);
     
