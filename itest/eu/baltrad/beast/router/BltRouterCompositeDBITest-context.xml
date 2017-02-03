@@ -63,7 +63,9 @@
 
   <bean id="catalog" class="eu.baltrad.beast.db.Catalog" autowire="byType" />
 
-  <bean id="bltcompositemgr" class="eu.baltrad.beast.rules.composite.CompositingRuleManager" autowire="byType" />
+  <bean id="filterManager" class="eu.baltrad.beast.rules.RuleFilterManager" autowire="byType" />
+
+  <bean id="bltcompositemgr" class="eu.baltrad.beast.rules.composite.CompositingRuleManager" autowire="byType" />  
   
   <bean id="router" class="eu.baltrad.beast.router.impl.BltRouter" autowire="byType">
     <property name="ruleManagers">

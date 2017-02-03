@@ -18,8 +18,6 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.volume;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -28,21 +26,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.bdb.db.FileEntry;
-import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.beast.db.AttributeFilter;
 import eu.baltrad.beast.db.Catalog;
-import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
+import junit.framework.TestCase;
 
 /**
  * @author Anders Henja

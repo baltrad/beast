@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.composite;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,15 +31,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
 import eu.baltrad.bdb.db.FileEntry;
-import eu.baltrad.bdb.expr.ExpressionFactory;
-import eu.baltrad.bdb.oh5.MetadataMatcher;
+import eu.baltrad.bdb.oh5.Metadata;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.filters.LowestAngleFilter;
-import eu.baltrad.beast.db.filters.TimeIntervalFilter;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.db.filters.CompositingRuleFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -232,16 +232,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * for generating timeout message
    */
   private List<String> recipients = new ArrayList<String>();
-
-  /**
-   * The metadata matcher
-   */
-  private MetadataMatcher matcher = null;
   
   /**
-   * The expression factory
+   * The filter used for matching files
    */
-  private ExpressionFactory xpr = null;
+  private IFilter filter = null;
   
   /**
    * The logger
@@ -252,8 +247,7 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * Default constructor,however, use manager for creation
    */
   protected CompositingRule() {
-    matcher = new MetadataMatcher();
-    xpr = new ExpressionFactory();
+    //
   }
   
   /**
@@ -416,133 +410,73 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       IBltMessage generatedMessage = null;
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
-        String object = file.getMetadata().getWhatObject();
-        
-        boolean handleScan = false;
-        boolean handlePvol = false;
-        if (object != null && object.equals("SCAN") && isScanBased()) {
-          handleScan = true;
-        } else if (object != null && object.equals("PVOL") && !isScanBased()) {
-          handlePvol = true;
-        }
-        
-        if (handleScan || handlePvol) {
+        CompositingRuleFilter ruleFilter = createFilter(getNominalTimeFromFile(file));
+        if (ruleFilter.fileMatches(file)) {
           logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
               ", file: " + file.getUuid());
           
-          if (handleScan) {
-            generatedMessage = handleCompositeFromScans(message);
-          } else if (handlePvol) {
-            generatedMessage = handleCompositeFromVolume(message);
-          }
+          generatedMessage = createComposite(message, ruleFilter);
           
           logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
-              ", file: " + file.getUuid());          
+              ", file: " + file.getUuid()); 
         }
-        
       }
       return generatedMessage;
     } finally {
       logger.debug("EXIT: handle(IBltMessage)");
     }
   }
-
-  /**
-   * Handles generation of a composite from a number of scans
-   * @param message the @ref eu.baltrad.beast.message.mo.BltDataMessage containing a file scan 
-   * @return a message or null if criterias not have been met.
-   */
-  protected IBltMessage handleCompositeFromScans(IBltMessage message) {
-    logger.debug("ENTER: handleCompositeFromScans(IBltMessage)");
-
-    IBltMessage result = null;
-    Map<String, Double> prevAngles = null;
-    CompositeTimerData data = createTimerData(message);
-    if (data != null) {
-      TimeoutTask tt = timeoutManager.getRegisteredTask(data);
-      if (tt == null) {
-        DateTime prevDateTime = ruleUtil.createPrevNominalTime(data.getDateTime(), interval);
-        prevAngles = ruleUtil.fetchLowestSourceElevationAngle(prevDateTime, data.getDateTime(), sources, quantity);
-        data.setPreviousAngles(prevAngles);
-      } else {
-        data = (CompositeTimerData)tt.getData();
-      }
-    
-      result = createCompositeScanMessage(data);
-      if (result != null) {
-        ruleUtil.trigger(ruleid, data.getDateTime());
-        if (tt != null) {
-          timeoutManager.unregister(tt.getId());
-        }
-      } else {
-        if (tt == null && timeout > 0) {
-          timeoutManager.register(this, ruleUtil.getTimeoutTime(data.getDateTime(), nominalTimeout, timeout*1000), data);
-        }
-      }
-    }
-    logger.debug("EXIT: handleCompositeFromScans(IBltMessage)");
-    return result;
-  }
   
-  /**
-   * Creates a composite scan message if criterias are met.
-   * @param data the composite timer data
-   * @return a message if criterias are met, otherwise null
-   */
-  protected IBltMessage createCompositeScanMessage(CompositeTimerData data) {
-    logger.debug("ENTER: createCompositeScanMessage(CompositeTimerData)");
-    try {
-      DateTime nextTime = ruleUtil.createNextNominalTime(data.getDateTime(), interval);
-      Map<String, Double> currAngles = ruleUtil.fetchLowestSourceElevationAngle(data.getDateTime(), nextTime, sources, quantity);
-      Map<String, Double> prevAngles = data.getPreviousAngles();
-    
-      for (String src : sources) {
-        Double pelangle = prevAngles.get(src);
-        Double elangle = currAngles.get(src);
-        if (pelangle != null && elangle != null) {
-          if (pelangle.compareTo(elangle) < 0) {
-            return null;
-          }
-        } else {
-          return null;
-        }
-      }
-      List<CatalogEntry> entries = fetchScanEntries(data.getDateTime());
-      return createMessage(data.getDateTime(), entries);
-    } finally {
-      logger.debug("EXIT: createCompositeScanMessage(CompositeTimerData)");
-    }
-  }
-
-  /**
-   * Determines if a composite should be generated from a number
-   * of volumes or not.
-   * @param message the @ref eu.baltrad.beast.message.mo.BltDataMessage containing a file volume
-   * @return the message or null if criterias not have been met.
-   */
-  protected IBltMessage handleCompositeFromVolume(IBltMessage message) {
-    logger.debug("ENTER: handleCompositeFromVolume(IBltMessage)");
-
+  protected IBltMessage createComposite(IBltMessage message, CompositingRuleFilter ruleFilter) {
     IBltMessage result = null;
+
     CompositeTimerData data = createTimerData(message);
-    if (data != null) {
-      List<CatalogEntry> entries = fetchEntries(data.getDateTime());
-      TimeoutTask tt = timeoutManager.getRegisteredTask(data);
-      if (areCriteriasMet(entries)) {
-        result = createMessage(data.getDateTime(), entries);
-        ruleUtil.trigger(ruleid, data.getDateTime());
-        if (tt != null) {
-          timeoutManager.unregister(tt.getId());
-        }
-      } else {
-        if (tt == null) {
-          if (timeout > 0) {
-            timeoutManager.register(this, ruleUtil.getTimeoutTime(data.getDateTime(), nominalTimeout, timeout*1000), data);
-          }
+    if (data == null) {
+      return null;
+    }
+    
+    TimeoutTask timeoutTask = timeoutManager.getRegisteredTask(data);
+    if (timeoutTask == null) {
+      Map<String, CatalogEntry> previousEntries = fetchPreviousEntriesMap(ruleFilter);
+      if (previousEntries.size() > 0) {
+        data.setPreviousEntries(previousEntries);        
+      }
+    } else {
+      data = (CompositeTimerData)timeoutTask.getData();
+    }
+    
+    Map<String,CatalogEntry> currentEntries = fetchEntriesMap(ruleFilter);
+    
+    boolean allSourcesPresent = true;
+    for (String src : data.getPreviousSources()) {
+      if (!currentEntries.containsKey(src)) {
+        allSourcesPresent = false;
+        break;
+      } else if (isScanBased()) {
+        // for scans, we check also that the lowest scan is received
+        CatalogEntry currentEntry = currentEntries.get(src);
+        Double currentElangle = (Double)currentEntry.getAttribute("/dataset1/where/elangle");
+        Double previousElangle = data.getPreviousAngles().get(src);
+        
+        if (previousElangle == null || previousElangle.compareTo(currentElangle) < 0) {
+          allSourcesPresent = false;
+          break;
         }
       }
     }
-    logger.debug("EXIT: handleCompositeFromVolume(IBltMessage)");
+    
+    if (allSourcesPresent) {
+      result = createMessage(data.getDateTime(), currentEntries);
+      ruleUtil.trigger(ruleid, data.getDateTime());
+      if (timeoutTask != null) {
+        timeoutManager.unregister(timeoutTask.getId());
+      }
+    } else {
+      if (timeoutTask == null && timeout > 0) {
+        timeoutManager.register(this, ruleUtil.getTimeoutTime(data.getDateTime(), nominalTimeout, timeout*1000), data);
+      }
+    }
+
     return result;
   }
   
@@ -555,13 +489,9 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     IBltMessage result = null;
     CompositeTimerData ctd = (CompositeTimerData)data;
     if (ctd != null) {
-      List<CatalogEntry> entries = null;
-      
-      if (ctd.isScanBased()) {
-        entries = fetchScanEntries(ctd.getDateTime());
-      } else {
-        entries = fetchEntries(ctd.getDateTime());
-      }
+      CompositingRuleFilter ruleFilter = createFilter(ctd.getDateTime());
+      Map<String, CatalogEntry> entries = fetchEntriesMap(ruleFilter);
+
       if (!ruleUtil.isTriggered(ruleid, ctd.getDateTime())) {
         IBltMessage msgtosend = createMessage(ctd.getDateTime(), entries);
         BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
@@ -584,59 +514,39 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     CompositeTimerData result = null;
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
-      String object = file.getMetadata().getWhatObject();
-      Time t = file.getMetadata().getWhatTime();
-      Date d = file.getMetadata().getWhatDate();
-      DateTime nominalTime = ruleUtil.createNominalTime(d, t, interval);
-      if (quantity != null && !quantity.equals("")) {
-        if (!matcher.match(file.getMetadata(), xpr.eq(xpr.attribute("what/quantity"), xpr.literal(quantity)))) {
-          return null;
-        }
-      }
+      DateTime nominalTime = getNominalTimeFromFile(file);
+
       if (!ruleUtil.isTriggered(ruleid, nominalTime)) {
-        if (!isScanBased() && object.equals("PVOL")) {
-          result = new CompositeTimerData(ruleid, nominalTime);
-        } else if (isScanBased() && object.equals("SCAN")) {
-          result = new CompositeTimerData(ruleid, nominalTime, true);
-        }
+        result = new CompositeTimerData(ruleid, nominalTime, isScanBased(), sources);
       }
     }
     
     return result;
   }
   
-  /**
-   * Verifies if the criterias has been met so that we can create
-   * the message.
-   * @param entries a list of catalog entries
-   * @return true if the criterias has been met.
-   */
-  protected boolean areCriteriasMet(List<CatalogEntry> entries) {
-    List<String> es = ruleUtil.getSourcesFromEntries(entries);
-    for (String s : sources) {
-      if (!es.contains(s)) {
-        return false;
-      }
-    }
-    return true;
+  protected DateTime getNominalTimeFromFile(FileEntry file) {
+    Metadata metaData = file.getMetadata();
+    Time t = metaData.getWhatTime();
+    Date d = metaData.getWhatDate();
+    return ruleUtil.createNominalTime(d, t, interval);
   }
 
   /**
    * Creates a message if all nessecary entries are there
    * @param nominalDT the nominal time
-   * @param entries the list of entries
+   * @param entriesMap the list of entries
    * @return a message if criterias are fullfilled, otherwise null
    */
-  protected IBltMessage createMessage(DateTime nominalDT, List<CatalogEntry> entries) {
+  protected IBltMessage createMessage(DateTime nominalDT, Map<String,CatalogEntry> entriesMap) {
     BltGenerateMessage result = new BltGenerateMessage();
     Date date = nominalDT.getDate();
     Time time = nominalDT.getTime();
     
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>(entriesMap.values());
+    
     result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
-    entries = ruleUtil.getEntriesByClosestTime(nominalDT, entries);
-    entries = ruleUtil.getEntriesBySources(sources, entries);
     List<String> uuids = ruleUtil.getUuidStringsFromEntries(entries);
-    List<String> usedSources = ruleUtil.getSourcesFromEntries(entries);
+    List<String> usedSources = new ArrayList<String>(entriesMap.keySet());
     ruleUtil.reportRadarSourceUsage(sources, usedSources);
     
     result.setFiles(uuids.toArray(new String[0]));
@@ -692,72 +602,46 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
 
     return result;
   }
-  
-  /**
-   * Fetches the entries that are from the nominal time up until 
-   * the stop time defined by the interval.
-   * @param nominalTime the nominal time
-   * @return a list of entries
-   */
-  protected List<CatalogEntry> fetchEntries(DateTime nominalTime) {
-    TimeIntervalFilter filter = createFilter(nominalTime);
-    List<CatalogEntry> entries = catalog.fetch(filter);
-    return entries;
-  }
 
   /**
    * Returns a filter
    * @param nominalDT the nominal time
    * @return a TimeIntervalFilter for polar volumes  
    */
-  protected TimeIntervalFilter createFilter(DateTime nominalDT) {
-    TimeIntervalFilter filter = new TimeIntervalFilter();
-    filter.setObject("PVOL");
-    if (quantity != null && !quantity.equals("")) {
-      filter.setQuantity(quantity);
-    }
+  protected CompositingRuleFilter createFilter(DateTime nominalDT) {
     DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
-    filter.setStartDateTime(nominalDT);
-    filter.setStopDateTime(stopDT);
-    return filter;
+    
+    CompositingRuleFilter ruleFilter = 
+        new CompositingRuleFilter(isScanBased(), quantity, sources, nominalDT, stopDT, filter);
+    
+    return ruleFilter;
   }
   
-  /**
-   * Fetches lowest sweep scan for sources between nomialDT and
-   * nominalDT + interval
-   * @param nominalDT the nominal time
-   * @return list of entries
-   */
-  protected List<CatalogEntry> fetchScanEntries(DateTime nominalDT) {
-    List<CatalogEntry> result = new ArrayList<CatalogEntry>();
-    LowestAngleFilter filter = createScanFilter(nominalDT);
-    for (String src : sources) {
-      filter.setSource(src);
-      List<CatalogEntry> entries = catalog.fetch(filter);
-      result.addAll(entries);
-    }
-    return result;
-  }
-
-  protected LowestAngleFilter createScanFilter(DateTime nominalDT) {
-    LowestAngleFilter filter = new LowestAngleFilter();
-    if (quantity != null && !quantity.equals("")) {
-      filter.setQuantity(quantity);
-    }
+  protected Map<String,CatalogEntry> fetchPreviousEntriesMap(CompositingRuleFilter ruleFilter) {
+    DateTime previousStartDT = ruleUtil.createPrevNominalTime(ruleFilter.getStartDateTime(), interval);
+    CompositingRuleFilter previousFilter = createFilter(previousStartDT);
     
-    filter.setStart(nominalDT);
-    DateTime stopDT = ruleUtil.createNextNominalTime(nominalDT, interval);
-    filter.setStop(stopDT);
-    filter.setClosestToStartDate(true);
-    return filter;
+    return fetchEntriesMap(previousFilter);
   }
-
-  protected List<String> getUuidsFromEntries(List<CatalogEntry> entries) {
-    List<String> uuids = new ArrayList<String>(entries.size());
-    for (CatalogEntry e: entries) {
-      uuids.add(e.getUuid());
+  
+  protected Map<String,CatalogEntry> fetchEntriesMap(CompositingRuleFilter ruleFilter) {
+    Map<String,CatalogEntry> result = new HashMap<String, CatalogEntry>();
+    
+    List<CatalogEntry> entries = catalog.fetch(ruleFilter);
+    
+    List<String> remainingSources = new ArrayList<String>(sources);
+    
+    for (CatalogEntry entry : entries) {
+      String src = entry.getSource();
+      if (remainingSources.contains(src)) {
+        if (ruleFilter.fileMatches(entry.getFileEntry())) {
+          result.put(src, entry);
+          remainingSources.remove(src);          
+        }
+      }
     }
-    return uuids;
+
+    return result;
   }
   
   /**
@@ -941,14 +825,6 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     this.quantity = quantity;
   }
 
-  /**
-   * For test purspose
-   * @param matcher the matcher
-   */
-  protected void setMetadataMatcher(MetadataMatcher matcher) {
-    this.matcher = matcher;
-  }
-
   public boolean isNominalTimeout() {
     return nominalTimeout;
   }
@@ -972,5 +848,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   
   public void setQualityControlMode(int qualityControlMode) {
     this.qualityControlMode = qualityControlMode;
+  }
+  
+  public IFilter getFilter() {
+    return filter;
+  }
+
+  public void setFilter(IFilter filter) {
+    this.filter = filter;
   }
 }

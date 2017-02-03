@@ -18,10 +18,13 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.composite;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import eu.baltrad.bdb.util.DateTime;
+import eu.baltrad.beast.db.CatalogEntry;
 
 /**
  * Used for keeping track on registered tasks in the timeout manager.
@@ -48,6 +51,8 @@ public class CompositeTimerData {
    */
   private Map<String, Double> prevAngles = new HashMap<String, Double>();
   
+  private List<String> previousSources = null;
+  
   /**
    * Constructor
    * @param dt the date time
@@ -67,9 +72,10 @@ public class CompositeTimerData {
    * @param dt the date time
    * @param scanBased if scan based composite or not
    */
-  public CompositeTimerData(int ruleid, DateTime dt, boolean scanBased) {
+  public CompositeTimerData(int ruleid, DateTime dt, boolean scanBased, List<String> sources) {
     this(ruleid, dt);
     this.scanBased = scanBased;
+    this.previousSources = sources;
   }
   
   /**
@@ -133,5 +139,27 @@ public class CompositeTimerData {
    */
   public Map<String, Double> getPreviousAngles() {
     return prevAngles;
+  }
+  
+  public void setPreviousEntries(Map<String,CatalogEntry> entries) {
+    ArrayList<String> sources = new ArrayList<String>(entries.keySet());
+    setPreviousSources(sources);
+    
+    if (isScanBased()) {
+      for (String source : sources) {
+        CatalogEntry entry = entries.get(source);
+        Double elangle = (Double)entry.getAttribute("/dataset1/where/elangle");
+        prevAngles.put(source, elangle);
+      }
+    }
+    
+  }
+  
+  public void setPreviousSources(List<String> sources) {
+    this.previousSources = sources;
+  }
+  
+  public List<String> getPreviousSources() {
+    return previousSources;
   }
 }

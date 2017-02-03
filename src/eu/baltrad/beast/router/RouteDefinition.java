@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.router;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -90,7 +91,12 @@ public class RouteDefinition {
     }
   }
   
-  public static class NameComparator extends RouteComparator {
+  public static class NameComparator extends RouteComparator implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8047472457043886897L;
+
     public int doCompare(RouteDefinition route1, RouteDefinition route2) {
       if (route1.getName() == null || route2.getName() == null) {
         return 0;
@@ -100,7 +106,12 @@ public class RouteDefinition {
     }
   }
   
-  public static class DescriptionComparator extends RouteComparator {
+  public static class DescriptionComparator extends RouteComparator implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 9198396822068447710L;
+
     public int doCompare(RouteDefinition route1, RouteDefinition route2) {
       if (route1.getDescription() == null || route2.getDescription() == null) {
         return 0;
@@ -110,13 +121,23 @@ public class RouteDefinition {
     }
   }
   
-  public static class ActiveComparator extends RouteComparator {
+  public static class ActiveComparator extends RouteComparator implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1158483498421166326L;
+
     public int doCompare(RouteDefinition route1, RouteDefinition route2) {
       return (route1.isActive() ==  route2.isActive() ? 0 : (route2.isActive() ? 1 : -1));
     }
   }
   
-  public static class TypeComparator extends RouteComparator {
+  public static class TypeComparator extends RouteComparator implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4356175456332530439L;
+
     public int doCompare(RouteDefinition route1, RouteDefinition route2) {
       if (route1.getRuleType() == null || route2.getRuleType() == null) {
         return 0;

@@ -23,21 +23,20 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.bdb.db.FileEntry;
-import eu.baltrad.bdb.util.DateTime;
-
+import eu.baltrad.beast.db.AttributeFilter;
 import eu.baltrad.beast.db.Catalog;
-import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.beast.db.CombinedFilter;
+import eu.baltrad.beast.db.CombinedFilter.MatchType;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
+import junit.framework.TestCase;
 
 /**
  * @author Anders Henja
@@ -88,11 +87,6 @@ public class CompositingRuleITest extends TestCase {
     "fixtures/Z_SCAN_C_ESWI_20101016080500_sevar_000000.h5",
     "fixtures/Z_SCAN_C_ESWI_20101016080500_sevil_000000.h5"
   };
-  
-  private static String SCAN_SEHUD_CONFLICT_ELANGLE_1 = "fixtures/scan_sehud_0.5_20110126T184500Z.h5";  
-  private static String SCAN_SEHUD_CONFLICT_ELANGLE_2 = "fixtures/scan_sehud_0.5_20110126T184600Z.h5";
-  private static String SCAN_SEHUD_CONFLICT_ELANGLE_3 = "fixtures/scan_sehud_1.0_20110126T184500Z.h5";
-  private static String SCAN_SEHUD_CONFLICT_ELANGLE_4 = "fixtures/scan_sehud_1.0_20110126T184600Z.h5";
   
   public CompositingRuleITest(String name) {
     super(name);
@@ -241,47 +235,92 @@ public class CompositingRuleITest extends TestCase {
     assertNotNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023182000_sease_000000.h5")));
   }
   
-  public void testFetchScanEntries() throws Exception {
+  public void testHandle_filterMalfuncScans() throws Exception {
+    AttributeFilter filter = new AttributeFilter();
+    filter.setAttribute("how/malfunc");
+    filter.setValueType(AttributeFilter.ValueType.STRING);
+    filter.setValue("True");
+    filter.setOperator(AttributeFilter.Operator.NE);
+    classUnderTest.setFilter(filter);
+    
     List<String> sources = new ArrayList<String>();
-    sources.add("sehud");
+    sources.add("seang");
+    sources.add("searl");
+    sources.add("sease");
 
     classUnderTest.setArea("baltrad_composite");
     classUnderTest.setInterval(5);
     classUnderTest.setSources(sources);
-    classUnderTest.setScanBased(true);    
+    classUnderTest.setTimeout(10000);
+    classUnderTest.setScanBased(true);
     
-    // 20110126T184500Z
-    FileEntry f2 = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_SEHUD_CONFLICT_ELANGLE_2)));
-    Thread.sleep(2000); // We need to ensure that files are stored at different times to reproduce the problem
-    FileEntry f1 = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_SEHUD_CONFLICT_ELANGLE_1)));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181000_seang_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181000_searl_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181000_sease_000000.h5")));
+    // next period
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181500_seang_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181500_searl_malfunc_000000.h5")));
+    // Since the scan above was filtered out, due to malfunc, no composite should be generated when adding sease below
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181500_sease_000000.h5")));
+    // First when adding the none-malfunc scan for searl, a composite shall be generated
+    assertNotNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20101023181500_searl_000000.h5")));
+
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20170202080000_searl_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20170202080000_sease_malfunc_000000.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20170202080000_seang_000000.h5")));
+    // next period - since sease was filtered out last period, it is sufficient to receive searl and seang in the next to create a composite
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20170202080500_searl_000000.h5")));
+    assertNotNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/Z_SCAN_C_ESWI_20170202080500_seang_000000.h5")));
     
-    List<CatalogEntry> entries = classUnderTest.fetchScanEntries(new DateTime(2011,1,26,18,45,0));
-    assertEquals(1, entries.size());
-    assertEquals(f1.getUuid().toString(), entries.get(0).getUuid());
-    assertEquals("20110126", entries.get(0).getFileEntry().getMetadata().getWhatDate().toIsoString());
-    assertEquals("184500", entries.get(0).getFileEntry().getMetadata().getWhatTime().toIsoString());
   }
-
-  public void testFetchScanEntries_bothDuplicateElAngleAndDates() throws Exception {
+  
+  public void testHandle_filterPvolAngles() throws Exception {
+    AttributeFilter attrFilter1 = new AttributeFilter();
+    attrFilter1.setAttribute("where/elangle");
+    attrFilter1.setValueType(AttributeFilter.ValueType.DOUBLE);
+    attrFilter1.setValue("0.7");
+    attrFilter1.setOperator(AttributeFilter.Operator.LT);
+    
+    AttributeFilter attrFilter2 = new AttributeFilter();
+    attrFilter2.setAttribute("where/elangle");
+    attrFilter2.setValueType(AttributeFilter.ValueType.DOUBLE);
+    attrFilter2.setValue("25.0");
+    attrFilter2.setOperator(AttributeFilter.Operator.GT);
+    
+    CombinedFilter combinedFilter = new CombinedFilter();
+    combinedFilter.addChildFilter(attrFilter1);
+    combinedFilter.addChildFilter(attrFilter2);
+    combinedFilter.setMatchType(MatchType.ALL);
+    
+    classUnderTest.setFilter(combinedFilter);
+    
     List<String> sources = new ArrayList<String>();
-    sources.add("sehud");
+    sources.add("sease");
+    sources.add("sekir");
+    sources.add("sevil");
+    sources.add("seang");
 
     classUnderTest.setArea("baltrad_composite");
     classUnderTest.setInterval(5);
     classUnderTest.setSources(sources);
-    classUnderTest.setScanBased(true);    
+    classUnderTest.setTimeout(10000);
+    classUnderTest.setScanBased(false);
     
-    // 20110126T184500Z
-    FileEntry f1 = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_SEHUD_CONFLICT_ELANGLE_1)));
-    FileEntry f2 = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_SEHUD_CONFLICT_ELANGLE_2)));
-    FileEntry f3 = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_SEHUD_CONFLICT_ELANGLE_3)));
-    FileEntry f4 = catalog.getCatalog().store(new FileInputStream(getFilePath(SCAN_SEHUD_CONFLICT_ELANGLE_4)));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/sease_pvol_20170203T010000Z.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/sekkr_pvol_20170203T010000Z.h5"))); // not in sources list
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/sekir_pvol_20170203T010000Z.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/seang_pvol_no05angle_20170203T010000Z.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/seang_pvol_no40angle_20170203T010000Z.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/sevil_pvol_20170203T010000Z.h5")));
     
-    List<CatalogEntry> entries = classUnderTest.fetchScanEntries(new DateTime(2011,1,26,18,45,0));
-    assertEquals(1, entries.size());
-    assertEquals(f1.getUuid().toString(), entries.get(0).getUuid());
-    assertEquals("20110126", entries.get(0).getFileEntry().getMetadata().getWhatDate().toIsoString());
-    assertEquals("184500", entries.get(0).getFileEntry().getMetadata().getWhatTime().toIsoString());
+    // since only three of the sources in the source-list were received with correct angles in the previous period, 
+    // it is enough to receive those three sources in the next
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/sease_pvol_20170203T010500Z.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/sevil_pvol_no05angle_20170203T010500Z.h5")));
+    assertNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/sekir_pvol_20170203T010500Z.h5")));
+    // no composite generated for volume above, since sevil was filtered out. Need to add sevil volume the pass filter below
+    assertNotNull(catalogAndHandle(classUnderTest, getFilePath("fixtures/sevil_pvol_20170203T010500Z.h5")));
+    
   }
   
   protected BltDataMessage createDataMessage(FileEntry f) {

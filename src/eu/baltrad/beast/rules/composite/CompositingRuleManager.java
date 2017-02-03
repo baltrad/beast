@@ -20,14 +20,18 @@ package eu.baltrad.beast.rules.composite;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
@@ -55,6 +59,11 @@ public class CompositingRuleManager implements IRuleManager {
    * The timeout manager
    */
   private TimeoutManager timeoutManager = null;
+  
+  /**
+   * filter manager
+   */
+  private RuleFilterManager filterManager;
   
   /**
    * @param template the jdbc template to set
@@ -91,6 +100,7 @@ public class CompositingRuleManager implements IRuleManager {
   public void delete(int ruleId) {
     storeSources(ruleId, null);
     storeDetectors(ruleId, null);
+    storeFilter(ruleId, null);
     template.update("delete from beast_composite_rules where rule_id=?",
         new Object[]{ruleId});
   }
@@ -100,10 +110,12 @@ public class CompositingRuleManager implements IRuleManager {
    */
   @Override
   public IRule load(int ruleId) {
-    return template.queryForObject(
+    CompositingRule rule = template.queryForObject(
         "select * from beast_composite_rules where rule_id=?",
         getCompsiteRuleMapper(),
         new Object[]{ruleId});
+    rule.setFilter(loadFilter(ruleId));
+    return rule;
   }
 
   /**
@@ -134,6 +146,7 @@ public class CompositingRuleManager implements IRuleManager {
         " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignoreMalfunc, ctfilter, qitotalField, quantity, nominal_timeout, qualityControlMode});
     storeSources(ruleId, crule.getSources());
     storeDetectors(ruleId, crule.getDetectors());
+    storeFilter(ruleId, crule.getFilter());
     crule.setRuleId(ruleId);
   }
 
@@ -148,6 +161,7 @@ public class CompositingRuleManager implements IRuleManager {
         new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), crule.getSelectionMethod(), crule.getMethod(), crule.getProdpar(), crule.isApplyGRA(), crule.getZR_A(), crule.getZR_b(), crule.isIgnoreMalfunc(), crule.isCtFilter(), crule.getQitotalField(), crule.getQuantity(), crule.isNominalTimeout(), crule.getQualityControlMode(), ruleId});
     storeSources(ruleId, crule.getSources());
     storeDetectors(ruleId, crule.getDetectors());
+    storeFilter(ruleId, crule.getFilter());
     crule.setRuleId(ruleId);
   }
   
@@ -194,6 +208,35 @@ public class CompositingRuleManager implements IRuleManager {
             " values (?,?)", new Object[]{rule_id, src});
       }
     }    
+  }
+  
+  /**
+   * Stores the associated filter
+   * @param rule_id the rule_id
+   * @param filter the filter to store
+   */
+  protected void storeFilter(int rule_id, IFilter filter) {
+    if (filter != null) {
+      Map<String, IFilter> filters = new HashMap<String, IFilter>();
+      filters.put("match", filter);
+      filterManager.storeFilters(rule_id, filters);
+    } else {
+      filterManager.deleteFilters(rule_id);
+    }
+  }
+  
+  /**
+   * Loads the filter for the rule
+   * @param rule_id the rule
+   * @return the filter if any otherwise null
+   */
+  protected IFilter loadFilter(int rule_id) {
+    IFilter result = null;
+    Map<String, IFilter> filters = filterManager.loadFilters(rule_id);
+    if (filters.containsKey("match")) {
+      result = filters.get("match");
+    }
+    return result;
   }
  
   /**
@@ -276,4 +319,19 @@ public class CompositingRuleManager implements IRuleManager {
     result.afterPropertiesSet();
     return result;
   }
+  
+  /**
+   * @return the filter manager
+   */
+  public RuleFilterManager getFilterManager() {
+    return filterManager;
+  }
+
+  /**
+   * @param filterManager the filter manager
+   */
+  public void setFilterManager(RuleFilterManager filterManager) {
+    this.filterManager = filterManager;
+  }
+  
 }
