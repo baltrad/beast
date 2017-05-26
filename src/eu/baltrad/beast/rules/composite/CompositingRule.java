@@ -412,12 +412,12 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
         CompositingRuleFilter ruleFilter = createFilter(getNominalTimeFromFile(file));
         if (ruleFilter.fileMatches(file)) {
-          logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+          logger.info("ENTER: execute CompositingRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
               ", file: " + file.getUuid());
           
           generatedMessage = createComposite(message, ruleFilter);
           
-          logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+          logger.info("EXIT: execute CompositingRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
               ", file: " + file.getUuid()); 
         }
       }

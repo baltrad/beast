@@ -216,9 +216,9 @@ public class DistributionRule implements IRule, IRulePropertyAccess {
     if (message instanceof BltDataMessage) {
       FileEntry entry = ((BltDataMessage)message).getFileEntry();
       if (match(entry)) {
-        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
+        logger.info("ENTER: execute DistributionRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         upload(entry);
-        logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
+        logger.info("EXIT: execute DistributionRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
       }
     }
     logger.debug("EXIT: handle(IBltMessage)");

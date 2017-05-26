@@ -365,7 +365,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     if (data != null && !isHandled(data)) {
       // if data != null, message is an instance of BltDataMessage - therefore safe to cast
       FileEntry file = ((BltDataMessage)message).getFileEntry();
-      logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+      logger.info("ENTER: execute VolumeRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
           ", file: " + file.getUuid());
       List<CatalogEntry> entries = fetchAllCurrentEntries(data.getDateTime(), data.getSource());
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
@@ -382,7 +382,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
           }
         }
       }
-      logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+      logger.info("EXIT: execute VolumeRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
           ", file: " + file.getUuid());
     }
     

@@ -26,6 +26,7 @@ import static org.junit.Assert.assertSame;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.easymock.EasyMockSupport;
@@ -36,6 +37,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 import eu.baltrad.beast.rules.util.RuleUtilities;
 
@@ -52,6 +55,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
   
   private JdbcOperations jdbc = null;
   private WrwpRuleManager classUnderTest = null;
+  private RuleFilterManager filterManager = null;
   private Methods methods = null;
   
   /**
@@ -60,6 +64,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
   @Before
   public void setUp() throws Exception {
     jdbc = createMock(JdbcOperations.class);
+    filterManager = createMock(RuleFilterManager.class);
     methods = createMock(Methods.class);
     
     classUnderTest = new WrwpRuleManager() {
@@ -77,6 +82,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
       }
     };    
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
   }
 
   /**
@@ -108,6 +114,8 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
         "VALUES (?,?,?,?,?,?,?)", 
         new Object[]{10, 300, 5000, 1000, 10000, 1.5, 10.0})).andReturn(1);
     
+    filterManager.deleteFilters(10);
+    
     methods.updateSources(10, sources);
     
     replayAll();
@@ -122,6 +130,10 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
   public void test_load() throws Exception {
     WrwpRule rule = new WrwpRule();
     
+    HashMap<String, IFilter> filters = new HashMap<String, IFilter>();
+    IFilter filter = createMock(IFilter.class);
+    filters.put("match", filter);
+    
     final RowMapper<WrwpRule> mapper = new RowMapper<WrwpRule>() {
       public WrwpRule mapRow(ResultSet arg0, int arg1) throws SQLException {
         return null;
@@ -135,9 +147,12 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
       }
     };
     classUnderTest.setJdbcTemplate(jdbc);
+    classUnderTest.setFilterManager(filterManager);
     
     expect(jdbc.queryForObject("SELECT * FROM beast_wrwp_rules WHERE rule_id=?",
         mapper, new Object[]{3})).andReturn(rule);
+    
+    expect(filterManager.loadFilters(3)).andReturn(filters);
     
     replayAll();
     
@@ -167,6 +182,8 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
         new Object[]{300, 5000, 1000, 10000, 1.5, 10.0, 12})).andReturn(1);
     methods.updateSources(12, sources);
     
+    filterManager.deleteFilters(12);
+    
     replayAll();
     
     classUnderTest.update(12, rule);
@@ -181,6 +198,8 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     
     expect(jdbc.update("DELETE FROM beast_wrwp_rules WHERE rule_id=?",
       new Object[]{12})).andReturn(0);
+    
+    filterManager.deleteFilters(12);
       
     replayAll();
       

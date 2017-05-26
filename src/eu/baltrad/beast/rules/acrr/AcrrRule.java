@@ -380,7 +380,7 @@ public class AcrrRule implements IRule, InitializingBean {
     logger.debug("ENTER: handle(IBltMessage)");
     try {
       if (message instanceof BltTriggerJobMessage) {
-        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
+        logger.info("ENTER: execute AcrrRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         DateTime nowdt = ruleUtil.nowDT();
         if (((BltTriggerJobMessage)message).getScheduledFireTime() != null) {
           nowdt = ruleUtil.createDateTime(((BltTriggerJobMessage)message).getScheduledFireTime());
@@ -414,13 +414,13 @@ public class AcrrRule implements IRule, InitializingBean {
         logger.debug("AcrrRule createMessage - entries: " +
             StringUtils.collectionToDelimitedString(uuids, " "));
         
-        logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
+        logger.info("EXIT: execute AcrrRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         
         return result;
       }
     } 
     catch (Exception e) {
-      logger.error("FAIL: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName(), e);
+      logger.error("FAIL: execute AcrrRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName(), e);
     }
     finally {
       logger.debug("EXIT: handle(IBltMessage)");

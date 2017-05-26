@@ -95,7 +95,7 @@ public class GraRule extends AcrrRule {
     logger.debug("ENTER: handle(IBltMessage)");
     try {
       if (message instanceof BltTriggerJobMessage) {
-        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
+        logger.info("ENTER: execute GraRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         DateTime nowdt = getNowDT();
         if (((BltTriggerJobMessage)message).getScheduledFireTime() != null) {
           nowdt = getRuleUtilities().createDateTime(((BltTriggerJobMessage)message).getScheduledFireTime());
@@ -127,7 +127,7 @@ public class GraRule extends AcrrRule {
         logger.debug("GraRule createMessage - entries: " +
             StringUtils.collectionToDelimitedString(uuids, " "));
         
-        logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
+        logger.info("EXIT: execute GraRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         
         return result;
       }

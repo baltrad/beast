@@ -22,7 +22,6 @@ package eu.baltrad.beast.rules.wrwp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +35,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -51,6 +51,7 @@ public class WrwpRuleManagerITest {
   private JdbcOperations template = null;
   private Catalog catalog = null;
   private IRuleUtilities utilities = null;
+  private RuleFilterManager filterManager = null;
 
   @Before
   public void setUp() throws Exception {
@@ -65,11 +66,13 @@ public class WrwpRuleManagerITest {
     context = BeastDBTestHelper.loadContext(this);
     catalog = (Catalog)context.getBean("catalog");
     utilities = (IRuleUtilities)context.getBean("ruleutil");
+    filterManager = (RuleFilterManager)context.getBean("filterManager");
 
     classUnderTest = new WrwpRuleManager();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setRuleUtilities(utilities);
     classUnderTest.setJdbcTemplate(template);
+    classUnderTest.setFilterManager(filterManager);
   }
    
   @After
@@ -79,6 +82,7 @@ public class WrwpRuleManagerITest {
     template = null;
     catalog = null;
     utilities = null;
+    filterManager = null;
     context.close();
     dbcontext.close();
   }
@@ -157,8 +161,4 @@ public class WrwpRuleManagerITest {
     Assertion.assertEquals(expectedsrc, actualsrc);
   }
   
-  private String getFilePath(String resource) throws Exception {
-    File f = new File(this.getClass().getResource(resource).getFile());
-    return f.getAbsolutePath();
-  }
 }

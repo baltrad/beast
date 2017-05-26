@@ -109,7 +109,7 @@ public class GoogleMapRule implements IRule, InitializingBean {
 	  try {
 	    if (isValid() && message != null && message instanceof BltDataMessage) {
 	      FileEntry fe = ((BltDataMessage)message).getFileEntry();
-	      logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+	      logger.info("ENTER: execute GoogleMapRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
             ", file: " + fe.getUuid());
 	      String object = fe.getMetadata().getWhatObject();
 	      if (object != null && object.equals("COMP")) {
@@ -130,7 +130,7 @@ public class GoogleMapRule implements IRule, InitializingBean {
 	          result.setArguments(args.toArray(new String[0]));
 	        }
 	      }
-	      logger.info("EXIT: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+	      logger.info("EXIT: execute GoogleMapRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
             ", file: " + fe.getUuid());
 	    }
 	  } finally {

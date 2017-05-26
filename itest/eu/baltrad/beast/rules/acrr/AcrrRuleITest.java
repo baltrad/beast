@@ -19,27 +19,19 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.rules.acrr;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
-import eu.baltrad.beast.db.filters.TimeIntervalFilter;
-import eu.baltrad.beast.db.filters.TimeSelectionFilter;
 import eu.baltrad.beast.itest.BeastDBTestHelper;
-import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
-import eu.baltrad.beast.rules.volume.VolumeRule;
+import junit.framework.TestCase;
 
 /**
  * @author Anders Henja

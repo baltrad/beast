@@ -28,7 +28,9 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -96,9 +98,23 @@ public class WrwpRule implements IRule, InitializingBean {
   private double velocitythreshold = 2.0;
   
   /**
+   * The filter used for matching files
+   */
+  private IFilter filter = null;
+
+  /**
+   * The matcher used for verifying the filter
+   */
+  private MetadataMatcher matcher;
+  
+  /**
    * The logger
    */
   private static Logger logger = LogManager.getLogger(WrwpRule.class);
+  
+  public WrwpRule() {
+    matcher = new MetadataMatcher();
+  }
   
   /**
    * @param ruleid the ruleid to set
@@ -240,6 +256,22 @@ public class WrwpRule implements IRule, InitializingBean {
     return this.sources;
   }
   
+  public IFilter getFilter() {
+    return filter;
+  }
+
+  public void setFilter(IFilter filter) {
+    this.filter = filter;
+  }
+
+  public MetadataMatcher getMatcher() {
+    return matcher;
+  }
+
+  public void setMatcher(MetadataMatcher matcher) {
+    this.matcher = matcher;
+  }
+  
   /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
    */
@@ -249,7 +281,7 @@ public class WrwpRule implements IRule, InitializingBean {
     
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
-      if (file.getMetadata().getWhatObject().equals("PVOL")) {
+      if (handleFile(file)) {
         String s = file.getSource().getName();
         if (sources.size() > 0 && sources.contains(s)) {
           logger.debug("Creating a message to generate a wrwp product for '"+s+"'");
@@ -269,6 +301,17 @@ public class WrwpRule implements IRule, InitializingBean {
     }
 
     return result;
+  }
+  
+  private boolean handleFile(FileEntry file) {
+    boolean handleFile = false;
+    if (file.getMetadata().getWhatObject().equals("PVOL")) {
+      if (filter == null || matcher.match(file.getMetadata(), filter.getExpression())) {
+        handleFile = true;
+      }
+    }
+    
+    return handleFile;
   }
 
   /**

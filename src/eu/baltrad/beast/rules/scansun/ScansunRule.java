@@ -66,7 +66,7 @@ public class ScansunRule implements IRule {
     try {
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
-        logger.info("ENTER: execute ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+        logger.info("ENTER: execute ScansunRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
             ", file: " + file.getUuid());
         String object = file.getMetadata().getWhatObject();
         String src = file.getSource().getName();

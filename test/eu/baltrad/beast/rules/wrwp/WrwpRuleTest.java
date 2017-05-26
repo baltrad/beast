@@ -21,6 +21,8 @@ package eu.baltrad.beast.rules.wrwp;
 
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -34,9 +36,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.oh5.Source;
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.mo.BltAlertMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -50,14 +55,17 @@ public class WrwpRuleTest extends EasyMockSupport {
   private Catalog catalog = null;
   private IRuleUtilities ruleUtil = null;
   private WrwpRule classUnderTest = null;
+  private MetadataMatcher matcher = null;
   
   @Before
   public void setUp() throws Exception {
     catalog = createMock(Catalog.class);
     ruleUtil = createMock(IRuleUtilities.class);
+    matcher = createMock(MetadataMatcher.class);
     classUnderTest = new WrwpRule();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setRuleUtilities(ruleUtil);
+    classUnderTest.setMatcher(matcher);
   }
   
   @After
@@ -233,5 +241,75 @@ public class WrwpRuleTest extends EasyMockSupport {
       // pass
     }
   }
+  
+  @Test
+  public void handle_filterNotMatching() throws Exception {
+
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata m = createMock(Metadata.class);
+    IFilter filter = createMock(IFilter.class);
+    Expression xpr = createMock(Expression.class);
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("searl");
+    sources.add("seang");
+    classUnderTest.setSources(sources);
+    
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fe);
+    
+    expect(fe.getMetadata()).andReturn(m).anyTimes();
+    expect(m.getWhatObject()).andReturn("PVOL");
+    expect(filter.getExpression()).andReturn(xpr);
+    expect(matcher.match(m, xpr)).andReturn(false);
+
+    classUnderTest.setFilter(filter);
+    classUnderTest.setMatcher(matcher);
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertNull(result);
+  }
+  
+  @Test
+  public void handle_filterMatching() throws Exception {
+
+    Source fileSource = new Source("searl");
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata m = createMock(Metadata.class);
+    IFilter filter = createMock(IFilter.class);
+    Expression xpr = createMock(Expression.class);
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("searl");
+    sources.add("seang");
+    classUnderTest.setSources(sources);
+    
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fe);
+    
+    expect(fe.getMetadata()).andReturn(m).anyTimes();
+    expect(fe.getUuid()).andReturn(new UUID(10, 99)).anyTimes();
+    expect(m.getWhatObject()).andReturn("PVOL");
+    expect(fe.getSource()).andReturn(fileSource);
+    expect(filter.getExpression()).andReturn(xpr);
+    expect(matcher.match(m, xpr)).andReturn(true);
+
+    classUnderTest.setFilter(filter);
+    classUnderTest.setMatcher(matcher);
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertNotNull(result);
+    assertEquals(result.getAlgorithm(), "eu.baltrad.beast.GenerateWrwp");
+    assertEquals(result.getFiles().length, 1);
+    assertEquals(result.getFiles()[0], "00000000-0000-000a-0000-000000000063"); // UUID(10, 99) should give this
+  } 
   
 }

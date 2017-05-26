@@ -21,14 +21,18 @@ package eu.baltrad.beast.rules.wrwp;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.RuleFilterManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
 /**
@@ -49,6 +53,11 @@ public class WrwpRuleManager implements IRuleManager {
    * The rule utilities
    */
   private IRuleUtilities ruleUtilities = null;
+  
+  /**
+   * filter manager
+   */
+  private RuleFilterManager filterManager;
   
   /**
    * @param template the jdbc template to set
@@ -75,7 +84,7 @@ public class WrwpRuleManager implements IRuleManager {
    * @see eu.baltrad.beast.rules.IRuleManager#store(int, eu.baltrad.beast.rules.IRule)
    */
   @Override
-  public void store(int rule_id, IRule rule) {
+  public void store(int ruleId, IRule rule) {
     WrwpRule wrule = (WrwpRule)rule;
     int interval = wrule.getInterval();
     int maxheight = wrule.getMaxheight();
@@ -88,28 +97,32 @@ public class WrwpRuleManager implements IRuleManager {
         "INSERT INTO beast_wrwp_rules" +
         " (rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh)" +
         " VALUES (?,?,?,?,?,?,?)", 
-        new Object[]{rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh});
+        new Object[]{ruleId, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh});
     
-    updateSources(rule_id, wrule.getSources());
+    updateSources(ruleId, wrule.getSources());
     
-    wrule.setRuleId(rule_id);
+    storeFilter(ruleId, wrule.getFilter());
+    
+    wrule.setRuleId(ruleId);
   }
 
   /**
    * @see eu.baltrad.beast.rules.IRuleManager#load(int)
    */
   @Override
-  public IRule load(int rule_id) {
-    return template.queryForObject("SELECT * FROM beast_wrwp_rules WHERE rule_id=?", 
+  public IRule load(int ruleId) {
+    WrwpRule rule = template.queryForObject("SELECT * FROM beast_wrwp_rules WHERE rule_id=?", 
         getWrwpRuleMapper(),
-        new Object[]{rule_id});
+        new Object[]{ruleId});
+    rule.setFilter(loadFilter(ruleId));
+    return rule;
   }
 
   /**
    * @see eu.baltrad.beast.rules.IRuleManager#update(int, eu.baltrad.beast.rules.IRule)
    */
   @Override
-  public void update(int rule_id, IRule rule) {
+  public void update(int ruleId, IRule rule) {
     WrwpRule wrule = (WrwpRule)rule;
     int interval = wrule.getInterval();
     int maxheight = wrule.getMaxheight();
@@ -121,20 +134,23 @@ public class WrwpRuleManager implements IRuleManager {
     template.update(
         "UPDATE beast_wrwp_rules SET interval=?, maxheight=?, mindistance=?," +
         " maxdistance=?, minelangle=?, minvelocitythresh=? WHERE rule_id=?",
-        new Object[]{interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, rule_id});
+        new Object[]{interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, ruleId});
     
-    updateSources(rule_id, wrule.getSources());
+    updateSources(ruleId, wrule.getSources());
     
-    wrule.setRuleId(rule_id);
+    storeFilter(ruleId, wrule.getFilter());
+    
+    wrule.setRuleId(ruleId);
   }
 
   /**
    * @see eu.baltrad.beast.rules.IRuleManager#delete(int)
    */
   @Override
-  public void delete(int rule_id) {
-    updateSources(rule_id, null);
-    template.update("DELETE FROM beast_wrwp_rules WHERE rule_id=?", new Object[]{rule_id});
+  public void delete(int ruleId) {
+    updateSources(ruleId, null);
+    storeFilter(ruleId, null);
+    template.update("DELETE FROM beast_wrwp_rules WHERE rule_id=?", new Object[]{ruleId});
   }
 
   /**
@@ -152,25 +168,25 @@ public class WrwpRuleManager implements IRuleManager {
    * Updates the sources
    * @param sources the sources that should be added for the specific rule
    */
-  protected void updateSources(int rule_id, List<String> sources) {
-    template.update("DELETE FROM beast_wrwp_sources WHERE rule_id=?", new Object[]{rule_id});
+  protected void updateSources(int ruleId, List<String> sources) {
+    template.update("DELETE FROM beast_wrwp_sources WHERE rule_id=?", new Object[]{ruleId});
     if (sources != null) {
       for (String s : sources) {
         template.update("INSERT INTO beast_wrwp_sources (rule_id, source) VALUES (?,?)",
-            new Object[]{rule_id, s});
+            new Object[]{ruleId, s});
       }
     }
   }
   
   /**
    * Returns the sources associated with this rule
-   * @param rule_id the rule id
+   * @param ruleId the rule id
    * @return the list of sources
    */
-  protected List<String> getSources(int rule_id) {
+  protected List<String> getSources(int ruleId) {
     return template.query("SELECT source FROM beast_wrwp_sources WHERE rule_id=?", 
         getSourceMapper(), 
-        new Object[]{rule_id});
+        new Object[]{ruleId});
   }
   
   /**
@@ -205,5 +221,48 @@ public class WrwpRuleManager implements IRuleManager {
         return rs.getString("source");
       }
     };
+  }
+  
+  /**
+   * Stores the associated filter
+   * @param ruleId the ruleId
+   * @param filter the filter to store
+   */
+  protected void storeFilter(int ruleId, IFilter filter) {
+    if (filter != null) {
+      Map<String, IFilter> filters = new HashMap<String, IFilter>();
+      filters.put("match", filter);
+      filterManager.storeFilters(ruleId, filters);
+    } else {
+      filterManager.deleteFilters(ruleId);
+    }
+  }
+  
+  /**
+   * Loads the filter for the rule
+   * @param ruleId the rule
+   * @return the filter if any otherwise null
+   */
+  protected IFilter loadFilter(int ruleId) {
+    IFilter result = null;
+    Map<String, IFilter> filters = filterManager.loadFilters(ruleId);
+    if (filters.containsKey("match")) {
+      result = filters.get("match");
+    }
+    return result;
+  }
+  
+  /**
+   * @return the filter manager
+   */
+  public RuleFilterManager getFilterManager() {
+    return filterManager;
+  }
+
+  /**
+   * @param filterManager the filter manager
+   */
+  public void setFilterManager(RuleFilterManager filterManager) {
+    this.filterManager = filterManager;
   }
 }
