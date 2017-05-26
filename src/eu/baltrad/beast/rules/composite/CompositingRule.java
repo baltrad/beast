@@ -228,6 +228,11 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   private int qualityControlMode = QualityControlMode_ANALYZE_AND_APPLY;
   
   /**
+   * Indicates quality controls shall always be reprocessed
+   */
+  private boolean reprocessQuality = false;
+  
+  /**
    * The recipients that are affected by this rule. Used
    * for generating timeout message
    */
@@ -593,6 +598,9 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     if (getQuantity() != null && !getQuantity().equals("")) {
       args.add("--quantity="+getQuantity());
     }
+    if (isReprocessQuality()) {
+      args.add("--reprocess_qfields=True");
+    }
     args.add("--algorithm_id="+getRuleId());
     args.add("--merge=true");
     result.setArguments(args.toArray(new String[0]));
@@ -856,5 +864,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
 
   public void setFilter(IFilter filter) {
     this.filter = filter;
+  }
+
+  public void setReprocessQuality(Boolean reprocessQuality) {
+    this.reprocessQuality = reprocessQuality;
+  }
+  
+  public boolean isReprocessQuality() {
+    return this.reprocessQuality;
   }
 }

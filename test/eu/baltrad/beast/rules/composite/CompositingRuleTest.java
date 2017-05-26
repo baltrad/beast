@@ -684,6 +684,85 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--algorithm_id=10", arguments[14]);
     assertEquals("--merge=true", arguments[15]);
   }
+  
+  @Test
+  public void testCreateMessage_reprocessQuality() {
+    Date date = new Date(2010, 2, 1);
+    Time time = new Time(1, 0, 0);
+    DateTime nominalTime = new DateTime(date, time);
+    List<String> detectors = new ArrayList<String>();
+    detectors.add("ropo");
+    detectors.add("sigge");
+    detectors.add("nisse");
+    
+    // actual entries don't matter, just make the list of different size to distinguish
+    Map<String, CatalogEntry> entries = new HashMap<String, CatalogEntry>();
+    List<CatalogEntry> entriesBySources = new ArrayList<CatalogEntry>(entries.values());
+    
+    List<String> fileEntries = new ArrayList<String>();
+    fileEntries.add("uuid-1");
+    fileEntries.add("uuid-2");
+    fileEntries.add("uuid-3");
+
+    List<String> usedSources = new ArrayList<String>();
+    
+    classUnderTest.setArea("blt_composite");
+    
+    List<String> sources = new ArrayList<String>();
+    sources.add("sekkr");
+    sources.add("selul");
+    sources.add("searl");
+    classUnderTest.setSources(sources);
+    
+    expect(ruleUtil.getUuidStringsFromEntries(entriesBySources)).andReturn(fileEntries);
+    ruleUtil.reportRadarSourceUsage(sources, usedSources);
+    
+    classUnderTest.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    classUnderTest.setDetectors(detectors);
+    
+    classUnderTest.setMethod(CompositingRule.PPI);
+    classUnderTest.setProdpar("0.5");
+    classUnderTest.setApplyGRA(true);
+    classUnderTest.setIgnoreMalfunc(true);
+    classUnderTest.setCtFilter(true);
+    classUnderTest.setReprocessQuality(true);
+    classUnderTest.setZR_A(100.0);
+    classUnderTest.setZR_b(1.4);
+    
+    replayAll();
+    
+    IBltMessage result = classUnderTest.createMessage(nominalTime, entries);
+    
+    verifyAll();
+    
+    assertTrue(result instanceof BltGenerateMessage);
+    BltGenerateMessage msg = (BltGenerateMessage)result;
+    assertEquals("eu.baltrad.beast.GenerateComposite", msg.getAlgorithm());
+    String[] files = msg.getFiles();
+    assertEquals(3, files.length);
+    assertTrue(arrayContains(files, "uuid-1"));
+    assertTrue(arrayContains(files, "uuid-2"));
+    assertTrue(arrayContains(files, "uuid-3"));
+    String[] arguments = msg.getArguments();
+    assertEquals(17, arguments.length);
+    assertEquals("--area=blt_composite", arguments[0]);
+    assertEquals("--date=20100201", arguments[1]);
+    assertEquals("--time=010000", arguments[2]);
+    assertEquals("--selection=HEIGHT_ABOVE_SEALEVEL", arguments[3]);
+    assertEquals("--anomaly-qc=ropo,sigge,nisse", arguments[4]);
+    assertEquals("--qc-mode=ANALYZE_AND_APPLY", arguments[5]);
+    assertEquals("--method=ppi", arguments[6]);
+    assertEquals("--prodpar=0.5", arguments[7]);
+    assertEquals("--applygra=true", arguments[8]);
+    assertEquals("--zrA=100.0", arguments[9]);
+    assertEquals("--zrb=1.4", arguments[10]);
+    assertEquals("--ignore-malfunc=true", arguments[11]);
+    assertEquals("--ctfilter=True", arguments[12]);
+    assertEquals("--quantity=DBZH", arguments[13]);
+    assertEquals("--reprocess_qfields=True", arguments[14]);
+    assertEquals("--algorithm_id=10", arguments[15]);
+    assertEquals("--merge=true", arguments[16]);
+  }
 
   @Test
   public void testCreateMessage_qiTotal() {
