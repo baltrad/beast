@@ -76,7 +76,8 @@ create table beast_composite_rules (
   ctfilter boolean NOT NULL,
   qitotal_field text,
   quantity text,
-  qc_mode integer NOT NULL  
+  qc_mode integer NOT NULL,
+  reprocess_quality boolean NOT NULL
 );
 
 create table beast_composite_sources (
