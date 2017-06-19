@@ -81,11 +81,14 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
   @Test
   public void testGetSupportedAttributes() {
     Set<String> result = classUnderTest.getSupportedAttributes();
-    Assert.assertEquals(4, result.size());
+    Assert.assertEquals(7, result.size());
     Assert.assertEquals(true, result.contains("objects"));
     Assert.assertEquals(true, result.contains("sources"));
     Assert.assertEquals(true, result.contains("areas"));
     Assert.assertEquals(true, result.contains("minutes"));
+    Assert.assertEquals(true,  result.contains("what/*"));
+    Assert.assertEquals(true,  result.contains("where/*"));
+    Assert.assertEquals(true,  result.contains("how/*"));
   }
   
   @Test
