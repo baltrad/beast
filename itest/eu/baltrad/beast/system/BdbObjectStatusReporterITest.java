@@ -49,6 +49,9 @@ public class BdbObjectStatusReporterITest {
     "fixtures/Z_SCAN_C_ESWI_20101016080000_seang_000000.h5",
     "fixtures/Z_SCAN_C_ESWI_20101016080500_seang_000000.h5",
     "fixtures/Z_SCAN_C_ESWI_20101016080500_searl_000000.h5",
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_seang_000001.h5", // O1
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_sehud_000000.h5", // O2
+    "fixtures/Z_SCAN_C_ESWI_20101016080500_selek_000000.h5", // O3  
     "fixtures/comp_20101016080000_swegmaps_2000.h5"
   };
   
@@ -73,6 +76,21 @@ public class BdbObjectStatusReporterITest {
     classUnderTest = null;
     helper = null;
     context.close();
+  }
+  
+  long getMinuteOffsetFromNow(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second) {
+    GregorianCalendar c = new GregorianCalendar();
+    c.setTimeZone(TimeZone.getTimeZone("UTC"));
+    c.set(Calendar.YEAR, year);
+    c.set(Calendar.MONTH, month);
+    c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+    c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+    c.set(Calendar.MINUTE, minute);
+    c.set(Calendar.SECOND, second);
+    
+    GregorianCalendar now = new GregorianCalendar();
+
+    return ((now.getTimeInMillis() - c.getTimeInMillis()) / (60 * 1000));
   }
   
   @Test
@@ -109,6 +127,152 @@ public class BdbObjectStatusReporterITest {
     Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
   }
 
+  @Test
+  public void testGetStatus_OptionalAttribute_elangle_0_5() {
+    long minute = getMinuteOffsetFromNow(2010,9,16,8,0,0) + 2;
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN");
+    values.put("sources", "seang");
+    values.put("minutes", minute);
+    values.put("where/elangle", "0.5");
+    
+    // Verify that we can find the specified elangle
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
+    Assert.assertEquals(1, result.size());
+    Assert.assertTrue(result.contains(SystemStatus.OK));
+  }
+
+  @Test
+  public void testGetStatus_OptionalAttribute_elangle_1_5() {
+    long minute = getMinuteOffsetFromNow(2010,9,16,8,0,0) + 2;
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN");
+    values.put("sources", "seang");
+    values.put("minutes", minute);
+    values.put("where/elangle", "1.5");
+    
+    // Verify that we can find the specified elangle
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
+    Assert.assertEquals(1, result.size());
+    Assert.assertTrue(result.contains(SystemStatus.OK));
+  }
+
+  @Test
+  public void testGetStatus_OptionalAttribute_elangle_2_0_doesntexist() {
+    long minute = getMinuteOffsetFromNow(2010,9,16,8,0,0) + 2;
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN");
+    values.put("sources", "seang");
+    values.put("minutes", minute);
+    values.put("where/elangle", "1.0");
+    
+    // Verify that we can find the specified elangle
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
+    Assert.assertEquals(1, result.size());
+    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+  }
+
+  @Test
+  public void testGetStatus_OptionalAttribute_malfunc_True() {
+    long minute = getMinuteOffsetFromNow(2010,9,16,8,5,0) + 2;
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN");
+    values.put("sources", "sehud");
+    values.put("minutes", minute);
+    values.put("how/malfunc", "True");
+    
+    // Verify
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
+    Assert.assertEquals(1, result.size());
+    Assert.assertTrue(result.contains(SystemStatus.OK));
+    
+    // And just ensure that we dont find anything with malfunc = False
+    values.put("how/malfunc", "False");
+    result = classUnderTest.getStatus(values);
+    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+  }
+
+  @Test
+  public void testGetStatus_OptionalAttribute_malfunc_False() {
+    long minute = getMinuteOffsetFromNow(2010,9,16,8,5,0) + 2;
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN");
+    values.put("sources", "selek");
+    values.put("minutes", minute);
+    values.put("how/malfunc", "False");
+    
+    // Verify
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
+    Assert.assertEquals(1, result.size());
+    Assert.assertTrue(result.contains(SystemStatus.OK));
+
+    // And just ensure that we dont find anything with malfunc = True
+    values.put("how/malfunc", "True");
+    result = classUnderTest.getStatus(values);
+    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+  }
+
+  @Test
+  public void testGetStatus_OptionalAttribute_mixed() {
+    long minute = getMinuteOffsetFromNow(2010,9,16,8,5,0) + 2;
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN");
+    values.put("sources", "selek");
+    values.put("minutes", minute);
+    values.put("where/a1gate", "0");
+    values.put("where/nrays", "420");
+    values.put("where/rstart", "0");
+    
+    // Verify
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
+    Assert.assertEquals(1, result.size());
+    Assert.assertTrue(result.contains(SystemStatus.OK));
+
+    // And just ensure that we dont find anything other values
+    values.put("where/a1gate", "1");
+    result = classUnderTest.getStatus(values);
+    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+
+    // And just ensure that we dont find anything other values
+    values.put("where/a1gate", "0");
+    values.put("where/nrays", "421");
+    result = classUnderTest.getStatus(values);
+    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+
+    // And just ensure that we dont find anything other values
+    values.put("where/nrays", "420");
+    values.put("where/rstart", "10");
+    result = classUnderTest.getStatus(values);
+    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+
+    // And now test that we can reset it back again to get a hit
+    values.put("where/rstart", "0");
+    result = classUnderTest.getStatus(values);
+    Assert.assertTrue(result.contains(SystemStatus.OK));
+  }
+
+  @Test
+  public void testGetStatus_OptionalAttribute_mixed_2() {
+    long minute = getMinuteOffsetFromNow(2010,9,16,8,5,0) + 2;
+    
+    Map<String,Object> values = new HashMap<String, Object>();
+    values.put("objects", "SCAN");
+    values.put("sources", "selek,searl");
+    values.put("minutes", minute);
+    values.put("how/system", "ERIC");
+    
+    // Verify
+    Set<SystemStatus> result = classUnderTest.getStatus(values);
+    Assert.assertEquals(1, result.size());
+    Assert.assertTrue(result.contains(SystemStatus.OK));
+  }
+  
   @Test
   public void testGetStatus_pvol_searl() {
     GregorianCalendar c = new GregorianCalendar();

@@ -64,6 +64,9 @@ public class BdbObjectStatusReporter implements ISystemStatusReporter{
     SUPPORTED_ATTRIBUTES.add("objects");
     SUPPORTED_ATTRIBUTES.add("sources");
     SUPPORTED_ATTRIBUTES.add("areas");
+    SUPPORTED_ATTRIBUTES.add("what/*");
+    SUPPORTED_ATTRIBUTES.add("where/*");
+    SUPPORTED_ATTRIBUTES.add("how/*");
   }
   
   /**
@@ -170,6 +173,15 @@ public class BdbObjectStatusReporter implements ISystemStatusReporter{
     }
     if (prodfilter != null) {
       qfilter.add(xpr.or(prodfilter));
+    }
+    
+    // Handle optional attributes
+    for (String k : values.keySet()) {
+      String lowerCaseK = k.toLowerCase();
+      if (lowerCaseK.startsWith("what/") || lowerCaseK.startsWith("where/") || lowerCaseK.startsWith("how/")) {
+        //List<Expression> filters = new ArrayList<Expression>();
+        qfilter.add(xpr.eq(xpr.attribute(lowerCaseK), xpr.literal((String)values.get(k))));
+      }
     }
     
     return xpr.and(qfilter);
