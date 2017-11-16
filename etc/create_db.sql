@@ -210,7 +210,8 @@ create table beast_wrwp_rules (
   mindistance INTEGER NOT NULL,
   maxdistance INTEGER NOT NULL,
   minelangle DECIMAL NOT NULL,
-  minvelocitythresh DECIMAL NOT NULL
+  minvelocitythresh DECIMAL NOT NULL,
+  fields TEXT NOT NULL
 );  
 
 create table beast_wrwp_sources (

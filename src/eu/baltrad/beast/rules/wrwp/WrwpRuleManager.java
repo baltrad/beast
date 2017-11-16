@@ -92,12 +92,13 @@ public class WrwpRuleManager implements IRuleManager {
     int maxdistance = wrule.getMaxdistance();
     double minelangle = wrule.getMinelevationangle();
     double minvelocitythresh = wrule.getMinvelocitythreshold();
+    String fields = wrule.getFieldsAsStr();
     
     template.update(
         "INSERT INTO beast_wrwp_rules" +
-        " (rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh)" +
-        " VALUES (?,?,?,?,?,?,?)", 
-        new Object[]{ruleId, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh});
+        " (rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, fields)" +
+        " VALUES (?,?,?,?,?,?,?,?)", 
+        new Object[]{ruleId, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, fields});
     
     updateSources(ruleId, wrule.getSources());
     
@@ -130,11 +131,12 @@ public class WrwpRuleManager implements IRuleManager {
     int maxdistance = wrule.getMaxdistance();
     double minelangle = wrule.getMinelevationangle();
     double minvelocitythresh = wrule.getMinvelocitythreshold();
+    String fields = wrule.getFieldsAsStr();
     
     template.update(
         "UPDATE beast_wrwp_rules SET interval=?, maxheight=?, mindistance=?," +
-        " maxdistance=?, minelangle=?, minvelocitythresh=? WHERE rule_id=?",
-        new Object[]{interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, ruleId});
+        " maxdistance=?, minelangle=?, minvelocitythresh=?, fields=? WHERE rule_id=?",
+        new Object[]{interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, fields, ruleId});
     
     updateSources(ruleId, wrule.getSources());
     
@@ -205,6 +207,9 @@ public class WrwpRuleManager implements IRuleManager {
         result.setMaxdistance(rs.getInt("maxdistance"));
         result.setMinelevationangle(rs.getDouble("minelangle"));
         result.setMinvelocitythreshold(rs.getDouble("minvelocitythresh"));
+        String fields = rs.getString("fields");
+        result.setFields(fields == null ? "" : fields);
+
         result.setSources(getSources(result.getRuleId()));
         return result;
       }

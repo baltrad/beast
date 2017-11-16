@@ -118,6 +118,61 @@ public class WrwpRuleTest extends EasyMockSupport {
   }
   
   @Test
+  public void test_fields() {
+    assertEquals(0, classUnderTest.getFields().size());
+    List<String> newFields = new ArrayList<String>();
+    newFields.add("ff");
+    newFields.add(" fg");
+    newFields.add("fh ");
+
+    assertEquals(true, classUnderTest.setFields(newFields));
+    
+    assertEquals(3, classUnderTest.getFields().size());
+    assertEquals("ff", classUnderTest.getFields().get(0));
+    assertEquals("fg", classUnderTest.getFields().get(1));
+    assertEquals("fh", classUnderTest.getFields().get(2));
+  }
+
+  @Test
+  public void test_invalid_field() {
+    assertEquals(0, classUnderTest.getFields().size());
+    List<String> newFields = new ArrayList<String>();
+    newFields.add("f f");
+
+    assertEquals(false, classUnderTest.setFields(newFields));
+    
+    assertEquals(0, classUnderTest.getFields().size());
+  }
+  
+  @Test
+  public void test_fields_str() {
+    assertEquals("", classUnderTest.getFieldsAsStr());
+    String[][] valid_values={
+        {"ff,ff_dev,dd ","ff,ff_dev,dd"},
+        {" ff, ff_dev, dd", "ff,ff_dev,dd"},
+        {",ff,ff_dev,dd", "ff,ff_dev,dd"},
+        {"   ", ""}}; 
+    
+    for (String[] x : valid_values) {
+      assertEquals(true, classUnderTest.setFields(x[0]));
+      assertEquals(x[1], classUnderTest.getFieldsAsStr());
+    }
+  }
+  
+  @Test
+  public void test_fields_nok_str() {
+    assertEquals("", classUnderTest.getFieldsAsStr());
+    String[] valid_values={
+        " ff, ff _dev, dd",
+        " f a  "}; 
+    
+    for (String x : valid_values) {
+      assertEquals(false, classUnderTest.setFields(x));
+      assertEquals("", classUnderTest.getFieldsAsStr());
+    }
+  }
+  
+  @Test
   public void test_handle() {
     FileEntry fe = createMock(FileEntry.class);
     Metadata meta = createMock(Metadata.class);
@@ -161,6 +216,52 @@ public class WrwpRuleTest extends EasyMockSupport {
     assertEquals("--velocitythreshold=4.5", result.getArguments()[5]);
   }
 
+  @Test
+  public void test_handle_with_fields() {
+    FileEntry fe = createMock(FileEntry.class);
+    Metadata meta = createMock(Metadata.class);
+    Source src = new Source("seang");
+    List<String> sources = new ArrayList<String>();
+    UUID uuid = UUID.randomUUID();
+    
+    sources.add("searl");
+    sources.add("seang");
+    
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(fe);
+    
+    classUnderTest.setInterval(500);
+    classUnderTest.setMaxdistance(10000);
+    classUnderTest.setMindistance(1000);
+    classUnderTest.setMaxheight(10000);
+    classUnderTest.setMinelevationangle(3.5);
+    classUnderTest.setMinvelocitythreshold(4.5);
+    classUnderTest.setSources(sources);
+    classUnderTest.setFields("ff,ff_dev,dd");
+    
+    expect(fe.getMetadata()).andReturn(meta);
+    expect(meta.getWhatObject()).andReturn("PVOL");
+    expect(fe.getSource()).andReturn(src);
+    expect(fe.getUuid()).andReturn(uuid);
+    
+    replayAll();
+    
+    BltGenerateMessage result = (BltGenerateMessage)classUnderTest.handle(msg);
+    
+    verifyAll();
+    assertEquals("eu.baltrad.beast.GenerateWrwp", result.getAlgorithm());
+    assertEquals(1, result.getFiles().length);
+    assertEquals(uuid.toString(), result.getFiles()[0]);
+    assertEquals(7, result.getArguments().length);
+    assertEquals("--interval=500", result.getArguments()[0]);
+    assertEquals("--maxheight=10000", result.getArguments()[1]);
+    assertEquals("--mindistance=1000", result.getArguments()[2]);
+    assertEquals("--maxdistance=10000", result.getArguments()[3]);
+    assertEquals("--minelevationangle=3.5", result.getArguments()[4]);
+    assertEquals("--velocitythreshold=4.5", result.getArguments()[5]);
+    assertEquals("--fields=ff,ff_dev,dd", result.getArguments()[6]);
+  }
+  
   @Test
   public void test_handle_notSupportedSource() {
     FileEntry fe = createMock(FileEntry.class);

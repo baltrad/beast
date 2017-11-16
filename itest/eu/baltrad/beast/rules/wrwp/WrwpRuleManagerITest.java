@@ -102,6 +102,7 @@ public class WrwpRuleManagerITest {
     rule.setMaxdistance(20000);
     rule.setMinelevationangle(1.5);
     rule.setMinvelocitythreshold(0.5);
+    rule.setFields("de,ef");
     rule.setSources(sources);
     
     classUnderTest.store(4, rule);
@@ -120,12 +121,28 @@ public class WrwpRuleManagerITest {
     assertEquals(10000, rule.getMaxdistance());
     assertEquals(2.5, rule.getMinelevationangle(), 4);
     assertEquals(3.5, rule.getMinvelocitythreshold(), 4);
+    assertEquals("abcd", rule.getFieldsAsStr());
     assertEquals(3, rule.getSources().size());
     assertTrue(rule.getSources().contains("sekkr"));
     assertTrue(rule.getSources().contains("selul"));
     assertTrue(rule.getSources().contains("seang"));
   }
-  
+
+  @Test
+  public void test_load_empty_fields() throws Exception {
+    WrwpRule rule = (WrwpRule)classUnderTest.load(3);
+    assertEquals(500, rule.getInterval());
+    assertEquals(10000, rule.getMaxheight());
+    assertEquals(2000, rule.getMindistance());
+    assertEquals(20000, rule.getMaxdistance());
+    assertEquals(3.5, rule.getMinelevationangle(), 4);
+    assertEquals(2.5, rule.getMinvelocitythreshold(), 4);
+    assertEquals("", rule.getFieldsAsStr());
+    assertEquals(0, rule.getFields().size());
+    assertEquals(1, rule.getSources().size());
+    assertTrue(rule.getSources().contains("selek"));
+  }
+
   @Test
   public void test_update() throws Exception {
     List<String> sources = new ArrayList<String>();
@@ -139,6 +156,7 @@ public class WrwpRuleManagerITest {
     rule.setMaxdistance(5000);
     rule.setMinelevationangle(1.1);
     rule.setMinvelocitythreshold(0.1);
+    rule.setFields("ghgh");
     rule.setSources(sources);
 
     classUnderTest.update(2, rule);

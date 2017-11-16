@@ -337,6 +337,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_wrwp_with_fields() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_wrwp_rules' AND column_name = 'fields';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_wrwp_rules ADD COLUMN fields TEXT;
+    UPDATE beast_wrwp_rules SET fields='';
+    ALTER TABLE beast_wrwp_rules ALTER COLUMN fields SET NOT NULL;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -357,6 +368,7 @@ select update_beast_volume_rules_with_qc_mode();
 select update_beast_composite_rules_with_qc_mode();
 select update_beast_site2d_rules_with_qc_mode();
 select update_beast_composite_rules_with_reprocess_quality();
+select update_beast_wrwp_with_fields();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -378,3 +390,4 @@ drop function update_beast_volume_rules_with_qc_mode();
 drop function update_beast_composite_rules_with_qc_mode();
 drop function update_beast_site2d_rules_with_qc_mode();
 drop function update_beast_composite_rules_with_reprocess_quality();
+drop function update_beast_wrwp_with_fields()

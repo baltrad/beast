@@ -21,6 +21,9 @@ package eu.baltrad.beast.rules.wrwp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -98,6 +101,11 @@ public class WrwpRule implements IRule, InitializingBean {
   private double velocitythreshold = 2.0;
   
   /**
+   * A list of fields to generate
+   */
+  private List<String> fields = new ArrayList<String>();
+  
+  /**
    * The filter used for matching files
    */
   private IFilter filter = null;
@@ -106,6 +114,8 @@ public class WrwpRule implements IRule, InitializingBean {
    * The matcher used for verifying the filter
    */
   private MetadataMatcher matcher;
+  
+  private Pattern FIELDS_PATTERN = Pattern.compile("^[A-Za-z_0-9\\-]+$");
   
   /**
    * The logger
@@ -256,6 +266,72 @@ public class WrwpRule implements IRule, InitializingBean {
     return this.sources;
   }
   
+  /**
+   * @return a comma separated list of fields to generate
+   */
+  public String getFieldsAsStr() {
+    String result = "";
+    if (fields.size()==0)
+      return "";
+    
+    for (String s : fields) {
+      result = result + "," + s;
+    }
+    
+    return result.substring(1);
+  }
+
+  /**
+   * @return a list of fields
+   */
+  public List<String> getFields() {
+    return fields;
+  }
+  
+  /**
+   * @param fields a comma separated list of fields to generate
+   */
+  public boolean setFields(String fields) {
+    List<String> newFields = new ArrayList<String>();
+    
+    if (fields==null)
+      return false;
+    
+    if (fields.trim().length()==0) {
+      this.fields = newFields;
+      return true;
+    }
+    
+    StringTokenizer tokenizer=new StringTokenizer(fields, ",");
+    while (tokenizer.hasMoreTokens()) {
+      String token = tokenizer.nextToken().trim();
+      Matcher m = FIELDS_PATTERN.matcher(token);
+      if (!m.matches())
+        return false;
+      newFields.add(token);
+    }
+    this.fields = newFields;
+    return true;
+  }
+  
+  /**
+   * Sets the fields to generate 
+   * @param fields the fields to generate
+   * @return if field names are allowed
+   */
+  public boolean setFields(List<String> fields) {
+    List<String> newFields = new ArrayList<String>();
+    for (String s : fields) {
+      String fname = s.trim();
+      Matcher m = FIELDS_PATTERN.matcher(fname);
+      if (!m.matches())
+        return false;
+      newFields.add(fname);
+    }
+    this.fields = newFields;
+    return true;
+  }
+  
   public IFilter getFilter() {
     return filter;
   }
@@ -295,6 +371,8 @@ public class WrwpRule implements IRule, InitializingBean {
           args.add("--maxdistance="+maxdistance);
           args.add("--minelevationangle="+minelevationangle);
           args.add("--velocitythreshold="+velocitythreshold);
+          if (fields.size() > 0)
+            args.add("--fields="+getFieldsAsStr());
           result.setArguments(args.toArray(new String[0]));
         }
       }

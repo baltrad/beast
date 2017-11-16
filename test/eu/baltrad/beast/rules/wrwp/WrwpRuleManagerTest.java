@@ -108,11 +108,12 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     rule.setMinelevationangle(1.5);
     rule.setMinvelocitythreshold(10.0);
     rule.setSources(sources);
+    rule.setFields("dd,aa");
 
     expect(jdbc.update("INSERT INTO beast_wrwp_rules " + 
-    		"(rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh) " +
-        "VALUES (?,?,?,?,?,?,?)", 
-        new Object[]{10, 300, 5000, 1000, 10000, 1.5, 10.0})).andReturn(1);
+    		"(rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, fields) " +
+        "VALUES (?,?,?,?,?,?,?,?)", 
+        new Object[]{10, 300, 5000, 1000, 10000, 1.5, 10.0, "dd,aa"})).andReturn(1);
     
     filterManager.deleteFilters(10);
     
@@ -174,12 +175,13 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     rule.setMaxdistance(10000);
     rule.setMinelevationangle(1.5);
     rule.setMinvelocitythreshold(10.0);
+    rule.setFields("aa,dd");
     rule.setSources(sources);
 
     expect(jdbc.update(
         "UPDATE beast_wrwp_rules SET interval=?, maxheight=?, mindistance=?," +
-        " maxdistance=?, minelangle=?, minvelocitythresh=? WHERE rule_id=?",
-        new Object[]{300, 5000, 1000, 10000, 1.5, 10.0, 12})).andReturn(1);
+        " maxdistance=?, minelangle=?, minvelocitythresh=?, fields=? WHERE rule_id=?",
+        new Object[]{300, 5000, 1000, 10000, 1.5, 10.0, "aa,dd", 12})).andReturn(1);
     methods.updateSources(12, sources);
     
     filterManager.deleteFilters(12);
@@ -307,6 +309,7 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     expect(rs.getInt("maxdistance")).andReturn(10000);
     expect(rs.getDouble("minelangle")).andReturn(4.5);
     expect(rs.getDouble("minvelocitythresh")).andReturn(1.5);
+    expect(rs.getString("fields")).andReturn("aa,dd");
     
     expect(methods.getSources(3)).andReturn(sources);
     
@@ -325,11 +328,52 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     assertEquals(10000, result.getMaxdistance());
     assertEquals(4.5, result.getMinelevationangle(), 4);
     assertEquals(1.5, result.getMinvelocitythreshold(), 4);
+    assertEquals("aa,dd", result.getFieldsAsStr());
     assertSame(sources, result.getSources());
     assertSame(cat, result.getCatalog());
     assertSame(utils, result.getRuleUtilities());
   }
 
+  @Test
+  public void test_wrwp_rule_mapper_fields_null() throws Exception {
+    IRuleUtilities utils = createMock(IRuleUtilities.class);
+    Catalog cat = createMock(Catalog.class);
+    ResultSet rs = createMock(ResultSet.class);
+
+    List<String> sources = new ArrayList<String>();
+    
+    expect(rs.getInt("rule_id")).andReturn(3);
+    expect(rs.getInt("interval")).andReturn(300);
+    expect(rs.getInt("maxheight")).andReturn(5000);
+    expect(rs.getInt("mindistance")).andReturn(1000);
+    expect(rs.getInt("maxdistance")).andReturn(10000);
+    expect(rs.getDouble("minelangle")).andReturn(4.5);
+    expect(rs.getDouble("minvelocitythresh")).andReturn(1.5);
+    expect(rs.getString("fields")).andReturn(null);
+    
+    expect(methods.getSources(3)).andReturn(sources);
+    
+    classUnderTest.setCatalog(cat);
+    classUnderTest.setRuleUtilities(utils);
+    
+    replayAll();
+    
+    WrwpRule result = classUnderTest.getWrwpRuleMapper().mapRow(rs, 1); 
+    
+    verifyAll();
+    assertEquals(3, result.getRuleId());
+    assertEquals(300, result.getInterval());
+    assertEquals(5000, result.getMaxheight());
+    assertEquals(1000, result.getMindistance());
+    assertEquals(10000, result.getMaxdistance());
+    assertEquals(4.5, result.getMinelevationangle(), 4);
+    assertEquals(1.5, result.getMinvelocitythreshold(), 4);
+    assertEquals("", result.getFieldsAsStr());
+    assertSame(sources, result.getSources());
+    assertSame(cat, result.getCatalog());
+    assertSame(utils, result.getRuleUtilities());
+  }
+  
   @Test
   public void test_source_mapper() throws Exception {
     ResultSet rs = createMock(ResultSet.class);
