@@ -119,6 +119,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(CompositingRule.SelectionMethod_NEAREST_RADAR, ((CompositingRule)def.getRule()).getSelectionMethod());
     assertEquals(CompositingRule.PPI, ((CompositingRule)def.getRule()).getMethod());
     assertEquals("0.5", ((CompositingRule)def.getRule()).getProdpar());
+    assertEquals(-1, ((CompositingRule)def.getRule()).getMaxAgeLimit());
     assertEquals(false, ((CompositingRule)def.getRule()).isApplyGRA());
     assertEquals(100.0, ((CompositingRule)def.getRule()).getZR_A(), 4);
     assertEquals(1.5, ((CompositingRule)def.getRule()).getZR_b(), 4);
@@ -151,6 +152,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     ((CompositingRule)def.getRule()).setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     ((CompositingRule)def.getRule()).setMethod(CompositingRule.CAPPI);
     ((CompositingRule)def.getRule()).setProdpar("500.0");
+    ((CompositingRule)def.getRule()).setMaxAgeLimit(60);
     ((CompositingRule)def.getRule()).setApplyGRA(true);
     ((CompositingRule)def.getRule()).setZR_A(200.0);
     ((CompositingRule)def.getRule()).setZR_b(1.6);
@@ -212,6 +214,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     rule.setMethod(CompositingRule.CAPPI);
     rule.setProdpar("500.0");
+    rule.setMaxAgeLimit(30);
     rule.setApplyGRA(true);
     rule.setZR_A(210.0);
     rule.setZR_b(1.7);

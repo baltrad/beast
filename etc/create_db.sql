@@ -77,7 +77,8 @@ create table beast_composite_rules (
   qitotal_field text,
   quantity text,
   qc_mode integer NOT NULL,
-  reprocess_quality boolean NOT NULL
+  reprocess_quality boolean NOT NULL,
+  max_age_limit integer NOT NULL
 );
 
 create table beast_composite_sources (

@@ -29,6 +29,8 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +76,8 @@ public class CompositingRuleTest extends EasyMockSupport {
     public IBltMessage createMessage(DateTime nominalTime, Map<String, CatalogEntry> entries);
     public IBltMessage createComposite(IBltMessage message, CompositingRuleFilter ruleFilter);
     public DateTime getNominalTimeFromFile(FileEntry file);
+    public DateTime getDateTimeFromFile(FileEntry file);
+    public boolean dateTimeExceedsMaxAgeLimit(DateTime dateTime);
   };
 
   @Before
@@ -145,6 +149,61 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals(1.6, classUnderTest.getZR_b(), 4);
     classUnderTest.setZR_b(10.0);
     assertEquals(10.0, classUnderTest.getZR_b(), 4);
+  }
+  
+  @Test
+  public void testExceedsMaxAgeLimit_disabled() {
+    int disabledIndicator = -1;
+    classUnderTest.setMaxAgeLimit(disabledIndicator);
+    
+    Calendar fileDate = GregorianCalendar.getInstance();
+    fileDate.add(Calendar.MINUTE, -1000);
+    
+    DateTime fileDateTime = classUnderTest.getRuleUtilities().createDateTime(fileDate.getTime());
+    
+    boolean dateTimeExceedsLimit = classUnderTest.dateTimeExceedsMaxAgeLimit(fileDateTime);
+    
+    assertEquals(false, dateTimeExceedsLimit);
+  }
+  
+  @Test
+  public void testExceedsMaxAgeLimit_exceeding() {
+    int maxAgeLimitMinutes = 60;
+    classUnderTest.setMaxAgeLimit(maxAgeLimitMinutes);
+    
+    Calendar fileDate = GregorianCalendar.getInstance();
+    fileDate.add(Calendar.MINUTE, -(maxAgeLimitMinutes + 1)); // exceeding limit with 1 minute
+    
+    DateTime fileDateTime = new DateTime(2018, 2, 26, 5, 14, 30);
+    DateTime nowDateTime = new DateTime(2018, 2, 26, 6, 15, 00); // 60 minutes and 30 seconds after file time
+    
+    expect(ruleUtil.nowDT()).andReturn(nowDateTime);
+    
+    replayAll();
+    
+    boolean dateTimeExceedsLimit = classUnderTest.dateTimeExceedsMaxAgeLimit(fileDateTime);
+    
+    assertEquals(true, dateTimeExceedsLimit);
+  }
+  
+  @Test
+  public void testExceedsMaxAgeLimit_notExceeding() {
+    int maxAgeLimitMinutes = 60;
+    classUnderTest.setMaxAgeLimit(maxAgeLimitMinutes);
+    
+    Calendar fileDate = GregorianCalendar.getInstance();
+    fileDate.add(Calendar.MINUTE, -(maxAgeLimitMinutes + 1)); // exceeding limit with 1 minute
+    
+    DateTime fileDateTime = new DateTime(2018, 2, 26, 5, 14, 30);
+    DateTime nowDateTime = new DateTime(2018, 2, 26, 6, 14, 00); // 59 minutes and 30 seconds after file time
+    
+    expect(ruleUtil.nowDT()).andReturn(nowDateTime);
+    
+    replayAll();
+    
+    boolean dateTimeExceedsLimit = classUnderTest.dateTimeExceedsMaxAgeLimit(fileDateTime);
+    
+    assertEquals(false, dateTimeExceedsLimit);
   }
 
   @Test
@@ -1075,19 +1134,25 @@ public class CompositingRuleTest extends EasyMockSupport {
   
   @Test
   public void testHandle_fileMatches() throws Exception {
-    testHandle(true); 
+    testHandle(true, false); 
   }
   
   @Test
   public void testHandle_fileDoesNotMatch() throws Exception {
-    testHandle(false); 
+    testHandle(false, false); 
   }
   
-  private void testHandle(boolean fileMatches) {
+  @Test
+  public void testHandle_exceedsMaxAgeLimit() throws Exception {
+    testHandle(true, true); 
+  }
+  
+  private void testHandle(boolean fileMatches, boolean exceedsMaxAgeLimit) {
     final ICompositingMethods methods = createMock(ICompositingMethods.class);
 
     FileEntry fileEntry = createMock(FileEntry.class);
     DateTime dateTime = new DateTime(2017, 02, 01, 15, 10, 0);
+    DateTime nominalDateTime = new DateTime(2017, 02, 01, 15, 0, 0);
     CompositingRuleFilter filter = createMock(CompositingRuleFilter.class);
     
     BltDataMessage msg = new BltDataMessage();
@@ -1104,18 +1169,29 @@ public class CompositingRuleTest extends EasyMockSupport {
         return methods.createFilter(nominalTime);
       }
       
-      protected DateTime getNominalTimeFromFile(FileEntry file) {
-        return methods.getNominalTimeFromFile(file);
+      protected DateTime getDateTimeFromFile(FileEntry file) {
+        return methods.getDateTimeFromFile(file);
+      }
+      
+      protected boolean dateTimeExceedsMaxAgeLimit(DateTime dateTime) {
+        return methods.dateTimeExceedsMaxAgeLimit(dateTime);
       }
     };
-
-    expect(methods.getNominalTimeFromFile(fileEntry)).andReturn(dateTime);
-    expect(methods.createFilter(dateTime)).andReturn(filter);
-    expect(filter.fileMatches(fileEntry)).andReturn(fileMatches);
     
-    if (fileMatches) {
+    classUnderTest.setRuleUtilities(ruleUtil);
+
+    expect(fileEntry.getUuid()).andReturn(new UUID(100, 100)).anyTimes();      
+
+    expect(methods.getDateTimeFromFile(fileEntry)).andReturn(dateTime);
+    expect(methods.dateTimeExceedsMaxAgeLimit(dateTime)).andReturn(exceedsMaxAgeLimit);
+    expect(ruleUtil.createNominalTime(dateTime, classUnderTest.getInterval())).andReturn(nominalDateTime);
+    expect(methods.createFilter(nominalDateTime)).andReturn(filter);
+    if (!exceedsMaxAgeLimit) {
+      expect(filter.fileMatches(fileEntry)).andReturn(fileMatches);      
+    }
+    
+    if (fileMatches && !exceedsMaxAgeLimit) {
       expect(methods.createComposite(msg, filter)).andReturn(genMsg);
-      expect(fileEntry.getUuid()).andReturn(new UUID(100, 100)).anyTimes();      
     }
     
     replayAll();
@@ -1123,7 +1199,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     IBltMessage result = classUnderTest.handle(msg);
     
     verifyAll();
-    if (fileMatches) {
+    if (fileMatches && !exceedsMaxAgeLimit) {
       assertSame(result, genMsg);      
     } else {
       assertNull(result);

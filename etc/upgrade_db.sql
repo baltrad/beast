@@ -346,6 +346,17 @@ BEGIN
     ALTER TABLE beast_wrwp_rules ALTER COLUMN fields SET NOT NULL;
   END IF; 
 END;
+
+
+CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_max_age_limit() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'max_age_limit';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_composite_rules ADD COLUMN max_age_limit integer;
+    UPDATE beast_composite_rules SET max_age_limit=-1;
+    ALTER TABLE beast_composite_rules ALTER COLUMN max_age_limit SET NOT NULL;
+  END IF;
+END;
 $$ LANGUAGE plpgsql;
 
 select create_beast_gmap_rules();
@@ -369,6 +380,7 @@ select update_beast_composite_rules_with_qc_mode();
 select update_beast_site2d_rules_with_qc_mode();
 select update_beast_composite_rules_with_reprocess_quality();
 select update_beast_wrwp_with_fields();
+select update_beast_composite_rules_with_max_age_limit();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -391,3 +403,4 @@ drop function update_beast_composite_rules_with_qc_mode();
 drop function update_beast_site2d_rules_with_qc_mode();
 drop function update_beast_composite_rules_with_reprocess_quality();
 drop function update_beast_wrwp_with_fields()
+drop function update_beast_composite_rules_with_max_age_limit();

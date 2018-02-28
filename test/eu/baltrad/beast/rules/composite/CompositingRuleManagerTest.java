@@ -150,6 +150,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setSelectionMethod(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     rule.setMethod(CompositingRule.PPI);
     rule.setProdpar("0.5");
+    rule.setMaxAgeLimit(1440);
     rule.setApplyGRA(true);
     rule.setZR_A(10.0);
     rule.setZR_b(5.0);
@@ -162,8 +163,8 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setReprocessQuality(false);
     
     expect(jdbc.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field, quantity, nominal_timeout, qc_mode, reprocess_quality)"+
-        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, "se.baltrad.something", "VRAD", true, CompositingRule.QualityControlMode_ANALYZE, false}))
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, max_age_limit, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field, quantity, nominal_timeout, qc_mode, reprocess_quality)"+
+        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", 1440, true, 10.0, 5.0, true, true, "se.baltrad.something", "VRAD", true, CompositingRule.QualityControlMode_ANALYZE, false}))
           .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -205,6 +206,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setDetectors(detectors);
     rule.setMethod(CompositingRule.PPI);
     rule.setProdpar("0.5");
+    rule.setMaxAgeLimit(60);
     rule.setApplyGRA(true);
     rule.setZR_A(10.0);
     rule.setZR_b(5.0);
@@ -216,8 +218,8 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE);
     rule.setReprocessQuality(true);
     
-    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=?, quantity=?, nominal_timeout=?, qc_mode=?, reprocess_quality=? where rule_id=?",
-        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", true, 10.0, 5.0, true, true, "se.baltrad.something", "NOOP", true, CompositingRule.QualityControlMode_ANALYZE, true, 13}))
+    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, max_age_limit=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=?, quantity=?, nominal_timeout=?, qc_mode=?, reprocess_quality=? where rule_id=?",
+        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", 60, true, 10.0, 5.0, true, true, "se.baltrad.something", "NOOP", true, CompositingRule.QualityControlMode_ANALYZE, true, 13}))
         .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -390,6 +392,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     expect(rs.getInt("selection_method")).andReturn(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
     expect(rs.getString("method")).andReturn(CompositingRule.PPI);
     expect(rs.getString("prodpar")).andReturn("0.5");
+    expect(rs.getInt("max_age_limit")).andReturn(30);
     expect(rs.getBoolean("applygra")).andReturn(true);
     expect(rs.getDouble("ZR_A")).andReturn(10.0);
     expect(rs.getDouble("ZR_b")).andReturn(5.0);
@@ -432,6 +435,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     assertEquals(CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, result.getSelectionMethod());
     assertEquals(CompositingRule.PPI, result.getMethod());
     assertEquals("0.5", result.getProdpar());
+    assertEquals(30, result.getMaxAgeLimit());
     assertEquals(true, result.isApplyGRA());
     assertEquals(10.0, result.getZR_A(), 4);
     assertEquals(5.0, result.getZR_b(), 4);

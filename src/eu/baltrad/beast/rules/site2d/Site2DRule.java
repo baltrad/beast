@@ -245,7 +245,7 @@ public class Site2DRule implements IRule, InitializingBean {
     BltGenerateMessage generatedMessage = null;
     if (message instanceof BltDataMessage) {
       FileEntry file = ((BltDataMessage)message).getFileEntry();
-      logger.info("ENTER: execute ScansunRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+      logger.info("ENTER: execute Site2DRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
           ", file: " + file.getUuid());
       
       if (fileMatchesRule(file)) {
@@ -254,7 +254,7 @@ public class Site2DRule implements IRule, InitializingBean {
         generatedMessage = createMessage(file.getUuid().toString(), date, time);
       }
       
-      logger.info("EXIT: execute ScansunRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
+      logger.info("EXIT: execute Site2DRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
           ", file: " + file.getUuid());
       
     }

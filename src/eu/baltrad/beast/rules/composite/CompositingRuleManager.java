@@ -131,6 +131,7 @@ public class CompositingRuleManager implements IRuleManager {
     int selection_method = crule.getSelectionMethod();
     String method = crule.getMethod();
     String prodpar = crule.getProdpar();
+    int maxAgeLimit = crule.getMaxAgeLimit();
     boolean applygra = crule.isApplyGRA();
     double ZR_A = crule.getZR_A();
     double ZR_b = crule.getZR_b();
@@ -143,8 +144,8 @@ public class CompositingRuleManager implements IRuleManager {
     boolean reprocess_quality = crule.isReprocessQuality();
     
     template.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field, quantity, nominal_timeout, qc_mode, reprocess_quality)"+
-        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout, byscan, selection_method, method, prodpar, applygra, ZR_A, ZR_b, ignoreMalfunc, ctfilter, qitotalField, quantity, nominal_timeout, qualityControlMode, reprocess_quality});
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, max_age_limit, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field, quantity, nominal_timeout, qc_mode, reprocess_quality)"+
+        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, timeout, byscan, selection_method, method, prodpar, maxAgeLimit, applygra, ZR_A, ZR_b, ignoreMalfunc, ctfilter, qitotalField, quantity, nominal_timeout, qualityControlMode, reprocess_quality});
     storeSources(ruleId, crule.getSources());
     storeDetectors(ruleId, crule.getDetectors());
     storeFilter(ruleId, crule.getFilter());
@@ -158,8 +159,8 @@ public class CompositingRuleManager implements IRuleManager {
   public void update(int ruleId, IRule rule) {
     CompositingRule crule = (CompositingRule)rule;
     template.update(
-        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=?, quantity=?, nominal_timeout=?, qc_mode=?, reprocess_quality=? where rule_id=?",
-        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), crule.getSelectionMethod(), crule.getMethod(), crule.getProdpar(), crule.isApplyGRA(), crule.getZR_A(), crule.getZR_b(), crule.isIgnoreMalfunc(), crule.isCtFilter(), crule.getQitotalField(), crule.getQuantity(), crule.isNominalTimeout(), crule.getQualityControlMode(), crule.isReprocessQuality(), ruleId});
+        "update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, max_age_limit=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=?, quantity=?, nominal_timeout=?, qc_mode=?, reprocess_quality=? where rule_id=?",
+        new Object[]{crule.getArea(), crule.getInterval(), crule.getTimeout(), crule.isScanBased(), crule.getSelectionMethod(), crule.getMethod(), crule.getProdpar(), crule.getMaxAgeLimit(), crule.isApplyGRA(), crule.getZR_A(), crule.getZR_b(), crule.isIgnoreMalfunc(), crule.isCtFilter(), crule.getQitotalField(), crule.getQuantity(), crule.isNominalTimeout(), crule.getQualityControlMode(), crule.isReprocessQuality(), ruleId});
     storeSources(ruleId, crule.getSources());
     storeDetectors(ruleId, crule.getDetectors());
     storeFilter(ruleId, crule.getFilter());
@@ -270,6 +271,7 @@ public class CompositingRuleManager implements IRuleManager {
         result.setSelectionMethod(rs.getInt("selection_method"));
         result.setMethod(rs.getString("method"));
         result.setProdpar(rs.getString("prodpar"));
+        result.setMaxAgeLimit(rs.getInt("max_age_limit"));
         result.setApplyGRA(rs.getBoolean("applygra"));
         result.setZR_A(rs.getDouble("ZR_A"));
         result.setZR_b(rs.getDouble("ZR_b"));

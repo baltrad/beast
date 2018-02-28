@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -35,6 +36,7 @@ import eu.baltrad.bdb.oh5.Metadata;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
+import eu.baltrad.bdb.util.TimeDelta;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.IFilter;
@@ -221,6 +223,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    * The quantity to use
    */
   private String quantity = "DBZH";
+  
+  /**
+   * Incoming data exceeding this age threshold will not be handled 
+   * by this rule. In minutes. -1 indicates that no max age limit 
+   * will be applied.
+   */
+  private int maxAgeLimit = -1;
   
   /**
    * How the quality controls should be handled and used
@@ -415,21 +424,41 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       IBltMessage generatedMessage = null;
       if (message instanceof BltDataMessage) {
         FileEntry file = ((BltDataMessage)message).getFileEntry();
-        CompositingRuleFilter ruleFilter = createFilter(getNominalTimeFromFile(file));
-        if (ruleFilter.fileMatches(file)) {
+        DateTime fileDateTime = getDateTimeFromFile(file);
+        UUID fileUuid = file.getUuid();
+        CompositingRuleFilter ruleFilter = createFilter(ruleUtil.createNominalTime(fileDateTime, getInterval()));
+        if (dateTimeExceedsMaxAgeLimit(fileDateTime)) {
+          logger.debug("CompositingRule - datetime in file " + fileUuid + " exceeds the maximum age limit of " + 
+              getMaxAgeLimit() + " in rule. File not handled by rule.");
+        } else if (ruleFilter.fileMatches(file)) {
           logger.info("ENTER: execute CompositingRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
-              ", file: " + file.getUuid());
+              ", file: " + fileUuid);
           
           generatedMessage = createComposite(message, ruleFilter);
           
           logger.info("EXIT: execute CompositingRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
-              ", file: " + file.getUuid()); 
+              ", file: " + fileUuid); 
         }
       }
       return generatedMessage;
     } finally {
       logger.debug("EXIT: handle(IBltMessage)");
     }
+  }
+  
+  protected boolean dateTimeExceedsMaxAgeLimit(DateTime dateTime) {
+    if (getMaxAgeLimit() == -1) {
+      // -1 means disabled
+      return false;
+    }
+    
+    DateTime now = ruleUtil.nowDT();
+    
+    int secondsOffsetToLimit = -(60 * getMaxAgeLimit());
+    TimeDelta timeDeltaToLimit = new TimeDelta().addSeconds(secondsOffsetToLimit);
+    DateTime dateTimeLimit = now.add(timeDeltaToLimit);
+    
+    return dateTimeLimit.isAfter(dateTime);
   }
   
   protected IBltMessage createComposite(IBltMessage message, CompositingRuleFilter ruleFilter) {
@@ -527,6 +556,13 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     }
     
     return result;
+  }
+  
+  protected DateTime getDateTimeFromFile(FileEntry file) {
+    Metadata metaData = file.getMetadata();
+    Time time = metaData.getWhatTime();
+    Date date = metaData.getWhatDate();
+    return new DateTime(date, time);
   }
   
   protected DateTime getNominalTimeFromFile(FileEntry file) {
@@ -831,6 +867,20 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
    */
   public void setQuantity(String quantity) {
     this.quantity = quantity;
+  }
+
+  /**
+   * @return the maximum age limit in minutes
+   */
+  public int getMaxAgeLimit() {
+    return maxAgeLimit;
+  }
+
+  /**
+   * @param maxAgeLimit the maximum age limit in minutes
+   */
+  public void setMaxAgeLimit(int maxAgeLimit) {
+    this.maxAgeLimit = maxAgeLimit;
   }
 
   public boolean isNominalTimeout() {
