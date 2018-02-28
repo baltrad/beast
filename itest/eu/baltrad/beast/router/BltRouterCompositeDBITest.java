@@ -131,6 +131,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(CompositingRule.QualityControlMode_ANALYZE, ((CompositingRule)def.getRule()).getQualityControlMode());
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
     assertEquals("ropo", ((CompositingRule)def.getRule()).getDetectors().get(0));
+    assertEquals(false, ((CompositingRule)def.getRule()).isReprocessQuality());
   }
 
   public void testUpdateCompositingDef() throws Exception {
