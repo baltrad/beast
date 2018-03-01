@@ -402,5 +402,5 @@ drop function update_beast_volume_rules_with_qc_mode();
 drop function update_beast_composite_rules_with_qc_mode();
 drop function update_beast_site2d_rules_with_qc_mode();
 drop function update_beast_composite_rules_with_reprocess_quality();
-drop function update_beast_wrwp_with_fields()
+drop function update_beast_wrwp_with_fields();
 drop function update_beast_composite_rules_with_max_age_limit();
