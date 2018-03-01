@@ -346,7 +346,7 @@ BEGIN
     ALTER TABLE beast_wrwp_rules ALTER COLUMN fields SET NOT NULL;
   END IF; 
 END;
-
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_max_age_limit() RETURNS VOID AS $$
 BEGIN
