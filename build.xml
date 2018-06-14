@@ -185,7 +185,9 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   </target>
 	
   <target name="install" depends="distribution, -install-files" />
-	
+
+  <target name="install-files" depends="-install-files" />
+
   <target name="install-doc" depends="doc, -install-doc-files" />
 
   <!-- This is the overall build script that can be used to get a full build & test sequence --> 
