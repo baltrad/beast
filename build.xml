@@ -25,6 +25,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="app.name" value="beast" />
   <property name="app.version" value="0.1-dev" />
   <property name="app.root.dir" value="${basedir}" />
+  <property name="app.dist.dir.name" value="beast" />
   <property name="build.dir" value="${basedir}/build" />
   <property name="build.classes.dir" value="${build.dir}/classes" />
   <property name="build.test.dir" value="${build.dir}/test" />
@@ -39,17 +40,17 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="compile.debug" value="true" />
   <property name="compile.optimize" value="true" />
   <property name="compile.includeAntRuntime" value="no" />
-
   <property file="develop.properties" />
   <property name="prefix" value="/opt/baltrad" />
 
   <property file="${etc.dir}/testdb.properties" />
 
+
   <!-- override this with -Dbaltraddb.path= -->
   <property name="baltraddb.path" value="/opt/baltrad/db-devel"/>
   <property name="baltraddb.bin.path" value="${baltraddb.path}/bin"/>
 
-	<available file="${baltraddb.path}" type="dir" property="baltraddb.available"/>
+  <available file="${baltraddb.path}" type="dir" property="baltraddb.available"/>
   <available file="${baltraddb.path}/share/baltrad-bdb/java/baltrad-bdb-client.jar" property="baltrad-bdb-client.jar.available"/>
   <available file="${baltraddb.bin.path}/baltrad-bdb-server" property="baltrad-bdb-server.available"/>
   <fail unless="baltrad-bdb-client.jar.available" message="Can not find baltrad-bdb-client.jar!" />
@@ -107,21 +108,21 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="distribution" depends="build, execute.test" />
 
   <target name="-install-files">
-  	<mkdir dir="${prefix}/beast" />
-  	<mkdir dir="${prefix}/beast/sql" />
-  	<mkdir dir="${prefix}/beast/bin" />
-  	<mkdir dir="${prefix}/beast/etc" />
-  	<mkdir dir="${prefix}/beast/libs" />
-  	<mkdir dir="${prefix}/beast/plugins" />
-  	<mkdir dir="${prefix}/beast/examples" />
-  	<copy todir="${prefix}/beast/sql">
+  	<mkdir dir="${prefix}/${app.dist.dir.name}" />
+  	<mkdir dir="${prefix}/${app.dist.dir.name}/sql" />
+  	<mkdir dir="${prefix}/${app.dist.dir.name}/bin" />
+  	<mkdir dir="${prefix}/${app.dist.dir.name}/etc" />
+  	<mkdir dir="${prefix}/${app.dist.dir.name}/libs" />
+  	<mkdir dir="${prefix}/${app.dist.dir.name}/plugins" />
+  	<mkdir dir="${prefix}/${app.dist.dir.name}/examples" />
+  	<copy todir="${prefix}/${app.dist.dir.name}/sql">
   	  <fileset dir="${etc.dir}">
   	  	<include name="drop_db.sql" />
   	  	<include name="create_db.sql" />
   	  	<include name="upgrade_db.sql" />
   	  </fileset>
   	</copy>
-  	<copy todir="${prefix}/beast/libs" flatten="true">
+  	<copy todir="${prefix}/${app.dist.dir.name}/libs" flatten="true">
       <fileset dir="${lib.dir}">
         <include name="**/*.jar"/>
         <exclude name="ant/*.jar" />
@@ -133,7 +134,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<exclude name="spring/spring-test.jar"/>
       </fileset>
   	</copy>
-  	<copy todir="${prefix}/beast/etc">
+  	<copy todir="${prefix}/${app.dist.dir.name}/etc">
       <fileset dir="${etc.dir}">
         <include name="xmlrpcserver-context.xml" />
         <include name="build-plugin.xml" />
@@ -143,7 +144,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       	<include name="odim_quantities.xml" />
       </fileset>
   	</copy>
-  	<copy todir="${prefix}/beast/examples">
+  	<copy todir="${prefix}/${app.dist.dir.name}/examples">
 	  <fileset dir="${examples.dir}">
 	    <include name="*.groovy" />
 	    <include name="*.xml" />
@@ -160,24 +161,24 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   	<delete file="${prefix}/beast/libs/spring-webmvc.jar" failonerror="false"/>
   	<delete file="${prefix}/beast/libs/quartz-1.8.3.jar" failonerror="false"/>
   	
-  	<copy file="${dist.dir}/${app.name}.jar" todir="${prefix}/beast/bin" />
-  	<copy file="${etc.dir}/xmlrpcserver" todir="${prefix}/beast/bin" />
-    <chmod file="${prefix}/beast/bin/xmlrpcserver" perm="755"/>
-  	<copy file="${etc.dir}/pgfwkplugin" todir="${prefix}/beast/bin" />
-    <chmod file="${prefix}/beast/bin/pgfwkplugin" perm="755"/>
+  	<copy file="${dist.dir}/${app.name}.jar" todir="${prefix}/${app.dist.dir.name}/bin" />
+  	<copy file="${etc.dir}/xmlrpcserver" todir="${prefix}/${app.dist.dir.name}/bin" />
+    <chmod file="${prefix}/${app.dist.dir.name}/bin/xmlrpcserver" perm="755"/>
+  	<copy file="${etc.dir}/pgfwkplugin" todir="${prefix}/${app.dist.dir.name}/bin" />
+    <chmod file="${prefix}/${app.dist.dir.name}/bin/pgfwkplugin" perm="755"/>
   </target>
 
   <target name="-install-doc-files">
-  	<mkdir dir="${prefix}/beast" />
-  	<mkdir dir="${prefix}/beast/doc" />
-	<mkdir dir="${prefix}/beast/doc/doxygen" />
-  	<mkdir dir="${prefix}/beast/doc/javadoc" />
-  	<copy todir="${prefix}/beast/doc/doxygen">
+  	<mkdir dir="${prefix}/${app.dist.dir.name}" />
+  	<mkdir dir="${prefix}/${app.dist.dir.name}/doc" />
+	<mkdir dir="${prefix}/${app.dist.dir.name}/doc/doxygen" />
+  	<mkdir dir="${prefix}/${app.dist.dir.name}/doc/javadoc" />
+  	<copy todir="${prefix}/${app.dist.dir.name}/doc/doxygen">
       <fileset dir="${dist.dir}/doxygen/html">
         <include name="**/*.*" />
       </fileset>
   	</copy>
-    <copy todir="${prefix}/beast/doc/javadoc">
+    <copy todir="${prefix}/${app.dist.dir.name}/doc/javadoc">
       <fileset dir="${dist.dir}/javadoc">
         <include name="**/*.*" />
       </fileset>
