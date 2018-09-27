@@ -49,14 +49,18 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <!-- override this with -Dbaltraddb.path= -->
   <property name="baltraddb.path" value="/opt/baltrad/db-devel"/>
   <property name="baltraddb.bin.path" value="${baltraddb.path}/bin"/>
+  <property name="baltraddb.java.path" value="${baltraddb.path}/share/baltrad-bdb/java" />
 
   <available file="${baltraddb.path}" type="dir" property="baltraddb.available"/>
-  <available file="${baltraddb.path}/share/baltrad-bdb/java/baltrad-bdb-client.jar" property="baltrad-bdb-client.jar.available"/>
+  <available file="${baltraddb.java.path}/baltrad-bdb-client.jar" property="baltrad-bdb-client.jar.available"/>
   <available file="${baltraddb.bin.path}/baltrad-bdb-server" property="baltrad-bdb-server.available"/>
   <fail unless="baltrad-bdb-client.jar.available" message="Can not find baltrad-bdb-client.jar!" />
   <fail unless="baltrad-bdb-server.available" message="Can not find baltrad-bdb-server executable" />
   <fail unless="blt.db.path" message="No storage root path defined (blt.db.path)!"/>
 
+  <echo>Java Version via Ant: ${ant.java.version}</echo> 
+  <echo>Java Version System Prop: ${java.version}</echo> 
+  <echoproperties/>
   <path id="lib.path">
     <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
@@ -66,10 +70,10 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <exclude name="emma/*.jar"/>
       <exclude name="cglib/*.jar"/>
     </fileset>
-    <fileset dir="${baltraddb.path}/share/baltrad-bdb/java/">
+    <fileset dir="${baltraddb.java.path}/">
       <include name="baltrad-bdb-client.jar"/>
     </fileset>
-    <fileset dir="${baltraddb.path}/share/baltrad-bdb/java/">
+    <fileset dir="${baltraddb.java.path}/">
       <include name="libs/*.jar"/>
     </fileset>
   </path>
