@@ -28,10 +28,14 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import eu.baltrad.beast.net.FileUploadHandlerBase;
 
 public class FTPFileUploadHandler extends FileUploadHandlerBase {
+  private final static Logger logger = LogManager.getLogger(FTPFileUploadHandler.class);
+  
   protected static final int DEFAULT_CONNECT_TIMEOUT = 10000;
   protected static final int DEFAULT_SOCKET_TIMEOUT = 60000;
 
@@ -76,18 +80,33 @@ public class FTPFileUploadHandler extends FileUploadHandlerBase {
   protected void store(File src, URI dst) throws IOException {
     File dstPath = getPath(dst);
     String dstFilename = src.getName();
+    
     if (!isDirectory(dstPath)) {
       dstFilename = dstPath.getName();
       dstPath = dstPath.getParentFile();
     }
-    if (!client.changeWorkingDirectory(dstPath.toString()))
-      throw new IOException("Failed to cwd: " + dstPath);
-    if (!client.setFileType(FTP.BINARY_FILE_TYPE))
-      throw new IOException("Failed to set binary transfer mode");
+    
+    if (!client.changeWorkingDirectory(dstPath.toString())) {
+      throw new IOException("Failed to cwd: " + dstPath);      
+    }
+    
+    if (!client.setFileType(FTP.BINARY_FILE_TYPE)) {
+      throw new IOException("Failed to set binary transfer mode");      
+    }
+    
     InputStream is = openStream(src);
+    String tempDstFileName = "." + dstFilename;
     try {
-      if (!client.storeFile(dstFilename, is))
-        throw new IOException("Failed to store " + src.toString());
+      if (client.storeFile(tempDstFileName, is)) {
+        logger.debug("Storing temporary file: " + tempDstFileName);
+        if (!client.rename(tempDstFileName, dstFilename)) {
+          throw new IOException("Failed to rename temporary file " + tempDstFileName + " to " + dstFilename);
+        } else {
+          logger.debug("Renamed temporary file from " + tempDstFileName + " to target name " + dstFilename);          
+        }
+      } else {
+        throw new IOException("Failed to store " + src.toString());                
+      }
     } finally {
       if (is != null) {
         is.close();

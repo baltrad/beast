@@ -254,7 +254,8 @@ public class FTPFileUploadHandlerTest extends EasyMockSupport {
     expect(client.changeWorkingDirectory("/remote/path")).andReturn(true);
     expect(client.setFileType(FTPClient.BINARY_FILE_TYPE)).andReturn(true);
     expect(methods.openStream(src)).andReturn(stream);
-    expect(client.storeFile("file", stream)).andReturn(true);
+    expect(client.storeFile(".file", stream)).andReturn(true);
+    expect(client.rename(".file", "file")).andReturn(true);
 
     replayAll();
 
@@ -285,7 +286,8 @@ public class FTPFileUploadHandlerTest extends EasyMockSupport {
     expect(client.changeWorkingDirectory("/remote/path")).andReturn(true);
     expect(client.setFileType(FTPClient.BINARY_FILE_TYPE)).andReturn(true);
     expect(methods.openStream(src)).andReturn(stream);
-    expect(client.storeFile("newfilename", stream)).andReturn(true);
+    expect(client.storeFile(".newfilename", stream)).andReturn(true);
+    expect(client.rename(".newfilename", "newfilename")).andReturn(true);
 
     replayAll();
 
@@ -365,7 +367,7 @@ public class FTPFileUploadHandlerTest extends EasyMockSupport {
     expect(client.changeWorkingDirectory("/remote/path")).andReturn(true);
     expect(client.setFileType(FTPClient.BINARY_FILE_TYPE)).andReturn(true);
     expect(methods.openStream(src)).andReturn(stream);
-    expect(client.storeFile("file", stream)).andReturn(false);
+    expect(client.storeFile(".file", stream)).andReturn(false);
 
     replayAll();
 
@@ -373,6 +375,43 @@ public class FTPFileUploadHandlerTest extends EasyMockSupport {
       classUnderTest.store(src, dst);
       fail("expected IOException");
     } catch (IOException e) { }
+    
+    verifyAll();
+  }
+  
+  @Test
+  public void testStore_renameFailure() throws Exception {
+    URI dst = URI.create("ftp://user:passwd@host/remote/path");
+    File src = new File("/path/to/target.tst");
+    InputStream stream = new InputStream() {
+      @Override public int read() { return -1; } 
+    };
+
+    classUnderTest = new FTPFileUploadHandler(client) {
+      protected InputStream openStream(File f) throws IOException {
+        return methods.openStream(f);
+      }
+
+      protected boolean isDirectory(File path) throws IOException {
+        return methods.isDirectory(path);
+      }
+    };
+
+    expect(methods.isDirectory(new File("/remote/path"))).andReturn(true);
+    expect(client.changeWorkingDirectory("/remote/path")).andReturn(true);
+    expect(client.setFileType(FTPClient.BINARY_FILE_TYPE)).andReturn(true);
+    expect(methods.openStream(src)).andReturn(stream);
+    expect(client.storeFile(".target.tst", stream)).andReturn(true);
+    expect(client.rename(".target.tst", "target.tst")).andReturn(false);
+
+    replayAll();
+
+    try {
+      classUnderTest.store(src, dst);
+      fail("expected IOException");
+    } catch (IOException e) { 
+      assertTrue(e.getMessage().equals("Failed to rename temporary file .target.tst to target.tst"));
+    }
     
     verifyAll();
   }

@@ -9,11 +9,7 @@ import net.schmizz.sshj.xfer.FileSystemFile;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 import net.schmizz.sshj.xfer.scp.ScpCommandLine;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 public class SCPOnlyFileUploadHandler extends SCPFileUploadHandler {
-  private final static Logger logger = LogManager.getLogger(SCPOnlyFileUploadHandler.class);
 
   /**
    * @see eu.baltrad.beast.net.FileUploadHandler#upload(java.io.File, java.net.URI)
