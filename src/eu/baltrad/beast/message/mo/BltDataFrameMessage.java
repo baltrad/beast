@@ -26,12 +26,13 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 
+import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.IBltXmlMessage;
 
 /**
  * @author Anders Henja
  */
-public class BltDataFrameMessage implements IBltXmlMessage  {
+public class BltDataFrameMessage implements IBltMessage  {
   /**
    * The headers to be added to the data frame
    */
@@ -41,23 +42,7 @@ public class BltDataFrameMessage implements IBltXmlMessage  {
    * Filename
    */
   private String filename = null;
-  
-  /**
-   * @see eu.baltrad.beast.message.IBltXmlMessage#fromDocument(org.dom4j.Document)
-   */
-  @Override
-  public void fromDocument(Document dom) {
-  }
 
-  /**
-   * @see eu.baltrad.beast.message.IBltXmlMessage#toDocument()
-   */
-  @Override
-  public Document toDocument() {
-    Document document = DocumentHelper.createDocument();
-    return document;
-  }
-  
   /**
    * @param filename the filename to set
    */

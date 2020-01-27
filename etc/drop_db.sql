@@ -31,3 +31,6 @@ drop table if exists beast_anomaly_detectors;
 drop table if exists adaptors_xmlrpc;
 drop table if exists adaptors; 
 drop table if exists router_rules;
+drop table if exists beast_authorization;
+drop table if exists beast_authorization_request;
+

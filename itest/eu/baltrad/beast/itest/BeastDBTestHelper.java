@@ -236,6 +236,7 @@ public class BeastDBTestHelper {
     if (extras != null) {
       cname = cname + "-" + extras;
     }
+    
     cname = cname + ".xls";
     File f = new File(tc.getClass().getResource(cname).getFile());
     return new XlsDataSet(f);

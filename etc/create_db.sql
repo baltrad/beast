@@ -219,3 +219,40 @@ create table beast_wrwp_sources (
   rule_id integer REFERENCES beast_wrwp_rules(rule_id),
   source text
 );
+
+CREATE TABLE beast_authorization
+(
+    nodename VARCHAR(128) UNIQUE NOT NULL,
+    nodeemail VARCHAR(256) NOT NULL,
+    nodeaddress VARCHAR(256) NOT NULL,
+    redirected_address VARCHAR(256), 
+    publickey TEXT,
+    publickeypath TEXT,
+    privatekey TEXT,
+    privatekeypath TEXT,
+    lastupdated TIMESTAMP,
+    authorized BOOLEAN DEFAULT FALSE NOT NULL,
+    injector BOOLEAN DEFAULT FALSE NOT NULL,
+    local BOOLEAN DEFAULT FALSE,
+    connectionuuid VARCHAR(64) NOT NULL PRIMARY KEY
+);
+
+CREATE TABLE beast_authorization_request
+(
+    id SERIAL PRIMARY KEY NOT NULL,
+    nodename VARCHAR(128),
+    nodeemail VARCHAR(256),
+    nodeaddress VARCHAR(256),
+    checksum VARCHAR(64),
+    publickey TEXT,
+    message TEXT,
+    requestuuid VARCHAR(64) NOT NULL,
+    outgoing BOOLEAN DEFAULT FALSE,
+    remotehost VARCHAR(256),
+    receivedat timestamp,
+    autorequest BOOLEAN DEFAULT FALSE,
+    remoteaddress VARCHAR(256),
+    UNIQUE (requestuuid, outgoing)
+);
+
+

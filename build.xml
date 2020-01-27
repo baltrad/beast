@@ -60,7 +60,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 
   <echo>Java Version via Ant: ${ant.java.version}</echo> 
   <echo>Java Version System Prop: ${java.version}</echo> 
-  <echoproperties/>
+  <!--<echoproperties/>-->
   <path id="lib.path">
     <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
@@ -366,8 +366,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
       <batchtest fork="yes" todir="${dist.dir}/junit-reports">
       	<fileset dir="${build.itest.dir}" includes="**/*Test.class"
                  excludes="eu/baltrad/beast/net/FileDistributionITest.class"/>
-      	<!--
-      	<fileset dir="${build.itest.dir}" includes="**/VolumeRuleManagerITest.class"
+        <!--
+      	<fileset dir="${build.itest.dir}" includes="eu/baltrad/beast/security/AuthorizationRequest*ITest.class"
                  excludes="eu/baltrad/beast/net/FileDistributionITest.class"/>
         -->         
       </batchtest>
