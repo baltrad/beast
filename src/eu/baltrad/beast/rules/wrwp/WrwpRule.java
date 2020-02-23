@@ -96,9 +96,29 @@ public class WrwpRule implements IRule, InitializingBean {
   private double minelevationangle = 2.5;
 
   /**
+   * Maximum elevation angle [deg]
+   */
+  private double maxelevationangle = 45.0;
+  
+  /**
    * Radial velocity threshold [m/s]
    */
   private double velocitythreshold = 2.0;
+  
+  /**
+   * Maximum allowed layer velocity [m/s]
+   */
+  private double maxvelocitythreshold = 60.0; 
+  
+  /**
+   * Minimum sample size for reflectivity
+   */
+  private int minsamplesizereflectivity = 40;
+  
+  /**
+   * Minimum sample size for wind
+   */
+  private int minsamplesizewind = 40;
   
   /**
    * A list of fields to generate
@@ -370,7 +390,11 @@ public class WrwpRule implements IRule, InitializingBean {
           args.add("--mindistance="+mindistance);
           args.add("--maxdistance="+maxdistance);
           args.add("--minelevationangle="+minelevationangle);
+          args.add("--maxelevationangle="+maxelevationangle);
           args.add("--velocitythreshold="+velocitythreshold);
+          args.add("--maxvelocitythreshold="+maxvelocitythreshold);
+          args.add("--minsamplesizereflectivity="+minsamplesizereflectivity);
+          args.add("--minsamplesizewind="+minsamplesizewind);
           if (fields.size() > 0)
             args.add("--fields="+getFieldsAsStr());
           result.setArguments(args.toArray(new String[0]));
@@ -417,5 +441,37 @@ public class WrwpRule implements IRule, InitializingBean {
         ruleUtil == null) {
       throw new BeanInitializationException("catalog or ruleUtilities missing");
     }    
+  }
+
+  public double getMaxelevationangle() {
+    return maxelevationangle;
+  }
+
+  public void setMaxelevationangle(double maxelevationangle) {
+    this.maxelevationangle = maxelevationangle;
+  }
+
+  public double getMaxvelocitythreshold() {
+    return maxvelocitythreshold;
+  }
+
+  public void setMaxvelocitythreshold(double maxvelocitythreshold) {
+    this.maxvelocitythreshold = maxvelocitythreshold;
+  }
+
+  public int getMinsamplesizereflectivity() {
+    return minsamplesizereflectivity;
+  }
+
+  public void setMinsamplesizereflectivity(int minsamplesizereflectivity) {
+    this.minsamplesizereflectivity = minsamplesizereflectivity;
+  }
+
+  public int getMinsamplesizewind() {
+    return minsamplesizewind;
+  }
+
+  public void setMinsamplesizewind(int minsamplesizewind) {
+    this.minsamplesizewind = minsamplesizewind;
   }
 }

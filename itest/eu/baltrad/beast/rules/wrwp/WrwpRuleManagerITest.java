@@ -101,7 +101,11 @@ public class WrwpRuleManagerITest {
     rule.setMindistance(1000);
     rule.setMaxdistance(20000);
     rule.setMinelevationangle(1.5);
+    rule.setMaxelevationangle(43.0);
     rule.setMinvelocitythreshold(0.5);
+    rule.setMaxvelocitythreshold(50.0);
+    rule.setMinsamplesizereflectivity(30);
+    rule.setMinsamplesizewind(29);
     rule.setFields("de,ef");
     rule.setSources(sources);
     
@@ -155,7 +159,11 @@ public class WrwpRuleManagerITest {
     rule.setMindistance(99);
     rule.setMaxdistance(5000);
     rule.setMinelevationangle(1.1);
+    rule.setMaxelevationangle(42.1);
     rule.setMinvelocitythreshold(0.1);
+    rule.setMaxvelocitythreshold(49.9);
+    rule.setMinsamplesizereflectivity(54);
+    rule.setMinsamplesizewind(53);
     rule.setFields("ghgh");
     rule.setSources(sources);
 

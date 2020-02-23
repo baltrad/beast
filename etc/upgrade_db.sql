@@ -408,6 +408,26 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_wrwp_rules_with_maxelangle_and_more_attributes() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_wrwp_rules' AND column_name = 'maxelangle';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_wrwp_rules ADD COLUMN maxelangle DECIMAL;
+    ALTER TABLE beast_wrwp_rules ADD COLUMN maxvelocitythresh DECIMAL;
+    ALTER TABLE beast_wrwp_rules ADD COLUMN minsamplesizereflectivity INTEGER;
+    ALTER TABLE beast_wrwp_rules ADD COLUMN minsamplesizewind INTEGER;
+    UPDATE beast_wrwp_rules SET maxelangle=45.0;
+    UPDATE beast_wrwp_rules SET maxvelocitythresh=60.0;
+    UPDATE beast_wrwp_rules SET minsamplesizereflectivity=40;
+    UPDATE beast_wrwp_rules SET minsamplesizewind=40;
+    ALTER TABLE beast_wrwp_rules ALTER COLUMN maxelangle SET NOT NULL;
+    ALTER TABLE beast_wrwp_rules ALTER COLUMN maxvelocitythresh SET NOT NULL;
+    ALTER TABLE beast_wrwp_rules ALTER COLUMN minsamplesizereflectivity SET NOT NULL;
+    ALTER TABLE beast_wrwp_rules ALTER COLUMN minsamplesizewind SET NOT NULL;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -432,6 +452,7 @@ select update_beast_wrwp_with_fields();
 select update_beast_composite_rules_with_max_age_limit();
 select create_beast_authorization();
 select create_beast_authorization_request();
+select update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -457,4 +478,5 @@ drop function update_beast_wrwp_with_fields();
 drop function update_beast_composite_rules_with_max_age_limit();
 drop function create_beast_authorization();
 drop function create_beast_authorization_request();
+drop function update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
 

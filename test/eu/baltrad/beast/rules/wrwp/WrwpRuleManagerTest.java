@@ -106,14 +106,18 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     rule.setMindistance(1000);
     rule.setMaxdistance(10000);
     rule.setMinelevationangle(1.5);
+    rule.setMaxelevationangle(43.0);
     rule.setMinvelocitythreshold(10.0);
+    rule.setMaxvelocitythreshold(46.0);
+    rule.setMinsamplesizereflectivity(30);
+    rule.setMinsamplesizewind(29);
     rule.setSources(sources);
     rule.setFields("dd,aa");
 
     expect(jdbc.update("INSERT INTO beast_wrwp_rules " + 
-    		"(rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, fields) " +
-        "VALUES (?,?,?,?,?,?,?,?)", 
-        new Object[]{10, 300, 5000, 1000, 10000, 1.5, 10.0, "dd,aa"})).andReturn(1);
+    		"(rule_id, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
+        new Object[]{10, 300, 5000, 1000, 10000, 1.5, 43.0, 10.0, 46.0, 30, 29, "dd,aa"})).andReturn(1);
     
     filterManager.deleteFilters(10);
     
@@ -174,14 +178,18 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     rule.setMindistance(1000);
     rule.setMaxdistance(10000);
     rule.setMinelevationangle(1.5);
+    rule.setMaxelevationangle(43.0);
     rule.setMinvelocitythreshold(10.0);
+    rule.setMaxvelocitythreshold(45.0);
+    rule.setMinsamplesizereflectivity(30);
+    rule.setMinsamplesizewind(29);
     rule.setFields("aa,dd");
     rule.setSources(sources);
 
     expect(jdbc.update(
         "UPDATE beast_wrwp_rules SET interval=?, maxheight=?, mindistance=?," +
-        " maxdistance=?, minelangle=?, minvelocitythresh=?, fields=? WHERE rule_id=?",
-        new Object[]{300, 5000, 1000, 10000, 1.5, 10.0, "aa,dd", 12})).andReturn(1);
+        " maxdistance=?, minelangle=?, maxelangle=?, minvelocitythresh=?, maxvelocitythresh=?, minsamplesizereflectivity=?, minsamplesizewind=?, fields=? WHERE rule_id=?",
+        new Object[]{300, 5000, 1000, 10000, 1.5, 43.0, 10.0, 45.0, 30, 29, "aa,dd", 12})).andReturn(1);
     methods.updateSources(12, sources);
     
     filterManager.deleteFilters(12);
@@ -308,7 +316,12 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     expect(rs.getInt("mindistance")).andReturn(1000);
     expect(rs.getInt("maxdistance")).andReturn(10000);
     expect(rs.getDouble("minelangle")).andReturn(4.5);
+    expect(rs.getDouble("maxelangle")).andReturn(43.0);
     expect(rs.getDouble("minvelocitythresh")).andReturn(1.5);
+    expect(rs.getDouble("maxvelocitythresh")).andReturn(50.0);
+    expect(rs.getInt("minsamplesizereflectivity")).andReturn(30);
+    expect(rs.getInt("minsamplesizewind")).andReturn(29);
+    
     expect(rs.getString("fields")).andReturn("aa,dd");
     
     expect(methods.getSources(3)).andReturn(sources);
@@ -327,7 +340,11 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     assertEquals(1000, result.getMindistance());
     assertEquals(10000, result.getMaxdistance());
     assertEquals(4.5, result.getMinelevationangle(), 4);
+    assertEquals(43.0, result.getMaxelevationangle(), 4);
     assertEquals(1.5, result.getMinvelocitythreshold(), 4);
+    assertEquals(50.0, result.getMaxvelocitythreshold(), 4);
+    assertEquals(30, result.getMinsamplesizereflectivity());
+    assertEquals(29, result.getMinsamplesizewind());
     assertEquals("aa,dd", result.getFieldsAsStr());
     assertSame(sources, result.getSources());
     assertSame(cat, result.getCatalog());
@@ -348,7 +365,11 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     expect(rs.getInt("mindistance")).andReturn(1000);
     expect(rs.getInt("maxdistance")).andReturn(10000);
     expect(rs.getDouble("minelangle")).andReturn(4.5);
+    expect(rs.getDouble("maxelangle")).andReturn(43.0);
     expect(rs.getDouble("minvelocitythresh")).andReturn(1.5);
+    expect(rs.getDouble("maxvelocitythresh")).andReturn(50.0);
+    expect(rs.getInt("minsamplesizereflectivity")).andReturn(30);
+    expect(rs.getInt("minsamplesizewind")).andReturn(29);
     expect(rs.getString("fields")).andReturn(null);
     
     expect(methods.getSources(3)).andReturn(sources);
@@ -367,7 +388,11 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     assertEquals(1000, result.getMindistance());
     assertEquals(10000, result.getMaxdistance());
     assertEquals(4.5, result.getMinelevationangle(), 4);
+    assertEquals(43.0, result.getMaxelevationangle(), 4);
     assertEquals(1.5, result.getMinvelocitythreshold(), 4);
+    assertEquals(50.0, result.getMaxvelocitythreshold(), 4);
+    assertEquals(30, result.getMinsamplesizereflectivity());
+    assertEquals(29, result.getMinsamplesizewind());
     assertEquals("", result.getFieldsAsStr());
     assertSame(sources, result.getSources());
     assertSame(cat, result.getCatalog());

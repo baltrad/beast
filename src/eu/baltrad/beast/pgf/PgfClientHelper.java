@@ -186,10 +186,18 @@ public class PgfClientHelper implements IPgfClientHelper {
             HashMap<String, Object> v = hm.get(k);
             PcsDefinition pdef = new PcsDefinition(k);
             if (v.containsKey("description")) {
-              pdef.setDescription((String)v.get("description"));
+              Object ov = v.get("description");
+              if (ov != null) {
+                pdef.setDescription(ov.toString());
+              }
+              //pdef.setDescription((String)v.get("description"));
             }
             if (v.containsKey("definition")) {
-              pdef.setDefinition((String)v.get("definition"));
+              Object ov = v.get("definition");
+              if (ov != null) {
+                pdef.setDefinition(ov.toString());
+              }
+              //pdef.setDefinition((String)v.get("definition"));
             }
             pcs.add(pdef);
           }

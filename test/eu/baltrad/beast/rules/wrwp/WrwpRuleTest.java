@@ -111,12 +111,41 @@ public class WrwpRuleTest extends EasyMockSupport {
   }
 
   @Test
+  public void test_maxelevationangle() {
+    assertEquals(45.0, classUnderTest.getMaxelevationangle(), 4);
+    classUnderTest.setMaxelevationangle(35.0);
+    assertEquals(35.0, classUnderTest.getMaxelevationangle(), 4);
+  }
+  
+  
+  @Test
   public void test_minvelocitythreshold() {
     assertEquals(2.0, classUnderTest.getMinvelocitythreshold(), 4);
     classUnderTest.setMinvelocitythreshold(5.0);
     assertEquals(5.0, classUnderTest.getMinvelocitythreshold(), 4);
   }
   
+  @Test
+  public void test_maxvelocitythreshold() {
+    assertEquals(60.0, classUnderTest.getMaxvelocitythreshold(), 4);
+    classUnderTest.setMaxvelocitythreshold(50.0);
+    assertEquals(50.0, classUnderTest.getMaxvelocitythreshold(), 4);
+  }  
+  
+  @Test
+  public void test_minsamplesizereflectivity()  {
+    assertEquals(40, classUnderTest.getMinsamplesizereflectivity());
+    classUnderTest.setMinsamplesizereflectivity(30);
+    assertEquals(30, classUnderTest.getMinsamplesizereflectivity());
+  }
+
+  @Test
+  public void test_minsamplesizewind()  {
+    assertEquals(40, classUnderTest.getMinsamplesizewind());
+    classUnderTest.setMinsamplesizewind(30);
+    assertEquals(30, classUnderTest.getMinsamplesizewind());
+  }
+
   @Test
   public void test_fields() {
     assertEquals(0, classUnderTest.getFields().size());
@@ -191,7 +220,11 @@ public class WrwpRuleTest extends EasyMockSupport {
     classUnderTest.setMindistance(1000);
     classUnderTest.setMaxheight(10000);
     classUnderTest.setMinelevationangle(3.5);
+    classUnderTest.setMaxelevationangle(43.5);
     classUnderTest.setMinvelocitythreshold(4.5);
+    classUnderTest.setMaxvelocitythreshold(44.5);
+    classUnderTest.setMinsamplesizereflectivity(30);
+    classUnderTest.setMinsamplesizewind(29);
     classUnderTest.setSources(sources);
     
     expect(fe.getMetadata()).andReturn(meta);
@@ -207,13 +240,17 @@ public class WrwpRuleTest extends EasyMockSupport {
     assertEquals("eu.baltrad.beast.GenerateWrwp", result.getAlgorithm());
     assertEquals(1, result.getFiles().length);
     assertEquals(uuid.toString(), result.getFiles()[0]);
-    assertEquals(6, result.getArguments().length);
+    assertEquals(10, result.getArguments().length);
     assertEquals("--interval=500", result.getArguments()[0]);
     assertEquals("--maxheight=10000", result.getArguments()[1]);
     assertEquals("--mindistance=1000", result.getArguments()[2]);
     assertEquals("--maxdistance=10000", result.getArguments()[3]);
     assertEquals("--minelevationangle=3.5", result.getArguments()[4]);
-    assertEquals("--velocitythreshold=4.5", result.getArguments()[5]);
+    assertEquals("--maxelevationangle=43.5", result.getArguments()[5]);
+    assertEquals("--velocitythreshold=4.5", result.getArguments()[6]);
+    assertEquals("--maxvelocitythreshold=44.5", result.getArguments()[7]);
+    assertEquals("--minsamplesizereflectivity=30", result.getArguments()[8]);
+    assertEquals("--minsamplesizewind=29", result.getArguments()[9]);
   }
 
   @Test
@@ -235,7 +272,11 @@ public class WrwpRuleTest extends EasyMockSupport {
     classUnderTest.setMindistance(1000);
     classUnderTest.setMaxheight(10000);
     classUnderTest.setMinelevationangle(3.5);
+    classUnderTest.setMaxelevationangle(43.5);
     classUnderTest.setMinvelocitythreshold(4.5);
+    classUnderTest.setMaxvelocitythreshold(44.5);
+    classUnderTest.setMinsamplesizereflectivity(30);
+    classUnderTest.setMinsamplesizewind(29);
     classUnderTest.setSources(sources);
     classUnderTest.setFields("ff,ff_dev,dd");
     
@@ -252,14 +293,18 @@ public class WrwpRuleTest extends EasyMockSupport {
     assertEquals("eu.baltrad.beast.GenerateWrwp", result.getAlgorithm());
     assertEquals(1, result.getFiles().length);
     assertEquals(uuid.toString(), result.getFiles()[0]);
-    assertEquals(7, result.getArguments().length);
+    assertEquals(11, result.getArguments().length);
     assertEquals("--interval=500", result.getArguments()[0]);
     assertEquals("--maxheight=10000", result.getArguments()[1]);
     assertEquals("--mindistance=1000", result.getArguments()[2]);
     assertEquals("--maxdistance=10000", result.getArguments()[3]);
     assertEquals("--minelevationangle=3.5", result.getArguments()[4]);
-    assertEquals("--velocitythreshold=4.5", result.getArguments()[5]);
-    assertEquals("--fields=ff,ff_dev,dd", result.getArguments()[6]);
+    assertEquals("--maxelevationangle=43.5", result.getArguments()[5]);
+    assertEquals("--velocitythreshold=4.5", result.getArguments()[6]);
+    assertEquals("--maxvelocitythreshold=44.5", result.getArguments()[7]);
+    assertEquals("--minsamplesizereflectivity=30", result.getArguments()[8]);
+    assertEquals("--minsamplesizewind=29", result.getArguments()[9]);
+    assertEquals("--fields=ff,ff_dev,dd", result.getArguments()[10]);
   }
   
   @Test

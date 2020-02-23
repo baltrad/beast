@@ -91,14 +91,19 @@ public class WrwpRuleManager implements IRuleManager {
     int mindistance = wrule.getMindistance();
     int maxdistance = wrule.getMaxdistance();
     double minelangle = wrule.getMinelevationangle();
+    double maxelangle = wrule.getMaxelevationangle();
     double minvelocitythresh = wrule.getMinvelocitythreshold();
+    double maxvelocitythresh = wrule.getMaxvelocitythreshold();
+    int minsamplesizereflectivity = wrule.getMinsamplesizereflectivity();
+    int minsamplesizewind = wrule.getMinsamplesizewind();
+    
     String fields = wrule.getFieldsAsStr();
     
     template.update(
         "INSERT INTO beast_wrwp_rules" +
-        " (rule_id, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, fields)" +
-        " VALUES (?,?,?,?,?,?,?,?)", 
-        new Object[]{ruleId, interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, fields});
+        " (rule_id, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields)" +
+        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
+        new Object[]{ruleId, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields});
     
     updateSources(ruleId, wrule.getSources());
     
@@ -130,13 +135,17 @@ public class WrwpRuleManager implements IRuleManager {
     int mindistance = wrule.getMindistance();
     int maxdistance = wrule.getMaxdistance();
     double minelangle = wrule.getMinelevationangle();
+    double maxelangle = wrule.getMaxelevationangle();
     double minvelocitythresh = wrule.getMinvelocitythreshold();
+    double maxvelocitythresh = wrule.getMaxvelocitythreshold();
+    int minsamplesizereflectivity = wrule.getMinsamplesizereflectivity();
+    int minsamplesizewind = wrule.getMinsamplesizewind();
     String fields = wrule.getFieldsAsStr();
     
     template.update(
         "UPDATE beast_wrwp_rules SET interval=?, maxheight=?, mindistance=?," +
-        " maxdistance=?, minelangle=?, minvelocitythresh=?, fields=? WHERE rule_id=?",
-        new Object[]{interval, maxheight, mindistance, maxdistance, minelangle, minvelocitythresh, fields, ruleId});
+        " maxdistance=?, minelangle=?, maxelangle=?, minvelocitythresh=?, maxvelocitythresh=?, minsamplesizereflectivity=?, minsamplesizewind=?, fields=? WHERE rule_id=?",
+        new Object[]{interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields, ruleId});
     
     updateSources(ruleId, wrule.getSources());
     
@@ -206,7 +215,11 @@ public class WrwpRuleManager implements IRuleManager {
         result.setMindistance(rs.getInt("mindistance"));
         result.setMaxdistance(rs.getInt("maxdistance"));
         result.setMinelevationangle(rs.getDouble("minelangle"));
+        result.setMaxelevationangle(rs.getDouble("maxelangle"));
         result.setMinvelocitythreshold(rs.getDouble("minvelocitythresh"));
+        result.setMaxvelocitythreshold(rs.getDouble("maxvelocitythresh"));
+        result.setMinsamplesizereflectivity(rs.getInt("minsamplesizereflectivity"));
+        result.setMinsamplesizewind(rs.getInt("minsamplesizewind"));
         String fields = rs.getString("fields");
         result.setFields(fields == null ? "" : fields);
 

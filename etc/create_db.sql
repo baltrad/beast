@@ -211,7 +211,11 @@ create table beast_wrwp_rules (
   mindistance INTEGER NOT NULL,
   maxdistance INTEGER NOT NULL,
   minelangle DECIMAL NOT NULL,
+  maxelangle DECIMAL NOT NULL,
   minvelocitythresh DECIMAL NOT NULL,
+  maxvelocitythresh DECIMAL NOT NULL,
+  minsamplesizereflectivity INTEGER NOT NULL,
+  minsamplesizewind INTEGER NOT NULL,
   fields TEXT NOT NULL
 );  
 
