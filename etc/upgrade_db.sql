@@ -428,6 +428,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_wrwp_with_capital_dbzh() RETURNS VOID AS $$
+BEGIN
+  UPDATE beast_wrwp_rules SET fields = replace(fields, 'dbzh', 'DBZH');
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -453,6 +459,7 @@ select update_beast_composite_rules_with_max_age_limit();
 select create_beast_authorization();
 select create_beast_authorization_request();
 select update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
+select update_beast_wrwp_with_capital_dbzh();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -479,4 +486,4 @@ drop function update_beast_composite_rules_with_max_age_limit();
 drop function create_beast_authorization();
 drop function create_beast_authorization_request();
 drop function update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
-
+drop function update_beast_wrwp_with_capital_dbzh();
