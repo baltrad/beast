@@ -14,6 +14,13 @@ public interface SendFileRequestCallback {
   public void filePublished(SendFileRequest request);
   
   /**
+   * @param request the file request that has been published (with success)
+   * @param redirectAddress the address redirected to
+   * @param statusCode the status code indicating redirect
+   */
+  public void filePublished(SendFileRequest request, String redirectAddress, int statusCode);
+  
+  /**
    * Invoked whenever a file publication fails for some reason.
    * @param request the request
    * @param response the response indicating failure

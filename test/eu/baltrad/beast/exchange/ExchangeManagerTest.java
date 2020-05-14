@@ -40,6 +40,7 @@ public class ExchangeManagerTest extends EasyMockSupport {
   public interface Methods {
     public ExchangeResponse send(SendFileRequest request, SendFileRequestCallback callback);
     public IPooledFileRequestPublisher createPooledFileRequestPublisher();
+    public SendFileRequest createNewRequest(SendFileRequest request, String address);
   };
   
   private ExchangeManager classUnderTest = null;
@@ -61,6 +62,10 @@ public class ExchangeManagerTest extends EasyMockSupport {
       @Override
       protected IPooledFileRequestPublisher createPooledFileRequestPublisher() {
         return methods.createPooledFileRequestPublisher();
+      }
+      @Override
+      protected SendFileRequest createNewRequest(SendFileRequest request, String address) {
+        return methods.createNewRequest(request, address);
       }
     };
     classUnderTest.setConnector(connector);
@@ -518,11 +523,82 @@ public class ExchangeManagerTest extends EasyMockSupport {
     assertSame(response, result);
   }
   
+  
   @Test
-  public void test_send_with_callback_redirected() {
+  public void test_send_callback_redirect() throws Exception {
+    SendFileRequestCallback callback = createMock(SendFileRequestCallback.class);
+
+    SendFileRequest request = new SendFileRequest();
+    request.setAddress("http://localhost.se");
+    request.setNodeName("mynodename");
+
+    SendFileRequest newrequest = new SendFileRequest();
+    newrequest.setAddress("http://somewhere.else");
+
+    Authorization authorization = new Authorization();
+    authorization.setRedirectedAddress(null);
+
+    ExchangeResponse response = new ExchangeResponse(HttpStatus.SC_TEMPORARY_REDIRECT);
+    response.setRedirectAddress("http://somewhere.else");
+    response.setRedirected(true);
+    ExchangeResponse redirectresponse = new ExchangeResponse(HttpStatus.SC_OK);
+    
+    expect(connector.send(request)).andReturn(response);
+    expect(authorizationManager.getByNodeName("mynodename")).andReturn(authorization);
+    expect(methods.createNewRequest(request, "http://somewhere.else")).andReturn(newrequest);
+    expect(connector.send(newrequest)).andReturn(redirectresponse);
+    authorizationManager.update(authorization);
+    callback.filePublished(request, "http://somewhere.else", HttpStatus.SC_TEMPORARY_REDIRECT);
+    replayAll();
+    
+    classUnderTest.send(request, callback);
+    
+    verifyAll();
+    assertEquals("http://somewhere.else", authorization.getRedirectedAddress());
+    assertEquals("http://localhost.se", request.getAddress());
+  }
+ 
+  @Test
+  public void test_send_callback_redirect_failed() throws Exception {
+    SendFileRequestCallback callback = createMock(SendFileRequestCallback.class);
+
+    SendFileRequest request = new SendFileRequest();
+    request.setAddress("http://localhost.se");
+    request.setNodeName("mynodename");
+
+    SendFileRequest newrequest = new SendFileRequest();
+    newrequest.setAddress("http://somewhere.else");
+
+    Authorization authorization = new Authorization();
+    authorization.setRedirectedAddress(null);
+
+    ExchangeResponse response = new ExchangeResponse(HttpStatus.SC_TEMPORARY_REDIRECT);
+    response.setRedirectAddress("http://somewhere.else");
+    response.setRedirected(true);
+    ExchangeResponse redirectresponse = new ExchangeResponse(HttpStatus.SC_TEMPORARY_REDIRECT);
+    
+    expect(connector.send(request)).andReturn(response);
+    expect(authorizationManager.getByNodeName("mynodename")).andReturn(authorization);
+    expect(methods.createNewRequest(request, "http://somewhere.else")).andReturn(newrequest);
+    expect(connector.send(newrequest)).andReturn(redirectresponse);
+    callback.filePublicationFailed(request, response);
+    replayAll();
+    
+    classUnderTest.send(request, callback);
+    
+    verifyAll();
+    assertEquals(null, authorization.getRedirectedAddress());
+    assertEquals("http://localhost.se", request.getAddress());
+  }
+  
+  @Test
+  public void test_send_with_redirected() {
     SendFileRequest request = new SendFileRequest();
     request.setNodeName("mynodename");
     request.setAddress("http://localhost.se");
+    SendFileRequest newrequest = new SendFileRequest();
+    newrequest.setAddress("http://somewhere.else");
+
     ExchangeResponse response = new ExchangeResponse(HttpStatus.SC_TEMPORARY_REDIRECT);
     response.setRedirectAddress("http://somewhere.else");
     response.setRedirected(true);
@@ -531,14 +607,15 @@ public class ExchangeManagerTest extends EasyMockSupport {
     
     expect(connector.send(request)).andReturn(response);
     expect(authorizationManager.getByNodeName("mynodename")).andReturn(authorization);
-    expect(connector.send(request)).andReturn(new ExchangeResponse(HttpStatus.SC_OK));
+    expect(methods.createNewRequest(request, "http://somewhere.else")).andReturn(newrequest);
+    expect(connector.send(newrequest)).andReturn(new ExchangeResponse(HttpStatus.SC_OK));
     authorizationManager.update(authorization);
 
     replayAll();
     classUnderTest.send(request);
     verifyAll();
     assertEquals("http://somewhere.else", authorization.getRedirectedAddress());
-    assertEquals("http://somewhere.else", request.getAddress());
+    assertEquals("http://localhost.se", request.getAddress());
   }
   
   @Test
@@ -546,6 +623,8 @@ public class ExchangeManagerTest extends EasyMockSupport {
     SendFileRequest request = new SendFileRequest();
     request.setNodeName("mynodename");
     request.setAddress("http://localhost.se");
+    SendFileRequest newrequest = new SendFileRequest();
+    newrequest.setAddress("http://somewhere.else");
     ExchangeResponse response = new ExchangeResponse(HttpStatus.SC_TEMPORARY_REDIRECT);
     response.setRedirectAddress("http://somewhere.else");
     response.setRedirected(true);
@@ -554,13 +633,14 @@ public class ExchangeManagerTest extends EasyMockSupport {
     
     expect(connector.send(request)).andReturn(response);
     expect(authorizationManager.getByNodeName("mynodename")).andReturn(authorization);
-    expect(connector.send(request)).andReturn(new ExchangeResponse(HttpStatus.SC_OK));
+    expect(methods.createNewRequest(request, "http://somewhere.else")).andReturn(newrequest);
+    expect(connector.send(newrequest)).andReturn(new ExchangeResponse(HttpStatus.SC_OK));
     
     replayAll();
     classUnderTest.send(request);
     verifyAll();
     assertEquals("http://somewhere.else", authorization.getRedirectedAddress());
-    assertEquals("http://somewhere.else", request.getAddress());
+    assertEquals("http://localhost.se", request.getAddress());
   }
   
   @Test
@@ -568,6 +648,8 @@ public class ExchangeManagerTest extends EasyMockSupport {
     SendFileRequest request = new SendFileRequest();
     request.setNodeName("mynodename");
     request.setAddress("http://localhost.se");
+    SendFileRequest newrequest = new SendFileRequest();
+    newrequest.setAddress("http://somewhere.else");
     ExchangeResponse response = new ExchangeResponse(HttpStatus.SC_TEMPORARY_REDIRECT);
     response.setRedirectAddress("http://somewhere.else");
     response.setRedirected(true);
@@ -575,7 +657,8 @@ public class ExchangeManagerTest extends EasyMockSupport {
     
     expect(connector.send(request)).andReturn(response);
     expect(authorizationManager.getByNodeName("mynodename")).andReturn(authorization);
-    expect(connector.send(request)).andReturn(new ExchangeResponse(HttpStatus.SC_NOT_FOUND));
+    expect(methods.createNewRequest(request, "http://somewhere.else")).andReturn(newrequest);
+    expect(connector.send(newrequest)).andReturn(new ExchangeResponse(HttpStatus.SC_NOT_FOUND));
 
     replayAll();
     try {
@@ -585,9 +668,9 @@ public class ExchangeManagerTest extends EasyMockSupport {
     }
     verifyAll();
     assertEquals(null, authorization.getRedirectedAddress());
-    assertEquals("http://somewhere.else", request.getAddress());
+    assertEquals("http://localhost.se", request.getAddress());
   }
-  
+ 
   @Test
   public void test_sendAsync() {
     IPooledFileRequestPublisher publisher = createMock(IPooledFileRequestPublisher.class);

@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.bouncycastle.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,6 +115,17 @@ public class ExchangeManager implements IExchangeManager {
     return send(request, null);
   }
 
+  protected SendFileRequest createNewRequest(SendFileRequest request, String address) {
+    SendFileRequest newrequest = new SendFileRequest();
+    newrequest.setAddress(address);
+    newrequest.setContentType(request.getContentType());
+    newrequest.setData(request.getData());
+    newrequest.setDate(request.getDate());
+    newrequest.setMetadata(request.getMetadata());
+    newrequest.setNodeName(request.getNodeName());
+    return newrequest;
+  }
+  
   /**
    * @see IExchangeManager#send(SendFileRequest, SendFileRequestCallback)
    */
@@ -124,8 +136,8 @@ public class ExchangeManager implements IExchangeManager {
       if (response.isRedirected()) {
         Authorization authorization = authorizationManager.getByNodeName(request.getNodeName());
         if (authorization != null && response.getRedirectAddress() != null) {
-          request.setAddress(response.getRedirectAddress());
-          ExchangeResponse newresponse = connector.send(request);
+          SendFileRequest newrequest = createNewRequest(request, response.getRedirectAddress());
+          ExchangeResponse newresponse = connector.send(newrequest);
           if (newresponse.statusCode() == HttpStatus.SC_OK) {
             if (!response.getRedirectAddress().equals(authorization.getRedirectedAddress())) {
               try {
@@ -135,8 +147,17 @@ public class ExchangeManager implements IExchangeManager {
                 logger.warn("Failed to update redirect address", e);
               }
             }
+            try {
+              callback.filePublished(request, response.getRedirectAddress(), response.statusCode());
+            } catch (Exception e) {
+              logger.error(e);
+            }
           } else {
-            throw new ExchangeStatusException("Failed to send redirected message", newresponse.statusCode());
+            try {
+              callback.filePublicationFailed(request, response);
+            } catch (Exception e) {
+              logger.error(e);
+            }
           }
           response = newresponse;
         }
@@ -146,6 +167,7 @@ public class ExchangeManager implements IExchangeManager {
           try {
             callback.filePublicationFailed(request, response);
           } catch (Exception e) {
+            logger.error(e);
           }
         }
       }
