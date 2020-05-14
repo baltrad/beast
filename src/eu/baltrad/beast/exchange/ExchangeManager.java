@@ -123,15 +123,17 @@ public class ExchangeManager implements IExchangeManager {
     if (response.statusCode() != HttpStatus.SC_OK) {
       if (response.isRedirected()) {
         Authorization authorization = authorizationManager.getByNodeName(request.getNodeName());
-        if (authorization != null && response.getRedirectAddress() != null && !response.getRedirectAddress().equals(authorization.getRedirectedAddress())) {
+        if (authorization != null && response.getRedirectAddress() != null) {
           request.setAddress(response.getRedirectAddress());
           ExchangeResponse newresponse = connector.send(request);
           if (newresponse.statusCode() == HttpStatus.SC_OK) {
-            try {
-              authorization.setRedirectedAddress(response.getRedirectAddress());
-              authorizationManager.update(authorization);
-            } catch (Exception e) {
-              logger.warn("Failed to update redirect address", e);
+            if (!response.getRedirectAddress().equals(authorization.getRedirectedAddress())) {
+              try {
+                authorization.setRedirectedAddress(response.getRedirectAddress());
+                authorizationManager.update(authorization);
+              } catch (Exception e) {
+                logger.warn("Failed to update redirect address", e);
+              }
             }
           } else {
             throw new ExchangeStatusException("Failed to send redirected message", newresponse.statusCode());
