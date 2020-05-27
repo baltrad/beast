@@ -94,7 +94,28 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     
     assertEquals("0x81540b", result);
   }
-  
+ 
+  @Test
+  public void testVeryLargeQuantString() {
+    Metadata metadata = createBaseMetadata();
+    
+    metadata.addNode("/dataset1", new Group("data3"));
+    
+    metadata.addNode("/dataset1/data1", new Group("what"));
+    metadata.addNode("/dataset1/data2", new Group("what"));
+    metadata.addNode("/dataset1/data3", new Group("what"));
+    
+    metadata.addNode("/dataset1/data1/what", new Attribute("quantity", "DBZH")); // 127
+    metadata.addNode("/dataset1/data2/what", new Attribute("quantity", "TH")); // 126
+    metadata.addNode("/dataset1/data3/what", new Attribute("quantity", "UPSPV")); // 59
+
+    classUnderTest = new QuantityHexNameCreator(new File(getClass().getResource("quantities_fixture.xml").getFile()));
+    
+    String result = classUnderTest.createName("_beast/hexcode", metadata);
+    
+    assertEquals("0x100000000000000003", result);
+  }
+
   @Test
   public void testCreate_1_shiftRight() {
     Metadata metadata = createBaseMetadata();
@@ -145,7 +166,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
 
     String result = classUnderTest.createName("_beast/hexcode", metadata);
     
-    assertEquals("0xd000000000000003", result);
+    assertEquals("0xd0000000000000000000000000000003", result);
   }
 
   @Test
@@ -159,7 +180,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
 
     String result = classUnderTest.createName("_beast/hexcode", metadata);
     
-    assertEquals("0xc000000000000000", result);
+    assertEquals("0xc0000000000000000000000000000000", result);
   }
 
   @Test
@@ -173,7 +194,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
 
     String result = classUnderTest.createName("_beast/hexcode", metadata);
     
-    assertEquals("0x8000000000000000", result);
+    assertEquals("0x80000000000000000000000000000000", result);
   }
 
   @Test
@@ -207,7 +228,7 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
 
     String result = classUnderTest.createName("_beast/hexcode", metadata);
     
-    assertEquals("0xc000000000000000", result);
+    assertEquals("0xc0000000000000000000000000000000", result);
   }
 
   private Metadata createBaseMetadata() {
@@ -240,9 +261,9 @@ public class QuantityHexNameCreatorTest extends EasyMockSupport {
     result.put("LSB", 0);
     result.put("NLSB", 1);
     result.put("ABCD", 3);
-    result.put("BRDR", 21);
-    result.put("TH", 62);
-    result.put("DBZH", 63);
+    result.put("BRDR", 85);
+    result.put("TH", 126);
+    result.put("DBZH", 127);
     
     return result;
   }

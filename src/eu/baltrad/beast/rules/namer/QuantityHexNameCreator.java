@@ -20,6 +20,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.rules.namer;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,12 +46,12 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
   /**
    * Bitmask to use when shifting from left to right.
    */
-  private final static long SR_BITMASK = 0x8000000000000000L;
+  private final static BigInteger SR_BITMASK = BigInteger.ONE.shiftLeft(127);
 
   /**
    * Bitmask to use when shifting from right to left.
    */
-  private final static long SL_BITMASK = 0x1L;
+  private final static BigInteger SL_BITMASK = BigInteger.ONE;
 
   /**
    * The hexdata tag
@@ -138,7 +139,7 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
         }
       }
     }
-    return "0x" + Long.toHexString(createMaskFromIntegers(integers));
+    return "0x" + createMaskFromIntegers(integers).toString(16);
   }
 
   /**
@@ -148,13 +149,13 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
    *          a list of integer positions
    * @return the created long value
    */
-  protected long createMaskFromIntegers(List<Integer> integers) {
-    long result = 0L;
+  protected BigInteger createMaskFromIntegers(List<Integer> integers) {
+    BigInteger result = BigInteger.ZERO;
     for (Integer i : integers) {
       if (shiftLeft) {
-        result = result | (SL_BITMASK << (long) i);
+        result = result.or(SL_BITMASK.shiftLeft(i));
       } else {
-        result = result | (SR_BITMASK >>> (long) i);
+        result = result.or(SR_BITMASK.shiftRight(i));
       }
     }
     return result;
@@ -228,7 +229,7 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
       int index = Integer.parseInt(e.attribute("index").getValue());
       if (result.values().contains(index)) {
         throw new RuntimeException("Invalid odim-quantities xml file. Same index-value (" 
-                                   + new Integer(index).toString() + ") specified more than once.");
+                                   + Integer.valueOf(index).toString() + ") specified more than once.");
       }
       result.put(v, index);
     }
