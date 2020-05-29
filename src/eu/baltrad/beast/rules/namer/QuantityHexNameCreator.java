@@ -190,7 +190,7 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
       }
       
       boolean leftShifting = isLeftShifting(doc);
-      leftShifting=true;      
+
       Map<String,Integer> mapping = parseMapping(doc);
       
       this.shiftLeft = leftShifting;
