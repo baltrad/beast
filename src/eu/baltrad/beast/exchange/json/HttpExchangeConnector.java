@@ -197,8 +197,10 @@ public class HttpExchangeConnector implements ExchangeConnector {
     
     try {
       httpPost.setEntity(createByteArrayEntity(request.getData()));
-      logger.info("Sending file data to: " + request.getAddress());
+      long st = System.currentTimeMillis();
+      logger.info("Sending file data to: " + request.getAddress() + ", thread: " + Thread.currentThread().getName());
       HttpResponse response = httpClient.execute(httpPost);
+      logger.info("File data sent to "  + request.getAddress() +  " in " + (System.currentTimeMillis() - st) + " ms, thread: " + Thread.currentThread().getName());
       HttpEntity resEntity = response.getEntity();
       if (resEntity != null) {
         EntityUtils.consume(resEntity);
