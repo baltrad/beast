@@ -3,6 +3,9 @@
  */
 package eu.baltrad.beast.exchange;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 /**
  * Task used when posting asynchronous send file requests
  * @author anders
@@ -11,6 +14,8 @@ public class PooledFileRequestTask implements Runnable {
   private SendFileRequest request;
   private SendFileRequestCallback callback;
   private IExchangeManager exchangeManager;
+  
+  private final static Logger logger = LogManager.getLogger(PooledFileRequestTask.class);
   
   /**
    * Constructor
@@ -31,6 +36,9 @@ public class PooledFileRequestTask implements Runnable {
     try {
       exchangeManager.send(request, callback);
     } catch (ExchangeStatusException e) {
+      logger.warn("ExchangeStatusException " + Thread.currentThread().getName(), e);
+    } catch (Exception e) {
+      logger.error("Exception " + Thread.currentThread().getName(), e);
     }
   }
 

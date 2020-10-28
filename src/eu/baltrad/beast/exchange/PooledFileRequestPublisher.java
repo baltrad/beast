@@ -96,12 +96,13 @@ public class PooledFileRequestPublisher implements IPooledFileRequestPublisher, 
     if (exchangeManager == null) {
       throw new RuntimeException("ExchangeManager must be set before calling afterPropertiesSet");
     }
+    final ThreadFactory threadFactory = Executors.defaultThreadFactory();
     executor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, DEFAULT_KEEP_ALIVE_TIME, TimeUnit.SECONDS, queue);
     executor.setThreadFactory(
         new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                Thread t = Executors.defaultThreadFactory().newThread(r);
+                Thread t = threadFactory.newThread(r);
                 t.setDaemon(true);
                 return t;
             }
