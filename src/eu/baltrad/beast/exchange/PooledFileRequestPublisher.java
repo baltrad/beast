@@ -102,7 +102,8 @@ public class PooledFileRequestPublisher implements IPooledFileRequestPublisher, 
         new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                Thread t = threadFactory.newThread(r);
+                //Thread t = threadFactory.newThread(r);
+                Thread t = Executors.defaultThreadFactory().newThread(r);
                 t.setDaemon(true);
                 return t;
             }
