@@ -161,7 +161,7 @@ public class RouteDefinition {
     if (active) {
       long st = System.currentTimeMillis();
       IBltMessage result = rule.handle(msg);
-      logger.debug("RouteDefinition: Took " + (System.currentTimeMillis() - st) + " ms to process '" + getName() + "'");
+      logger.debug("RouteDefinition: Took " + (System.currentTimeMillis() - st) + " ms to process '" + getName() + "' in thread: " + Thread.currentThread().getName());
       return result;
     }
     return null;
