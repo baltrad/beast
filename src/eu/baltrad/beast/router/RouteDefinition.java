@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.rules.IRule;
 
@@ -61,6 +64,11 @@ public class RouteDefinition {
    * Description of this route definition.
    */
   private String description = null;
+  
+  /**
+   * Logger
+   */
+  private final static Logger logger = LogManager.getLogger(RouteDefinition.class);
   
   public static abstract class RouteComparator implements Comparator<RouteDefinition> {
     
@@ -151,7 +159,10 @@ public class RouteDefinition {
       throw new NullPointerException("msg == null");
     }
     if (active) {
-      return rule.handle(msg);
+      long st = System.currentTimeMillis();
+      IBltMessage result = rule.handle(msg);
+      logger.debug("RouteDefinition: Took " + (System.currentTimeMillis() - st) + " ms to process '" + getName() + "'");
+      return result;
     }
     return null;
   }
