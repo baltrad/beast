@@ -410,11 +410,11 @@ public class RuleUtilitiesTest extends EasyMockSupport {
     
     classUnderTest.trigger(21, d1);
     
-    for (int i = 0; i < 99; i++) {
+    for (int i = 0; i < 199; i++) {
       classUnderTest.trigger(22 + i, d2);
     }
     assertEquals(true, classUnderTest.isTriggered(21, d1));
-    classUnderTest.trigger(122, d2);
+    classUnderTest.trigger(222, d2);
     assertEquals(false, classUnderTest.isTriggered(21, d1));
   }
 
