@@ -397,8 +397,8 @@ public class RuleUtilities implements IRuleUtilities {
       registeredTriggers.add(m);
     }
     
-    // Keep a backlog of 100 entries until there is need for more clever solution
-    if (registeredTriggers.size() > 100) {
+    // Keep a backlog of 200 entries until there is need for more clever solution
+    if (registeredTriggers.size() > 200) {
       registeredTriggers.remove(0);
     }
   }
