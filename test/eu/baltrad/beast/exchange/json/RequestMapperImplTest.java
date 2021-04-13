@@ -65,17 +65,17 @@ public class RequestMapperImplTest extends EasyMockSupport {
     System.out.println(json);
     
     JsonNode node = jsonMapper.readTree(json);
-    assertEquals("DEX-Message", node.get("MessageType").getValueAsText());
-    assertEquals("2.2", node.get("MessageVersion").getValueAsText());
-    assertEquals("AuthorizationRequest", node.get("ObjectClass").getValueAsText());
+    assertEquals("DEX-Message", node.get("MessageType").asText());
+    assertEquals("2.2", node.get("MessageVersion").asText());
+    assertEquals("AuthorizationRequest", node.get("ObjectClass").asText());
     JsonNode objectNode = node.get("Object");
-    assertEquals("othernode", objectNode.get("NodeName").getValueAsText());
-    assertEquals("a@be", objectNode.get("NodeEmail").getValueAsText());
-    assertEquals("http://other.se", objectNode.get("NodeAddress").getValueAsText());
-    assertEquals("Hello", objectNode.get("Message").getValueAsText());
-    assertEquals("publickey", new String(Base64.getDecoder().decode(objectNode.get("PublicKey").getValueAsText())));
-    assertEquals("123", objectNode.get("Checksum").getValueAsText());
-    assertEquals("g-h-i-j", objectNode.get("RequestUUID").getValueAsText());
+    assertEquals("othernode", objectNode.get("NodeName").asText());
+    assertEquals("a@be", objectNode.get("NodeEmail").asText());
+    assertEquals("http://other.se", objectNode.get("NodeAddress").asText());
+    assertEquals("Hello", objectNode.get("Message").asText());
+    assertEquals("publickey", new String(Base64.getDecoder().decode(objectNode.get("PublicKey").asText())));
+    assertEquals("123", objectNode.get("Checksum").asText());
+    assertEquals("g-h-i-j", objectNode.get("RequestUUID").asText());
   }
   
   @Test

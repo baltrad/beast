@@ -162,22 +162,22 @@ public class CombinedFilterTest extends EasyMockSupport {
 
     JsonNode json = jsonMapper.valueToTree(classUnderTest);
     assertEquals(4, json.size());
-    assertEquals("combined", json.get("type").getValueAsText());
-    assertEquals(3, json.get("id").getValueAsInt());
-    assertEquals("ALL", json.get("matchType").getValueAsText());
+    assertEquals("combined", json.get("type").asText());
+    assertEquals(3, json.get("id").asInt());
+    assertEquals("ALL", json.get("matchType").asText());
     JsonNode children = json.get("childFilters");
     assertEquals(2, children.size());
     json = children.get(0);
     assertEquals(4, json.size());
-    assertEquals("combined", json.get("type").getValueAsText());
-    assertEquals(1, json.get("id").getValueAsInt());
-    assertEquals("ALL", json.get("matchType").getValueAsText());
+    assertEquals("combined", json.get("type").asText());
+    assertEquals(1, json.get("id").asInt());
+    assertEquals("ALL", json.get("matchType").asText());
     assertEquals(0, json.get("childFilters").size());
     json = children.get(1);
     assertEquals(4, json.size());
-    assertEquals("combined", json.get("type").getValueAsText());
-    assertEquals(2, json.get("id").getValueAsInt());
-    assertEquals("ANY", json.get("matchType").getValueAsText());
+    assertEquals("combined", json.get("type").asText());
+    assertEquals(2, json.get("id").asInt());
+    assertEquals("ANY", json.get("matchType").asText());
     assertEquals(0, json.get("childFilters").size());
   }
 

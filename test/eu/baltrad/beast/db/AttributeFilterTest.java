@@ -173,13 +173,13 @@ public class AttributeFilterTest {
     JsonNode json = jsonMapper.valueToTree(classUnderTest);
     
     assertEquals(7, json.size());
-    assertEquals("attr", json.get("type").getValueAsText());
-    assertEquals(5, json.get("id").getValueAsInt());
-    assertEquals("where/object", json.get("attribute").getValueAsText());
-    assertEquals("IN", json.get("operator").getValueAsText());
-    assertEquals("STRING", json.get("valueType").getValueAsText());
-    assertEquals("PVOL, SCAN", json.get("value").getValueAsText());
-    assertFalse(json.get("negated").getValueAsBoolean());
+    assertEquals("attr", json.get("type").asText());
+    assertEquals(5, json.get("id").asInt());
+    assertEquals("where/object", json.get("attribute").asText());
+    assertEquals("IN", json.get("operator").asText());
+    assertEquals("STRING", json.get("valueType").asText());
+    assertEquals("PVOL, SCAN", json.get("value").asText());
+    assertFalse(json.get("negated").asBoolean());
     assertFalse(json.has("xpr"));
   }
 
