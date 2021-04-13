@@ -1,0 +1,46 @@
+{"composite-route":{
+   "name":"swegmap2km",
+   "author":"Nisse",
+   "active":true,
+   "description":"Swedish gmap composite 2km resolution",
+   "scan_based":true,
+   "method":"PPI",
+   "prodpar":"0.5",
+   "selection_method":"HEIGHT_ABOVE_SEALEVEL",
+   "recipients":["RAVE"],
+   "area":"swegmaps2km",
+   "quantity":"DBZH",
+   "interval":5,
+   "timeout":30,
+   "nominal_timeout":false,
+   "max_age_limit":-1,
+   "apply_gra":false,
+   "zr_A":200.0,
+   "zr_b":1.6,
+   "ignore_malfunc":false,
+   "ct_filter":false,
+   "qi_total_field":"",
+   "sources":["sekrn","sella","seosd","seoer","sehuv","selek","sehem","seatv","sevax","seang","sekaa","sebaa"],
+   "detectors":["ropo","distance"],
+   "quality_control_mode":"ANALYZE_AND_APPLY",
+   "filter":{
+     "id":"",
+     "type":"combined",
+     "matchType":"ALL",
+     "childFilters":[
+       {"id":"",
+        "type":"attr",
+        "attribute":"/what/quantity",
+        "operator":"EQ",
+        "valueType":"STRING",
+        "value":"TH"},
+       {"id":"",
+        "type":"attr",
+        "attribute":"/where/elangle",
+        "operator":"EQ",
+        "valueType":"DOUBLE",
+        "value":"1.0"}
+     ]
+   }
+ }
+}

@@ -661,7 +661,18 @@ public class Site2DRule implements IRule, InitializingBean {
     }
     return "UNKNOWN";
   }
+
   public void setQualityControlMode(int qualityControlMode) {
     this.qualityControlMode = qualityControlMode;
+  }
+  
+  public void setQualityControlMode(String qualityControlMode) {
+    if (qualityControlMode.equalsIgnoreCase("ANALYZE")) {
+      this.qualityControlMode = QualityControlMode_ANALYZE;
+    } else if (qualityControlMode.equalsIgnoreCase("ANALYZE_AND_APPLY")) {
+      this.qualityControlMode = QualityControlMode_ANALYZE_AND_APPLY;
+    } else {
+      throw new IllegalArgumentException("Unknown quality control mode string " + qualityControlMode);
+    }
   }
 }

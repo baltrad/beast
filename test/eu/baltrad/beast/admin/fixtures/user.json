@@ -1,0 +1,7 @@
+{"user": {
+    "name": "kalle",
+    "role": "operator",
+    "password": "<secret>",
+    "new-password": "<new secret>"
+  }
+}

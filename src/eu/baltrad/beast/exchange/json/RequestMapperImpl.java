@@ -74,22 +74,22 @@ public class RequestMapperImpl implements RequestMapper {
 
   public ExchangeMessage parse(JsonNode node) {
     ExchangeMessage message = new ExchangeMessage();
-    if (node.has("MessageType") && node.get("MessageType").getValueAsText().equals("DEX-Message")) {
-      message.setVersion(node.get("MessageVersion").getValueAsText());
-      String objectClass = node.get("ObjectClass").getValueAsText();
+    if (node.has("MessageType") && node.get("MessageType").asText().equals("DEX-Message")) {
+      message.setVersion(node.get("MessageVersion").asText());
+      String objectClass = node.get("ObjectClass").asText();
       if (objectClass.equals("AuthorizationRequest")) {
         AuthorizationRequest request = new AuthorizationRequest();
         JsonNode objectNode = node.get("Object");
-        request.setNodeName(objectNode.get("NodeName").getValueAsText());
-        request.setNodeEmail(objectNode.get("NodeEmail").getValueAsText());
-        request.setNodeAddress(objectNode.get("NodeAddress").getValueAsText());
-        request.setMessage(objectNode.get("Message").getValueAsText());
-        String publickey = objectNode.get("PublicKey").getValueAsText();
+        request.setNodeName(objectNode.get("NodeName").asText());
+        request.setNodeEmail(objectNode.get("NodeEmail").asText());
+        request.setNodeAddress(objectNode.get("NodeAddress").asText());
+        request.setMessage(objectNode.get("Message").asText());
+        String publickey = objectNode.get("PublicKey").asText();
         if (publickey != null && publickey.length() > 0) {
           request.setPublicKey(Base64.getDecoder().decode(publickey));
         }
-        request.setChecksum(objectNode.get("Checksum").getValueAsText());
-        request.setRequestUUID(objectNode.get("RequestUUID").getValueAsText());
+        request.setChecksum(objectNode.get("Checksum").asText());
+        request.setRequestUUID(objectNode.get("RequestUUID").asText());
         message.setAuthorizationRequest(request);
       }
     } else {

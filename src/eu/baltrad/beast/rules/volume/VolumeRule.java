@@ -703,6 +703,11 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     }
   }
   
+  public void setElevationAngles(List<Double> elevationAngles) throws IllegalArgumentException {
+    this.elevationAngles.clear();
+    this.elevationAngles.addAll(elevationAngles);
+  }
+  
   public List<Double> getElevationAnglesAsDoubles() {
     return elevationAngles;
   }
@@ -746,5 +751,15 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   
   public void setQualityControlMode(int qualityControlMode) {
     this.qualityControlMode = qualityControlMode;
+  }
+
+  public void setQualityControlMode(String qualityControlMode) {
+    if (qualityControlMode.equals("ANALYZE")) {
+      this.qualityControlMode = QualityControlMode_ANALYZE;
+    } else if (qualityControlMode.equals("ANALYZE_AND_APPLY")) {
+      this.qualityControlMode = QualityControlMode_ANALYZE_AND_APPLY;
+    } else {
+      throw new IllegalArgumentException("Unknown quality control mode string " + qualityControlMode);
+    }
   }
 }

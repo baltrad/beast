@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -328,9 +329,27 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    */
   @Override
   public synchronized List<RouteDefinition> getDefinitions() {
-    return this.definitions;
+    List<RouteDefinition> result = new ArrayList<RouteDefinition>();
+    result.addAll(this.definitions);
+    return result;
   }
 
+  /**
+   * @see eu.baltrad.beast.router.IRouterManager#getDefinitions(List<String>)
+   */
+  @Override
+  public synchronized List<RouteDefinition> getDefinitions(List<String> types) {
+    if (types != null && types.size() > 0) {
+      List<RouteDefinition> result = new ArrayList<RouteDefinition>();
+      for (String t : types) {
+        result.addAll(definitions.stream().filter(x -> x.getRuleType().equals(t)).collect(Collectors.toList()));
+      }
+      return result;
+    }
+    
+    return getDefinitions();
+  }
+  
   /**
    * Removes the specified definition from the list.
    * @param name the name of the definition that should be removed

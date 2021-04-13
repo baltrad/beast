@@ -34,6 +34,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import eu.baltrad.beast.admin.Command;
 import eu.baltrad.beast.security.crypto.CryptoFactory;
 import eu.baltrad.beast.security.crypto.KeyczarCryptoFactory;
 import eu.baltrad.beast.security.crypto.Signer;
@@ -195,6 +196,15 @@ public class SecurityManager implements ISecurityManager {
     }
   }
 
+  @Override
+  public boolean validate(String nodeName, String messageDate, String signature, Command command) {
+    try {
+      return getVerifier(nodeName).verify(messageDate + ":" + command.getRawMessage(), signature);
+    } catch (KeyczarException e) {
+      return false;
+    }
+  }
+  
   /**
    * @see ISecurityManager#createSignature(String)
    */

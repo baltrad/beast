@@ -18,10 +18,14 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.scheduler;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
 /**
  * @author Anders Henja
  *
  */
+@JsonRootName("schedule")
 public class CronEntry {
   private int id = 0;
   private String expression = null;
@@ -59,6 +63,7 @@ public class CronEntry {
   /**
    * @param id the id to set
    */
+  @JsonProperty(value="identifier")
   public void setId(int id) {
     this.id = id;
   }
@@ -66,6 +71,7 @@ public class CronEntry {
   /**
    * @return the id
    */
+  @JsonProperty(value="identifier")
   public int getId() {
     return id;
   }
@@ -87,6 +93,7 @@ public class CronEntry {
   /**
    * @param name the name to set
    */
+  @JsonProperty(value="route-name")
   public void setName(String name) {
     this.name = name;
   }
@@ -94,6 +101,7 @@ public class CronEntry {
   /**
    * @return the name
    */
+  @JsonProperty(value="route-name")
   public String getName() {
     return name;
   }

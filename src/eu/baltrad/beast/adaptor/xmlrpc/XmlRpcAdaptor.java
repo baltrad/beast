@@ -259,6 +259,7 @@ public class XmlRpcAdaptor implements IAdaptor {
     try {
       return new URL(url);
     } catch (MalformedURLException t) {
+      logger.info("BAD URL: " + url);
       throw new AdaptorAddressException("bad url", t);
     }
   }

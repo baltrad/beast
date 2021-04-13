@@ -719,10 +719,33 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   }
 
   /**
+   * Sets the selection method from a string
+   * @param selectionMethod the selection method
+   */
+  public void setSelectionMethod(String selectionMethod) {
+    if (selectionMethod.equalsIgnoreCase("NEAREST_RADAR")) {
+      setSelectionMethod(SelectionMethod_NEAREST_RADAR);
+    } else if (selectionMethod.equalsIgnoreCase("HEIGHT_ABOVE_SEALEVEL")) {
+      setSelectionMethod(SelectionMethod_HEIGHT_ABOVE_SEALEVEL);
+    } else {
+      throw new IllegalArgumentException("Invalid selection method " + selectionMethod);
+    }
+  }
+  
+  /**
    * @return the selectionMethod
    */
   public int getSelectionMethod() {
     return selectionMethod;
+  }
+  
+  public String getSelectionMethodAsString() {
+    if (selectionMethod == SelectionMethod_NEAREST_RADAR) {
+      return "NEAREST_RADAR";
+    } else if (selectionMethod == SelectionMethod_HEIGHT_ABOVE_SEALEVEL) {
+      return "HEIGHT_ABOVE_SEALEVEL";
+    }
+    return "UNKNOWN";
   }
 
   /**
@@ -902,6 +925,16 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
       return "ANALYZE_AND_APPLY";
     }
     return "UNKNOWN";
+  }
+  
+  public void setQualityControlMode(String qualityControlMode) {
+    if (qualityControlMode.equalsIgnoreCase("ANALYZE")) {
+      this.qualityControlMode = QualityControlMode_ANALYZE;
+    } else if (qualityControlMode.equalsIgnoreCase("ANALYZE_AND_APPLY")) {
+      this.qualityControlMode = QualityControlMode_ANALYZE_AND_APPLY;
+    } else {
+      throw new IllegalArgumentException("Unknown quality control mode string " + qualityControlMode);
+    }
   }
   
   public void setQualityControlMode(int qualityControlMode) {

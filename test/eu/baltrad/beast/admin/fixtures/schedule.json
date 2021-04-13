@@ -1,0 +1,6 @@
+  {"schedule": {
+      "identifier": 1,
+      "expression": "0 * * * * ?",
+      "route-name": "trimcount"
+    }
+  }

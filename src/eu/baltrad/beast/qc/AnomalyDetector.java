@@ -18,9 +18,12 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.qc;
 
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
 /**
  * @author Anders Henja
  */
+@JsonRootName("anomaly-detector")
 public class AnomalyDetector {
   /**
    * Detector name
@@ -32,6 +35,22 @@ public class AnomalyDetector {
    */
   private String description = null;
 
+  /**
+   * Default constructor
+   */
+  public AnomalyDetector() {
+  }
+  
+  /**
+   * Constructor
+   * @param name the of the detector
+   * @param description of the detector
+   */
+  public AnomalyDetector(String name, String description) {
+    setName(name);
+    setDescription(description);
+  }
+  
   /**
    * @param name the name to set
    */

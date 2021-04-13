@@ -42,6 +42,13 @@ public interface IRouterManager {
   public List<RouteDefinition> getDefinitions();
 
   /**
+   * Gets the definitions with specified types
+   * @param[in] list of types
+   * @returns the definitions 
+   */
+  public List<RouteDefinition> getDefinitions(List<String> types);
+  
+  /**
    * Returns the definition with specified name
    * 
    * @param name - the name

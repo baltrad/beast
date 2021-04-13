@@ -21,6 +21,7 @@ package eu.baltrad.beast.router.impl;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -211,6 +212,8 @@ public class BltRouterManagerDBTest extends EasyMockSupport {
   @Test
   public void testAfterPropertiesSet() throws Exception {
     List<RouteDefinition> definitions = new ArrayList<RouteDefinition>();
+    definitions.add(new RouteDefinition());
+    definitions.get(0).setAuthor("X");
     
     final RowMapper<RouteDefinition> mapper = new RowMapper<RouteDefinition>() {
       public RouteDefinition mapRow(ResultSet arg0, int arg1) throws SQLException {
@@ -233,7 +236,8 @@ public class BltRouterManagerDBTest extends EasyMockSupport {
     classUnderTest.afterPropertiesSet();
     
     verifyAll();
-    assertSame(definitions, classUnderTest.getDefinitions());
+    assertEquals(1, classUnderTest.getDefinitions().size());
+    assertEquals("X", classUnderTest.getDefinitions().get(0).getAuthor());
   }
   
   @Test

@@ -835,7 +835,7 @@ public class VolumeRuleTest extends EasyMockSupport {
   public void testSetElevationAngles_empty() {
     classUnderTest.setElevationAngles("1.5,2,3.5,4");
     assertEquals(4, classUnderTest.getElevationAnglesAsDoubles().size());
-    classUnderTest.setElevationAngles(null);
+    classUnderTest.setElevationAngles((String)null);
     assertEquals(0, classUnderTest.getElevationAnglesAsDoubles().size());
     classUnderTest.setElevationAngles("");
     assertEquals(0, classUnderTest.getElevationAnglesAsDoubles().size());

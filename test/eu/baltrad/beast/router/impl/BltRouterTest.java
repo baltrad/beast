@@ -742,11 +742,14 @@ public class BltRouterTest extends EasyMockSupport {
   @Test
   public void testGetDefinitions() throws Exception {
     List<RouteDefinition> defs = new ArrayList<RouteDefinition>();
+    defs.add(new RouteDefinition());
+    defs.get(0).setAuthor("X");
     
     BltRouter classUnderTest = new BltRouter();
     classUnderTest.setDefinitions(defs);
     
-    assertSame(defs, classUnderTest.getDefinitions());
+    assertEquals(1, classUnderTest.getDefinitions().size());
+    assertEquals("X", classUnderTest.getDefinitions().get(0).getAuthor());
   }
   
   @Test

@@ -1,0 +1,6 @@
+{"adaptor": {
+  "name":"RAVE",
+  "type":"XMLRPC",
+  "uri":"http://localhost:8085/RAVE",
+  "timeout":5000
+}}

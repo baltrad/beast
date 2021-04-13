@@ -2,6 +2,7 @@ package eu.baltrad.beast.security;
 
 import org.apache.http.client.methods.HttpUriRequest;
 
+import eu.baltrad.beast.admin.Command;
 import eu.baltrad.beast.security.crypto.Signer;
 import eu.baltrad.beast.security.crypto.Verifier;
 
@@ -42,6 +43,17 @@ public interface ISecurityManager {
    * @return if the message is signed properly
    */
   public boolean validate(String nodeName, String signature, String message);
+  
+  /**
+   * Validates a command so that it is valid to run
+   * @param nodeName The node name
+   * @param messageDate The date when sending message
+   * @param signature The signature in the message
+   * @param command The command to be verified
+   * @return if command should be accepted or not
+   */
+  public boolean validate(String nodeName, String messageDate, String signature, Command command);
+
   
   /**
    * @return the local node authorization
