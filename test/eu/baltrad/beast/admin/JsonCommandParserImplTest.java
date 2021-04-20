@@ -73,6 +73,10 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
       public String getOperation() {
         return null;
       }
+      @Override
+      public boolean validate() {
+        return true;
+      }
     };
     
     classUnderTest = createMockBuilder(JsonCommandParserImpl.class)
@@ -99,6 +103,10 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
       @Override
       public String getOperation() {
         return null;
+      }
+      @Override
+      public boolean validate() {
+        return true;
       }
     };
     

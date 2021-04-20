@@ -67,6 +67,17 @@ public class HelpCommand extends Command {
   }
 
   /**
+   * @see Command#validate()
+   */
+  @Override
+  public boolean validate() {
+    if (HELP.equals(operation)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * @return the command
    */
   public String getCommand() {

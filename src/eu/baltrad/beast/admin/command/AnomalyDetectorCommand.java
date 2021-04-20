@@ -68,6 +68,25 @@ public class AnomalyDetectorCommand extends Command {
   }
 
   /**
+   * @see Command#validate()
+   */
+  @Override
+  public boolean validate() {
+    if (LIST.equals(operation)) {
+      return true;
+    } else if (GET.equals(operation) || REMOVE.equals(operation)) {
+      if (name != null && !name.isEmpty()) {
+        return true;
+      }
+    } else if (ADD.equals(operation) || UPDATE.equals(operation)) {
+      if (name != null && !name.isEmpty() && description != null && !description.isEmpty()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * @return the name
    */
   public String getName() {

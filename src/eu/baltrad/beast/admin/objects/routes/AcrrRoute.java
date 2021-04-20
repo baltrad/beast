@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.admin.objects.routes;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
@@ -34,6 +35,10 @@ import eu.baltrad.beast.rules.acrr.AcrrRule;
  */
 @JsonRootName("acrr-route")
 public class AcrrRoute extends Route {
+  public static final String ObjectType_IMAGE = "IMAGE";
+  
+  public static final String ObjectType_COMP = "COMP";
+
   /**
    * The area for which this route should be triggered
    */
@@ -42,7 +47,7 @@ public class AcrrRoute extends Route {
   /**
    * The object type, can be either IMAGE or COMP
    */
-  private String objectType = "IMAGE";
+  private String objectType = ObjectType_IMAGE;
   
   /**
    * The quantity that should be accumulated
@@ -317,5 +322,17 @@ public class AcrrRoute extends Route {
     rule.setZrB(this.getZrb());
 
     return rule;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isValid() {
+    if (getName() != null && !getName().isEmpty() && area != null && 
+        !area.isEmpty() && getRecipients() != null && getRecipients().size() > 0 &&
+        getAcceptableLoss() >= 0 && getAcceptableLoss() <= 100 &&
+        getFilesPerHour() > 0) {
+      return true;
+    }
+    return false;
   }
 }

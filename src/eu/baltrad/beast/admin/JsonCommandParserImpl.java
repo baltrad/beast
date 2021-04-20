@@ -47,6 +47,7 @@ import eu.baltrad.beast.admin.command.ScheduleCommand;
 import eu.baltrad.beast.admin.command.UserCommand;
 import eu.baltrad.beast.admin.objects.Adaptor;
 import eu.baltrad.beast.admin.objects.User;
+import eu.baltrad.beast.admin.objects.routes.BasicRoute;
 import eu.baltrad.beast.admin.objects.routes.Route;
 import eu.baltrad.beast.admin.objects.routes.Site2DRoute;
 import eu.baltrad.beast.qc.AnomalyDetector;
@@ -316,7 +317,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
         }
         if (routeCommand.getRoute() == null) {
           if (node.has("name")) {
-            routeCommand.setRoute(new Route(node.get("name").asText()));
+            routeCommand.setRoute(new BasicRoute(node.get("name").asText()));
           } else {
             throw new AdministratorException("No object to handle");
           }

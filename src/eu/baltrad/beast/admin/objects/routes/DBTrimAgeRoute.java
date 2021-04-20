@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.admin.objects.routes;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
 import eu.baltrad.beast.router.IRouterManager;
@@ -63,5 +64,14 @@ public class DBTrimAgeRoute extends Route {
     BdbTrimAgeRule rule = (BdbTrimAgeRule)routerManager.createRule(BdbTrimAgeRule.TYPE);
     rule.setFileAgeLimit(this.getAge());
     return rule;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isValid() {
+    if (getName() != null && !getName().isEmpty() && getAge() > 0) {
+      return true;
+    }
+    return false;
   }
 }

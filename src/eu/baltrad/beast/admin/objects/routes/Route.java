@@ -21,6 +21,8 @@ package eu.baltrad.beast.admin.objects.routes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
@@ -29,7 +31,7 @@ import eu.baltrad.beast.rules.IRule;
  * Base object used when manipulating different routes. See {@link RouteDefinition}
  * @author anders
  */
-public class Route {
+public abstract class Route {
   /**
    * The unique name of this definition.
    */
@@ -98,7 +100,11 @@ public class Route {
    * @param recipients the recipients to set
    */
   public void setRecipients(List<String> recipients) {
-    this.recipients = recipients;
+    if (recipients == null) {
+      this.recipients = new ArrayList<String>();
+    } else {
+      this.recipients = recipients;
+    }
   }
 
 
@@ -148,6 +154,20 @@ public class Route {
   public void setDescription(String description) {
     this.description = description;
   }
+  
+  /**
+   * Validates this route so that it follows the conventions.
+   * @return true if valid, false otherwise
+   */
+  public boolean validate() {
+    if (name != null && !name.isEmpty() && author != null && !author.isEmpty() && description != null && !description.isEmpty()) {
+      return isValid();
+    }
+    return false;
+  }
+  
+  @JsonIgnore
+  public abstract boolean isValid();
   
   /**
    * Fills a route from the route definition

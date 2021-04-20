@@ -21,6 +21,7 @@ package eu.baltrad.beast.admin.objects.routes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
@@ -346,5 +347,17 @@ public class WrwpRoute extends Route {
     rule.setMaxvelocitythreshold(this.getUpperThresholdForCalculatedVelocity());
     
     return rule;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isValid() {
+    if (getName() != null && !getName().isEmpty() &&
+        getSources().size() > 0 &&
+        getRecipients().size() > 0 &&
+        getFields().size() > 0) {
+      return true;
+    }
+    return false;
   }
 }

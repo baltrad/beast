@@ -67,6 +67,12 @@ public class RouteCommand extends Command {
   private String templateRouteType = null;
   
   /**
+   * Default constructor
+   */
+  public RouteCommand() {
+  }
+  
+  /**
    * Constructor
    * @param operation the operation
    */
@@ -74,6 +80,11 @@ public class RouteCommand extends Command {
     setOperation(operation);
   }
 
+  /**
+   * Constructor
+   * @param operation the operation
+   * @param route the route
+   */
   public RouteCommand(String operation, Route route) {
     setOperation(operation);
     setRoute(route);
@@ -92,6 +103,31 @@ public class RouteCommand extends Command {
    */
   public void setOperation(String operation) {
     this.operation = operation;
+  }
+
+  /**
+   * @see Command#validate()
+   */
+  @Override
+  public boolean validate() {
+    boolean result = false;
+    if (route != null) {
+      if (ADD.equalsIgnoreCase(operation) || UPDATE.equalsIgnoreCase(operation)) {
+        result = route.validate();
+      } else if (REMOVE.equalsIgnoreCase(operation) || GET.equalsIgnoreCase(operation)) {
+        if (route.getName() != null && !route.getName().isEmpty()) {
+          result = true;
+        }
+      }
+    }
+    if (LIST.equalsIgnoreCase(operation) || LIST_TYPES.equalsIgnoreCase(operation))  {
+      result = true;
+    }
+    if (CREATE_ROUTE_TEMPLATE.equalsIgnoreCase(operation) && getTemplateRouteType() != null && !getTemplateRouteType().isEmpty()) {
+      result = true;
+    }
+    
+    return result;
   }
 
   /**

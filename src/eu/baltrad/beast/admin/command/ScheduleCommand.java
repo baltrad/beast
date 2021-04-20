@@ -19,6 +19,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.admin.command;
 
 import eu.baltrad.beast.admin.Command;
+import eu.baltrad.beast.scheduler.CronEntryUtilities;
 
 /**
  * @author anders
@@ -71,7 +72,43 @@ public class ScheduleCommand extends Command {
     setOperation(operation);
     setExpression(expression);
   }
-  
+
+  /**
+   * Constructor
+   */
+  public ScheduleCommand(String operation, int identifier) {
+    setOperation(operation);
+    setIdentfier(identifier);
+  }
+
+  /**
+   * Constructor
+   */
+  public ScheduleCommand(String operation, int identifier, String expression) {
+    setOperation(operation);
+    setIdentfier(identifier);
+    setExpression(expression);
+  }
+
+  /**
+   * Constructor
+   */
+  public ScheduleCommand(String operation, int identifier, String expression, String routeName) {
+    setOperation(operation);
+    setIdentfier(identifier);
+    setExpression(expression);
+    setRouteName(routeName);
+  }
+
+  /**
+   * Constructor
+   */
+  public ScheduleCommand(String operation, String expression, String routeName) {
+    setOperation(operation);
+    setExpression(expression);
+    setRouteName(routeName);
+  }
+
   /**
    * @return the operation
    */
@@ -87,6 +124,50 @@ public class ScheduleCommand extends Command {
     this.operation = operation;
   }
 
+  /**
+   * @see Command#validate()
+   */
+  @Override
+  public boolean validate() {
+    if (ADD.equalsIgnoreCase(operation)) {
+      if (getRouteName() != null && !getRouteName().isEmpty() &&
+          validateExpression()) {
+        return true;
+      }
+    } else if (UPDATE.equalsIgnoreCase(operation)) {
+      if (getRouteName() != null && !getRouteName().isEmpty() &&
+          validateExpression() &&
+          getIdentfier() > 0) {
+        return true;
+      }
+    } else if (REMOVE.equalsIgnoreCase(operation)) {
+      if (getIdentfier() > 0) {
+        return true;
+      }
+    } else if (GET.equalsIgnoreCase(operation)) {
+      if (getIdentfier() > 0 || (getRouteName() != null && !getRouteName().isEmpty())) {
+        return true;
+      }
+    } else if (LIST.equalsIgnoreCase(operation)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Validates the cron expression
+   * @return true if expression is valid
+   */
+  protected boolean validateExpression() {
+    try {
+      CronEntryUtilities.validateExpression(expression);
+      return true;
+    } catch (Exception e) {
+      // pass
+    }
+    return false;
+  }
+  
   /**
    * @return the expression
    */

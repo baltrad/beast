@@ -19,6 +19,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 
 package eu.baltrad.beast.admin.objects.routes;
 
+import java.net.URI;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
@@ -121,5 +124,25 @@ public class DistributionRoute extends Route {
     rule.setDestination(this.getDestination());
     rule.setMetadataNamingTemplate(this.getNameTemplate());
     return rule;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isValid() {
+    if (getName() != null && !getName().isEmpty() && 
+        getDestination() != null && !getDestination().isEmpty() &&
+        isValidDestination()) {
+      return true;
+    }
+    return false;
+  }
+  
+  protected boolean isValidDestination() {
+    try {
+      URI x = URI.create(getDestination());
+      return x != null;
+    } catch (Exception e) {
+    }
+    return false;
   }
 }

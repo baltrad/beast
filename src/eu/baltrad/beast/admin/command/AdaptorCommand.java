@@ -18,6 +18,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.admin.command;
 
+import java.net.URI;
+
 import eu.baltrad.beast.admin.Command;
 import eu.baltrad.beast.admin.objects.Adaptor;
 
@@ -31,7 +33,7 @@ public class AdaptorCommand extends Command {
   public final static String REMOVE = "remove_adaptor";
   public final static String GET = "get_adaptor";
   public final static String LIST = "list_adaptors";
-  
+
   /**
    * Operation
    */
@@ -82,6 +84,41 @@ public class AdaptorCommand extends Command {
   }
 
   /**
+   * @see Command#validate()
+   */
+  @Override
+  public boolean validate() {
+    try {
+      if (LIST.equals(operation)) {
+        return true;
+      } else if (adaptor != null && (GET.equals(operation) || REMOVE.equals(operation))) {
+        if (adaptor.getName() != null && !adaptor.getName().isEmpty()) {
+          return true;
+        }
+      } else if (adaptor != null && (ADD.equals(operation) || UPDATE.equals(operation))) {
+        if ((adaptor.getName() != null && !adaptor.getName().isEmpty()) &&
+            (adaptor.getType() != null && !adaptor.getType().isEmpty()) &&
+            validateUri(adaptor.getUri()) &&
+            adaptor.getTimeout() >= 0) {
+          return true;
+        }
+      }
+    } catch (Exception e) {
+      // pass
+    }
+    return false;
+  }
+
+  protected boolean validateUri(String uri) {
+    try {
+      URI.create(uri);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**
    * @return the adaptor
    */
   public Adaptor getAdaptor() {
@@ -94,5 +131,4 @@ public class AdaptorCommand extends Command {
   public void setAdaptor(Adaptor adaptor) {
     this.adaptor = adaptor;
   }
-
 }

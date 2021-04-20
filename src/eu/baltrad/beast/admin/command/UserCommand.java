@@ -80,6 +80,24 @@ public class UserCommand extends Command {
   }
 
   /**
+   * @see Command#validate()
+   */
+  @Override
+  public boolean validate() {
+    if (CHANGE_PASSWORD.equalsIgnoreCase(operation)) {
+      if (user != null) {
+        if (user.getName() != null && !user.getName().isEmpty() && 
+            user.getNewpassword() != null && !user.getNewpassword().isEmpty()) {
+          return true;
+        }
+      }
+    } else if (LIST.equalsIgnoreCase(operation)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * @return the user
    */
   public User getUser() {

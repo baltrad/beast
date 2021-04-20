@@ -18,6 +18,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.admin.objects.routes;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
@@ -33,6 +34,10 @@ import eu.baltrad.beast.rules.gra.GraRule;
  */
 @JsonRootName("gra-route")
 public class GraRoute extends Route {
+  public static final String ObjectType_IMAGE = "IMAGE";
+  
+  public static final String ObjectType_COMP = "COMP";
+  
   /**
    * The area for which this route should be triggered
    */
@@ -41,7 +46,7 @@ public class GraRoute extends Route {
   /**
    * The object type, can be either IMAGE or COMP
    */
-  private String objectType = "IMAGE";
+  private String objectType = ObjectType_IMAGE;
   
   /**
    * The quantity that should be accumulated
@@ -295,5 +300,18 @@ public class GraRoute extends Route {
     rule.setZrB(this.getZrb());
 
     return rule;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isValid() {
+    if (getName() != null && !getName().isEmpty() &&
+        getArea() != null && !getArea().isEmpty() &&
+        getRecipients().size() > 0 &&
+        getAcceptableLoss() >= 0 && getAcceptableLoss() <= 100 &&
+        getFilesPerHour() > 0) {
+      return true;
+    }
+    return false;
   }
 }

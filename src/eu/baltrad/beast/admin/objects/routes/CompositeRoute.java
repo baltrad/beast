@@ -21,6 +21,7 @@ package eu.baltrad.beast.admin.objects.routes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
@@ -36,7 +37,50 @@ import eu.baltrad.beast.rules.composite.CompositingRule;
  */
 @JsonRootName("composite-route")
 public class CompositeRoute extends Route {
+  
+  /**
+   * To set that method should be PPI compositing
+   */
+  public final static String PPI = CompositingRule.PPI;
 
+  /**
+   * To set that method should be CAPPPI compositing
+   */
+  public final static String CAPPI = CompositingRule.CAPPI;
+  
+  /**
+   * To set that method should be PCAPPI compositing
+   */
+  public final static String PCAPPI = CompositingRule.PCAPPI;
+  
+  /**
+   * Use Pseudo-Max compositing.
+   */
+  public final static String PMAX = CompositingRule.PMAX;
+  
+  /**
+   * Use Max compositing
+   */
+  public final static String MAX = CompositingRule.MAX;
+  
+  /**
+   * Nearest radar selection
+   */
+  public final static String Selection_NEAREST_RADAR = "NEAREST_RADAR";
+
+  /**
+   * Nearest radar selection
+   */
+  public final static String Selection_HEIGHT_ABOVE_SEALEVEL = "HEIGHT_ABOVE_SEALEVEL";
+
+  /**
+   * Performs the analyze and also applies the result
+   */
+  public final static String QualityControlMode_ANALYZE_AND_APPLY = "ANALYZE_AND_APPLY";
+  
+  /** Only performs the quality analysis */
+  public final static String QualityControlMode_ANALYZE = "ANALYZE";  
+  
   /**
    * Interval
    */
@@ -71,7 +115,7 @@ public class CompositeRoute extends Route {
   /**
    * The selection method to use when determining the pixel
    */
-  private String selectionMethod = "NEAREST_RADAR"; 
+  private String selectionMethod = Selection_NEAREST_RADAR; 
   
   /**
    * Detectors that should be run for this composite rule
@@ -81,7 +125,7 @@ public class CompositeRoute extends Route {
   /**
    * The algorithm to use
    */
-  private String method = CompositingRule.PCAPPI;
+  private String method = PCAPPI;
   
   /**
    * The product parameter that should be used in conjunction with the algorithm.
@@ -135,7 +179,7 @@ public class CompositeRoute extends Route {
   /**
    * How the quality controls should be handled and used
    */
-  private String qualityControlMode = "ANALYZE_AND_APPLY";
+  private String qualityControlMode = QualityControlMode_ANALYZE_AND_APPLY;
   
   /**
    * Indicates quality controls shall always be reprocessed
@@ -146,7 +190,7 @@ public class CompositeRoute extends Route {
    * The filter used for matching files
    */
   private IFilter filter = null;
-  
+
   /**
    * Constructor
    */
@@ -216,7 +260,11 @@ public class CompositeRoute extends Route {
    * @param sources the sources to set
    */
   public void setSources(List<String> sources) {
-    this.sources = sources;
+    if (sources == null) {
+      this.sources = new ArrayList<String>();
+    } else {
+      this.sources = sources;
+    }
   }
 
   /**
@@ -538,5 +586,43 @@ public class CompositeRoute extends Route {
     rule.setZR_b(this.getZR_b());
     
     return rule;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isValid() {
+    boolean result = false; 
+    if (this.getName() != null && !this.getName().isEmpty() &&
+        this.getArea() != null && !this.getArea().isEmpty() &&
+        this.getSources().size() > 0 &&
+        this.getRecipients().size() > 0) {
+      result = true;
+    }
+    
+    if (result && this.getMethod() != null && this.getMethod().equalsIgnoreCase(CompositeRoute.PMAX)) {
+      result = false;
+      if (this.getProdpar() != null) {
+        String[] values = this.getProdpar().split(",");
+        if (values.length >= 1) {
+          try {
+            Double.parseDouble(values[0].trim());
+            if (values.length > 1) {
+              Double.parseDouble(values[1].trim());
+            }
+            result = true;
+          } catch (NumberFormatException e) {
+          }
+        }
+      }
+    } else if (result && this.getProdpar() != null && !this.getProdpar().isEmpty()) {
+      result = false;
+      try {
+        Double.parseDouble(this.getProdpar());
+        result = true;
+      } catch (NumberFormatException e) {
+        // pass
+      }
+    }
+    return result;
   }
 }

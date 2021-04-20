@@ -21,6 +21,7 @@ package eu.baltrad.beast.admin.objects.routes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
@@ -465,6 +466,18 @@ public class Site2DRoute extends Route {
     rule.setZR_b(this.getZR_b());
     
     return rule;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isValid() {
+    if (getName() != null && !getName().isEmpty() &&
+        ((getArea() != null && !getArea().isEmpty()) || (getPcsId() != null && !getPcsId().isEmpty())) &&
+        getRecipients().size() > 0 &&
+        getSources().size() > 0) {
+      return true;
+    }
+    return false;
   }
 
 }

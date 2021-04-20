@@ -25,12 +25,28 @@ package eu.baltrad.beast.admin;
 public abstract class Command {
   private String rawMessage = null;
   
+  /**
+   * @return the name of the operation affecting this command
+   */
   public abstract String getOperation();
   
+  /**
+   * Validates if the current command is valid according to operation and content and should be accepted 
+   * @return true if valid
+   */
+  public abstract boolean validate();
+  
+  /**
+   * Sets the RAW message used to populate the command
+   * @param s the raw message
+   */
   public void setRawMessage(String s) {
     rawMessage = s;
   }
   
+  /**
+   * @return the RAW message used to populate the command
+   */
   public String getRawMessage() {
     return rawMessage;
   }
