@@ -111,7 +111,8 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     ScheduleCommand.LIST,
     
     /* User admin commands */
-    UserCommand.CHANGE_PASSWORD
+    UserCommand.CHANGE_PASSWORD,
+    UserCommand.LIST
   };
   
   /**
@@ -127,14 +128,6 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     } catch (IOException e) {
       throw new AdministratorException(e);
     }
-//    try {
-//      JsonNode node = jsonMapper.readTree(inputStream);
-//      return parse(node);
-//    } catch (JsonProcessingException e) {
-//      throw new AdministratorException(e);
-//    } catch (IOException e) {
-//      throw new AdministratorException(e);
-//    }
   }
 
   @Override
