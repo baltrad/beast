@@ -35,6 +35,7 @@ import eu.baltrad.beast.admin.objects.routes.DBTrimCountRoute;
 import eu.baltrad.beast.admin.objects.routes.DistributionRoute;
 import eu.baltrad.beast.admin.objects.routes.GmapRoute;
 import eu.baltrad.beast.admin.objects.routes.GraRoute;
+import eu.baltrad.beast.admin.objects.routes.GroovyRoute;
 import eu.baltrad.beast.admin.objects.routes.Route;
 import eu.baltrad.beast.admin.objects.routes.ScansunRoute;
 import eu.baltrad.beast.admin.objects.routes.Site2DRoute;
@@ -48,6 +49,7 @@ import eu.baltrad.beast.rules.composite.CompositingRule;
 import eu.baltrad.beast.rules.dist.DistributionRule;
 import eu.baltrad.beast.rules.gmap.GoogleMapRule;
 import eu.baltrad.beast.rules.gra.GraRule;
+import eu.baltrad.beast.rules.groovy.GroovyRule;
 import eu.baltrad.beast.rules.scansun.ScansunRule;
 import eu.baltrad.beast.rules.site2d.Site2DRule;
 import eu.baltrad.beast.rules.volume.VolumeRule;
@@ -98,6 +100,7 @@ public class RouteCommandHelper implements InitializingBean{
     add(new RouteMapping("gra-route", GraRule.TYPE, GraRoute.class));
     add(new RouteMapping("wrwp-route", WrwpRule.TYPE, WrwpRoute.class));
     add(new RouteMapping("scansun-route", ScansunRule.TYPE, ScansunRoute.class));
+    add(new RouteMapping("groovy-route", GroovyRule.TYPE, GroovyRoute.class));
   }};
   
   /**

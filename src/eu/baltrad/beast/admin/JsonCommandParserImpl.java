@@ -122,7 +122,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
    */
   @Override
   public Command parse(InputStream inputStream) {
-    logger.info("manage(inputStream)");
+    logger.info("parse(inputStream)");
     try {
       return parse(IOUtils.toString(inputStream, StandardCharsets.UTF_8.name()));
     } catch (IOException e) {
@@ -132,8 +132,9 @@ public class JsonCommandParserImpl implements JsonCommandParser {
 
   @Override
   public Command parse(String s) {
-    logger.info("manage(String)");
+    logger.info("parse(String)");
     try {
+      logger.info("Message is: " + s);
       JsonNode node = jsonMapper.readTree(s);
       Command command = parse(node);
       if (command != null) {
@@ -304,6 +305,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
         RouteCommand routeCommand = new RouteCommand(operation);
         for (String key : routeCommandHelper.getRouteTypes()) {
           if (node.has(key)) {
+            logger.info("KEY: " + key);
             routeCommand.setRoute((Route)jsonMapper.readValue(node.get(key), routeCommandHelper.getRouteClass(key)));
             break;
           }

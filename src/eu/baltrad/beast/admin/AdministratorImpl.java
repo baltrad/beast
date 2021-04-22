@@ -115,16 +115,18 @@ public class AdministratorImpl implements Administrator {
    */
   @Override
   public CommandResponse handle(Command command) {
-    if  (command instanceof HelpCommand) {
-      return handleCommand((HelpCommand)command);
-    } else if (command instanceof AdaptorCommand) {
-      return handleCommand((AdaptorCommand)command);
-    } else if (command instanceof AnomalyDetectorCommand) {
-      return handleCommand((AnomalyDetectorCommand)command);
-    } else if (command instanceof RouteCommand) {
-      return handleCommand((RouteCommand)command);
-    } else if (command instanceof ScheduleCommand) {
-      return handleCommand((ScheduleCommand)command);
+    if (command != null && command.validate()) {
+      if  (command instanceof HelpCommand) {
+        return handleCommand((HelpCommand)command);
+      } else if (command instanceof AdaptorCommand) {
+        return handleCommand((AdaptorCommand)command);
+      } else if (command instanceof AnomalyDetectorCommand) {
+        return handleCommand((AnomalyDetectorCommand)command);
+      } else if (command instanceof RouteCommand) {
+        return handleCommand((RouteCommand)command);
+      } else if (command instanceof ScheduleCommand) {
+        return handleCommand((ScheduleCommand)command);
+      }
     }
     return new CommandResponseStatus(false);
   }

@@ -117,7 +117,9 @@ public class AdministratorImplTest extends EasyMockSupport {
   
   @Test
   public void handle_AnomalyDetectorCommand() {
-    AnomalyDetectorCommand command = new AnomalyDetectorCommand();
+    AnomalyDetectorCommand command = new AnomalyDetectorCommand() {
+      public boolean validate() { return true; }
+    };
     CommandResponseStatus response = new CommandResponseStatus(true);
     
     classUnderTest = createMockBuilder(AdministratorImpl.class)
@@ -194,6 +196,21 @@ public class AdministratorImplTest extends EasyMockSupport {
   @Test
   public void handle_UserCommand() {
     UserCommand command = new UserCommand(UserCommand.CHANGE_PASSWORD);
+    
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertEquals(false, result.wasSuccessful());
+  }
+  
+  @Test
+  public void handle_invalid() {
+    //AdaptorCommand command = new AdaptorCommand();
+    Command command = createMock(Command.class);
+    
+    expect(command.validate()).andReturn(false);
     
     replayAll();
     
