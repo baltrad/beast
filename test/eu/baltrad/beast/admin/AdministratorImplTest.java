@@ -95,16 +95,18 @@ public class AdministratorImplTest extends EasyMockSupport {
     jsonGenerator = null;
     classUnderTest = null;
   }
-  
+    
   @Test
   public void handle_AdaptorCommand() {
-    AdaptorCommand command = new AdaptorCommand();
+    AdaptorCommand command = createMock(AdaptorCommand.class);
+
     CommandResponseStatus response = new CommandResponseStatus(true);
     
     classUnderTest = createMockBuilder(AdministratorImpl.class)
         .addMockedMethod("handleCommand", AdaptorCommand.class)
         .createMock();
     
+    expect(command.validate()).andReturn(true);
     expect(classUnderTest.handleCommand(command)).andReturn(response);
 
     replayAll();
@@ -116,87 +118,15 @@ public class AdministratorImplTest extends EasyMockSupport {
   }
   
   @Test
-  public void handle_AnomalyDetectorCommand() {
-    AnomalyDetectorCommand command = new AnomalyDetectorCommand() {
-      public boolean validate() { return true; }
-    };
-    CommandResponseStatus response = new CommandResponseStatus(true);
+  public void handle_AdaptorCommand_invalid() {
+    AdaptorCommand command = createMock(AdaptorCommand.class);
     
     classUnderTest = createMockBuilder(AdministratorImpl.class)
-        .addMockedMethod("handleCommand", AnomalyDetectorCommand.class)
+        .addMockedMethod("handleCommand", AdaptorCommand.class)
         .createMock();
-    
-    expect(classUnderTest.handleCommand(command)).andReturn(response);
 
-    replayAll();
-    
-    CommandResponse result = classUnderTest.handle(command);
-    
-    verifyAll();
-    assertSame(result, response);
-  }
+    expect(command.validate()).andReturn(false);
 
-  @Test
-  public void handle_RouteCommand() {
-    RouteCommand command = new RouteCommand(RouteCommand.ADD);
-    CommandResponseStatus response = new CommandResponseStatus(true);
-    
-    classUnderTest = createMockBuilder(AdministratorImpl.class)
-        .addMockedMethod("handleCommand", RouteCommand.class)
-        .createMock();
-    
-    expect(classUnderTest.handleCommand(command)).andReturn(response);
-
-    replayAll();
-    
-    CommandResponse result = classUnderTest.handle(command);
-    
-    verifyAll();
-    assertSame(result, response);
-  }
-
-  @Test
-  public void handle_ScheduleCommand() {
-    ScheduleCommand command = new ScheduleCommand(ScheduleCommand.ADD);
-    CommandResponseStatus response = new CommandResponseStatus(true);
-    
-    classUnderTest = createMockBuilder(AdministratorImpl.class)
-        .addMockedMethod("handleCommand", ScheduleCommand.class)
-        .createMock();
-    
-    expect(classUnderTest.handleCommand(command)).andReturn(response);
-
-    replayAll();
-    
-    CommandResponse result = classUnderTest.handle(command);
-    
-    verifyAll();
-    assertSame(result, response);
-  }
-
-  @Test
-  public void handle_HelpCommand() {
-    HelpCommand command = new HelpCommand(HelpCommand.HELP);
-    CommandResponseStatus response = new CommandResponseStatus(true);
-    
-    classUnderTest = createMockBuilder(AdministratorImpl.class)
-        .addMockedMethod("handleCommand", HelpCommand.class)
-        .createMock();
-    
-    expect(classUnderTest.handleCommand(command)).andReturn(response);
-
-    replayAll();
-    
-    CommandResponse result = classUnderTest.handle(command);
-    
-    verifyAll();
-    assertSame(result, response);
-  }
-
-  @Test
-  public void handle_UserCommand() {
-    UserCommand command = new UserCommand(UserCommand.CHANGE_PASSWORD);
-    
     replayAll();
     
     CommandResponse result = classUnderTest.handle(command);
@@ -206,8 +136,195 @@ public class AdministratorImplTest extends EasyMockSupport {
   }
   
   @Test
+  public void handle_AnomalyDetectorCommand() {
+    AnomalyDetectorCommand command = createMock(AnomalyDetectorCommand.class);
+
+    CommandResponseStatus response = new CommandResponseStatus(true);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", AnomalyDetectorCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(true);
+    expect(classUnderTest.handleCommand(command)).andReturn(response);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertSame(result, response);
+  }
+
+  @Test
+  public void handle_AnomalyDetectorCommand_invalid() {
+    AnomalyDetectorCommand command = createMock(AnomalyDetectorCommand.class);
+
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", AnomalyDetectorCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(false);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertEquals(false, result.wasSuccessful());
+  }
+
+  @Test
+  public void handle_RouteCommand() {
+    RouteCommand command = createMock(RouteCommand.class);
+//    RouteCommand command = new RouteCommand(RouteCommand.ADD) {
+//      public boolean validate() { return true; }
+//    };
+
+    CommandResponseStatus response = new CommandResponseStatus(true);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", RouteCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(true);
+    expect(classUnderTest.handleCommand(command)).andReturn(response);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertSame(result, response);
+  }
+
+  @Test
+  public void handle_RouteCommand_invalid() {
+    RouteCommand command = createMock(RouteCommand.class);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", RouteCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(false);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertEquals(false, result.wasSuccessful());
+  }
+
+  @Test
+  public void handle_ScheduleCommand() {
+    ScheduleCommand command = createMock(ScheduleCommand.class);
+    
+    CommandResponseStatus response = new CommandResponseStatus(true);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", ScheduleCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(true);
+    expect(classUnderTest.handleCommand(command)).andReturn(response);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertSame(result, response);
+  }
+
+  @Test
+  public void handle_ScheduleCommand_invalid() {
+    ScheduleCommand command = createMock(ScheduleCommand.class);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", ScheduleCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(false);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertSame(false, result.wasSuccessful());
+  }
+  
+  @Test
+  public void handle_HelpCommand() {
+    HelpCommand command = createMock(HelpCommand.class);
+    
+    CommandResponseStatus response = new CommandResponseStatus(true);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", HelpCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(true);
+    expect(classUnderTest.handleCommand(command)).andReturn(response);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertSame(result, response);
+  }
+
+  @Test
+  public void handle_HelpCommand_invalid() {
+    HelpCommand command = createMock(HelpCommand.class);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", HelpCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(false);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertSame(false, result.wasSuccessful());
+  }
+
+  @Test
+  public void handle_UserCommand() {
+    UserCommand command = createMock(UserCommand.class);
+    
+    expect(command.validate()).andReturn(true);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertEquals(false, result.wasSuccessful());
+  }
+
+  @Test
+  public void handle_UserCommand_invalid() {
+    UserCommand command = createMock(UserCommand.class);
+    
+    expect(command.validate()).andReturn(false);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertEquals(false, result.wasSuccessful());
+  }
+
+  
+  @Test
   public void handle_invalid() {
-    //AdaptorCommand command = new AdaptorCommand();
     Command command = createMock(Command.class);
     
     expect(command.validate()).andReturn(false);
