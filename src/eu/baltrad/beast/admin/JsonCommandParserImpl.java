@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
@@ -44,8 +45,10 @@ import eu.baltrad.beast.admin.command.AnomalyDetectorCommand;
 import eu.baltrad.beast.admin.command.HelpCommand;
 import eu.baltrad.beast.admin.command.RouteCommand;
 import eu.baltrad.beast.admin.command.ScheduleCommand;
+import eu.baltrad.beast.admin.command.SettingCommand;
 import eu.baltrad.beast.admin.command.UserCommand;
 import eu.baltrad.beast.admin.objects.Adaptor;
+import eu.baltrad.beast.admin.objects.Settings;
 import eu.baltrad.beast.admin.objects.User;
 import eu.baltrad.beast.admin.objects.routes.BasicRoute;
 import eu.baltrad.beast.admin.objects.routes.Route;
@@ -112,7 +115,10 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     
     /* User admin commands */
     UserCommand.CHANGE_PASSWORD,
-    UserCommand.LIST
+    UserCommand.LIST,
+    
+    /** Setting commands */
+    SettingCommand.UPDATE_SETTINGS
   };
   
   /**
@@ -202,6 +208,8 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     } else if (command.equals(UserCommand.CHANGE_PASSWORD) ||
         command.equals(UserCommand.LIST)) {
       return parseUserCommand(command, arguments);
+    } else if (command.equals(SettingCommand.UPDATE_SETTINGS) || command.equals(SettingCommand.LIST)) {
+      return parseSettingCommand(command, arguments);
     } else {
       logger.info("Command not supported: " + command);
       return null;
@@ -358,6 +366,33 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       }
     }
     return null;
+  }
+  
+  
+  /**
+   * Parses a setting command
+   * @param operation the operation
+   * @param node the arguments
+   * @return the parsed user command
+   * @throws {@link AdministratorException} when a problem occurs.
+   */
+  public Command parseSettingCommand(String operation, JsonNode arguments) {
+    SettingCommand command = null;
+    if (operation.equals(SettingCommand.UPDATE_SETTINGS)) {
+      JsonNode settingsNode = arguments.get("settings");
+      try {
+        if (settingsNode != null) {
+          command = new SettingCommand(operation);
+          command.setSettings(jsonMapper.readValue(settingsNode, Settings.class));
+        }
+      } catch (Exception e) {
+        throw new AdministratorException(e);
+      }
+    } else if (operation.equals(SettingCommand.LIST)) {
+      logger.info("Operation: " + operation);
+      command = new SettingCommand(operation);
+    }
+    return command;
   }
   
   /**

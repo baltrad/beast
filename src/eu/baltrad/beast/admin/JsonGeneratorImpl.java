@@ -29,11 +29,14 @@ import org.codehaus.jackson.map.SerializationConfig;
 
 import eu.baltrad.beast.admin.command_response.CommandResponseJsonObject;
 import eu.baltrad.beast.admin.command_response.CommandResponseStatus;
+import eu.baltrad.beast.admin.command_response.SettingCommandResponse;
 import eu.baltrad.beast.admin.objects.Adaptor;
+import eu.baltrad.beast.admin.objects.Settings;
 import eu.baltrad.beast.admin.objects.User;
 import eu.baltrad.beast.admin.objects.routes.Route;
 import eu.baltrad.beast.qc.AnomalyDetector;
 import eu.baltrad.beast.scheduler.CronEntry;
+import net.schmizz.sshj.sftp.Response.StatusCode;
 
 /**
  * Implementation of the json generator
@@ -74,6 +77,18 @@ public class JsonGeneratorImpl implements JsonGenerator {
       String str = ((CommandResponseJsonObject)response).getJsonString();
       logger.info("CommandResponseJsonObject: " + str);
       return str;
+    } else if (response instanceof SettingCommandResponse) {
+      try {
+        return mapper.writeValueAsString(response);
+      } catch (Exception e) {
+        return "{\"status\":\"ERROR\"}";
+      }
+    } else if (response instanceof Settings) {
+      try {
+        return mapper.writeValueAsString(response);
+      } catch (Exception e) {
+        return "{\"status\":\"ERROR\"}";
+      }
     }
     return "{\"status\":\"NOT_SUPPORTED\"}";
   }

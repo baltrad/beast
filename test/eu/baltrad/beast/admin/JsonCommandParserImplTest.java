@@ -28,6 +28,7 @@ import eu.baltrad.beast.admin.command.AnomalyDetectorCommand;
 import eu.baltrad.beast.admin.command.HelpCommand;
 import eu.baltrad.beast.admin.command.RouteCommand;
 import eu.baltrad.beast.admin.command.ScheduleCommand;
+import eu.baltrad.beast.admin.command.SettingCommand;
 import eu.baltrad.beast.admin.command.UserCommand;
 import eu.baltrad.beast.admin.objects.Adaptor;
 import eu.baltrad.beast.admin.objects.User;
@@ -228,7 +229,26 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     verifyAll();
     assertSame(command, result);
   }
-
+  
+  @Test
+  public void parseCommand_SettingCommand() throws Exception {
+    JsonNode arguments = createMock(JsonNode.class);
+    SettingCommand command = new SettingCommand(SettingCommand.UPDATE_SETTINGS);
+    
+    classUnderTest = createMockBuilder(JsonCommandParserImpl.class)
+        .addMockedMethod("parseSettingCommand", String.class, JsonNode.class)
+        .createMock();
+    
+    expect(classUnderTest.parseSettingCommand(SettingCommand.UPDATE_SETTINGS, arguments)).andReturn(command);
+    
+    replayAll();
+    
+    Command result = classUnderTest.parseCommand(SettingCommand.UPDATE_SETTINGS, arguments);
+    
+    verifyAll();
+    assertSame(command, result);
+  }
+  
   @Test
   public void parseCommand_ScheduleCommand() throws Exception {
     JsonNode arguments = createMock(JsonNode.class);

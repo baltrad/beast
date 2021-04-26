@@ -35,6 +35,7 @@ import eu.baltrad.beast.admin.command.AnomalyDetectorCommand;
 import eu.baltrad.beast.admin.command.HelpCommand;
 import eu.baltrad.beast.admin.command.RouteCommand;
 import eu.baltrad.beast.admin.command.ScheduleCommand;
+import eu.baltrad.beast.admin.command.SettingCommand;
 import eu.baltrad.beast.admin.command_response.CommandResponseJsonObject;
 import eu.baltrad.beast.admin.command_response.CommandResponseStatus;
 import eu.baltrad.beast.admin.objects.Adaptor;
@@ -126,6 +127,8 @@ public class AdministratorImpl implements Administrator {
         return handleCommand((RouteCommand)command);
       } else if (command instanceof ScheduleCommand) {
         return handleCommand((ScheduleCommand)command);
+      } else if (command instanceof SettingCommand) {
+        return handleCommand((SettingCommand)command);
       }
     }
     return new CommandResponseStatus(false);
@@ -320,6 +323,23 @@ public class AdministratorImpl implements Administrator {
       logger.warn("Failed to handle command", e);
     }
       
+    return new CommandResponseStatus(false);
+  }
+  
+  /**
+   * General handling of schedule commands
+   * @param command the schedule command
+   * @return the response to this command
+   */
+  public CommandResponse handleCommand(SettingCommand command) {
+    try {
+      if (command.getOperation().equals(SettingCommand.UPDATE_SETTINGS) ||
+          command.getOperation().equals(SettingCommand.LIST)) {
+        return new CommandResponseStatus(true);
+      }
+    } catch (Exception e) {
+      logger.warn("Failed to handle command", e);
+    }
     return new CommandResponseStatus(false);
   }
   

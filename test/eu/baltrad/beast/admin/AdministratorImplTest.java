@@ -26,6 +26,7 @@ import eu.baltrad.beast.admin.command.AnomalyDetectorCommand;
 import eu.baltrad.beast.admin.command.HelpCommand;
 import eu.baltrad.beast.admin.command.RouteCommand;
 import eu.baltrad.beast.admin.command.ScheduleCommand;
+import eu.baltrad.beast.admin.command.SettingCommand;
 import eu.baltrad.beast.admin.command.UserCommand;
 import eu.baltrad.beast.admin.command_response.CommandResponseJsonObject;
 import eu.baltrad.beast.admin.command_response.CommandResponseStatus;
@@ -177,9 +178,6 @@ public class AdministratorImplTest extends EasyMockSupport {
   @Test
   public void handle_RouteCommand() {
     RouteCommand command = createMock(RouteCommand.class);
-//    RouteCommand command = new RouteCommand(RouteCommand.ADD) {
-//      public boolean validate() { return true; }
-//    };
 
     CommandResponseStatus response = new CommandResponseStatus(true);
     
@@ -243,6 +241,45 @@ public class AdministratorImplTest extends EasyMockSupport {
     
     classUnderTest = createMockBuilder(AdministratorImpl.class)
         .addMockedMethod("handleCommand", ScheduleCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(false);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertSame(false, result.wasSuccessful());
+  }
+  
+  @Test
+  public void handle_SettingCommand() {
+    SettingCommand command = createMock(SettingCommand.class);
+    
+    CommandResponseStatus response = new CommandResponseStatus(true);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", SettingCommand.class)
+        .createMock();
+    
+    expect(command.validate()).andReturn(true);
+    expect(classUnderTest.handleCommand(command)).andReturn(response);
+
+    replayAll();
+    
+    CommandResponse result = classUnderTest.handle(command);
+    
+    verifyAll();
+    assertSame(result, response);
+  }
+
+  @Test
+  public void handle_SettingCommand_invalid() {
+    SettingCommand command = createMock(SettingCommand.class);
+    
+    classUnderTest = createMockBuilder(AdministratorImpl.class)
+        .addMockedMethod("handleCommand", SettingCommand.class)
         .createMock();
     
     expect(command.validate()).andReturn(false);
@@ -604,5 +641,14 @@ public class AdministratorImplTest extends EasyMockSupport {
     verifyAll();
     assertEquals(true, result.wasSuccessful());
     assertEquals("[\"A\",\"B\"]", ((CommandResponseJsonObject)result).getJsonString());
+  }
+  
+  @Test
+  public void some() {
+    try {
+      System.out.println(Integer.parseInt("018"));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
