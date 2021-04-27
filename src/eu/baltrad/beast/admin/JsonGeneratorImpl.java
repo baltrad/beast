@@ -268,4 +268,13 @@ public class JsonGeneratorImpl implements JsonGenerator {
       throw new AdministratorException(e);
     }
   }
+
+  @Override
+  public String toJson(Settings settings) {
+    try {
+      return mapper.writeValueAsString(settings);
+    } catch (Exception e) {
+      throw new AdministratorException(e);
+    }
+  }
 }

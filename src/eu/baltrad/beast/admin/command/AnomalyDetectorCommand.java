@@ -18,7 +18,10 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.admin.command;
 
+import java.util.List;
+
 import eu.baltrad.beast.admin.Command;
+import eu.baltrad.beast.qc.AnomalyDetector;
 
 /**
  * Commands affecting anomaly detectors
@@ -30,11 +33,24 @@ public class AnomalyDetectorCommand extends Command {
   public final static String REMOVE = "remove_anomaly_detector";
   public final static String GET = "get_anomaly_detector";
   public final static String LIST = "list_anomaly_detectors";
+  public final static String EXPORT = "export_anomaly_detectors";
+  public final static String IMPORT = "import_anomaly_detectors";
 
   private String operation = null;
-  private String name = null;
-  private String description = null;
 
+  private AnomalyDetector anomalyDetector = null;
+  
+  /**
+   * If importing detectors, this list will contain the detectors to be imported.
+   */
+  private List<AnomalyDetector> importedDetectors = null;
+  
+  /**
+   * If all adaptors should be removed before importing the data.
+   */
+  private boolean clearAllBeforeImport = false;
+  
+  
   public AnomalyDetectorCommand() {
   }
 
@@ -42,15 +58,9 @@ public class AnomalyDetectorCommand extends Command {
     setOperation(operation);
   }
 
-  public AnomalyDetectorCommand(String operation, String name) {
+  public AnomalyDetectorCommand(String operation, AnomalyDetector detector) {
     setOperation(operation);
-    setName(name);
-  }
-
-  public AnomalyDetectorCommand(String operation, String name, String description) {
-    setOperation(operation);
-    setName(name);
-    setDescription(description);
+    setAnomalyDetector(detector);
   }
 
   /**
@@ -72,14 +82,22 @@ public class AnomalyDetectorCommand extends Command {
    */
   @Override
   public boolean validate() {
-    if (LIST.equals(operation)) {
+    if (LIST.equals(operation) || EXPORT.equals(operation)) {
+      return true;
+    } else if (IMPORT.equals(operation)) {
+      for (AnomalyDetector detector : importedDetectors) {
+        if (detector.getName() == null || detector.getName().isEmpty() || detector.getDescription() == null || detector.getDescription().isEmpty()) {
+          return false;
+        }
+      }
       return true;
     } else if (GET.equals(operation) || REMOVE.equals(operation)) {
-      if (name != null && !name.isEmpty()) {
+      if (anomalyDetector != null && anomalyDetector.getName() != null && !anomalyDetector.getName().isEmpty()) {
         return true;
       }
     } else if (ADD.equals(operation) || UPDATE.equals(operation)) {
-      if (name != null && !name.isEmpty() && description != null && !description.isEmpty()) {
+      if (anomalyDetector != null && anomalyDetector.getName() != null && 
+          !anomalyDetector.getName().isEmpty() && anomalyDetector.getDescription() != null && !anomalyDetector.getDescription().isEmpty()) {
         return true;
       }
     }
@@ -87,31 +105,45 @@ public class AnomalyDetectorCommand extends Command {
   }
 
   /**
-   * @return the name
+   * @return the anomalyDetector
    */
-  public String getName() {
-    return name;
+  public AnomalyDetector getAnomalyDetector() {
+    return anomalyDetector;
   }
 
   /**
-   * @param name the name to set
+   * @param anomalyDetector the anomalyDetector to set
    */
-  public void setName(String name) {
-    this.name = name;
+  public void setAnomalyDetector(AnomalyDetector anomalyDetector) {
+    this.anomalyDetector = anomalyDetector;
   }
 
   /**
-   * @return the description
+   * @return the importedDetectors
    */
-  public String getDescription() {
-    return description;
+  public List<AnomalyDetector> getImportedDetectors() {
+    return importedDetectors;
   }
 
   /**
-   * @param description the description to set
+   * @param importedDetectors the importedDetectors to set
    */
-  public void setDescription(String description) {
-    this.description = description;
+  public void setImportedDetectors(List<AnomalyDetector> importedDetectors) {
+    this.importedDetectors = importedDetectors;
+  }
+
+  /**
+   * @return the clearAllBeforeImport
+   */
+  public boolean isClearAllBeforeImport() {
+    return clearAllBeforeImport;
+  }
+
+  /**
+   * @param clearAllBeforeImport the clearAllBeforeImport to set
+   */
+  public void setClearAllBeforeImport(boolean clearAllBeforeImport) {
+    this.clearAllBeforeImport = clearAllBeforeImport;
   }
 
 }

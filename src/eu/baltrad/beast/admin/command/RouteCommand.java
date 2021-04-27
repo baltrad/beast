@@ -35,6 +35,9 @@ public class RouteCommand extends Command {
   public final static String GET = "get_route";
   public final static String LIST = "list_routes";
   public final static String LIST_TYPES = "list_route_types";
+  public final static String EXPORT = "export_routes";
+  public final static String IMPORT = "import_routes";
+  
   public final static String CREATE_ROUTE_TEMPLATE = "create_route_template";
   /**
    * operation
@@ -66,6 +69,16 @@ public class RouteCommand extends Command {
    */
   private String templateRouteType = null;
   
+  /**
+   * The routes to import
+   */
+  private List<Route> importedRoutes = new ArrayList<Route>();
+  
+  /**
+   * If all routes should be removed before importing the data.
+   */
+  private boolean clearAllBeforeImport = false;
+
   /**
    * Default constructor
    */
@@ -120,9 +133,18 @@ public class RouteCommand extends Command {
         }
       }
     }
-    if (LIST.equalsIgnoreCase(operation) || LIST_TYPES.equalsIgnoreCase(operation))  {
+    if (LIST.equalsIgnoreCase(operation) || LIST_TYPES.equalsIgnoreCase(operation) || 
+        EXPORT.equalsIgnoreCase(operation))  {
       result = true;
     }
+    if (IMPORT.equalsIgnoreCase(operation)) {
+      for (Route route : importedRoutes) {
+        if (!route.validate()) {
+          return false;
+        }
+      }
+    }
+    
     if (CREATE_ROUTE_TEMPLATE.equalsIgnoreCase(operation) && getTemplateRouteType() != null && !getTemplateRouteType().isEmpty()) {
       result = true;
     }
@@ -202,5 +224,33 @@ public class RouteCommand extends Command {
    */
   public void setTemplateRouteType(String templateRouteType) {
     this.templateRouteType = templateRouteType;
+  }
+
+  /**
+   * @return the importedRoutes
+   */
+  public List<Route> getImportedRoutes() {
+    return importedRoutes;
+  }
+
+  /**
+   * @param importedRoutes the importedRoutes to set
+   */
+  public void setImportedRoutes(List<Route> importedRoutes) {
+    this.importedRoutes = importedRoutes;
+  }
+
+  /**
+   * @return the clearAllBeforeImport
+   */
+  public boolean isClearAllBeforeImport() {
+    return clearAllBeforeImport;
+  }
+
+  /**
+   * @param clearAllBeforeImport the clearAllBeforeImport to set
+   */
+  public void setClearAllBeforeImport(boolean clearAllBeforeImport) {
+    this.clearAllBeforeImport = clearAllBeforeImport;
   }
 }

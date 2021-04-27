@@ -122,6 +122,7 @@ public class DistributionRoute extends Route {
   public IRule toRule(IRouterManager routerManager) {
     DistributionRule rule = (DistributionRule)routerManager.createRule(DistributionRule.TYPE);
     rule.setDestination(this.getDestination());
+    rule.setFilter(this.getFilter());
     rule.setMetadataNamingTemplate(this.getNameTemplate());
     return rule;
   }

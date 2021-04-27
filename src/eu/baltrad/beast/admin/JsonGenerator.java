@@ -21,6 +21,7 @@ package eu.baltrad.beast.admin;
 import java.util.List;
 
 import eu.baltrad.beast.admin.objects.Adaptor;
+import eu.baltrad.beast.admin.objects.Settings;
 import eu.baltrad.beast.admin.objects.User;
 import eu.baltrad.beast.admin.objects.routes.Route;
 import eu.baltrad.beast.qc.AnomalyDetector;
@@ -107,4 +108,11 @@ public interface JsonGenerator {
    * @return the JSON string
    */
   public String toJsonFromUsers(List<User> users);
+  
+  /**
+   * Generates a JSON message from settings
+   * @param settings the settings
+   * @return the JSON string
+   */
+  public String toJson(Settings settings);
 }

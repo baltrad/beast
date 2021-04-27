@@ -3,9 +3,6 @@
  */
 package eu.baltrad.beast.admin.command;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import eu.baltrad.beast.admin.Command;
 import eu.baltrad.beast.admin.objects.Settings;
 
@@ -17,7 +14,11 @@ public class SettingCommand extends Command {
   public final static String UPDATE_SETTINGS = "update_settings";
 
   public final static String LIST = "list_settings";
-
+  
+  public final static String IMPORT = "import_settings";
+  
+  public final static String EXPORT = "export_settings";
+  
   /**
    * The operation
    */
@@ -63,7 +64,10 @@ public class SettingCommand extends Command {
   @Override
   public boolean validate() {
     if (getOperation() != null) {
-      if (getOperation().equals(SettingCommand.UPDATE_SETTINGS)) {
+      if (getOperation().equals(SettingCommand.UPDATE_SETTINGS) ||
+          getOperation().equals(SettingCommand.LIST) ||
+          getOperation().equals(SettingCommand.IMPORT) ||
+          getOperation().equals(SettingCommand.EXPORT)) {
         return true;
       }
     }

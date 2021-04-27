@@ -503,73 +503,29 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     AnomalyDetectorCommand result = (AnomalyDetectorCommand)classUnderTest.parseAnomalyDetectorCommand(AnomalyDetectorCommand.ADD, jsonMapper.readTree(new String(Files.readAllBytes(f.toPath()))));
     
     assertEquals("add_anomaly_detector", result.getOperation());
-    assertEquals("beamb", result.getName());
-    assertEquals("beamb quality control", result.getDescription());
-  }
-  
-  @Test
-  public void parseAnomalyDetectorCommand_ADD() throws Exception {
-    JsonNode argumentsNode = createMock(JsonNode.class);
-    JsonNode detectorNode = createMock(JsonNode.class);
-    JsonNode nameNode = createMock(JsonNode.class);
-    JsonNode descriptionNode = createMock(JsonNode.class);
-    
-    expect(argumentsNode.get("anomaly-detector")).andReturn(detectorNode);
-    expect(detectorNode.get("name")).andReturn(nameNode);
-    expect(nameNode.asText()).andReturn("thename");
-    expect(detectorNode.get("description")).andReturn(descriptionNode);
-    expect(descriptionNode.asText()).andReturn("thedescription");
-    
-    replayAll();
-    
-    AnomalyDetectorCommand result = (AnomalyDetectorCommand)classUnderTest.parseAnomalyDetectorCommand(AnomalyDetectorCommand.ADD, argumentsNode);
-    
-    verifyAll();
-    assertEquals("add_anomaly_detector", result.getOperation());
-    assertEquals("thename", result.getName());
-    assertEquals("thedescription", result.getDescription());
+    assertEquals("beamb", result.getAnomalyDetector().getName());
+    assertEquals("beamb quality control", result.getAnomalyDetector().getDescription());
   }
 
   @Test
   public void parseAnomalyDetectorCommand_UPDATE() throws Exception {
-    JsonNode argumentsNode = createMock(JsonNode.class);
-    JsonNode detectorNode = createMock(JsonNode.class);
-    JsonNode nameNode = createMock(JsonNode.class);
-    JsonNode descriptionNode = createMock(JsonNode.class);
+    File f = new File(this.getClass().getResource(JSON_ANOMALY_DETECTOR_FIXTURE).getFile());
+
+    AnomalyDetectorCommand result = (AnomalyDetectorCommand)classUnderTest.parseAnomalyDetectorCommand(AnomalyDetectorCommand.UPDATE, jsonMapper.readTree(new String(Files.readAllBytes(f.toPath()))));
     
-    expect(argumentsNode.get("anomaly-detector")).andReturn(detectorNode);
-    expect(detectorNode.get("name")).andReturn(nameNode);
-    expect(nameNode.asText()).andReturn("thename");
-    expect(detectorNode.get("description")).andReturn(descriptionNode);
-    expect(descriptionNode.asText()).andReturn("thedescription");
-    
-    replayAll();
-    
-    AnomalyDetectorCommand result = (AnomalyDetectorCommand)classUnderTest.parseAnomalyDetectorCommand(AnomalyDetectorCommand.UPDATE, argumentsNode);
-    
-    verifyAll();
     assertEquals("update_anomaly_detector", result.getOperation());
-    assertEquals("thename", result.getName());
-    assertEquals("thedescription", result.getDescription());
+    assertEquals("beamb", result.getAnomalyDetector().getName());
+    assertEquals("beamb quality control", result.getAnomalyDetector().getDescription());
   }
 
   @Test
   public void parseAnomalyDetectorCommand_REMOVE() throws Exception {
-    JsonNode argumentsNode = createMock(JsonNode.class);
-    JsonNode detectorNode = createMock(JsonNode.class);
-    JsonNode nameNode = createMock(JsonNode.class);
+    File f = new File(this.getClass().getResource(JSON_ANOMALY_DETECTOR_FIXTURE).getFile());
     
-    expect(argumentsNode.get("anomaly-detector")).andReturn(detectorNode);
-    expect(detectorNode.get("name")).andReturn(nameNode);
-    expect(nameNode.asText()).andReturn("thename");
+    AnomalyDetectorCommand result = (AnomalyDetectorCommand)classUnderTest.parseAnomalyDetectorCommand(AnomalyDetectorCommand.REMOVE, jsonMapper.readTree(new String(Files.readAllBytes(f.toPath()))));
     
-    replayAll();
-    
-    AnomalyDetectorCommand result = (AnomalyDetectorCommand)classUnderTest.parseAnomalyDetectorCommand(AnomalyDetectorCommand.REMOVE, argumentsNode);
-    
-    verifyAll();
     assertEquals("remove_anomaly_detector", result.getOperation());
-    assertEquals("thename", result.getName());
+    assertEquals("beamb", result.getAnomalyDetector().getName());
   }
 
   @Test
@@ -578,7 +534,8 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     JsonNode nameNode = createMock(JsonNode.class);
     
     expect(argumentsNode.get("anomaly-detector")).andReturn(null);
-    expect(argumentsNode.get("name")).andReturn(nameNode);
+    expect(argumentsNode.has("name")).andReturn(true).anyTimes();
+    expect(argumentsNode.get("name")).andReturn(nameNode).anyTimes();
     expect(nameNode.asText()).andReturn("thename");
     
     replayAll();
@@ -587,26 +544,20 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     
     verifyAll();
     assertEquals("remove_anomaly_detector", result.getOperation());
-    assertEquals("thename", result.getName());
+    assertEquals("thename", result.getAnomalyDetector().getName());
   }
 
   @Test
   public void parseAnomalyDetectorCommand_GET() throws Exception {
-    JsonNode argumentsNode = createMock(JsonNode.class);
-    JsonNode detectorNode = createMock(JsonNode.class);
-    JsonNode nameNode = createMock(JsonNode.class);
-    
-    expect(argumentsNode.get("anomaly-detector")).andReturn(detectorNode);
-    expect(detectorNode.get("name")).andReturn(nameNode);
-    expect(nameNode.asText()).andReturn("thename");
+    File f = new File(this.getClass().getResource(JSON_ANOMALY_DETECTOR_FIXTURE).getFile());
     
     replayAll();
     
-    AnomalyDetectorCommand result = (AnomalyDetectorCommand)classUnderTest.parseAnomalyDetectorCommand(AnomalyDetectorCommand.GET, argumentsNode);
+    AnomalyDetectorCommand result = (AnomalyDetectorCommand)classUnderTest.parseAnomalyDetectorCommand(AnomalyDetectorCommand.GET, jsonMapper.readTree(new String(Files.readAllBytes(f.toPath()))));
     
     verifyAll();
     assertEquals("get_anomaly_detector", result.getOperation());
-    assertEquals("thename", result.getName());
+    assertEquals("beamb", result.getAnomalyDetector().getName());
   }
 
   @Test
@@ -615,7 +566,8 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     JsonNode nameNode = createMock(JsonNode.class);
     
     expect(argumentsNode.get("anomaly-detector")).andReturn(null);
-    expect(argumentsNode.get("name")).andReturn(nameNode);
+    expect(argumentsNode.has("name")).andReturn(true).anyTimes();
+    expect(argumentsNode.get("name")).andReturn(nameNode).anyTimes();
     expect(nameNode.asText()).andReturn("thename");
     
     replayAll();
@@ -624,7 +576,7 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     
     verifyAll();
     assertEquals("get_anomaly_detector", result.getOperation());
-    assertEquals("thename", result.getName());
+    assertEquals("thename", result.getAnomalyDetector().getName());
   }
 
   @Test
@@ -848,9 +800,9 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     ScheduleCommand result = (ScheduleCommand)classUnderTest.parseScheduleCommand(ScheduleCommand.ADD, jsonMapper.readTree(new String(Files.readAllBytes(f.toPath()))));
     
     assertEquals("add_schedule", result.getOperation());
-    assertEquals(1, result.getIdentfier());
-    assertEquals("0 * * * * ?", result.getExpression());
-    assertEquals("trimcount", result.getRouteName());
+    assertEquals(1, result.getEntry().getId());
+    assertEquals("0 * * * * ?", result.getEntry().getExpression());
+    assertEquals("trimcount", result.getEntry().getName());
   }
   
   @Test
@@ -867,9 +819,9 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     
     verifyAll();
     assertEquals("add_schedule", result.getOperation());
-    assertEquals("1 * * * * *", result.getExpression());
-    assertEquals(1, result.getIdentfier());
-    assertEquals("theroute", result.getRouteName());
+    assertEquals("1 * * * * *", result.getEntry().getExpression());
+    assertEquals(1, result.getEntry().getId());
+    assertEquals("theroute", result.getEntry().getName());
   }
   
   @Test
@@ -886,9 +838,9 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     
     verifyAll();
     assertEquals("update_schedule", result.getOperation());
-    assertEquals("1 * * * * *", result.getExpression());
-    assertEquals(1, result.getIdentfier());
-    assertEquals("theroute", result.getRouteName());
+    assertEquals("1 * * * * *", result.getEntry().getExpression());
+    assertEquals(1, result.getEntry().getId());
+    assertEquals("theroute", result.getEntry().getName());
   }
 
   @Test
@@ -925,8 +877,8 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     
     verifyAll();
     assertEquals("get_schedule", result.getOperation());
-    assertEquals(1, result.getIdentfier());
-    assertEquals("theroute", result.getRouteName());
+    assertEquals(1, result.getEntry().getId());
+    assertEquals("theroute", result.getEntry().getName());
   }
 
   @Test
@@ -949,8 +901,8 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     
     verifyAll();
     assertEquals("get_schedule", result.getOperation());
-    assertEquals(2, result.getIdentfier());
-    assertEquals("theroute", result.getRouteName());
+    assertEquals(2, result.getEntry().getId());
+    assertEquals("theroute", result.getEntry().getName());
   }
 
   @Test
@@ -967,8 +919,8 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     
     verifyAll();
     assertEquals("remove_schedule", result.getOperation());
-    assertEquals(1, result.getIdentfier());
-    assertEquals("theroute", result.getRouteName());
+    assertEquals(1, result.getEntry().getId());
+    assertEquals("theroute", result.getEntry().getName());
   }
 
   @Test
@@ -991,8 +943,8 @@ public class JsonCommandParserImplTest  extends EasyMockSupport {
     
     verifyAll();
     assertEquals("remove_schedule", result.getOperation());
-    assertEquals(2, result.getIdentfier());
-    assertEquals("theroute", result.getRouteName());
+    assertEquals(2, result.getEntry().getId());
+    assertEquals("theroute", result.getEntry().getName());
   }
   
   @Test

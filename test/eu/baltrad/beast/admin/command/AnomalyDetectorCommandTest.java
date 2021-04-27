@@ -10,6 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.baltrad.beast.qc.AnomalyDetector;
+
 /**
  * @author anders
  *
@@ -30,8 +32,7 @@ public class AnomalyDetectorCommandTest extends EasyMockSupport {
   @Test
   public void validate_ADD() throws Exception {
     classUnderTest.setOperation(AnomalyDetectorCommand.ADD);
-    classUnderTest.setName("N1");
-    classUnderTest.setDescription("D1");
+    classUnderTest.setAnomalyDetector(new AnomalyDetector("N1", "D1"));
     
     replayAll();
     
@@ -44,8 +45,7 @@ public class AnomalyDetectorCommandTest extends EasyMockSupport {
   @Test
   public void validate_ADD_missingName() throws Exception {
     classUnderTest.setOperation(AnomalyDetectorCommand.ADD);
-    classUnderTest.setName(null);
-    classUnderTest.setDescription("D1");
+    classUnderTest.setAnomalyDetector(new AnomalyDetector(null, "D1"));
     
     replayAll();
     
@@ -58,8 +58,7 @@ public class AnomalyDetectorCommandTest extends EasyMockSupport {
   @Test
   public void validate_ADD_missingName_2() throws Exception {
     classUnderTest.setOperation(AnomalyDetectorCommand.ADD);
-    classUnderTest.setName("");
-    classUnderTest.setDescription("D1");
+    classUnderTest.setAnomalyDetector(new AnomalyDetector("", "D1"));
     
     replayAll();
     
@@ -72,7 +71,8 @@ public class AnomalyDetectorCommandTest extends EasyMockSupport {
   @Test
   public void validate_REMOVE() throws Exception {
     classUnderTest.setOperation(AnomalyDetectorCommand.REMOVE);
-    classUnderTest.setName("N1");
+    classUnderTest.setAnomalyDetector(new AnomalyDetector("N1",null));
+
     
     replayAll();
     
@@ -85,7 +85,7 @@ public class AnomalyDetectorCommandTest extends EasyMockSupport {
   @Test
   public void validate_REMOVE_missingName() throws Exception {
     classUnderTest.setOperation(AnomalyDetectorCommand.REMOVE);
-    classUnderTest.setName(null);
+    classUnderTest.setAnomalyDetector(new AnomalyDetector());
     
     replayAll();
     
@@ -98,7 +98,7 @@ public class AnomalyDetectorCommandTest extends EasyMockSupport {
   @Test
   public void validate_REMOVE_missingName_2() throws Exception {
     classUnderTest.setOperation(AnomalyDetectorCommand.REMOVE);
-    classUnderTest.setName("");
+    classUnderTest.setAnomalyDetector(new AnomalyDetector("",null));
     
     replayAll();
     

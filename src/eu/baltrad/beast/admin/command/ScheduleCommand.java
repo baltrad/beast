@@ -18,7 +18,11 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.admin.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import eu.baltrad.beast.admin.Command;
+import eu.baltrad.beast.scheduler.CronEntry;
 import eu.baltrad.beast.scheduler.CronEntryUtilities;
 
 /**
@@ -30,27 +34,29 @@ public class ScheduleCommand extends Command {
   public final static String REMOVE = "remove_schedule";
   public final static String GET = "get_schedule";
   public final static String LIST = "list_schedule";
+  public final static String IMPORT = "import_schedule";
+  public final static String EXPORT = "export_schedule";
   
   /**
    * The operation
    */
   private String operation = null;
+
+  /**
+   * A single entry for add/update/remove ...
+   */
+  private CronEntry entry = null;
   
   /**
-   * The unique identifier
+   * When importing cron entries
    */
-  private int identfier = 0;
-  
+  private List<CronEntry> importedEntries = new ArrayList<CronEntry>();
+
   /**
-   * The route name affected by this schedule 
+   * If all scheduled entries should be removed before importing the data.
    */
-  private String routeName = null;
-  
-  /**
-   * The expression
-   */
-  private String expression = null;
-  
+  private boolean clearAllBeforeImport = false;
+
   /**
    * Constructor
    */
@@ -68,45 +74,9 @@ public class ScheduleCommand extends Command {
   /**
    * Constructor
    */
-  public ScheduleCommand(String operation, String expression) {
+  public ScheduleCommand(String operation, CronEntry entry) {
     setOperation(operation);
-    setExpression(expression);
-  }
-
-  /**
-   * Constructor
-   */
-  public ScheduleCommand(String operation, int identifier) {
-    setOperation(operation);
-    setIdentfier(identifier);
-  }
-
-  /**
-   * Constructor
-   */
-  public ScheduleCommand(String operation, int identifier, String expression) {
-    setOperation(operation);
-    setIdentfier(identifier);
-    setExpression(expression);
-  }
-
-  /**
-   * Constructor
-   */
-  public ScheduleCommand(String operation, int identifier, String expression, String routeName) {
-    setOperation(operation);
-    setIdentfier(identifier);
-    setExpression(expression);
-    setRouteName(routeName);
-  }
-
-  /**
-   * Constructor
-   */
-  public ScheduleCommand(String operation, String expression, String routeName) {
-    setOperation(operation);
-    setExpression(expression);
-    setRouteName(routeName);
+    setEntry(entry);
   }
 
   /**
@@ -129,26 +99,34 @@ public class ScheduleCommand extends Command {
    */
   @Override
   public boolean validate() {
-    if (ADD.equalsIgnoreCase(operation)) {
-      if (getRouteName() != null && !getRouteName().isEmpty() &&
-          validateExpression()) {
+    if (ADD.equalsIgnoreCase(operation) && entry != null) {
+      if (entry.getName() != null && !entry.getName().isEmpty() &&
+          validateExpression(entry.getExpression())) {
         return true;
       }
-    } else if (UPDATE.equalsIgnoreCase(operation)) {
-      if (getRouteName() != null && !getRouteName().isEmpty() &&
-          validateExpression() &&
-          getIdentfier() > 0) {
+    } else if (UPDATE.equalsIgnoreCase(operation) && entry != null) {
+      if (entry.getName() != null && !entry.getName().isEmpty() &&
+          validateExpression(entry.getExpression()) &&
+          entry.getId() > 0) {
         return true;
       }
-    } else if (REMOVE.equalsIgnoreCase(operation)) {
-      if (getIdentfier() > 0) {
+    } else if (REMOVE.equalsIgnoreCase(operation) && entry != null) {
+      if (entry.getId() > 0) {
         return true;
       }
-    } else if (GET.equalsIgnoreCase(operation)) {
-      if (getIdentfier() > 0 || (getRouteName() != null && !getRouteName().isEmpty())) {
+    } else if (GET.equalsIgnoreCase(operation) && entry != null) {
+      if (entry.getId() > 0 || (entry.getName() != null && !entry.getName().isEmpty())) {
         return true;
       }
-    } else if (LIST.equalsIgnoreCase(operation)) {
+    } else if (LIST.equalsIgnoreCase(operation) || EXPORT.equalsIgnoreCase(operation)) {
+      return true;
+    } else if (IMPORT.equalsIgnoreCase(operation)) {
+      for (CronEntry entry : importedEntries) {
+        if (entry.getName() == null || entry.getName().isEmpty() ||
+            !validateExpression(entry.getExpression())) {
+          return false;
+        }
+      }
       return true;
     }
     return false;
@@ -158,7 +136,7 @@ public class ScheduleCommand extends Command {
    * Validates the cron expression
    * @return true if expression is valid
    */
-  protected boolean validateExpression() {
+  protected boolean validateExpression(String expression) {
     try {
       CronEntryUtilities.validateExpression(expression);
       return true;
@@ -167,46 +145,46 @@ public class ScheduleCommand extends Command {
     }
     return false;
   }
-  
+
   /**
-   * @return the expression
+   * @return the entry
    */
-  public String getExpression() {
-    return expression;
+  public CronEntry getEntry() {
+    return entry;
   }
 
   /**
-   * @param expression the expression to set
+   * @param entry the entry to set
    */
-  public void setExpression(String expression) {
-    this.expression = expression;
+  public void setEntry(CronEntry entry) {
+    this.entry = entry;
   }
 
   /**
-   * @return the identfier
+   * @return the entries
    */
-  public int getIdentfier() {
-    return identfier;
+  public List<CronEntry> getImportedEntries() {
+    return importedEntries;
   }
 
   /**
-   * @param identfier the identfier to set
+   * @param entries the entries to set
    */
-  public void setIdentfier(int identfier) {
-    this.identfier = identfier;
+  public void setImportedEntries(List<CronEntry> entries) {
+    this.importedEntries = entries;
   }
 
   /**
-   * @return the routeName
+   * @return the clearAllBeforeImport
    */
-  public String getRouteName() {
-    return routeName;
+  public boolean isClearAllBeforeImport() {
+    return clearAllBeforeImport;
   }
 
   /**
-   * @param routeName the routeName to set
+   * @param clearAllBeforeImport the clearAllBeforeImport to set
    */
-  public void setRouteName(String routeName) {
-    this.routeName = routeName;
+  public void setClearAllBeforeImport(boolean clearAllBeforeImport) {
+    this.clearAllBeforeImport = clearAllBeforeImport;
   }
 }

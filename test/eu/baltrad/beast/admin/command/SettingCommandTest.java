@@ -12,7 +12,6 @@ import org.junit.Test;
 
 /**
  * @author anders
- *
  */
 public class SettingCommandTest extends EasyMockSupport {
   private SettingCommand classUnderTest = null;

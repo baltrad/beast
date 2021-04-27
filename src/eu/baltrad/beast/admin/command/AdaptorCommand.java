@@ -19,6 +19,8 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.admin.command;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import eu.baltrad.beast.admin.Command;
 import eu.baltrad.beast.admin.objects.Adaptor;
@@ -33,6 +35,8 @@ public class AdaptorCommand extends Command {
   public final static String REMOVE = "remove_adaptor";
   public final static String GET = "get_adaptor";
   public final static String LIST = "list_adaptors";
+  public final static String EXPORT = "export_adaptors";
+  public final static String IMPORT = "import_adaptors";
 
   /**
    * Operation
@@ -43,6 +47,16 @@ public class AdaptorCommand extends Command {
    * Adaptor object
    */
   private Adaptor adaptor = null;
+  
+  /**
+   * Imported adaptors
+   */
+  private List<Adaptor> importedAdaptors = new ArrayList<Adaptor>();
+  
+  /**
+   * If all adaptors should be removed before importing the data.
+   */
+  private boolean clearAllBeforeImport = false;
   
   /**
    * Constructor
@@ -89,7 +103,7 @@ public class AdaptorCommand extends Command {
   @Override
   public boolean validate() {
     try {
-      if (LIST.equals(operation)) {
+      if (LIST.equals(operation) || EXPORT.equalsIgnoreCase(operation)) {
         return true;
       } else if (adaptor != null && (GET.equals(operation) || REMOVE.equals(operation))) {
         if (adaptor.getName() != null && !adaptor.getName().isEmpty()) {
@@ -102,6 +116,16 @@ public class AdaptorCommand extends Command {
             adaptor.getTimeout() >= 0) {
           return true;
         }
+      } else if (IMPORT.equalsIgnoreCase(operation)) {
+        for (Adaptor adaptor : importedAdaptors) {
+          if (adaptor.getName() == null || adaptor.getName().isEmpty() ||
+              adaptor.getType() == null || adaptor.getType().isEmpty() ||
+              !validateUri(adaptor.getUri()) ||
+              adaptor.getTimeout() < 0) {
+            return false;
+          }
+        }
+        return true;
       }
     } catch (Exception e) {
       // pass
@@ -130,5 +154,33 @@ public class AdaptorCommand extends Command {
    */
   public void setAdaptor(Adaptor adaptor) {
     this.adaptor = adaptor;
+  }
+
+  /**
+   * @return the importedAdaptors
+   */
+  public List<Adaptor> getImportedAdaptors() {
+    return importedAdaptors;
+  }
+
+  /**
+   * @param importedAdaptors the importedAdaptors to set
+   */
+  public void setImportedAdaptors(List<Adaptor> importedAdaptors) {
+    this.importedAdaptors = importedAdaptors;
+  }
+
+  /**
+   * @return the clearAllBeforeImport
+   */
+  public boolean isClearAllBeforeImport() {
+    return clearAllBeforeImport;
+  }
+
+  /**
+   * @param clearAllBeforeImport the clearAllBeforeImport to set
+   */
+  public void setClearAllBeforeImport(boolean clearAllBeforeImport) {
+    this.clearAllBeforeImport = clearAllBeforeImport;
   }
 }
