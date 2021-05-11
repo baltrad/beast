@@ -53,6 +53,11 @@ public class AdminMailer implements IAdminMailer {
   private String from = null;
   
   /**
+   * If mailing should be enabled or not
+   */
+  private boolean enabled = false;
+  
+  /**
    * Different properties that should be used in the connection with the mail server
    */
   private Map<String, String> properties = new HashMap<String, String>();
@@ -103,6 +108,8 @@ public class AdminMailer implements IAdminMailer {
   @Autowired
   @Override
   public void sendKeyApprovalRequest(String to, String subject, String uri, String message, AuthorizationRequest request) {
+    if (!isEnabled())
+      return;
     JavaMailSender sender = getMailSender();
 
     SimpleMailMessage mail = new SimpleMailMessage();
@@ -225,5 +232,19 @@ public class AdminMailer implements IAdminMailer {
    */
   public void setFrom(String from) {
     this.from = from;
+  }
+
+  /**
+   * @return the enabled
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  /**
+   * @param enabled the enabled to set
+   */
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
   }
 }
