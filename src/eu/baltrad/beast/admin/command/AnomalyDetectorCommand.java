@@ -35,6 +35,7 @@ public class AnomalyDetectorCommand extends Command {
   public final static String LIST = "list_anomaly_detectors";
   public final static String EXPORT = "export_anomaly_detectors";
   public final static String IMPORT = "import_anomaly_detectors";
+  public final static String DROP = "drop_anomaly_detectors";
 
   private String operation = null;
 
@@ -44,12 +45,6 @@ public class AnomalyDetectorCommand extends Command {
    * If importing detectors, this list will contain the detectors to be imported.
    */
   private List<AnomalyDetector> importedDetectors = null;
-  
-  /**
-   * If all adaptors should be removed before importing the data.
-   */
-  private boolean clearAllBeforeImport = false;
-  
   
   public AnomalyDetectorCommand() {
   }
@@ -82,7 +77,7 @@ public class AnomalyDetectorCommand extends Command {
    */
   @Override
   public boolean validate() {
-    if (LIST.equals(operation) || EXPORT.equals(operation)) {
+    if (LIST.equals(operation) || EXPORT.equals(operation) || DROP.equals(operation)) {
       return true;
     } else if (IMPORT.equals(operation)) {
       for (AnomalyDetector detector : importedDetectors) {
@@ -131,19 +126,4 @@ public class AnomalyDetectorCommand extends Command {
   public void setImportedDetectors(List<AnomalyDetector> importedDetectors) {
     this.importedDetectors = importedDetectors;
   }
-
-  /**
-   * @return the clearAllBeforeImport
-   */
-  public boolean isClearAllBeforeImport() {
-    return clearAllBeforeImport;
-  }
-
-  /**
-   * @param clearAllBeforeImport the clearAllBeforeImport to set
-   */
-  public void setClearAllBeforeImport(boolean clearAllBeforeImport) {
-    this.clearAllBeforeImport = clearAllBeforeImport;
-  }
-
 }

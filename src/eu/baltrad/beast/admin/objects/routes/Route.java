@@ -160,7 +160,7 @@ public abstract class Route {
    * @return true if valid, false otherwise
    */
   public boolean validate() {
-    if (name != null && !name.isEmpty() && author != null && !author.isEmpty() && description != null && !description.isEmpty()) {
+    if (name != null && !name.isEmpty() && author != null && description != null) {
       return isValid();
     }
     return false;

@@ -178,16 +178,6 @@ public class AdministratorImpl implements Administrator {
       addOrUpdateAdaptor(command.getAdaptor());
       return new CommandResponseStatus(true);
     } else if (command.getOperation().equals(AdaptorCommand.IMPORT)) {
-      if (command.isClearAllBeforeImport()) {
-        List<IAdaptor> adaptors = getAdaptorManager().getRegisteredAdaptors();
-        for (IAdaptor adaptor: adaptors) {
-          try {
-            getAdaptorManager().unregister(adaptor.getName());
-          } catch (Exception e) {
-            logger.info("Failed to unregister adaptor: " + adaptor.getName(), e);
-          }
-        }
-      }
       for (Adaptor adaptor : command.getImportedAdaptors()) {
         addOrUpdateAdaptor(adaptor);
       }
@@ -196,6 +186,16 @@ public class AdministratorImpl implements Administrator {
       if (getAdaptorManager().getAdaptorNames().contains(command.getAdaptor().getName())) {
         logger.info("Removing adaptor: " + command.getAdaptor().getName());
         getAdaptorManager().unregister(command.getAdaptor().getName());
+      }
+      return new CommandResponseStatus(true);
+    } else if (command.getOperation().equals(AdaptorCommand.DROP)) {
+      List<IAdaptor> adaptors = getAdaptorManager().getRegisteredAdaptors();
+      for (IAdaptor adaptor: adaptors) {
+        try {
+          getAdaptorManager().unregister(adaptor.getName());
+        } catch (Exception e) {
+          logger.info("Failed to unregister adaptor: " + adaptor.getName(), e);
+        }
       }
       return new CommandResponseStatus(true);
     } else if (command.getOperation().equals(AdaptorCommand.GET)) {
@@ -214,7 +214,7 @@ public class AdministratorImpl implements Administrator {
       }
       String adaptorsstr = jsonGenerator.toJsonFromAdaptors(adaptordefs);
       if (command.getOperation().equals(AdaptorCommand.EXPORT)) {
-        adaptorsstr = "{\"clear_all_before_import\":false,\n\"adaptors\":"+adaptorsstr+"\n}";
+        adaptorsstr = "{\"adaptors\":"+adaptorsstr+"\n}";
       }
       return new CommandResponseJsonObject(adaptorsstr);
     }
@@ -255,6 +255,16 @@ public class AdministratorImpl implements Administrator {
     } else if (command.getOperation().equals(AnomalyDetectorCommand.REMOVE)) {
       getAnomalyDetectorManager().remove(command.getAnomalyDetector().getName());
       return new CommandResponseStatus(true);
+    } else if (command.getOperation().equals(AnomalyDetectorCommand.DROP)) {
+      List<AnomalyDetector> detectors = getAnomalyDetectorManager().list();
+      for (AnomalyDetector detector : detectors) {
+        try {
+          getAnomalyDetectorManager().remove(detector.getName());
+        } catch (Exception e) {
+          logger.warn("Failed to remove detector " + detector.getName(), e);
+        }
+      }
+      return new CommandResponseStatus(true);
     } else if (command.getOperation().equals(AnomalyDetectorCommand.GET)) {
       AnomalyDetector detector = getAnomalyDetectorManager().get(command.getAnomalyDetector().getName());
       return new CommandResponseJsonObject(jsonGenerator.toJson(detector));
@@ -262,20 +272,10 @@ public class AdministratorImpl implements Administrator {
                command.getOperation().equals(AnomalyDetectorCommand.EXPORT)) {
       String detectorstr = jsonGenerator.toJsonFromAnomalyDetectorList(getAnomalyDetectorManager().list());
       if (command.getOperation().equals(AnomalyDetectorCommand.EXPORT)) {
-        detectorstr = "{\"clear_all_before_import\":false,\n\"anomaly-detectors\":"+detectorstr+"\n}";
+        detectorstr = "{\"anomaly-detectors\":"+detectorstr+"\n}";
       }
       return new CommandResponseJsonObject(detectorstr);
     } else if (command.getOperation().equals(AnomalyDetectorCommand.IMPORT)) {
-      if (command.isClearAllBeforeImport()) {
-        List<AnomalyDetector> detectors = getAnomalyDetectorManager().list();
-        for (AnomalyDetector detector : detectors) {
-          try {
-            getAnomalyDetectorManager().remove(detector.getName());
-          } catch (Exception e) {
-            logger.warn("Failed to remove detector " + detector.getName(), e);
-          }
-        }
-      }
       for (AnomalyDetector detector : command.getImportedDetectors()) {
         addOrUpdateAnomalyDetector(detector);
       }
@@ -304,16 +304,7 @@ public class AdministratorImpl implements Administrator {
         return new CommandResponseStatus(true);       
       }
     } else if (command.getOperation().equals(RouteCommand.IMPORT)) {
-      if (command.isClearAllBeforeImport()) {
-        List<RouteDefinition> definitions = routerManager.getDefinitions();
-        for (RouteDefinition def : definitions) {
-          try {
-            routerManager.deleteDefinition(def.getName());
-          } catch (Exception e) {
-            logger.info("Failed to remove definition", e);
-          }
-        }
-      }
+      logger.info("handleCommand(RouteCommand): routes = " + command.getImportedRoutes().size());
       for (Route route : command.getImportedRoutes()) {
         logger.info("Importing route: " + route.getName());
         IRule rule = route.toRule(routerManager);
@@ -332,6 +323,18 @@ public class AdministratorImpl implements Administrator {
       } catch (RuleException e) {
         return new CommandResponseStatus(false);
       }
+    } else if (command.getOperation().equals(RouteCommand.DROP)) {
+      List<RouteDefinition> definitions = routerManager.getDefinitions();
+      logger.info("Dropping definitions: " + definitions.size());
+      for (RouteDefinition def : definitions) {
+        try {
+          logger.info("Removing definition with name: " + def.getName());
+          routerManager.deleteDefinition(def.getName());
+        } catch (Exception e) {
+          logger.info("Failed to remove definition", e);
+        }
+      }
+      return new CommandResponseStatus(true);
     } else if (command.getOperation().equals(RouteCommand.GET)) {  
       RouteDefinition def = routerManager.getDefinition(command.getRoute().getName());
       if (def != null) {
@@ -355,7 +358,7 @@ public class AdministratorImpl implements Administrator {
       }
       String strresult = jsonGenerator.toJsonFromRoutes(routes);
       if (command.getOperation().equals(RouteCommand.EXPORT)) {
-        strresult = "{\"clear_all_before_import\":false,\n\"routes\":"+strresult+"\n}";
+        strresult = "{\"routes\":"+strresult+"\n}";
       }
       return new CommandResponseJsonObject(strresult);
     } else if (command.getOperation().equals(RouteCommand.LIST_TYPES)) {    
@@ -402,6 +405,16 @@ public class AdministratorImpl implements Administrator {
           scheduler.unregister(command.getEntry().getId());
           return new CommandResponseStatus(true);
         }
+      } else if (command.getOperation().equals(ScheduleCommand.DROP)) {
+        List<CronEntry> schedule = scheduler.getSchedule();
+        for (CronEntry entry : schedule) {
+          try {
+            scheduler.unregister(entry.getId());
+          } catch (Exception e) {
+            logger.warn("Failed to unregister schedule with id " + entry.getId(), e);
+          }
+        }
+        return new CommandResponseStatus(true);
       } else if (command.getOperation().equals(ScheduleCommand.GET)) {
         if (command.getEntry().getId() != 0) {
           CronEntry entry = scheduler.getEntry(command.getEntry().getId());
@@ -414,17 +427,10 @@ public class AdministratorImpl implements Administrator {
           command.getOperation().equals(ScheduleCommand.EXPORT)) {
         String schedulestr = jsonGenerator.toJsonFromCronEntries(scheduler.getSchedule());
         if (command.getOperation().equals(ScheduleCommand.EXPORT)) {
-          schedulestr = "{\"clear_all_before_import\":false,\n\"entries\":"+schedulestr+"\n}";
+          schedulestr = "{\"entries\":"+schedulestr+"\n}";
         }
         return new CommandResponseJsonObject(schedulestr);
       } else if (command.getOperation().equals(ScheduleCommand.IMPORT)) {
-        if (command.isClearAllBeforeImport()) {
-          List<CronEntry> schedule = scheduler.getSchedule();
-          for (CronEntry entry : schedule) {
-            scheduler.unregister(entry.getId());
-          }
-        }
-        
         for (CronEntry entry : command.getImportedEntries()) {
           try {
             addOrUpdateEntry(entry);

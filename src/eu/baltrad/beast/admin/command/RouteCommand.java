@@ -21,6 +21,9 @@ package eu.baltrad.beast.admin.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import eu.baltrad.beast.admin.Command;
 import eu.baltrad.beast.admin.objects.routes.Route;
 
@@ -37,6 +40,7 @@ public class RouteCommand extends Command {
   public final static String LIST_TYPES = "list_route_types";
   public final static String EXPORT = "export_routes";
   public final static String IMPORT = "import_routes";
+  public final static String DROP = "drop_routes";
   
   public final static String CREATE_ROUTE_TEMPLATE = "create_route_template";
   /**
@@ -75,10 +79,10 @@ public class RouteCommand extends Command {
   private List<Route> importedRoutes = new ArrayList<Route>();
   
   /**
-   * If all routes should be removed before importing the data.
+   * The logger.
    */
-  private boolean clearAllBeforeImport = false;
-
+  private static Logger logger = LogManager.getLogger(RouteCommand.class);
+  
   /**
    * Default constructor
    */
@@ -133,16 +137,21 @@ public class RouteCommand extends Command {
         }
       }
     }
+    
     if (LIST.equalsIgnoreCase(operation) || LIST_TYPES.equalsIgnoreCase(operation) || 
-        EXPORT.equalsIgnoreCase(operation))  {
+        EXPORT.equalsIgnoreCase(operation) || DROP.equalsIgnoreCase(operation))  {
       result = true;
     }
+    
     if (IMPORT.equalsIgnoreCase(operation)) {
+      result = true;
       for (Route route : importedRoutes) {
         if (!route.validate()) {
-          return false;
+          logger.info("Route: " + route.getName() + " is not valid according to rules");
+          result = false;
         }
       }
+      return result;
     }
     
     if (CREATE_ROUTE_TEMPLATE.equalsIgnoreCase(operation) && getTemplateRouteType() != null && !getTemplateRouteType().isEmpty()) {
@@ -238,19 +247,5 @@ public class RouteCommand extends Command {
    */
   public void setImportedRoutes(List<Route> importedRoutes) {
     this.importedRoutes = importedRoutes;
-  }
-
-  /**
-   * @return the clearAllBeforeImport
-   */
-  public boolean isClearAllBeforeImport() {
-    return clearAllBeforeImport;
-  }
-
-  /**
-   * @param clearAllBeforeImport the clearAllBeforeImport to set
-   */
-  public void setClearAllBeforeImport(boolean clearAllBeforeImport) {
-    this.clearAllBeforeImport = clearAllBeforeImport;
   }
 }

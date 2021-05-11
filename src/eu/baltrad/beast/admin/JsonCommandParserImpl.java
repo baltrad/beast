@@ -93,6 +93,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     AdaptorCommand.LIST,
     AdaptorCommand.EXPORT,
     AdaptorCommand.IMPORT,
+    AdaptorCommand.DROP,
     
     /* Anomaly detector */
     AnomalyDetectorCommand.ADD,
@@ -102,6 +103,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     AnomalyDetectorCommand.LIST,
     AnomalyDetectorCommand.EXPORT,
     AnomalyDetectorCommand.IMPORT,
+    AnomalyDetectorCommand.DROP,
 
     /* Route */
     RouteCommand.CREATE_ROUTE_TEMPLATE,
@@ -113,6 +115,8 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     RouteCommand.LIST_TYPES,
     RouteCommand.EXPORT,
     RouteCommand.IMPORT,
+    RouteCommand.DROP,
+    
     
     /* Schedule */
     ScheduleCommand.ADD,
@@ -122,6 +126,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     ScheduleCommand.LIST,
     ScheduleCommand.EXPORT,
     ScheduleCommand.IMPORT,
+    ScheduleCommand.DROP,
     
     /* User admin commands */
     UserCommand.CHANGE_PASSWORD,
@@ -204,22 +209,26 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     } else if (command.equals(AdaptorCommand.ADD) || command.equals(AdaptorCommand.UPDATE) || 
         command.equals(AdaptorCommand.REMOVE) || command.equals(AdaptorCommand.GET) || 
         command.equals(AdaptorCommand.LIST) || command.equals(AdaptorCommand.IMPORT) ||
-        command.equals(AdaptorCommand.EXPORT)) {
+        command.equals(AdaptorCommand.EXPORT) || command.equals(AdaptorCommand.DROP)) {
       return parseAdaptorCommand(command, arguments);
     } else if ( command.equals(AnomalyDetectorCommand.ADD) ||
         command.equals(AnomalyDetectorCommand.UPDATE) || command.equals(AnomalyDetectorCommand.GET) ||
         command.equals(AnomalyDetectorCommand.REMOVE) || command.equals(AnomalyDetectorCommand.LIST) ||
-        command.equals(AnomalyDetectorCommand.EXPORT) || command.equals(AnomalyDetectorCommand.IMPORT)) {
+        command.equals(AnomalyDetectorCommand.EXPORT) || command.equals(AnomalyDetectorCommand.IMPORT) ||
+        command.equals(AnomalyDetectorCommand.DROP)) {
       return parseAnomalyDetectorCommand(command, arguments);
     } else if (command.equals(RouteCommand.ADD) ||
         command.equals(RouteCommand.UPDATE) || command.equals(RouteCommand.GET) ||
         command.equals(RouteCommand.REMOVE) || command.equals(RouteCommand.LIST) ||
         command.equals(RouteCommand.LIST_TYPES) || command.equals(RouteCommand.CREATE_ROUTE_TEMPLATE) ||
-        command.equals(RouteCommand.IMPORT) || command.equals(RouteCommand.EXPORT)) {
+        command.equals(RouteCommand.IMPORT) || command.equals(RouteCommand.EXPORT) ||
+        command.equals(RouteCommand.DROP)) {
       return parseRouteCommand(command, arguments);
     } else if (command.equals(ScheduleCommand.ADD) ||
         command.equals(ScheduleCommand.UPDATE) || command.equals(ScheduleCommand.GET) ||
-        command.equals(ScheduleCommand.REMOVE) || command.equals(ScheduleCommand.LIST)) {
+        command.equals(ScheduleCommand.REMOVE) || command.equals(ScheduleCommand.LIST) ||
+        command.equals(ScheduleCommand.IMPORT) || command.equals(ScheduleCommand.EXPORT) ||
+        command.equals(ScheduleCommand.DROP)) {
       return parseScheduleCommand(command, arguments);
     } else if (command.equals(UserCommand.CHANGE_PASSWORD) ||
         command.equals(UserCommand.LIST)) {
@@ -282,13 +291,6 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       } else {
         throw new AdministratorException("Must provide routes as list object");
       }
-      if (node.has("clear_all_before_import")) {
-        try {
-          adaptorCommand.setClearAllBeforeImport(node.get("clear_all_before_import").asBoolean());
-        } catch (Exception e) {
-          throw new AdministratorException("clear_all_before_import must be a boolean");
-        }
-      }
       return adaptorCommand;
     } else if (operation.equals(AdaptorCommand.REMOVE) || operation.equals(AdaptorCommand.GET)) {
       result = new AdaptorCommand(operation);
@@ -305,7 +307,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       }
       result.setAdaptor(new Adaptor(adaptorName));
       return result;
-    } else if (operation.equals(AdaptorCommand.LIST) || operation.equals(AdaptorCommand.EXPORT)) {
+    } else if (operation.equals(AdaptorCommand.LIST) || operation.equals(AdaptorCommand.EXPORT) || operation.equals(AdaptorCommand.DROP)) {
       return new AdaptorCommand(operation);
     }
     return null;
@@ -360,15 +362,8 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       } else {
         throw new AdministratorException("Must provide routes as list object");
       }
-      if (node.has("clear_all_before_import")) {
-        try {
-          detectorCommand.setClearAllBeforeImport(node.get("clear_all_before_import").asBoolean());
-        } catch (Exception e) {
-          throw new AdministratorException("clear_all_before_import must be a boolean");
-        }
-      }
       return detectorCommand;
-    } else if (operation.equals(AnomalyDetectorCommand.LIST) || operation.equals(AnomalyDetectorCommand.EXPORT)) {
+    } else if (operation.equals(AnomalyDetectorCommand.LIST) || operation.equals(AnomalyDetectorCommand.EXPORT) || operation.equals(AnomalyDetectorCommand.DROP)) {
       return new AnomalyDetectorCommand(operation);
     }
     return null;
@@ -440,7 +435,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       } else {
         throw new AdministratorException("No object to handle");
       }
-    } else if (operation.equals(RouteCommand.EXPORT)) {
+    } else if (operation.equals(RouteCommand.EXPORT) || operation.equals(RouteCommand.DROP)) {
       RouteCommand routeCommand = new RouteCommand(operation);
       return routeCommand;
     } else if (operation.equals(RouteCommand.IMPORT)) {
@@ -465,13 +460,6 @@ public class JsonCommandParserImpl implements JsonCommandParser {
         routeCommand.setImportedRoutes(mappedRoutes);
       } else {
         throw new AdministratorException("Must provide routes as list object");
-      }
-      if (node.has("clear_all_before_import")) {
-        try {
-          routeCommand.setClearAllBeforeImport(node.get("clear_all_before_import").asBoolean());
-        } catch (Exception e) {
-          throw new AdministratorException("clear_all_before_import must be a boolean");
-        }
       }
       return routeCommand;
     }
@@ -553,7 +541,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       }
       command = new ScheduleCommand(operation);
       command.setEntry(new CronEntry(identifier, null, routeName));
-    } else if (operation.equals(ScheduleCommand.LIST) || operation.equals(ScheduleCommand.EXPORT)) {
+    } else if (operation.equals(ScheduleCommand.LIST) || operation.equals(ScheduleCommand.EXPORT) || operation.equals(ScheduleCommand.DROP)) {
       command = new ScheduleCommand(operation);
     } else if (operation.equals(ScheduleCommand.IMPORT)) {
       command = new ScheduleCommand(operation);
@@ -572,13 +560,6 @@ public class JsonCommandParserImpl implements JsonCommandParser {
         command.setImportedEntries(mappedEntries);
       } else {
         throw new AdministratorException("Must provide schedule as list object");
-      }
-      if (node.has("clear_all_before_import")) {
-        try {
-          command.setClearAllBeforeImport(node.get("clear_all_before_import").asBoolean());
-        } catch (Exception e) {
-          throw new AdministratorException("clear_all_before_import must be a boolean");
-        }
       }
     }
     
@@ -716,6 +697,8 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     } else if (method.equals(AdaptorCommand.IMPORT)) {
       buffer.append("Used for importing a list of adaptors. Will either create or update existing adaptors.\n");
       buffer.append(createSimpleCommand(method, new Object[] {"adaptors",new Object[] {new Adaptor("X")}}));
+    } else if (method.equals(AdaptorCommand.DROP)) {
+      buffer.append("Removes all existing adaptors if possible. If any route is bound to an adaptor it will not be removed.\n");
     } else if (method.equals(AnomalyDetectorCommand.ADD)) {
       buffer.append("Adds an anomaly detector to the system. Format is:\n");
       buffer.append(createFullCommand(method, new AnomalyDetector("qcfunction", "This is the name of the QC function")));
@@ -739,6 +722,8 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     } else if (method.equals(AnomalyDetectorCommand.IMPORT)) {
       buffer.append("Used for importing a list of anomaly detectors. Will either create or update existing detectors.\n");
       buffer.append(createSimpleCommand(method, new Object[] {"anomaly-detectors",new Object[] {new AnomalyDetector("beamb", "beamb detector")}}));
+    } else if (method.equals(AnomalyDetectorCommand.DROP)) {
+      buffer.append("Removes all existing anomaly detectors if possible.\n");
     } else if (method.equals(RouteCommand.CREATE_ROUTE_TEMPLATE)) {
       buffer.append("Used to create a template that can be used for add and update of a route of specified type. Which is available by using list_types command\n");
       buffer.append(createSimpleCommand(method, new String[] {"route-type", "site2d-route"}));
@@ -779,6 +764,8 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       buffer.append(createSimpleCommand(method, new Object[] {"routes",new String[] {"composite-route","other-route"}}));
     } else if (method.equals(RouteCommand.LIST_TYPES)) {
       buffer.append("Returns a list of possible route types.\n");
+    } else if (method.equals(RouteCommand.DROP)) {
+      buffer.append("Removes all routes if possible. Note that if a schedule is bound to a route, that route will not be possible to remove.\n");
     } else if (method.equals(ScheduleCommand.ADD) || method.equals(ScheduleCommand.UPDATE)) {
       if (method.equals(ScheduleCommand.ADD)) {
         buffer.append("Adds a entry to the scheduler. Note, identifier is not needed here. Format is:\n");
@@ -846,6 +833,8 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       buffer.append(createSimpleCommand(method, new Object[] {"identifier", 1}));
     } else if (method.equals(ScheduleCommand.LIST)) {
       buffer.append("Returns all scheduled entries.\n");
+    } else if (method.equals(ScheduleCommand.DROP)) {
+      buffer.append("Removes all scheduled entries if possible.\n");
     } else if (method.equals(UserCommand.CHANGE_PASSWORD)) {
       User user = new User();
       user.setName("<username>");

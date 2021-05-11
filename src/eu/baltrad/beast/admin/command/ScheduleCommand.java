@@ -36,6 +36,7 @@ public class ScheduleCommand extends Command {
   public final static String LIST = "list_schedule";
   public final static String IMPORT = "import_schedule";
   public final static String EXPORT = "export_schedule";
+  public final static String DROP = "drop_schedule";
   
   /**
    * The operation
@@ -51,11 +52,6 @@ public class ScheduleCommand extends Command {
    * When importing cron entries
    */
   private List<CronEntry> importedEntries = new ArrayList<CronEntry>();
-
-  /**
-   * If all scheduled entries should be removed before importing the data.
-   */
-  private boolean clearAllBeforeImport = false;
 
   /**
    * Constructor
@@ -118,7 +114,7 @@ public class ScheduleCommand extends Command {
       if (entry.getId() > 0 || (entry.getName() != null && !entry.getName().isEmpty())) {
         return true;
       }
-    } else if (LIST.equalsIgnoreCase(operation) || EXPORT.equalsIgnoreCase(operation)) {
+    } else if (LIST.equalsIgnoreCase(operation) || EXPORT.equalsIgnoreCase(operation) || DROP.equalsIgnoreCase(operation)) {
       return true;
     } else if (IMPORT.equalsIgnoreCase(operation)) {
       for (CronEntry entry : importedEntries) {
@@ -172,19 +168,5 @@ public class ScheduleCommand extends Command {
    */
   public void setImportedEntries(List<CronEntry> entries) {
     this.importedEntries = entries;
-  }
-
-  /**
-   * @return the clearAllBeforeImport
-   */
-  public boolean isClearAllBeforeImport() {
-    return clearAllBeforeImport;
-  }
-
-  /**
-   * @param clearAllBeforeImport the clearAllBeforeImport to set
-   */
-  public void setClearAllBeforeImport(boolean clearAllBeforeImport) {
-    this.clearAllBeforeImport = clearAllBeforeImport;
   }
 }

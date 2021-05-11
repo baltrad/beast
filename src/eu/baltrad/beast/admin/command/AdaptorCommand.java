@@ -37,7 +37,8 @@ public class AdaptorCommand extends Command {
   public final static String LIST = "list_adaptors";
   public final static String EXPORT = "export_adaptors";
   public final static String IMPORT = "import_adaptors";
-
+  public final static String DROP = "drop_adaptors";
+  
   /**
    * Operation
    */
@@ -52,11 +53,6 @@ public class AdaptorCommand extends Command {
    * Imported adaptors
    */
   private List<Adaptor> importedAdaptors = new ArrayList<Adaptor>();
-  
-  /**
-   * If all adaptors should be removed before importing the data.
-   */
-  private boolean clearAllBeforeImport = false;
   
   /**
    * Constructor
@@ -103,7 +99,7 @@ public class AdaptorCommand extends Command {
   @Override
   public boolean validate() {
     try {
-      if (LIST.equals(operation) || EXPORT.equalsIgnoreCase(operation)) {
+      if (LIST.equals(operation) || EXPORT.equalsIgnoreCase(operation) || DROP.equalsIgnoreCase(operation)) {
         return true;
       } else if (adaptor != null && (GET.equals(operation) || REMOVE.equals(operation))) {
         if (adaptor.getName() != null && !adaptor.getName().isEmpty()) {
@@ -168,19 +164,5 @@ public class AdaptorCommand extends Command {
    */
   public void setImportedAdaptors(List<Adaptor> importedAdaptors) {
     this.importedAdaptors = importedAdaptors;
-  }
-
-  /**
-   * @return the clearAllBeforeImport
-   */
-  public boolean isClearAllBeforeImport() {
-    return clearAllBeforeImport;
-  }
-
-  /**
-   * @param clearAllBeforeImport the clearAllBeforeImport to set
-   */
-  public void setClearAllBeforeImport(boolean clearAllBeforeImport) {
-    this.clearAllBeforeImport = clearAllBeforeImport;
   }
 }
