@@ -293,6 +293,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 
   <!-- prepares the setup so that it is possible to run the junit integration tests -->
   <target name="prepare.itest" depends="create-testdb, extras-testdb, compile.itest">
+    	<mkdir dir="${blt.db.path}" />
 	<mkdir dir="${dist.dir}/junit-reports" />
 	<copy file="${etc.dir}/testdb.properties" todir="${build.classes.dir}"/>
   </target>
@@ -497,7 +498,6 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
         <include name="**/*.types"/>
       </fileset>
     </copy>
-  	<mkdir dir="${blt.db.path}" />
   </target>
 	
   <target name="doc" description="Generates doxygen">
