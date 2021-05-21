@@ -189,7 +189,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     </copy>
   </target>
 	
-  <target name="install" depends="distribution, -install-files" />
+  <target name="install" depends="build, -install-files" />
 
   <target name="install-files" depends="-install-files" />
 
