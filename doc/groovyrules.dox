@@ -3,9 +3,18 @@
 Beast comes delivered with support for creating scriptable rules by using the groovy
 language. Groovy is very similar to java so most of the things you can do in java you
 will be able to do in groovy as well. There are a few caveats to this as usual. One
-of them is that it isn't possible to create arrays by writing new String[]{"a", "b}
+of them is that it isn't possible to create arrays by writing 
+
+\verbatim
+  new String[]{"a", "b}
+\endverbatim
+
 which might cause some problems when creating the \ref eu.baltrad.beast.message.mo.BltGenerateMessage.
-Instead, you should write ["a", "b"] as String[].
+Instead, you should write 
+
+\verbatim
+  ["a", "b"] as String[]
+\endverbatim
 
 
 \subsection groovyrules_why Why?
@@ -54,11 +63,11 @@ won't do anything.
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.rules.IScriptableRule
 
-/**
- * Rule for forwarding a specific area to the google maps
- * generator plugin
- * @author Anders Henja
- */
+//
+// Rule for forwarding a specific area to the google maps
+// generator plugin
+// @author Anders Henja
+//
 class GMapRule implements IScriptableRule {
   @Override
   public IBltMessage handle(IBltMessage arg) {
@@ -184,24 +193,25 @@ Then, we just has to ensure that result is returned and test it out. The final r
 like this.
 
 \verbatim
-/* --------------------------------------------------------------------
-Copyright (C) 2009-2011 Swedish Meteorological and Hydrological Institute, SMHI,
 
-This file is part of the Beast library.
-
-Beast library is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Beast library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
-------------------------------------------------------------------------*/
+//--------------------------------------------------------------------
+// Copyright (C) 2009-2011 Swedish Meteorological and Hydrological Institute, SMHI,
+//
+// This file is part of the Beast library.
+//
+// Beast library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Beast library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Beast library library.  If not, see <http://www.gnu.org/licenses/>.
+// ------------------------------------------------------------------------
 package se.smhi
 
 import eu.baltrad.bdb.db.FileEntry;
@@ -214,34 +224,34 @@ import eu.baltrad.beast.rules.IScriptableRule
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 
-/**
- * Rule for forwarding a specific area to the google maps
- * generator plugin.
- * @author Anders Henja
- */
+//
+// Rule for forwarding a specific area to the google maps
+// generator plugin.
+// @author Anders Henja
+//
 class GMapRule implements IScriptableRule {
   public static String[] AREAS=["swegmaps_2000", "bltgmaps_4000"]; // Note difference from java by using [,] instead of {}
   
   public static String PATH="/opt/baltrad/rave_gmap/web/data";
 
-  /**
-   * Creates a file name to use  
-   * @param d the date
-   * @param t the time
-   * @param area the area
-   * @return the full file name
-   */
+  //
+  // Creates a file name to use  
+  // @param d the date
+  // @param t the time
+  // @param area the area
+  // @return the full file name
+  //
   protected String createFilename(Date d, Time t, String area) {
     String oname = PATH + "/"+area+"/" + 
       sprintf("%04d/%02d/%02d/%04d%02d%02d%02d%02d", 
         [d.year(), d.month(), d.day(), d.year(), d.month(), d.day(), t.hour(), t.minute()] as int[]) + ".png";
   }
   
-  /**
-   * Checks the source if it contains one of the strings in AREAS.
-   * @param source the what/source string.
-   * @return the found area or null
-   */
+  //
+  // Checks the source if it contains one of the strings in AREAS.
+  // @param source the what/source string.
+  // @return the found area or null
+  //
   protected String getSupportedArea(String source) {
     if (source != null) {
       for (String s : AREAS) {
