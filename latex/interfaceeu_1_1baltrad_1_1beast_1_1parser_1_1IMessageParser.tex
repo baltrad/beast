@@ -1,0 +1,51 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1parser_1_1IMessageParser}{}\doxysection{eu.\+baltrad.\+beast.\+parser.\+IMessage\+Parser Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1parser_1_1IMessageParser}\index{eu.baltrad.beast.parser.IMessageParser@{eu.baltrad.beast.parser.IMessageParser}}
+
+
+Parser interface.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1parser_1_1IMessageParser_a0b4f0bd87ccf8d5671587606a1638bfc}{parse}} (Object o)
+\begin{DoxyCompactList}\small\item\em Parses the object if able and returns a message object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Parser interface. 
+
+Will atempt to create a baltrad message from a xml-\/message. \begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1parser_1_1IMessageParser_a0b4f0bd87ccf8d5671587606a1638bfc}\label{interfaceeu_1_1baltrad_1_1beast_1_1parser_1_1IMessageParser_a0b4f0bd87ccf8d5671587606a1638bfc}} 
+\index{eu.baltrad.beast.parser.IMessageParser@{eu.baltrad.beast.parser.IMessageParser}!parse@{parse}}
+\index{parse@{parse}!eu.baltrad.beast.parser.IMessageParser@{eu.baltrad.beast.parser.IMessageParser}}
+\doxysubsubsection{\texorpdfstring{parse()}{parse()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} eu.\+baltrad.\+beast.\+parser.\+IMessage\+Parser.\+parse (\begin{DoxyParamCaption}\item[{Object}]{o }\end{DoxyParamCaption})}
+
+
+
+Parses the object if able and returns a message object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em o} & the input object (e.\+g. http request, or similar) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a IBlt\+Message supported by this parser or null if object is not supported 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Message\+Parser\+Exception} & if object is supported but can not be handled \\
+\hline
+\end{DoxyExceptions}
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/parser/IMessage\+Parser.\+java\end{DoxyCompactItemize}

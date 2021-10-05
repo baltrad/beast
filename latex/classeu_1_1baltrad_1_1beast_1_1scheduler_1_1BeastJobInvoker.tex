@@ -1,0 +1,68 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker}{}\doxysection{eu.\+baltrad.\+beast.\+scheduler.\+Beast\+Job\+Invoker Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker}\index{eu.baltrad.beast.scheduler.BeastJobInvoker@{eu.baltrad.beast.scheduler.BeastJobInvoker}}
+
+
+Will trigger the IBeast\+Job that has been stored in the jobdetail.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+scheduler.\+Beast\+Job\+Invoker\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker_a1b69f849660d2f791d7609e9c0935c44}{execute}} (Job\+Execution\+Context ctx)  throws Job\+Execution\+Exception 
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1message_1_1mo_1_1BltTriggerJobMessage}{Blt\+Trigger\+Job\+Message}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker_a0d9af9004ba582af59e43a1be15c7bc3}{create\+Message}} (String id, String name, Date scheduled\+Fire\+Time, Date fire\+Time, Date prev\+Fire\+Time, Date next\+Fire\+Time)
+\begin{DoxyCompactList}\small\item\em Creates a scheduled job message. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Will trigger the IBeast\+Job that has been stored in the jobdetail. 
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker_a0d9af9004ba582af59e43a1be15c7bc3}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker_a0d9af9004ba582af59e43a1be15c7bc3}} 
+\index{eu.baltrad.beast.scheduler.BeastJobInvoker@{eu.baltrad.beast.scheduler.BeastJobInvoker}!createMessage@{createMessage}}
+\index{createMessage@{createMessage}!eu.baltrad.beast.scheduler.BeastJobInvoker@{eu.baltrad.beast.scheduler.BeastJobInvoker}}
+\doxysubsubsection{\texorpdfstring{createMessage()}{createMessage()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1message_1_1mo_1_1BltTriggerJobMessage}{Blt\+Trigger\+Job\+Message}} eu.\+baltrad.\+beast.\+scheduler.\+Beast\+Job\+Invoker.\+create\+Message (\begin{DoxyParamCaption}\item[{String}]{id,  }\item[{String}]{name,  }\item[{Date}]{scheduled\+Fire\+Time,  }\item[{Date}]{fire\+Time,  }\item[{Date}]{prev\+Fire\+Time,  }\item[{Date}]{next\+Fire\+Time }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Creates a scheduled job message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & the id \\
+\hline
+{\em name} & the name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the message 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker_a1b69f849660d2f791d7609e9c0935c44}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1BeastJobInvoker_a1b69f849660d2f791d7609e9c0935c44}} 
+\index{eu.baltrad.beast.scheduler.BeastJobInvoker@{eu.baltrad.beast.scheduler.BeastJobInvoker}!execute@{execute}}
+\index{execute@{execute}!eu.baltrad.beast.scheduler.BeastJobInvoker@{eu.baltrad.beast.scheduler.BeastJobInvoker}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+scheduler.\+Beast\+Job\+Invoker.\+execute (\begin{DoxyParamCaption}\item[{Job\+Execution\+Context}]{ctx }\end{DoxyParamCaption}) throws Job\+Execution\+Exception\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+org.\+quartz.\+Job\+::execute(org.\+quartz.\+Job\+Execution\+Context) 
+\end{DoxySeeAlso}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/scheduler/Beast\+Job\+Invoker.\+java\end{DoxyCompactItemize}

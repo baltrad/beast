@@ -1,0 +1,103 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager}{}\doxysection{eu.\+baltrad.\+beast.\+db.\+Combined\+Filter\+Manager Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager}\index{eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+db.\+Combined\+Filter\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a64fc182750cc8dcac2e383b5af9ac810}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a64fc182750cc8dcac2e383b5af9ac810}} 
+void {\bfseries set\+Jdbc\+Template} (Jdbc\+Operations template)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a8d456175d1b3060562dd9d7066a8e1a9}{set\+Child\+Manager}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager}{IFilter\+Manager}} manager)
+\begin{DoxyCompactList}\small\item\em set manager used for loading child filters \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter}{Combined\+Filter}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a8c8d1a29954355c88a48de791ce40be0}{load}} (int id)
+\begin{DoxyCompactList}\small\item\em load combined filter from the database. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a7c73896acd650e3dcb4b916c4a6d8033}{store}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\begin{DoxyCompactList}\small\item\em store combined filter in the database. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a019a903e114981a9eb4c98c4a654c3b5}{update}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\begin{DoxyCompactList}\small\item\em update a filter \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a1bed0089df80a01a7ab22009dc04f4f5}{remove}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\begin{DoxyCompactList}\small\item\em remove combined filter from the database. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a8c8d1a29954355c88a48de791ce40be0}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a8c8d1a29954355c88a48de791ce40be0}} 
+\index{eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}!load@{load}}
+\index{load@{load}!eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter}{Combined\+Filter}} eu.\+baltrad.\+beast.\+db.\+Combined\+Filter\+Manager.\+load (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+load combined filter from the database. 
+
+also cascades to all child filters through child\+Filter\+Manager 
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a07c4d449e4db3f92352d3ef6c5480e33}{eu.\+baltrad.\+beast.\+db.\+IFilter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a1bed0089df80a01a7ab22009dc04f4f5}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a1bed0089df80a01a7ab22009dc04f4f5}} 
+\index{eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}!remove@{remove}}
+\index{remove@{remove}!eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+Combined\+Filter\+Manager.\+remove (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+remove combined filter from the database. 
+
+also cascades to all child filters through child\+Filter\+Manager 
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a1d7a4adac8f2ab8fe56f7b9b253b1af5}{eu.\+baltrad.\+beast.\+db.\+IFilter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a8d456175d1b3060562dd9d7066a8e1a9}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a8d456175d1b3060562dd9d7066a8e1a9}} 
+\index{eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}!setChildManager@{setChildManager}}
+\index{setChildManager@{setChildManager}!eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}}
+\doxysubsubsection{\texorpdfstring{setChildManager()}{setChildManager()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+Combined\+Filter\+Manager.\+set\+Child\+Manager (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager}{IFilter\+Manager}}}]{manager }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set manager used for loading child filters 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a7c73896acd650e3dcb4b916c4a6d8033}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a7c73896acd650e3dcb4b916c4a6d8033}} 
+\index{eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}!store@{store}}
+\index{store@{store}!eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}}
+\doxysubsubsection{\texorpdfstring{store()}{store()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+Combined\+Filter\+Manager.\+store (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+store combined filter in the database. 
+
+also cascades to all child filters through child\+Filter\+Manager 
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a4092ce1d6e31e38201eaa4bff8ba044d}{eu.\+baltrad.\+beast.\+db.\+IFilter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a019a903e114981a9eb4c98c4a654c3b5}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilterManager_a019a903e114981a9eb4c98c4a654c3b5}} 
+\index{eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}!update@{update}}
+\index{update@{update}!eu.baltrad.beast.db.CombinedFilterManager@{eu.baltrad.beast.db.CombinedFilterManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+Combined\+Filter\+Manager.\+update (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+update a filter 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filter} & filter to update \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a7e2e0c692188563d7096007af69b6b2b}{eu.\+baltrad.\+beast.\+db.\+IFilter\+Manager}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/db/Combined\+Filter\+Manager.\+java\end{DoxyCompactItemize}

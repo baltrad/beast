@@ -1,0 +1,69 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager}{}\doxysection{eu.\+baltrad.\+beast.\+manager.\+IBlt\+Message\+Manager Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager}\index{eu.baltrad.beast.manager.IBltMessageManager@{eu.baltrad.beast.manager.IBltMessageManager}}
+
+
+The main entry point for messages passed on to the beast framework.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+manager.\+IBlt\+Message\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager_add2d8334a3fec65af97f7e83b5dc0f67}{manage}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} message)
+\begin{DoxyCompactList}\small\item\em Manages the message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager_af924791c4131508d8f7500ce03ade53b}{shutdown}} ()
+\begin{DoxyCompactList}\small\item\em Safely terminates the manager and ensures that pending messages are managed properly. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The main entry point for messages passed on to the beast framework. 
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager_add2d8334a3fec65af97f7e83b5dc0f67}\label{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager_add2d8334a3fec65af97f7e83b5dc0f67}} 
+\index{eu.baltrad.beast.manager.IBltMessageManager@{eu.baltrad.beast.manager.IBltMessageManager}!manage@{manage}}
+\index{manage@{manage}!eu.baltrad.beast.manager.IBltMessageManager@{eu.baltrad.beast.manager.IBltMessageManager}}
+\doxysubsubsection{\texorpdfstring{manage()}{manage()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+manager.\+IBlt\+Message\+Manager.\+manage (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}}}]{message }\end{DoxyParamCaption})}
+
+
+
+Manages the message. 
+
+Will use the router and adaptors in order to get the message safely transmitted to the configured recipients. 
+\begin{DoxyParams}{Parameters}
+{\em message} & the message to handle \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1manager_1_1BltMessageManager_af940ef6ec02199e1ab4b6a9df4b24676}{eu.\+baltrad.\+beast.\+manager.\+Blt\+Message\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager_af924791c4131508d8f7500ce03ade53b}\label{interfaceeu_1_1baltrad_1_1beast_1_1manager_1_1IBltMessageManager_af924791c4131508d8f7500ce03ade53b}} 
+\index{eu.baltrad.beast.manager.IBltMessageManager@{eu.baltrad.beast.manager.IBltMessageManager}!shutdown@{shutdown}}
+\index{shutdown@{shutdown}!eu.baltrad.beast.manager.IBltMessageManager@{eu.baltrad.beast.manager.IBltMessageManager}}
+\doxysubsubsection{\texorpdfstring{shutdown()}{shutdown()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+manager.\+IBlt\+Message\+Manager.\+shutdown (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Safely terminates the manager and ensures that pending messages are managed properly. 
+
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1manager_1_1BltMessageManager_aec8c107409b20257b616b94984ea59cb}{eu.\+baltrad.\+beast.\+manager.\+Blt\+Message\+Manager}}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/manager/IBlt\+Message\+Manager.\+java\end{DoxyCompactItemize}

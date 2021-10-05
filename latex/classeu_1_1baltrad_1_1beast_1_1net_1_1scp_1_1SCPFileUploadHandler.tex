@@ -1,0 +1,127 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler}{}\doxysection{eu.\+baltrad.\+beast.\+net.\+scp.\+SCPFile\+Upload\+Handler Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler}\index{eu.baltrad.beast.net.scp.SCPFileUploadHandler@{eu.baltrad.beast.net.scp.SCPFileUploadHandler}}
+
+
+Upload files using SCP.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+net.\+scp.\+SCPFile\+Upload\+Handler\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.533123cm]{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a855aed1ddbcf8f7538f44aaa0c9fc65b}{SCPFile\+Upload\+Handler}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2e164649f7e5374509701175f3a1b483}{upload}} (File src, URI dst)  throws IOException 
+\begin{DoxyCompactList}\small\item\em Upload a file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2dc746200e5c19be4d1e32e601d3976f}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2dc746200e5c19be4d1e32e601d3976f}} 
+SSHClient {\bfseries connect} (URI uri)  throws IOException 
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a53dde9d93e603afeb64a169b4b15be69}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a53dde9d93e603afeb64a169b4b15be69}} 
+void {\bfseries disconnect} (SSHClient client)  throws IOException 
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_aca1a17ce19fd21f0dea1307e016eeee3}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_aca1a17ce19fd21f0dea1307e016eeee3}} 
+void {\bfseries auth} (SSHClient client, URI uri)  throws IOException 
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a68b438c9f454e262879a79d8b28525c6}{store}} (SSHClient client, File src, URI dst)  throws IOException 
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a1758702260217c9ebaafee81a0ac121f}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a1758702260217c9ebaafee81a0ac121f}} 
+int {\bfseries get\+Port} (URI uri)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2b5c11d1fed80c8b5ad0c4268e5e66b0}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2b5c11d1fed80c8b5ad0c4268e5e66b0}} 
+String {\bfseries get\+User} (URI uri)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a0855319844554123517c7dc4666b3983}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a0855319844554123517c7dc4666b3983}} 
+String {\bfseries get\+Password} (URI uri)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a6a3983fcb6d5b7217c787687f81064bf}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a6a3983fcb6d5b7217c787687f81064bf}} 
+String {\bfseries get\+Path} (URI uri)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a4c5c3e4d7f58f2ebbc96569d4822dc1f}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a4c5c3e4d7f58f2ebbc96569d4822dc1f}} 
+SSHClient {\bfseries acquire\+SSHClient} ()
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_aa1094a83a9be28a432184c7d7483550c}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_aa1094a83a9be28a432184c7d7483550c}} 
+Default\+Config {\bfseries create\+Default\+Config} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a643a7e45387a729ebfcac6599a0cb089}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a643a7e45387a729ebfcac6599a0cb089}} 
+static final int {\bfseries DEFAULT\+\_\+\+CONNECT\+\_\+\+TIMEOUT} = 10000
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2904723386b595118c5a8dcca4badca0}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2904723386b595118c5a8dcca4badca0}} 
+static final int {\bfseries DEFAULT\+\_\+\+SOCKET\+\_\+\+TIMEOUT} = 60000
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Upload files using SCP. 
+
+Uses $\sim$/.ssh/known\+\_\+hosts and $\sim$/.ssh/known\+\_\+hosts2 for host verification and $\sim$/.ssh/id\+\_\+rsa and $\sim$/.ssh/id\+\_\+dsa for keys.
+
+More thorough configuration could be provided through query arguments in the future. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a855aed1ddbcf8f7538f44aaa0c9fc65b}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a855aed1ddbcf8f7538f44aaa0c9fc65b}} 
+\index{eu.baltrad.beast.net.scp.SCPFileUploadHandler@{eu.baltrad.beast.net.scp.SCPFileUploadHandler}!SCPFileUploadHandler@{SCPFileUploadHandler}}
+\index{SCPFileUploadHandler@{SCPFileUploadHandler}!eu.baltrad.beast.net.scp.SCPFileUploadHandler@{eu.baltrad.beast.net.scp.SCPFileUploadHandler}}
+\doxysubsubsection{\texorpdfstring{SCPFileUploadHandler()}{SCPFileUploadHandler()}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+net.\+scp.\+SCPFile\+Upload\+Handler.\+SCPFile\+Upload\+Handler (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Default constructor. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a68b438c9f454e262879a79d8b28525c6}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a68b438c9f454e262879a79d8b28525c6}} 
+\index{eu.baltrad.beast.net.scp.SCPFileUploadHandler@{eu.baltrad.beast.net.scp.SCPFileUploadHandler}!store@{store}}
+\index{store@{store}!eu.baltrad.beast.net.scp.SCPFileUploadHandler@{eu.baltrad.beast.net.scp.SCPFileUploadHandler}}
+\doxysubsubsection{\texorpdfstring{store()}{store()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+net.\+scp.\+SCPFile\+Upload\+Handler.\+store (\begin{DoxyParamCaption}\item[{SSHClient}]{client,  }\item[{File}]{src,  }\item[{URI}]{dst }\end{DoxyParamCaption}) throws IOException\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Reimplemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPOnlyFileUploadHandler_a97f3d86cee35839b8eb20593e820d7b5}{eu.\+baltrad.\+beast.\+net.\+scp.\+SCPOnly\+File\+Upload\+Handler}}, and \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1net_1_1sftp_1_1SFTPFileUploadHandler_ab44e0927f4067527a70317d2e40a6d0f}{eu.\+baltrad.\+beast.\+net.\+sftp.\+SFTPFile\+Upload\+Handler}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2e164649f7e5374509701175f3a1b483}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1scp_1_1SCPFileUploadHandler_a2e164649f7e5374509701175f3a1b483}} 
+\index{eu.baltrad.beast.net.scp.SCPFileUploadHandler@{eu.baltrad.beast.net.scp.SCPFileUploadHandler}!upload@{upload}}
+\index{upload@{upload}!eu.baltrad.beast.net.scp.SCPFileUploadHandler@{eu.baltrad.beast.net.scp.SCPFileUploadHandler}}
+\doxysubsubsection{\texorpdfstring{upload()}{upload()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+net.\+scp.\+SCPFile\+Upload\+Handler.\+upload (\begin{DoxyParamCaption}\item[{File}]{src,  }\item[{URI}]{dst }\end{DoxyParamCaption}) throws IOException\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Upload a file. 
+
+The implementations should determine if the {\ttfamily dst} refers to a file or a directory and in case of the former rename the file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & the file to copy \\
+\hline
+{\em dst} & the destination URI. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em IOException} & when copying fails \\
+\hline
+\end{DoxyExceptions}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1net_1_1FileUploadHandler_a84d53d5008198f65bd37bed19d15ec0d}{eu.\+baltrad.\+beast.\+net.\+File\+Upload\+Handler}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/net/scp/SCPFile\+Upload\+Handler.\+java\end{DoxyCompactItemize}

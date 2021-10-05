@@ -1,0 +1,70 @@
+\begin{DoxyDate}{Date}
+March, 22nd 2010 
+\end{DoxyDate}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+x.\+x 
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Copyright }
+\copyright{} 2010 by the Swedish Meteorological and Hydrological Institute (SMHI), Norrköping, Sweden
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{Legals}
+BEAST is free software\+: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{}
+BEAST is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{}
+You should have received a copy of the GNU Lesser General Public License along with BEAST. If not, see \href{http://www.gnu.org/licenses/}{\texttt{ http\+://www.\+gnu.\+org/licenses/}}. By obtaining, using, and/or copying this software and/or its associated documentation, you agree that you have read, understood, and will comply with the following terms and conditions\+:
+\end{DoxyParagraph}
+\hypertarget{index_introduction}{}\doxysection{The beast library}\label{index_introduction}
+The beast library provides the internal mechanisms for managing messages and data that are transfered by the Baltrad Data Exchange engine. In it\textquotesingle{}s own, it does not do much except providing some mechanisms for determining what to do with certain messages as well as passing on the messages to different adaptors.
+
+Most functionality has been developed as building blocks that will allow the users to adapt the library into their own structure but the core functionality and the provided code has been built to support the baltrad dex and baltrad product generation framework.\hypertarget{index_adaptors}{}\doxysection{Adaptors}\label{index_adaptors}
+An adaptor can be seen as a connection point to an external resource. This adaptor knows how to transmit data to and from the external resource. It also knows what protocol that this external resource is using and can translate from and to beast messages. Currently, the only implemented adaptor is a XMLRPC adaptor.\hypertarget{index_routingandrules}{}\doxysection{Routing and rules}\label{index_routingandrules}
+When you are passing on a message to the system it will eventually come to a router. This router will execute all registered rules and determine what should be done. Sometimes the message should just trigger an event, other times it might result in a completly different message and in some cases it might even result in nothing at all.
+
+A route can be seen as a a rule associated with 0 or more adaptors. Which means that if a rule evaluates to some sort of action. All associated adaptors will be asked to perform this action.
+
+Beast comes with a number of predefined rules for volume and composite generation. It also contains rules for db maintenance. One very powerful rule is the groovy rule that you can read about here \mbox{\hyperlink{p_groovyrules}{Groovy}}.\hypertarget{index_messagemanager}{}\doxysection{Message Manager}\label{index_messagemanager}
+The basics for the beast library is that messages are passed around. Each message contains some sort of information. These messages are managed by routing rules which in turn will determine what to do with a message. If a routing rule determines that something should be done with the message it will either do something directly or indicate that one or more adaptors should manage the message or another type of message.
+
+So that we get up and running, first an example on how you do to send a message through the library.
+
+\begin{DoxyVerb}// Create some message
+BltCommandMessage msg = new BltCommandMessage();
+msg.setCommand("ls -la");  
+
+// Call the Baltrad Message Manager
+manager.manage(msg);
+\end{DoxyVerb}
+
+
+Ok, this probably looks quite easy and it is, but, how do you get hold of the manager? Well, since the beast library has been developed using the IOC container spring for wiring everything together you probably want to learn how to wire stuff up or you can just create a spring Application\+Context. If you are using spring for wiring for example a servlet or anything else up, it will most likely be a walk in the park to get hold of the message manager.
+
+Anyhow, let\textquotesingle{}s asume that you need to create the application context manually.
+
+\begin{DoxyVerb}import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import eu.baltrad.beast.manager.IBltMessageManager;
+
+...
+String path = "classpath:application-context.xml"
+ApplicationContext context = new FileSystemXmlApplicationContext(path)
+
+IBltMessageManager manager = (IBltMessageManager)context.getBean("bltmanager");
+\end{DoxyVerb}
+
+
+The above code says that load a application context named application-\/context.\+xml that can be found on the classpath. Then fetch the bean manager that is refered to by the name bltmanager.
+
+Now, you have some code that is able to load an application context and then return a bean to you. We are almost done. What is nessecary now is to create your application-\/context.\+xml. The default bundled application context can be found in {\bfseries{etc/default-\/application-\/context.\+xml}}, please take a look at it in order to get a feeling on how the system has been setup. You can also checkout the itest-\/directory since it contains various examples on how to wire the system depending on what you are after.\hypertarget{index_xmlrpcserver}{}\doxysection{Xml Rpc Server}\label{index_xmlrpcserver}
+The beast library comes bundled with a xmlrpc server that is able to manage requests for system commands, alerts and product generation requests.
+
+The xmlrpc server is able to load plugins but these plugins needs to be added to the spring application context file that is used by the Xml Rpc Server. This file is placed in $<$prefix$>$/etc/xmlrpcserver-\/context.xml. Here you can add any product generator by adding a separate entry for each and every one.
+
+These plugins are added as a simple bean with a name corresponding to the algorithm name to use. For example, if you want to call a algorithm with the name \char`\"{}my.\+Algorithm\char`\"{}, then the bean entry should look like\+: $<$bean id=\char`\"{}my.\+Algorithm\char`\"{} class=\char`\"{}x.\+y.\+z....\+Some\+Algorithm\char`\"{} $>$
+
+The code that contains the plugin, should be bundled in a .jar file that resides in the plugin directory ($<$prefix$>$/plugins). The bean should implement the interface \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1pgfwk_1_1IGeneratorPlugin}{eu.\+baltrad.\+beast.\+pgfwk.\+IGenerator\+Plugin}}. 

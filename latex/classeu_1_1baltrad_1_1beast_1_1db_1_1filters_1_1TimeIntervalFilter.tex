@@ -1,0 +1,209 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter}{}\doxysection{eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter}\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+
+
+Fetches all objects that are within a specified start -\/ stop date/time interval.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a3a8a8d0719e121dda149323bc3276296}{apply}} (File\+Query query)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aefb0d2c26029a63aee470f619d421401}{set\+Start\+Date\+Time}} (Date\+Time dt)
+\begin{DoxyCompactList}\small\item\em Sets the start date time. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a268b0ad8a2abc4123e2bbbd3a589dcff}{set\+Stop\+Date\+Time}} (Date\+Time dt)
+\begin{DoxyCompactList}\small\item\em Sets the stop date time. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aa85f74335535d291a6910b13e52da49a}{set\+Object}} (String object)
+\begin{DoxyCompactList}\small\item\em Sets the object to search for. \end{DoxyCompactList}\item 
+Date\+Time \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_ad41e8a48e656a77e9665456c090030f7}{get\+Start\+Date\+Time}} ()
+\item 
+Date\+Time \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af89b215bbd79ea87546e37fbb6aefc5c}{get\+Stop\+Date\+Time}} ()
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_ae1622919bd7ed5c09d08b58948599c6a}{get\+Object}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a2074c8f19ddb8e1d3a1cb84bcb6b10db}{set\+Source}} (String source)
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af3202027a1dd70c65be88b8550cd3e30}{get\+Source}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aeefd5c7f36bef67abdc14e237bb9ed56}{set\+Limit}} (int limit)
+\item 
+int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a70ae150b003d2edb5d118cf494c0fbf6}{get\+Limit}} ()
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af8c40858f8504d7bdd31319b8dada50f}{get\+Quantity}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a03ae626b4594f2843166c2f08259bca4}{set\+Quantity}} (String quantity)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Fetches all objects that are within a specified start -\/ stop date/time interval. 
+
+You can also ignore specifying start and/or stop date/time but if you ignore both you probably want to use a different filter.
+
+The filter compares\+: object equality (REQUIRED) source node id equality (OPTIONAL) start date-\/time \texorpdfstring{$<$}{<}= requested \texorpdfstring{$<$}{<} stop date-\/time
+
+It is also possible to limit the number of returned values by using the limit. Default is unlimited (0). The limiting function is ordered by descending date/time which means that if you specify limit 1 it will be the most recent time within the time interval.
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a3a8a8d0719e121dda149323bc3276296}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a3a8a8d0719e121dda149323bc3276296}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!apply@{apply}}
+\index{apply@{apply}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{apply()}{apply()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+apply (\begin{DoxyParamCaption}\item[{File\+Query}]{query }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1ICatalogFilter_aa1a2b84c5c5e9754a0cf33197dec485e}{eu.\+baltrad.\+beast.\+db.\+ICatalog\+Filter\+::apply}}(eu.\+baltrad.\+bdb.\+db.\+File\+Query) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1ICatalogFilter_aa1a2b84c5c5e9754a0cf33197dec485e}{eu.\+baltrad.\+beast.\+db.\+ICatalog\+Filter}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a70ae150b003d2edb5d118cf494c0fbf6}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a70ae150b003d2edb5d118cf494c0fbf6}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!getLimit@{getLimit}}
+\index{getLimit@{getLimit}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{getLimit()}{getLimit()}}
+{\footnotesize\ttfamily int eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+get\+Limit (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the limit 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_ae1622919bd7ed5c09d08b58948599c6a}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_ae1622919bd7ed5c09d08b58948599c6a}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!getObject@{getObject}}
+\index{getObject@{getObject}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{getObject()}{getObject()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+get\+Object (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the object type 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af8c40858f8504d7bdd31319b8dada50f}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af8c40858f8504d7bdd31319b8dada50f}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!getQuantity@{getQuantity}}
+\index{getQuantity@{getQuantity}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{getQuantity()}{getQuantity()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+get\+Quantity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the quantity 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af3202027a1dd70c65be88b8550cd3e30}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af3202027a1dd70c65be88b8550cd3e30}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!getSource@{getSource}}
+\index{getSource@{getSource}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{getSource()}{getSource()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+get\+Source (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the source 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_ad41e8a48e656a77e9665456c090030f7}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_ad41e8a48e656a77e9665456c090030f7}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!getStartDateTime@{getStartDateTime}}
+\index{getStartDateTime@{getStartDateTime}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{getStartDateTime()}{getStartDateTime()}}
+{\footnotesize\ttfamily Date\+Time eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+get\+Start\+Date\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the start date 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af89b215bbd79ea87546e37fbb6aefc5c}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_af89b215bbd79ea87546e37fbb6aefc5c}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!getStopDateTime@{getStopDateTime}}
+\index{getStopDateTime@{getStopDateTime}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{getStopDateTime()}{getStopDateTime()}}
+{\footnotesize\ttfamily Date\+Time eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+get\+Stop\+Date\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the stop date 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aeefd5c7f36bef67abdc14e237bb9ed56}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aeefd5c7f36bef67abdc14e237bb9ed56}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!setLimit@{setLimit}}
+\index{setLimit@{setLimit}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{setLimit()}{setLimit()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+set\+Limit (\begin{DoxyParamCaption}\item[{int}]{limit }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em limit} & the limit to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aa85f74335535d291a6910b13e52da49a}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aa85f74335535d291a6910b13e52da49a}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!setObject@{setObject}}
+\index{setObject@{setObject}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{setObject()}{setObject()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+set\+Object (\begin{DoxyParamCaption}\item[{String}]{object }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the object to search for. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em object} & the object to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a03ae626b4594f2843166c2f08259bca4}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a03ae626b4594f2843166c2f08259bca4}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!setQuantity@{setQuantity}}
+\index{setQuantity@{setQuantity}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{setQuantity()}{setQuantity()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+set\+Quantity (\begin{DoxyParamCaption}\item[{String}]{quantity }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em quantity} & the quantity to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a2074c8f19ddb8e1d3a1cb84bcb6b10db}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a2074c8f19ddb8e1d3a1cb84bcb6b10db}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!setSource@{setSource}}
+\index{setSource@{setSource}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{setSource()}{setSource()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+set\+Source (\begin{DoxyParamCaption}\item[{String}]{source }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em source} & the source to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aefb0d2c26029a63aee470f619d421401}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_aefb0d2c26029a63aee470f619d421401}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!setStartDateTime@{setStartDateTime}}
+\index{setStartDateTime@{setStartDateTime}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{setStartDateTime()}{setStartDateTime()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+set\+Start\+Date\+Time (\begin{DoxyParamCaption}\item[{Date\+Time}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the start date time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & the date time to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a268b0ad8a2abc4123e2bbbd3a589dcff}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeIntervalFilter_a268b0ad8a2abc4123e2bbbd3a589dcff}} 
+\index{eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}!setStopDateTime@{setStopDateTime}}
+\index{setStopDateTime@{setStopDateTime}!eu.baltrad.beast.db.filters.TimeIntervalFilter@{eu.baltrad.beast.db.filters.TimeIntervalFilter}}
+\doxysubsubsection{\texorpdfstring{setStopDateTime()}{setStopDateTime()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Interval\+Filter.\+set\+Stop\+Date\+Time (\begin{DoxyParamCaption}\item[{Date\+Time}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the stop date time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & the date time to set \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/db/filters/Time\+Interval\+Filter.\+java\end{DoxyCompactItemize}

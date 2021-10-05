@@ -1,0 +1,148 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator}{}\doxysection{eu.\+baltrad.\+beast.\+system.\+Xml\+System\+Status\+Generator Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator}\index{eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class {\bfseries Group\+Item}
+\item 
+interface {\bfseries Status\+Item}
+\item 
+class {\bfseries Value\+Item}
+\begin{DoxyCompactList}\small\item\em Each status is represented as component $\vert$ value $\vert$ status. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a8c1e6a30a98998b9e09512eafbccf8e9}{Xml\+System\+Status\+Generator}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor Essentially the same as calling the constructor with \textquotesingle{}\texorpdfstring{$<$}{<}?xml version=\textquotesingle{}1.\+0\textquotesingle{} encoding=\textquotesingle{}UTF-\/8\textquotesingle{}?\texorpdfstring{$>$}{>}\textquotesingle{}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_abcef48acdf58e4eb8ff25f37c32a709e}{add}} (String component, String value, Set$<$ \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$ status)
+\begin{DoxyCompactList}\small\item\em Adds one component to the status report. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_aa489a1094809209e55d3242e42f96d9d}{add}} (String component, Map$<$ Object, \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$ mapping)
+\begin{DoxyCompactList}\small\item\em Adds a value mapping where each individual value maps to a status. \end{DoxyCompactList}\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_aee1b9a50eba32c782a4a5bade16a8c06}{get\+Xml\+String}} ()
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a66f749ca6e3cde6d557202834d34dc73}{get\+Xml\+String}} (String encoding)
+\begin{DoxyCompactList}\small\item\em Returns the string representation. \end{DoxyCompactList}\item 
+Document \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a4391d17254740201a17589cf533b2553}{to\+Document}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a44e56916228d916e4d38c21275d1797f}{generate\+Status\+String}} (Set$<$ \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$ status)
+\begin{DoxyCompactList}\small\item\em Generates a status string. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a8c1e6a30a98998b9e09512eafbccf8e9}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a8c1e6a30a98998b9e09512eafbccf8e9}} 
+\index{eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}!XmlSystemStatusGenerator@{XmlSystemStatusGenerator}}
+\index{XmlSystemStatusGenerator@{XmlSystemStatusGenerator}!eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}}
+\doxysubsubsection{\texorpdfstring{XmlSystemStatusGenerator()}{XmlSystemStatusGenerator()}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+system.\+Xml\+System\+Status\+Generator.\+Xml\+System\+Status\+Generator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Default constructor Essentially the same as calling the constructor with \textquotesingle{}\texorpdfstring{$<$}{<}?xml version=\textquotesingle{}1.\+0\textquotesingle{} encoding=\textquotesingle{}UTF-\/8\textquotesingle{}?\texorpdfstring{$>$}{>}\textquotesingle{}. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_aa489a1094809209e55d3242e42f96d9d}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_aa489a1094809209e55d3242e42f96d9d}} 
+\index{eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}!add@{add}}
+\index{add@{add}!eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+Xml\+System\+Status\+Generator.\+add (\begin{DoxyParamCaption}\item[{String}]{component,  }\item[{Map$<$ Object, \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$}]{mapping }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds a value mapping where each individual value maps to a status. 
+
+Useful when querying for example peers for connectivity 
+\begin{DoxyParams}{Parameters}
+{\em component} & the component queried \\
+\hline
+{\em mapping} & the value -\/ status mapping \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_abcef48acdf58e4eb8ff25f37c32a709e}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_abcef48acdf58e4eb8ff25f37c32a709e}} 
+\index{eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}!add@{add}}
+\index{add@{add}!eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+Xml\+System\+Status\+Generator.\+add (\begin{DoxyParamCaption}\item[{String}]{component,  }\item[{String}]{value,  }\item[{Set$<$ \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$}]{status }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds one component to the status report. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em component} & the component \\
+\hline
+{\em value} & the value of the component \\
+\hline
+{\em status} & the status of the component with specified value \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a44e56916228d916e4d38c21275d1797f}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a44e56916228d916e4d38c21275d1797f}} 
+\index{eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}!generateStatusString@{generateStatusString}}
+\index{generateStatusString@{generateStatusString}!eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}}
+\doxysubsubsection{\texorpdfstring{generateStatusString()}{generateStatusString()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+system.\+Xml\+System\+Status\+Generator.\+generate\+Status\+String (\begin{DoxyParamCaption}\item[{Set$<$ \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$}]{status }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Generates a status string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em status} & the system status set \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the status string with $\vert$ between each unique status 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_aee1b9a50eba32c782a4a5bade16a8c06}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_aee1b9a50eba32c782a4a5bade16a8c06}} 
+\index{eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}!getXmlString@{getXmlString}}
+\index{getXmlString@{getXmlString}!eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}}
+\doxysubsubsection{\texorpdfstring{getXmlString()}{getXmlString()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+system.\+Xml\+System\+Status\+Generator.\+get\+Xml\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the xml string with UTF-\/8 encoding 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a66f749ca6e3cde6d557202834d34dc73}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a66f749ca6e3cde6d557202834d34dc73}} 
+\index{eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}!getXmlString@{getXmlString}}
+\index{getXmlString@{getXmlString}!eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}}
+\doxysubsubsection{\texorpdfstring{getXmlString()}{getXmlString()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+system.\+Xml\+System\+Status\+Generator.\+get\+Xml\+String (\begin{DoxyParamCaption}\item[{String}]{encoding }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the string representation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em encoding} & the encoding to use \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the string representation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a4391d17254740201a17589cf533b2553}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1XmlSystemStatusGenerator_a4391d17254740201a17589cf533b2553}} 
+\index{eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}!toDocument@{toDocument}}
+\index{toDocument@{toDocument}!eu.baltrad.beast.system.XmlSystemStatusGenerator@{eu.baltrad.beast.system.XmlSystemStatusGenerator}}
+\doxysubsubsection{\texorpdfstring{toDocument()}{toDocument()}}
+{\footnotesize\ttfamily Document eu.\+baltrad.\+beast.\+system.\+Xml\+System\+Status\+Generator.\+to\+Document (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the dom document 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/system/Xml\+System\+Status\+Generator.\+java\end{DoxyCompactItemize}

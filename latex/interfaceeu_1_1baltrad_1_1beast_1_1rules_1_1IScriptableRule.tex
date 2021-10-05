@@ -1,0 +1,46 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+IScriptable\+Rule Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule}\index{eu.baltrad.beast.rules.IScriptableRule@{eu.baltrad.beast.rules.IScriptableRule}}
+
+
+If a rule is scripted, it should implement this interface.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule_a60253b57e9f026165a7eb00a8bf9c467}{handle}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} message)
+\begin{DoxyCompactList}\small\item\em Handle this message. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+If a rule is scripted, it should implement this interface. 
+
+Do not confuse this interface with the \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1ScriptedRule}{Scripted\+Rule}} that is a wrapper for keeping track on the scripted rule. \begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule_a60253b57e9f026165a7eb00a8bf9c467}\label{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule_a60253b57e9f026165a7eb00a8bf9c467}} 
+\index{eu.baltrad.beast.rules.IScriptableRule@{eu.baltrad.beast.rules.IScriptableRule}!handle@{handle}}
+\index{handle@{handle}!eu.baltrad.beast.rules.IScriptableRule@{eu.baltrad.beast.rules.IScriptableRule}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} eu.\+baltrad.\+beast.\+rules.\+IScriptable\+Rule.\+handle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}}}]{message }\end{DoxyParamCaption})}
+
+
+
+Handle this message. 
+
+If returning a message it means that this rule has evaluated to true and the message should be managed. Otherwise, if null is returned, the rule has either managed the message or it can not handle the message. 
+\begin{DoxyParams}{Parameters}
+{\em message} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a message or null 
+\end{DoxyReturn}
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/IScriptable\+Rule.\+java\end{DoxyCompactItemize}

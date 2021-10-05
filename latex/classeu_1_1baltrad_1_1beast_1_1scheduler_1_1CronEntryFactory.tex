@@ -1,0 +1,360 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory}{}\doxysection{eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory}\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+
+
+Factory for creating cron entries.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a257d0b33f7f706c2ada676cc3959600d}{create}} (String expression, String job\+Name)
+\begin{DoxyCompactList}\small\item\em Creates an entry from a cron expression and a job name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a387d4ec43aa9db9bda0b0645565c60a5}{create}} (String expression, String job\+Name, int id)
+\begin{DoxyCompactList}\small\item\em Creates an entry from a cron expression, a job name and an id. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_af8627d78af6d099e306811555e4b75da}{create}} (String seconds, String minute, String hour, String day\+Of\+Month, String month, String day\+Of\+Week, String job\+Name)
+\begin{DoxyCompactList}\small\item\em Creates a cron entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_ae3fe9c1c4d89619517fcd447c80c7c27}{create}} (String seconds, String minute, String hour, String day\+Of\+Month, String month, String day\+Of\+Week, String job\+Name, int id)
+\begin{DoxyCompactList}\small\item\em Creates a cron entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a3022d81043fbcd2dcba7a40dbb199207}{create}} (String minute, String hour, String day\+Of\+Month, String month, String day\+Of\+Week, String job\+Name)
+\begin{DoxyCompactList}\small\item\em Creates a cron entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a9188d07fe017ffa15f2ac4f1676175fb}{create}} (String minute, String hour, String day\+Of\+Month, String month, String day\+Of\+Week, String job\+Name, int id)
+\begin{DoxyCompactList}\small\item\em Creates a cron entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a72d70280c6756945038ad4af8cb0e5de}{create}} (String hour, String day\+Of\+Month, String month, String day\+Of\+Week, String job\+Name)
+\begin{DoxyCompactList}\small\item\em Creates a cron entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a854272895ee04bd9bd59d1fc908795d0}{create}} (String hour, String day\+Of\+Month, String month, String day\+Of\+Week, String job\+Name, int id)
+\begin{DoxyCompactList}\small\item\em Creates a cron entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a4f1544f7916170234ddc3eefa6b9b628}{create}} (String day\+Of\+Month, String month, String day\+Of\+Week, String job\+Name)
+\begin{DoxyCompactList}\small\item\em Creates a cron entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_adc9ca8656b48b36ceaf2eaa56f5783ba}{create}} (String day\+Of\+Month, String month, String day\+Of\+Week, String job\+Name, int id)
+\begin{DoxyCompactList}\small\item\em Creates a cron entry. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a3dc4c74923504261f02261555d69ba15}{validate\+Expression}} (String expression)
+\begin{DoxyCompactList}\small\item\em Validates that an expression is valid. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Factory for creating cron entries. 
+
+A cron expression is either 6 or 7 fields with a space between the fields. This means that any special character in a field should never be separated by a space since that will be counted as the next field. The format of the expression is always.
+
+\texorpdfstring{$<$}{<}second\texorpdfstring{$>$}{>} \texorpdfstring{$<$}{<}minute\texorpdfstring{$>$}{>} \texorpdfstring{$<$}{<}hour\texorpdfstring{$>$}{>} \texorpdfstring{$<$}{<}day of month\texorpdfstring{$>$}{>} \texorpdfstring{$<$}{<}month\texorpdfstring{$>$}{>} \texorpdfstring{$<$}{<}day of week\texorpdfstring{$>$}{>} (\texorpdfstring{$<$}{<}year\texorpdfstring{$>$}{>})
+
+field allowed special character seconds 0 -\/ 59 , -\/ \&\#42; / minute 0 -\/ 59 , -\/ \&\#42; / hour 0 -\/ 23 , -\/ \&\#42; / day of month 0 -\/ 31 , -\/ \&\#42; ? / L W month 1 -\/ 12 , -\/ \&\#42; / day of week 1 -\/ 7 or SUN-\/\+SAT , -\/ \&\#42; ? / L \# year (optional) empty, 1970-\/2199 , -\/ \&\#42; /
+
+If you want to specify all allowed values you can use asterisk ($\ast$) which will represent all values between first -\/ last.
+
+It is also possible to define both ranges and lists and a combination of both. Ranges are represented by a hyphen (-\/) and lists by a comma (,). This means that you could define all minutes between 0 and 10 with 0-\/10 and hour 0 -\/ 6 and 18-\/23 with 0-\/6,18-\/23 but remember to not use spaces when defining a field since that will flow over to the next field.
+
+You can also define step values by using \texorpdfstring{$<$}{<}range\texorpdfstring{$>$}{>} or \&\#42; / \texorpdfstring{$<$}{<}value\texorpdfstring{$>$}{>} to indicate specific values. So if you want to execute a cron every second hour between 0 -\/ 6 in the morning you could write 0-\/6/2 or if you want to specify every second hour the whole day you define it with \&\#42;/2.
+
+L is defined as last which means that in day of month L would have the effect to specify last day in the current month. You can also specify a specific day which means that 6L would represent last friday of the month.
+
+W represents weekdays (2-\/6) and can be used in conjunction with L which gives that LW represents the last weekday of the month.\hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_autotoc_md0}{}\doxysubsection{is another special character that represents the n-\/th y-\/th day in the month, which}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_autotoc_md0}
+gives that if you for example specify 6\#3 it would mean the 3rd friday of the month.
+
+Cron entries can also have a seventh field that defines the year but that is optional.
+
+It is not possible to specify both day of week and day of month simultaneously so one of those two entries must be specified with a ? at any time.
+
+For more information about the cron-\/scheduling, please refer to manual for \href{http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html}{\texttt{ Quartz}}.
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a4f1544f7916170234ddc3eefa6b9b628}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a4f1544f7916170234ddc3eefa6b9b628}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [1/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{day\+Of\+Month,  }\item[{String}]{month,  }\item[{String}]{day\+Of\+Week,  }\item[{String}]{job\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a cron entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em day\+Of\+Month} & -\/ day of month pattern \\
+\hline
+{\em month} & -\/ month pattern \\
+\hline
+{\em day\+Of\+Week} & -\/ day of week pattern \\
+\hline
+{\em job\+Name} & the name of the job \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_adc9ca8656b48b36ceaf2eaa56f5783ba}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_adc9ca8656b48b36ceaf2eaa56f5783ba}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [2/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{day\+Of\+Month,  }\item[{String}]{month,  }\item[{String}]{day\+Of\+Week,  }\item[{String}]{job\+Name,  }\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a cron entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em day\+Of\+Month} & -\/ day of month pattern \\
+\hline
+{\em month} & -\/ month pattern \\
+\hline
+{\em day\+Of\+Week} & -\/ day of week pattern \\
+\hline
+{\em job\+Name} & -\/ the name of the job \\
+\hline
+{\em id} & -\/ the id \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a257d0b33f7f706c2ada676cc3959600d}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a257d0b33f7f706c2ada676cc3959600d}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [3/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{expression,  }\item[{String}]{job\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates an entry from a cron expression and a job name. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em expression} & the expression \\
+\hline
+{\em job\+Name} & the job name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a387d4ec43aa9db9bda0b0645565c60a5}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a387d4ec43aa9db9bda0b0645565c60a5}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [4/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{expression,  }\item[{String}]{job\+Name,  }\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates an entry from a cron expression, a job name and an id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em expression} & the expression \\
+\hline
+{\em job\+Name} & the job name \\
+\hline
+{\em id} & the id \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a72d70280c6756945038ad4af8cb0e5de}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a72d70280c6756945038ad4af8cb0e5de}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [5/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{hour,  }\item[{String}]{day\+Of\+Month,  }\item[{String}]{month,  }\item[{String}]{day\+Of\+Week,  }\item[{String}]{job\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a cron entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hour} & -\/ hour pattern \\
+\hline
+{\em day\+Of\+Month} & -\/ day of month pattern \\
+\hline
+{\em month} & -\/ month pattern \\
+\hline
+{\em day\+Of\+Week} & -\/ day of week pattern \\
+\hline
+{\em job\+Name} & -\/ the name of the job \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a854272895ee04bd9bd59d1fc908795d0}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a854272895ee04bd9bd59d1fc908795d0}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [6/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{hour,  }\item[{String}]{day\+Of\+Month,  }\item[{String}]{month,  }\item[{String}]{day\+Of\+Week,  }\item[{String}]{job\+Name,  }\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a cron entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hour} & -\/ hour pattern \\
+\hline
+{\em day\+Of\+Month} & -\/ day of month pattern \\
+\hline
+{\em month} & -\/ month pattern \\
+\hline
+{\em day\+Of\+Week} & -\/ day of week pattern \\
+\hline
+{\em job\+Name} & -\/ the name of the job \\
+\hline
+{\em id} & -\/ the id \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a3022d81043fbcd2dcba7a40dbb199207}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a3022d81043fbcd2dcba7a40dbb199207}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [7/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{minute,  }\item[{String}]{hour,  }\item[{String}]{day\+Of\+Month,  }\item[{String}]{month,  }\item[{String}]{day\+Of\+Week,  }\item[{String}]{job\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a cron entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em minute} & -\/ minute pattern \\
+\hline
+{\em hour} & -\/ hour pattern \\
+\hline
+{\em day\+Of\+Month} & -\/ day of month pattern \\
+\hline
+{\em month} & -\/ month pattern \\
+\hline
+{\em day\+Of\+Week} & -\/ day of week pattern \\
+\hline
+{\em job\+Name} & the name of the job \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a9188d07fe017ffa15f2ac4f1676175fb}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a9188d07fe017ffa15f2ac4f1676175fb}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [8/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{minute,  }\item[{String}]{hour,  }\item[{String}]{day\+Of\+Month,  }\item[{String}]{month,  }\item[{String}]{day\+Of\+Week,  }\item[{String}]{job\+Name,  }\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a cron entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em minute} & -\/ minute pattern \\
+\hline
+{\em hour} & -\/ hour pattern \\
+\hline
+{\em day\+Of\+Month} & -\/ day of month pattern \\
+\hline
+{\em month} & -\/ month pattern \\
+\hline
+{\em day\+Of\+Week} & -\/ day of week pattern \\
+\hline
+{\em job\+Name} & the name of the job \\
+\hline
+{\em id} & -\/ the id \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_af8627d78af6d099e306811555e4b75da}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_af8627d78af6d099e306811555e4b75da}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [9/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{seconds,  }\item[{String}]{minute,  }\item[{String}]{hour,  }\item[{String}]{day\+Of\+Month,  }\item[{String}]{month,  }\item[{String}]{day\+Of\+Week,  }\item[{String}]{job\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a cron entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em seconds} & -\/ second pattern \\
+\hline
+{\em minute} & -\/ minute pattern \\
+\hline
+{\em hour} & -\/ hour pattern \\
+\hline
+{\em day\+Of\+Month} & -\/ day of month pattern \\
+\hline
+{\em month} & -\/ month pattern \\
+\hline
+{\em day\+Of\+Week} & -\/ day of week pattern \\
+\hline
+{\em job\+Name} & the name of the job \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_ae3fe9c1c4d89619517fcd447c80c7c27}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_ae3fe9c1c4d89619517fcd447c80c7c27}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}\hspace{0.1cm}{\footnotesize\ttfamily [10/10]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntry}{Cron\+Entry}} eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+create (\begin{DoxyParamCaption}\item[{String}]{seconds,  }\item[{String}]{minute,  }\item[{String}]{hour,  }\item[{String}]{day\+Of\+Month,  }\item[{String}]{month,  }\item[{String}]{day\+Of\+Week,  }\item[{String}]{job\+Name,  }\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a cron entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em seconds} & -\/ second pattern \\
+\hline
+{\em minute} & -\/ minute pattern \\
+\hline
+{\em hour} & -\/ hour pattern \\
+\hline
+{\em day\+Of\+Month} & -\/ day of month pattern \\
+\hline
+{\em month} & -\/ month pattern \\
+\hline
+{\em day\+Of\+Week} & -\/ day of week pattern \\
+\hline
+{\em job\+Name} & -\/ the name of the job \\
+\hline
+{\em id} & -\/ the id \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a cron entry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a3dc4c74923504261f02261555d69ba15}\label{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1CronEntryFactory_a3dc4c74923504261f02261555d69ba15}} 
+\index{eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}!validateExpression@{validateExpression}}
+\index{validateExpression@{validateExpression}!eu.baltrad.beast.scheduler.CronEntryFactory@{eu.baltrad.beast.scheduler.CronEntryFactory}}
+\doxysubsubsection{\texorpdfstring{validateExpression()}{validateExpression()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+scheduler.\+Cron\+Entry\+Factory.\+validate\+Expression (\begin{DoxyParamCaption}\item[{String}]{expression }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Validates that an expression is valid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em expression} & the expression to validate \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1scheduler_1_1SchedulerException}{Scheduler\+Exception}}} & if the expression isn\textquotesingle{}t valid \\
+\hline
+\end{DoxyExceptions}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/scheduler/Cron\+Entry\+Factory.\+java\end{DoxyCompactItemize}

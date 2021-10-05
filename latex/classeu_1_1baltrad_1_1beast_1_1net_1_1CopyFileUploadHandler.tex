@@ -1,0 +1,64 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler}{}\doxysection{eu.\+baltrad.\+beast.\+net.\+Copy\+File\+Upload\+Handler Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler}\index{eu.baltrad.beast.net.CopyFileUploadHandler@{eu.baltrad.beast.net.CopyFileUploadHandler}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+net.\+Copy\+File\+Upload\+Handler\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_aac5c808ee395821c578ea088a66dd49c}{upload}} (File src, URI dst)  throws IOException 
+\begin{DoxyCompactList}\small\item\em Upload a file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_a32f22f2064a563aeed2a060f31666a2f}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_a32f22f2064a563aeed2a060f31666a2f}} 
+File {\bfseries get\+Path} (URI uri)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_ab6e4a98182d43e7b017510652ab4ca50}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_ab6e4a98182d43e7b017510652ab4ca50}} 
+boolean {\bfseries is\+Directory} (File path)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_a7bcc532034442fc73299432a2636181b}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_a7bcc532034442fc73299432a2636181b}} 
+void {\bfseries copy\+File\+To\+Directory} (File src, File dst)  throws IOException 
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_a5c1918cdc504ee4b938415ece2b0abdb}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_a5c1918cdc504ee4b938415ece2b0abdb}} 
+void {\bfseries copy\+File} (File src, File dst)  throws IOException 
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_aac5c808ee395821c578ea088a66dd49c}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1CopyFileUploadHandler_aac5c808ee395821c578ea088a66dd49c}} 
+\index{eu.baltrad.beast.net.CopyFileUploadHandler@{eu.baltrad.beast.net.CopyFileUploadHandler}!upload@{upload}}
+\index{upload@{upload}!eu.baltrad.beast.net.CopyFileUploadHandler@{eu.baltrad.beast.net.CopyFileUploadHandler}}
+\doxysubsubsection{\texorpdfstring{upload()}{upload()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+net.\+Copy\+File\+Upload\+Handler.\+upload (\begin{DoxyParamCaption}\item[{File}]{src,  }\item[{URI}]{dst }\end{DoxyParamCaption}) throws IOException\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Upload a file. 
+
+The implementations should determine if the {\ttfamily dst} refers to a file or a directory and in case of the former rename the file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & the file to copy \\
+\hline
+{\em dst} & the destination URI. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em IOException} & when copying fails \\
+\hline
+\end{DoxyExceptions}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1net_1_1FileUploadHandler_a84d53d5008198f65bd37bed19d15ec0d}{eu.\+baltrad.\+beast.\+net.\+File\+Upload\+Handler}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/net/Copy\+File\+Upload\+Handler.\+java\end{DoxyCompactItemize}

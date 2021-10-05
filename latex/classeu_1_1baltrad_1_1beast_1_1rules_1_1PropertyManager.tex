@@ -1,0 +1,109 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+Property\+Manager Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager}\index{eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}}
+
+
+Manage rule properties stored in beast\+\_\+rule\+\_\+properties.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a3cb42606f49317b8b9f3a00235863ab2}{set\+Jdbc\+Template}} (Jdbc\+Operations template)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_ad3cbc8ee95633df8aba219dc2b94e278}{delete\+Properties}} (int rule\+Id)
+\begin{DoxyCompactList}\small\item\em delete rule properties from the database \end{DoxyCompactList}\item 
+Map$<$ String, String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a111467c01db7f4f72d96b3d54732a383}{load\+Properties}} (int rule\+Id)
+\begin{DoxyCompactList}\small\item\em load rule properties from the database \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_ad0e48055b5892a7d745cc5b097de6764}{store\+Properties}} (int rule\+Id, Map$<$ String, String $>$ props)
+\begin{DoxyCompactList}\small\item\em store rule properties in the database \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a6afd6325dd90130c8f9ece325d7eada5}{update\+Properties}} (int rule\+Id, Map$<$ String, String $>$ props)
+\begin{DoxyCompactList}\small\item\em update rule properties in the database \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Manage rule properties stored in beast\+\_\+rule\+\_\+properties. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_ad3cbc8ee95633df8aba219dc2b94e278}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_ad3cbc8ee95633df8aba219dc2b94e278}} 
+\index{eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}!deleteProperties@{deleteProperties}}
+\index{deleteProperties@{deleteProperties}!eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}}
+\doxysubsubsection{\texorpdfstring{deleteProperties()}{deleteProperties()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+Property\+Manager.\+delete\+Properties (\begin{DoxyParamCaption}\item[{int}]{rule\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+delete rule properties from the database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+Id} & id of the rule whose properties should be deleted \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a111467c01db7f4f72d96b3d54732a383}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a111467c01db7f4f72d96b3d54732a383}} 
+\index{eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}!loadProperties@{loadProperties}}
+\index{loadProperties@{loadProperties}!eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}}
+\doxysubsubsection{\texorpdfstring{loadProperties()}{loadProperties()}}
+{\footnotesize\ttfamily Map$<$ String, String $>$ eu.\+baltrad.\+beast.\+rules.\+Property\+Manager.\+load\+Properties (\begin{DoxyParamCaption}\item[{int}]{rule\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+load rule properties from the database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+Id} & id of the rule properties should be loaded for \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+map of properties 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a3cb42606f49317b8b9f3a00235863ab2}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a3cb42606f49317b8b9f3a00235863ab2}} 
+\index{eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}!setJdbcTemplate@{setJdbcTemplate}}
+\index{setJdbcTemplate@{setJdbcTemplate}!eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}}
+\doxysubsubsection{\texorpdfstring{setJdbcTemplate()}{setJdbcTemplate()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+Property\+Manager.\+set\+Jdbc\+Template (\begin{DoxyParamCaption}\item[{Jdbc\+Operations}]{template }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em template} & the jdbc template to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_ad0e48055b5892a7d745cc5b097de6764}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_ad0e48055b5892a7d745cc5b097de6764}} 
+\index{eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}!storeProperties@{storeProperties}}
+\index{storeProperties@{storeProperties}!eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}}
+\doxysubsubsection{\texorpdfstring{storeProperties()}{storeProperties()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+Property\+Manager.\+store\+Properties (\begin{DoxyParamCaption}\item[{int}]{rule\+Id,  }\item[{Map$<$ String, String $>$}]{props }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+store rule properties in the database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+Id} & id of the rule these properties are for \\
+\hline
+{\em props} & map of properties \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a6afd6325dd90130c8f9ece325d7eada5}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1PropertyManager_a6afd6325dd90130c8f9ece325d7eada5}} 
+\index{eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}!updateProperties@{updateProperties}}
+\index{updateProperties@{updateProperties}!eu.baltrad.beast.rules.PropertyManager@{eu.baltrad.beast.rules.PropertyManager}}
+\doxysubsubsection{\texorpdfstring{updateProperties()}{updateProperties()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+Property\+Manager.\+update\+Properties (\begin{DoxyParamCaption}\item[{int}]{rule\+Id,  }\item[{Map$<$ String, String $>$}]{props }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+update rule properties in the database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+Id} & id of the rule these properties are for \\
+\hline
+{\em props} & map of properties \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/Property\+Manager.\+java\end{DoxyCompactItemize}

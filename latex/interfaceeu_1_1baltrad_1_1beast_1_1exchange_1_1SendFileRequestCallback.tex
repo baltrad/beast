@@ -1,0 +1,72 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback}{}\doxysection{eu.\+baltrad.\+beast.\+exchange.\+Send\+File\+Request\+Callback Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback}\index{eu.baltrad.beast.exchange.SendFileRequestCallback@{eu.baltrad.beast.exchange.SendFileRequestCallback}}
+
+
+Callback used when sending a file request.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_ae5ff6cfc0fcd38c81fe4402400f4b712}{file\+Published}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest}{Send\+File\+Request}} request)
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_a4df336344c7aba023439ee4d1db5749f}{file\+Published}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest}{Send\+File\+Request}} request, String redirect\+Address, int status\+Code)
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_a32315d9b04752b4d5a29120837c15b62}{file\+Publication\+Failed}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest}{Send\+File\+Request}} request, \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse}{Exchange\+Response}} response)
+\begin{DoxyCompactList}\small\item\em Invoked whenever a file publication fails for some reason. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Callback used when sending a file request. 
+
+Useful when using \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeManager_ac66a6171de819538163e7857674bddb2}{anders }}
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_a32315d9b04752b4d5a29120837c15b62}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_a32315d9b04752b4d5a29120837c15b62}} 
+\index{eu.baltrad.beast.exchange.SendFileRequestCallback@{eu.baltrad.beast.exchange.SendFileRequestCallback}!filePublicationFailed@{filePublicationFailed}}
+\index{filePublicationFailed@{filePublicationFailed}!eu.baltrad.beast.exchange.SendFileRequestCallback@{eu.baltrad.beast.exchange.SendFileRequestCallback}}
+\doxysubsubsection{\texorpdfstring{filePublicationFailed()}{filePublicationFailed()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+exchange.\+Send\+File\+Request\+Callback.\+file\+Publication\+Failed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest}{Send\+File\+Request}}}]{request,  }\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse}{Exchange\+Response}}}]{response }\end{DoxyParamCaption})}
+
+
+
+Invoked whenever a file publication fails for some reason. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em request} & the request \\
+\hline
+{\em response} & the response indicating failure \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_ae5ff6cfc0fcd38c81fe4402400f4b712}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_ae5ff6cfc0fcd38c81fe4402400f4b712}} 
+\index{eu.baltrad.beast.exchange.SendFileRequestCallback@{eu.baltrad.beast.exchange.SendFileRequestCallback}!filePublished@{filePublished}}
+\index{filePublished@{filePublished}!eu.baltrad.beast.exchange.SendFileRequestCallback@{eu.baltrad.beast.exchange.SendFileRequestCallback}}
+\doxysubsubsection{\texorpdfstring{filePublished()}{filePublished()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+exchange.\+Send\+File\+Request\+Callback.\+file\+Published (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest}{Send\+File\+Request}}}]{request }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em request} & the file request that has been published (with success) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_a4df336344c7aba023439ee4d1db5749f}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequestCallback_a4df336344c7aba023439ee4d1db5749f}} 
+\index{eu.baltrad.beast.exchange.SendFileRequestCallback@{eu.baltrad.beast.exchange.SendFileRequestCallback}!filePublished@{filePublished}}
+\index{filePublished@{filePublished}!eu.baltrad.beast.exchange.SendFileRequestCallback@{eu.baltrad.beast.exchange.SendFileRequestCallback}}
+\doxysubsubsection{\texorpdfstring{filePublished()}{filePublished()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+exchange.\+Send\+File\+Request\+Callback.\+file\+Published (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest}{Send\+File\+Request}}}]{request,  }\item[{String}]{redirect\+Address,  }\item[{int}]{status\+Code }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em request} & the file request that has been published (with success) \\
+\hline
+{\em redirect\+Address} & the address redirected to \\
+\hline
+{\em status\+Code} & the status code indicating redirect \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/exchange/Send\+File\+Request\+Callback.\+java\end{DoxyCompactItemize}

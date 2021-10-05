@@ -1,0 +1,179 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager}{}\doxysection{eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager}\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.917808cm]{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a56324891ea5247f1abc6bcee14e1ab3a}{Host\+Filter\+Manager}} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_accafc39267a3718438399afc82e0cd44}{set\+Template}} (Jdbc\+Operations template)
+\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a2c200dede252b591b2ed98bbb62906c2}{add}} (String ipfilter)
+\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a64b6f6700228a681fc2181bcb69f91e4}{remove}} (String ipfilter)
+\item 
+synchronized boolean \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a05167bfe48eeed615563d5df95eb3a54}{accepted}} (String ip)
+\item 
+boolean \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a1a7f057a867a6fc9ef5bbd6a48c6a0ef}{is\+Registered}} (String ipfilter)
+\item 
+synchronized List$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_ad6f1f7078e6fe784ee6332fb1a90fd7d}{get\+Patterns}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a94a8f06b3fa5811540981abec8543cd7}{after\+Properties\+Set}} ()  throws Exception 
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Row\+Mapper$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a8d34fd3179f8af9b686cac1a583f52da}{get\+Entry\+Mapper}} ()
+\begin{DoxyCompactList}\small\item\em Returns the row mapper for mapping entries. \end{DoxyCompactList}\item 
+boolean \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_ad44e2081d4ad4fc3f6177507d654e7d4}{is\+Valid\+Pattern}} (String pattern)
+\begin{DoxyCompactList}\small\item\em Checks if the pattern is valid. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a56324891ea5247f1abc6bcee14e1ab3a}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a56324891ea5247f1abc6bcee14e1ab3a}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!HostFilterManager@{HostFilterManager}}
+\index{HostFilterManager@{HostFilterManager}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{HostFilterManager()}{HostFilterManager()}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+Host\+Filter\+Manager (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a05167bfe48eeed615563d5df95eb3a54}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a05167bfe48eeed615563d5df95eb3a54}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!accepted@{accepted}}
+\index{accepted@{accepted}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{accepted()}{accepted()}}
+{\footnotesize\ttfamily synchronized boolean eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+accepted (\begin{DoxyParamCaption}\item[{String}]{ip }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa5abb595c0ba74a8a045453800578cb9}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager\+::accepted}}(java.\+lang.\+String) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa5abb595c0ba74a8a045453800578cb9}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a2c200dede252b591b2ed98bbb62906c2}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a2c200dede252b591b2ed98bbb62906c2}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!add@{add}}
+\index{add@{add}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+add (\begin{DoxyParamCaption}\item[{String}]{ipfilter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa24b5fcf78f05846214a956b02dcef76}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager\+::add}}(java.\+lang.\+String) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa24b5fcf78f05846214a956b02dcef76}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a94a8f06b3fa5811540981abec8543cd7}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a94a8f06b3fa5811540981abec8543cd7}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!afterPropertiesSet@{afterPropertiesSet}}
+\index{afterPropertiesSet@{afterPropertiesSet}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{afterPropertiesSet()}{afterPropertiesSet()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+after\+Properties\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) throws Exception\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+org.\+springframework.\+beans.\+factory.\+Initializing\+Bean\+::after\+Properties\+Set() 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a8d34fd3179f8af9b686cac1a583f52da}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a8d34fd3179f8af9b686cac1a583f52da}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!getEntryMapper@{getEntryMapper}}
+\index{getEntryMapper@{getEntryMapper}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{getEntryMapper()}{getEntryMapper()}}
+{\footnotesize\ttfamily Row\+Mapper$<$ String $>$ eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+get\+Entry\+Mapper (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Returns the row mapper for mapping entries. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_ad6f1f7078e6fe784ee6332fb1a90fd7d}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_ad6f1f7078e6fe784ee6332fb1a90fd7d}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!getPatterns@{getPatterns}}
+\index{getPatterns@{getPatterns}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{getPatterns()}{getPatterns()}}
+{\footnotesize\ttfamily synchronized List$<$ String $>$ eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+get\+Patterns (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+
+
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager}}\#\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_ad6f1f7078e6fe784ee6332fb1a90fd7d}{get\+Patterns()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_a15cafe26cf4e94e407c44f0a61b7bdf2}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a1a7f057a867a6fc9ef5bbd6a48c6a0ef}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a1a7f057a867a6fc9ef5bbd6a48c6a0ef}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!isRegistered@{isRegistered}}
+\index{isRegistered@{isRegistered}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{isRegistered()}{isRegistered()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+is\+Registered (\begin{DoxyParamCaption}\item[{String}]{ipfilter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aadd1182345fed67fcdc589c7ae1173da}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager\+::is\+Registered}}(java.\+lang.\+String) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aadd1182345fed67fcdc589c7ae1173da}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_ad44e2081d4ad4fc3f6177507d654e7d4}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_ad44e2081d4ad4fc3f6177507d654e7d4}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!isValidPattern@{isValidPattern}}
+\index{isValidPattern@{isValidPattern}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{isValidPattern()}{isValidPattern()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+is\+Valid\+Pattern (\begin{DoxyParamCaption}\item[{String}]{pattern }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Checks if the pattern is valid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pattern} & the pattern \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+if valid or not 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a64b6f6700228a681fc2181bcb69f91e4}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a64b6f6700228a681fc2181bcb69f91e4}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!remove@{remove}}
+\index{remove@{remove}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+remove (\begin{DoxyParamCaption}\item[{String}]{ipfilter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_ab13b795f98e0e491d7f7373fa868e0f8}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager\+::remove}}(java.\+lang.\+String) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_ab13b795f98e0e491d7f7373fa868e0f8}{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_accafc39267a3718438399afc82e0cd44}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_accafc39267a3718438399afc82e0cd44}} 
+\index{eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}!setTemplate@{setTemplate}}
+\index{setTemplate@{setTemplate}!eu.baltrad.beast.system.host.HostFilterManager@{eu.baltrad.beast.system.host.HostFilterManager}}
+\doxysubsubsection{\texorpdfstring{setTemplate()}{setTemplate()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager.\+set\+Template (\begin{DoxyParamCaption}\item[{Jdbc\+Operations}]{template }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em template} & the template to use \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/system/host/Host\+Filter\+Manager.\+java\end{DoxyCompactItemize}

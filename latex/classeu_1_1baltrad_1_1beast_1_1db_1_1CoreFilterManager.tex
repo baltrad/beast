@@ -1,0 +1,122 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager}{}\doxysection{eu.\+baltrad.\+beast.\+db.\+Core\+Filter\+Manager Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager}\index{eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}}
+
+
+the core filter manager.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+db.\+Core\+Filter\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a797be3ad82439e00adf2a96b203a5167}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a797be3ad82439e00adf2a96b203a5167}} 
+void {\bfseries set\+Jdbc\+Template} (Jdbc\+Operations template)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_aed0eabc7c5230bef767e0bceb637f0ef}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_aed0eabc7c5230bef767e0bceb637f0ef}} 
+void {\bfseries set\+Sub\+Managers} (Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager}{IFilter\+Manager}} $>$ sub\+Managers)
+\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a249afbba8a7d18d08cd03532959eaafd}{store}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a734564a09859cf0eb11399982ea2d836}{load}} (int id)
+\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a54925db53318638281edd8f66a13e5cf}{update}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a7760faf4b7da3ed7c7d646975609f5aa}{remove}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Map$<$ Integer, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a6e6e19c558c1aaaa93c78f0c0bd502e2}{get\+Cached\+Filters}} ()
+\begin{DoxyCompactList}\small\item\em Gives access to the cached filters. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_ae02570334477ba09b5dc83d5bd048c7e}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_ae02570334477ba09b5dc83d5bd048c7e}} 
+Map$<$ String, Object $>$ {\bfseries sql\+Select\+Filter} (int id)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a461c75c8974ffbc12d0ca496aa879685}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a461c75c8974ffbc12d0ca496aa879685}} 
+int {\bfseries sql\+Insert\+Filter} (String filter\+Type)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a35d3b527a6870635a85287e417641ebc}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a35d3b527a6870635a85287e417641ebc}} 
+void {\bfseries sql\+Delete\+Filter} (int id)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+the core filter manager. 
+
+All filter management should go through this class which delegates to correct submanager based on filter type. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a6e6e19c558c1aaaa93c78f0c0bd502e2}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a6e6e19c558c1aaaa93c78f0c0bd502e2}} 
+\index{eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}!getCachedFilters@{getCachedFilters}}
+\index{getCachedFilters@{getCachedFilters}!eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}}
+\doxysubsubsection{\texorpdfstring{getCachedFilters()}{getCachedFilters()}}
+{\footnotesize\ttfamily Map$<$ Integer, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ eu.\+baltrad.\+beast.\+db.\+Core\+Filter\+Manager.\+get\+Cached\+Filters (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Gives access to the cached filters. 
+
+Mostly used for test purposes. \begin{DoxyReturn}{Returns}
+the cached filters 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a734564a09859cf0eb11399982ea2d836}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a734564a09859cf0eb11399982ea2d836}} 
+\index{eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}!load@{load}}
+\index{load@{load}!eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} eu.\+baltrad.\+beast.\+db.\+Core\+Filter\+Manager.\+load (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a07c4d449e4db3f92352d3ef6c5480e33}{IFilter\+Manager\+::load(int)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a07c4d449e4db3f92352d3ef6c5480e33}{eu.\+baltrad.\+beast.\+db.\+IFilter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a7760faf4b7da3ed7c7d646975609f5aa}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a7760faf4b7da3ed7c7d646975609f5aa}} 
+\index{eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}!remove@{remove}}
+\index{remove@{remove}!eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+db.\+Core\+Filter\+Manager.\+remove (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a1d7a4adac8f2ab8fe56f7b9b253b1af5}{IFilter\+Manager\+::remove(\+IFilter)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a1d7a4adac8f2ab8fe56f7b9b253b1af5}{eu.\+baltrad.\+beast.\+db.\+IFilter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a249afbba8a7d18d08cd03532959eaafd}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a249afbba8a7d18d08cd03532959eaafd}} 
+\index{eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}!store@{store}}
+\index{store@{store}!eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}}
+\doxysubsubsection{\texorpdfstring{store()}{store()}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+db.\+Core\+Filter\+Manager.\+store (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a4092ce1d6e31e38201eaa4bff8ba044d}{IFilter\+Manager\+::store(\+IFilter)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a4092ce1d6e31e38201eaa4bff8ba044d}{eu.\+baltrad.\+beast.\+db.\+IFilter\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a54925db53318638281edd8f66a13e5cf}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CoreFilterManager_a54925db53318638281edd8f66a13e5cf}} 
+\index{eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}!update@{update}}
+\index{update@{update}!eu.baltrad.beast.db.CoreFilterManager@{eu.baltrad.beast.db.CoreFilterManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+db.\+Core\+Filter\+Manager.\+update (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a7e2e0c692188563d7096007af69b6b2b}{IFilter\+Manager\+::update(\+IFilter)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager_a7e2e0c692188563d7096007af69b6b2b}{eu.\+baltrad.\+beast.\+db.\+IFilter\+Manager}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/db/Core\+Filter\+Manager.\+java\end{DoxyCompactItemize}

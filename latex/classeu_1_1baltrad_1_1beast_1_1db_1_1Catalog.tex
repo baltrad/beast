@@ -1,0 +1,111 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog}{}\doxysection{eu.\+baltrad.\+beast.\+db.\+Catalog Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog}\index{eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}}
+
+
+Helper API for simplifying certain tasks related to the File\+Catalog.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+db.\+Catalog\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a7e67119c057969a981240666ae1c7eba}{set\+Catalog}} (File\+Catalog fc)
+\item 
+File\+Catalog \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a594ae12d5502c3f37116eea4f29641ac}{get\+Catalog}} ()
+\item 
+List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CatalogEntry}{Catalog\+Entry}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a76c9bdaf6992b7b38705873915b7ebbd}{fetch}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1ICatalogFilter}{ICatalog\+Filter}} filter)
+\begin{DoxyCompactList}\small\item\em Returns a list of entries by applying the provided filter. \end{DoxyCompactList}\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_aac5aa1c5a92657d8c0eed9e425f127a7}{get\+File\+Catalog\+Path}} (String uuid)
+\begin{DoxyCompactList}\small\item\em Returns the location of the file associated with the uuid. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a245def8431d2f4b7e20d31e171f27456}{after\+Properties\+Set}} ()  throws Exception 
+\begin{DoxyCompactList}\small\item\em Requires that a file catalog instance has been set, otherwise a Bean\+Initialization\+Exception will be thrown. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Helper API for simplifying certain tasks related to the File\+Catalog. 
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a245def8431d2f4b7e20d31e171f27456}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a245def8431d2f4b7e20d31e171f27456}} 
+\index{eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}!afterPropertiesSet@{afterPropertiesSet}}
+\index{afterPropertiesSet@{afterPropertiesSet}!eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}}
+\doxysubsubsection{\texorpdfstring{afterPropertiesSet()}{afterPropertiesSet()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+Catalog.\+after\+Properties\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) throws Exception\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Requires that a file catalog instance has been set, otherwise a Bean\+Initialization\+Exception will be thrown. 
+
+\begin{DoxySeeAlso}{See also}
+org.\+springframework.\+beans.\+factory.\+Initializing\+Bean\+::after\+Properties\+Set() 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a76c9bdaf6992b7b38705873915b7ebbd}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a76c9bdaf6992b7b38705873915b7ebbd}} 
+\index{eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}!fetch@{fetch}}
+\index{fetch@{fetch}!eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}}
+\doxysubsubsection{\texorpdfstring{fetch()}{fetch()}}
+{\footnotesize\ttfamily List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CatalogEntry}{Catalog\+Entry}} $>$ eu.\+baltrad.\+beast.\+db.\+Catalog.\+fetch (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1ICatalogFilter}{ICatalog\+Filter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a list of entries by applying the provided filter. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filter} & the filter to use \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a list of entries 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a594ae12d5502c3f37116eea4f29641ac}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a594ae12d5502c3f37116eea4f29641ac}} 
+\index{eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}!getCatalog@{getCatalog}}
+\index{getCatalog@{getCatalog}!eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}}
+\doxysubsubsection{\texorpdfstring{getCatalog()}{getCatalog()}}
+{\footnotesize\ttfamily File\+Catalog eu.\+baltrad.\+beast.\+db.\+Catalog.\+get\+Catalog (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the catalog 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_aac5aa1c5a92657d8c0eed9e425f127a7}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_aac5aa1c5a92657d8c0eed9e425f127a7}} 
+\index{eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}!getFileCatalogPath@{getFileCatalogPath}}
+\index{getFileCatalogPath@{getFileCatalogPath}!eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}}
+\doxysubsubsection{\texorpdfstring{getFileCatalogPath()}{getFileCatalogPath()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+db.\+Catalog.\+get\+File\+Catalog\+Path (\begin{DoxyParamCaption}\item[{String}]{uuid }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the location of the file associated with the uuid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em uuid} & the uuid \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the file location 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a7e67119c057969a981240666ae1c7eba}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog_a7e67119c057969a981240666ae1c7eba}} 
+\index{eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}!setCatalog@{setCatalog}}
+\index{setCatalog@{setCatalog}!eu.baltrad.beast.db.Catalog@{eu.baltrad.beast.db.Catalog}}
+\doxysubsubsection{\texorpdfstring{setCatalog()}{setCatalog()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+Catalog.\+set\+Catalog (\begin{DoxyParamCaption}\item[{File\+Catalog}]{fc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em fc} & the catalog to set \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/db/Catalog.\+java\end{DoxyCompactItemize}

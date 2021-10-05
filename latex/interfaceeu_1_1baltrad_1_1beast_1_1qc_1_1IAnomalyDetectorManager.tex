@@ -1,0 +1,133 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager}{}\doxysection{eu.\+baltrad.\+beast.\+qc.\+IAnomaly\+Detector\+Manager Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager}\index{eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}}
+
+
+Provides database access to list/add and remove anomaly detectors.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+qc.\+IAnomaly\+Detector\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_acbf14e1c4b3db9ea363e517ed8d1aede}{add}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetector}{Anomaly\+Detector}} detector)
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a8f2324f106ded3ffb16ec961944646ac}{update}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetector}{Anomaly\+Detector}} detector)
+\item 
+List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetector}{Anomaly\+Detector}} $>$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a631978837027f45ab91ab3790924943e}{list}} ()
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetector}{Anomaly\+Detector}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a36c13592036bb725aaae3c3bba4e3f87}{get}} (String name)
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a2d9bcc4f31ced9647a134f90d68a467d}{remove}} (String detector)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Provides database access to list/add and remove anomaly detectors. 
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_acbf14e1c4b3db9ea363e517ed8d1aede}\label{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_acbf14e1c4b3db9ea363e517ed8d1aede}} 
+\index{eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}!add@{add}}
+\index{add@{add}!eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+qc.\+IAnomaly\+Detector\+Manager.\+add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetector}{Anomaly\+Detector}}}]{detector }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em detector} & the detector to add \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyException}{Anomaly\+Exception}}} & if detector not could be added \\
+\hline
+\end{DoxyExceptions}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetectorManager_a52a2e681455ffa6e70dc81ba22b4d0e0}{eu.\+baltrad.\+beast.\+qc.\+Anomaly\+Detector\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a36c13592036bb725aaae3c3bba4e3f87}\label{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a36c13592036bb725aaae3c3bba4e3f87}} 
+\index{eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}!get@{get}}
+\index{get@{get}!eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetector}{Anomaly\+Detector}} eu.\+baltrad.\+beast.\+qc.\+IAnomaly\+Detector\+Manager.\+get (\begin{DoxyParamCaption}\item[{String}]{name }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & the detector name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the found detector 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyException}{Anomaly\+Exception}}} & if detector not could be found \\
+\hline
+\end{DoxyExceptions}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetectorManager_ad58009c8b70e2c8ab4b09bef1e8845dd}{eu.\+baltrad.\+beast.\+qc.\+Anomaly\+Detector\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a631978837027f45ab91ab3790924943e}\label{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a631978837027f45ab91ab3790924943e}} 
+\index{eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}!list@{list}}
+\index{list@{list}!eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}}
+\doxysubsubsection{\texorpdfstring{list()}{list()}}
+{\footnotesize\ttfamily List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetector}{Anomaly\+Detector}} $>$ eu.\+baltrad.\+beast.\+qc.\+IAnomaly\+Detector\+Manager.\+list (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+the list of registered detectors 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetectorManager_a90acc4e06f14c99c273d61bcf4cb6c08}{eu.\+baltrad.\+beast.\+qc.\+Anomaly\+Detector\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a2d9bcc4f31ced9647a134f90d68a467d}\label{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a2d9bcc4f31ced9647a134f90d68a467d}} 
+\index{eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}!remove@{remove}}
+\index{remove@{remove}!eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+qc.\+IAnomaly\+Detector\+Manager.\+remove (\begin{DoxyParamCaption}\item[{String}]{detector }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em detector} & the detector to remove \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetectorManager_aaed0b999985f7ed419ab606e1016ef17}{eu.\+baltrad.\+beast.\+qc.\+Anomaly\+Detector\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a8f2324f106ded3ffb16ec961944646ac}\label{interfaceeu_1_1baltrad_1_1beast_1_1qc_1_1IAnomalyDetectorManager_a8f2324f106ded3ffb16ec961944646ac}} 
+\index{eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}!update@{update}}
+\index{update@{update}!eu.baltrad.beast.qc.IAnomalyDetectorManager@{eu.baltrad.beast.qc.IAnomalyDetectorManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+qc.\+IAnomaly\+Detector\+Manager.\+update (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetector}{Anomaly\+Detector}}}]{detector }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em detector} & the detector to update \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyException}{Anomaly\+Exception}}} & if detector not could be updated \\
+\hline
+\end{DoxyExceptions}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1qc_1_1AnomalyDetectorManager_aedbf83d6288a3a3b8cf675253af55525}{eu.\+baltrad.\+beast.\+qc.\+Anomaly\+Detector\+Manager}}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/qc/IAnomaly\+Detector\+Manager.\+java\end{DoxyCompactItemize}

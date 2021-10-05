@@ -1,0 +1,180 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor}{}\doxysection{eu.\+baltrad.\+beast.\+system.\+System\+Supervisor Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor}\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+
+
+A system supervisor.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+system.\+System\+Supervisor\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_ac2edc45a630429f9c5d60939719aff44}{add}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemMessage}{System\+Message}} message)
+\item 
+List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemMessage}{System\+Message}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a5dd202fb2ccb58de7b83ac9cc3230b6b}{get\+Messages}} ()
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemMessage}{System\+Message}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a49af5e5d2f119a159e33b7818f95e9a0}{create\+Message}} (String module, String code, \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1MessageSeverity}{Message\+Severity}} severity, String message, String solution)
+\begin{DoxyCompactList}\small\item\em Creates a new system message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a285299e08be31e386b59eab085ae2503}{register}} (String name, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemStatusReporter}{ISystem\+Status\+Reporter}} reporter)
+\begin{DoxyCompactList}\small\item\em Registers a reporter with specified name. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a7a5cb9b48fdd1e8b68ce5c9dce4aa001}{set\+Reporters}} (Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemStatusReporter}{ISystem\+Status\+Reporter}} $>$ reporters)
+\begin{DoxyCompactList}\small\item\em Sets all reporters used by this supervisor. \end{DoxyCompactList}\item 
+Set$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_ac8f8db184c7adc20d967677f1b75cfa1}{get\+Supported\+Attributes}} (String component)
+\item 
+Set$<$ \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a96a9b4aba5c8c3cb71fd8db57713cd4f}{get\+Status}} (String component, Map$<$ String, Object $>$ values)
+\item 
+boolean \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_aedb4b6b1514d7446bd86df013ed179c8}{supports\+Mappable\+Status}} (String component)
+\item 
+Map$<$ String, Map$<$ Object, \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$ $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a765501ff41f2b20e4d39dd09c2517c32}{get\+Mapped\+Status}} (String component, Map$<$ String, Object $>$ values)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A system supervisor. 
+
+Keeps tracks of the reported alerts. \begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_ac2edc45a630429f9c5d60939719aff44}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_ac2edc45a630429f9c5d60939719aff44}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!add@{add}}
+\index{add@{add}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemMessage}{System\+Message}}}]{message }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_a08229342a94b05fa2f19fb16bb68bb8c}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor\+::add(\+System\+Message)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_a08229342a94b05fa2f19fb16bb68bb8c}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a49af5e5d2f119a159e33b7818f95e9a0}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a49af5e5d2f119a159e33b7818f95e9a0}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!createMessage@{createMessage}}
+\index{createMessage@{createMessage}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{createMessage()}{createMessage()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemMessage}{System\+Message}} eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+create\+Message (\begin{DoxyParamCaption}\item[{String}]{module,  }\item[{String}]{code,  }\item[{\mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1MessageSeverity}{Message\+Severity}}}]{severity,  }\item[{String}]{message,  }\item[{String}]{solution }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a new system message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em code} & the error code \\
+\hline
+{\em args} & the argument list \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the created system message 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a765501ff41f2b20e4d39dd09c2517c32}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a765501ff41f2b20e4d39dd09c2517c32}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!getMappedStatus@{getMappedStatus}}
+\index{getMappedStatus@{getMappedStatus}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{getMappedStatus()}{getMappedStatus()}}
+{\footnotesize\ttfamily Map$<$ String, Map$<$ Object, \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$ $>$ eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+get\+Mapped\+Status (\begin{DoxyParamCaption}\item[{String}]{component,  }\item[{Map$<$ String, Object $>$}]{values }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_a83bb2544ab4b63b2461ee710b7448a13}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor\+::get\+Mapped\+Status}}(java.\+lang.\+String, java.\+util.\+Map) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_a83bb2544ab4b63b2461ee710b7448a13}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a5dd202fb2ccb58de7b83ac9cc3230b6b}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a5dd202fb2ccb58de7b83ac9cc3230b6b}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!getMessages@{getMessages}}
+\index{getMessages@{getMessages}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{getMessages()}{getMessages()}}
+{\footnotesize\ttfamily List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemMessage}{System\+Message}} $>$ eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+get\+Messages (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_ab654bfbb3258679c72063dd33ce570d6}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor\+::get\+Messages()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_ab654bfbb3258679c72063dd33ce570d6}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a96a9b4aba5c8c3cb71fd8db57713cd4f}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a96a9b4aba5c8c3cb71fd8db57713cd4f}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!getStatus@{getStatus}}
+\index{getStatus@{getStatus}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{getStatus()}{getStatus()}}
+{\footnotesize\ttfamily Set$<$ \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1system_1_1SystemStatus}{System\+Status}} $>$ eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+get\+Status (\begin{DoxyParamCaption}\item[{String}]{component,  }\item[{Map$<$ String, Object $>$}]{values }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+eu.\+baltad.\+beast.\+system.\+ISystem\+Supervisor\+::get\+Status(java.\+lang.\+String, java.\+util.\+Map) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_a5bd7e9c090b19014655b38a71fce877a}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_ac8f8db184c7adc20d967677f1b75cfa1}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_ac8f8db184c7adc20d967677f1b75cfa1}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!getSupportedAttributes@{getSupportedAttributes}}
+\index{getSupportedAttributes@{getSupportedAttributes}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{getSupportedAttributes()}{getSupportedAttributes()}}
+{\footnotesize\ttfamily Set$<$ String $>$ eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+get\+Supported\+Attributes (\begin{DoxyParamCaption}\item[{String}]{component }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+eu.\+baltad.\+beast.\+system.\+ISystem\+Supervisor\+::get\+Supported\+Attributes(java.\+lang.\+String) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_ae09a32079f7887f24b8c9d47d30d8ab2}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a285299e08be31e386b59eab085ae2503}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a285299e08be31e386b59eab085ae2503}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!register@{register}}
+\index{register@{register}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{register()}{register()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+register (\begin{DoxyParamCaption}\item[{String}]{name,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemStatusReporter}{ISystem\+Status\+Reporter}}}]{reporter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Registers a reporter with specified name. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & the name that the reporter should be found by \\
+\hline
+{\em reporter} & the reporter \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a7a5cb9b48fdd1e8b68ce5c9dce4aa001}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_a7a5cb9b48fdd1e8b68ce5c9dce4aa001}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!setReporters@{setReporters}}
+\index{setReporters@{setReporters}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{setReporters()}{setReporters()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+set\+Reporters (\begin{DoxyParamCaption}\item[{Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemStatusReporter}{ISystem\+Status\+Reporter}} $>$}]{reporters }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets all reporters used by this supervisor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reporters} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_aedb4b6b1514d7446bd86df013ed179c8}\label{classeu_1_1baltrad_1_1beast_1_1system_1_1SystemSupervisor_aedb4b6b1514d7446bd86df013ed179c8}} 
+\index{eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}!supportsMappableStatus@{supportsMappableStatus}}
+\index{supportsMappableStatus@{supportsMappableStatus}!eu.baltrad.beast.system.SystemSupervisor@{eu.baltrad.beast.system.SystemSupervisor}}
+\doxysubsubsection{\texorpdfstring{supportsMappableStatus()}{supportsMappableStatus()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+system.\+System\+Supervisor.\+supports\+Mappable\+Status (\begin{DoxyParamCaption}\item[{String}]{component }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_a80f9284cea8a2b3e5a093f66ed64ffd2}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor\+::supports\+Mappable\+Status}}(java.\+lang.\+String) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1ISystemSupervisor_a80f9284cea8a2b3e5a093f66ed64ffd2}{eu.\+baltrad.\+beast.\+system.\+ISystem\+Supervisor}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/system/System\+Supervisor.\+java\end{DoxyCompactItemize}

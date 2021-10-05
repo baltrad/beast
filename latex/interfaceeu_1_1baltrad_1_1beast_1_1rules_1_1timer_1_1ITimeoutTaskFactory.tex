@@ -1,0 +1,67 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskFactory}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+timer.\+ITimeout\+Task\+Factory Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskFactory}\index{eu.baltrad.beast.rules.timer.ITimeoutTaskFactory@{eu.baltrad.beast.rules.timer.ITimeoutTaskFactory}}
+
+
+Factory for creating timeout tasks.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+rules.\+timer.\+ITimeout\+Task\+Factory\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskFactory}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutTask}{Timeout\+Task}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskFactory_a70faa4d1f558992792ac1f1a2072e7c3}{create}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutRule}{ITimeout\+Rule}} rule, long id, Object data, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener}{ITimeout\+Task\+Listener}} listener)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutTask}{Timeout\+Task}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Factory for creating timeout tasks. 
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskFactory_a70faa4d1f558992792ac1f1a2072e7c3}\label{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskFactory_a70faa4d1f558992792ac1f1a2072e7c3}} 
+\index{eu.baltrad.beast.rules.timer.ITimeoutTaskFactory@{eu.baltrad.beast.rules.timer.ITimeoutTaskFactory}!create@{create}}
+\index{create@{create}!eu.baltrad.beast.rules.timer.ITimeoutTaskFactory@{eu.baltrad.beast.rules.timer.ITimeoutTaskFactory}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutTask}{Timeout\+Task}} eu.\+baltrad.\+beast.\+rules.\+timer.\+ITimeout\+Task\+Factory.\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutRule}{ITimeout\+Rule}}}]{rule,  }\item[{long}]{id,  }\item[{Object}]{data,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener}{ITimeout\+Task\+Listener}}}]{listener }\end{DoxyParamCaption})}
+
+
+
+Creates a \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutTask}{Timeout\+Task}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule} & the rule \\
+\hline
+{\em id} & the id \\
+\hline
+{\em data} & any data that should be passed on \\
+\hline
+{\em listener} & the listener \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutTask}{Timeout\+Task}} 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutRuleException}{Timeout\+Rule\+Exception}}} & if the rule is null \\
+\hline
+\end{DoxyExceptions}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutTaskFactory_a2c0058ce736da35f30c018bdf71edc23}{eu.\+baltrad.\+beast.\+rules.\+timer.\+Timeout\+Task\+Factory}}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/timer/ITimeout\+Task\+Factory.\+java\end{DoxyCompactItemize}

@@ -1,0 +1,121 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+Rule\+Filter\+Manager Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}\index{eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}}
+
+
+Manage rule and filter associations in table beast\+\_\+rule\+\_\+filters.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_aa483d2aa63a556163b75142afe410161}{set\+Simple\+Jdbc\+Operations}} (Jdbc\+Operations jdbc\+Ops)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a1712a0ef8fe6b3f3bc0fb01bc0d46f8c}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a1712a0ef8fe6b3f3bc0fb01bc0d46f8c}} 
+void {\bfseries set\+Filter\+Manager} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilterManager}{IFilter\+Manager}} filter\+Manager)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_aae4ce8eb8dddcfdcff5b1556e7253061}{delete\+Filters}} (int rule\+Id)
+\begin{DoxyCompactList}\small\item\em delete rule/filter associations from the database. \end{DoxyCompactList}\item 
+Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a9dc278f3cf7f5eb504c815b24b969831}{load\+Filters}} (int rule\+Id)
+\begin{DoxyCompactList}\small\item\em load filters from the database. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a94bcf782333774758bbb97f8afacc938}{store\+Filters}} (int rule\+Id, Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ filters)
+\begin{DoxyCompactList}\small\item\em store rule filters in the database. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a276513a3be130438e88cd04e453966ba}{update\+Filters}} (int rule\+Id, Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ filters)
+\begin{DoxyCompactList}\small\item\em update rule filters in the database. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a93ff24e248e8bd66008d700f2f8c328f}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a93ff24e248e8bd66008d700f2f8c328f}} 
+List$<$ Integer $>$ {\bfseries get\+Rule\+Filter\+Ids} (int rule\+Id)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_ae1639374b9b5d0def1dfe9d4703fab34}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_ae1639374b9b5d0def1dfe9d4703fab34}} 
+Map$<$ String, Integer $>$ {\bfseries get\+Rule\+Filter\+Key\+Id\+Map} (int rule\+Id)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Manage rule and filter associations in table beast\+\_\+rule\+\_\+filters. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_aae4ce8eb8dddcfdcff5b1556e7253061}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_aae4ce8eb8dddcfdcff5b1556e7253061}} 
+\index{eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}!deleteFilters@{deleteFilters}}
+\index{deleteFilters@{deleteFilters}!eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}}
+\doxysubsubsection{\texorpdfstring{deleteFilters()}{deleteFilters()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+Rule\+Filter\+Manager.\+delete\+Filters (\begin{DoxyParamCaption}\item[{int}]{rule\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+delete rule/filter associations from the database. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+Id} & id of the rule whose filters should be deleted \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a9dc278f3cf7f5eb504c815b24b969831}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a9dc278f3cf7f5eb504c815b24b969831}} 
+\index{eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}!loadFilters@{loadFilters}}
+\index{loadFilters@{loadFilters}!eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}}
+\doxysubsubsection{\texorpdfstring{loadFilters()}{loadFilters()}}
+{\footnotesize\ttfamily Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ eu.\+baltrad.\+beast.\+rules.\+Rule\+Filter\+Manager.\+load\+Filters (\begin{DoxyParamCaption}\item[{int}]{rule\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+load filters from the database. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+Id} & id of the rule filters should be loaded for \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+map of filters 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_aa483d2aa63a556163b75142afe410161}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_aa483d2aa63a556163b75142afe410161}} 
+\index{eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}!setSimpleJdbcOperations@{setSimpleJdbcOperations}}
+\index{setSimpleJdbcOperations@{setSimpleJdbcOperations}!eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}}
+\doxysubsubsection{\texorpdfstring{setSimpleJdbcOperations()}{setSimpleJdbcOperations()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+Rule\+Filter\+Manager.\+set\+Simple\+Jdbc\+Operations (\begin{DoxyParamCaption}\item[{Jdbc\+Operations}]{jdbc\+Ops }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em jdbc\+Ops} & the JDBC operations to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a94bcf782333774758bbb97f8afacc938}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a94bcf782333774758bbb97f8afacc938}} 
+\index{eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}!storeFilters@{storeFilters}}
+\index{storeFilters@{storeFilters}!eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}}
+\doxysubsubsection{\texorpdfstring{storeFilters()}{storeFilters()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+Rule\+Filter\+Manager.\+store\+Filters (\begin{DoxyParamCaption}\item[{int}]{rule\+Id,  }\item[{Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$}]{filters }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+store rule filters in the database. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+Id} & id of the rule these filters are for \\
+\hline
+{\em filters} & map of filter \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a276513a3be130438e88cd04e453966ba}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager_a276513a3be130438e88cd04e453966ba}} 
+\index{eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}!updateFilters@{updateFilters}}
+\index{updateFilters@{updateFilters}!eu.baltrad.beast.rules.RuleFilterManager@{eu.baltrad.beast.rules.RuleFilterManager}}
+\doxysubsubsection{\texorpdfstring{updateFilters()}{updateFilters()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+Rule\+Filter\+Manager.\+update\+Filters (\begin{DoxyParamCaption}\item[{int}]{rule\+Id,  }\item[{Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$}]{filters }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+update rule filters in the database. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+Id} & id of the rule these filters are for \\
+\hline
+{\em filters} & map of filters \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/Rule\+Filter\+Manager.\+java\end{DoxyCompactItemize}

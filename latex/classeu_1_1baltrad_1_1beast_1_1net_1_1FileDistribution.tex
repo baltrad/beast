@@ -1,0 +1,131 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution}{}\doxysection{eu.\+baltrad.\+beast.\+net.\+File\+Distribution Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution}\index{eu.baltrad.beast.net.FileDistribution@{eu.baltrad.beast.net.FileDistribution}}
+
+
+Runnable that executes file distributions.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+net.\+File\+Distribution\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class {\bfseries File\+Distribution\+State\+Container}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a34861678d42dd6cc396c9c84560004e7}{File\+Distribution}} (File src, URI destination, String entry\+Name, File\+Distribution\+State\+Container state)  throws Unknown\+Service\+Exception 
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a837668d88dfa41af4b21c7cc06a2ffe5}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a837668d88dfa41af4b21c7cc06a2ffe5}} 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1net_1_1FileUploadHandler}{File\+Upload\+Handler}} {\bfseries get\+Upload\+Handler} ()
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a7b991abf2b96d47b530027262ff63cd2}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a7b991abf2b96d47b530027262ff63cd2}} 
+void {\bfseries set\+Upload\+Handler} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1net_1_1FileUploadHandler}{File\+Upload\+Handler}} upload\+Handler)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a9fb86b42dd7b063bf1d96f9a2319f0e3}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a9fb86b42dd7b063bf1d96f9a2319f0e3}} 
+URI {\bfseries get\+Full\+Destination} ()
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a796c32b699654a84e7b3ac20fbcdf3ad}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a796c32b699654a84e7b3ac20fbcdf3ad}} 
+void {\bfseries set\+Full\+Destination} (URI full\+Destination)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_aa53ccce1868b4b8502db54326d96d801}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_aa53ccce1868b4b8502db54326d96d801}} 
+File {\bfseries get\+Source\+File} ()
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a7ffd25343c9d33e59bd5ada081d3e8f7}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a7ffd25343c9d33e59bd5ada081d3e8f7}} 
+void {\bfseries set\+Source\+File} (File source\+File)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a0e1dbfb89ef6054b408cf2603030d7b9}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a0e1dbfb89ef6054b408cf2603030d7b9}} 
+void {\bfseries run} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a1651b8d09730903e65da9d286e54b0b7}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a1651b8d09730903e65da9d286e54b0b7}} 
+static Hash\+Map$<$ URI, String $>$ {\bfseries get\+Current\+Uploads} ()
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a343f9bee3cfc142778a86d962c37c6b7}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a343f9bee3cfc142778a86d962c37c6b7}} 
+static void {\bfseries set\+Current\+Uploads} (Hash\+Map$<$ URI, String $>$ current\+Uploads)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a7c40f742161ee3a5f1454b8edbef0f60}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a7c40f742161ee3a5f1454b8edbef0f60}} 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1net_1_1FileUploadHandler}{File\+Upload\+Handler}} {\bfseries get\+Handler\+By\+Scheme} (String scheme)  throws Unknown\+Service\+Exception 
+\item 
+URI \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a1abeaed0f567bf673329db0250e08192}{append\+Path}} (URI uri, String path)
+\begin{DoxyCompactList}\small\item\em Append a path to an URI. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_af58fd198009c317b847e8ec9d5ddadf1}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_af58fd198009c317b847e8ec9d5ddadf1}} 
+boolean {\bfseries lock\+Upload} (File src, URI destination)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a8b0d462ecaadcc321f3926b68440a412}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a8b0d462ecaadcc321f3926b68440a412}} 
+void {\bfseries unlock\+Upload} (URI destination)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_ab9a7aed406347eecadf6286c4d7652e0}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_ab9a7aed406347eecadf6286c4d7652e0}} 
+void {\bfseries warn\+About\+Ongoing\+Upload} (File src, URI full\+Destination)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_ac9b4d276fa29406af820356c6c4cbc00}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_ac9b4d276fa29406af820356c6c4cbc00}} 
+void {\bfseries upload\+Done} (boolean upload\+Successful)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Runnable that executes file distributions. 
+
+The type of file distribution is determined by the scheme indicated by the destination URI, provided as input to the constructor. Valid schemes are \char`\"{}copy\char`\"{}, \char`\"{}ftp\char`\"{}, \char`\"{}scp\char`\"{}, \char`\"{}scponly\char`\"{}, and \char`\"{}sftp\char`\"{}.
+
+The class provides protection against parallel uploads toward the same destination. If a distribution is started towards a destination that is already targeted by another active distribution, it will aborted and a warning will be output to the log. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a34861678d42dd6cc396c9c84560004e7}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a34861678d42dd6cc396c9c84560004e7}} 
+\index{eu.baltrad.beast.net.FileDistribution@{eu.baltrad.beast.net.FileDistribution}!FileDistribution@{FileDistribution}}
+\index{FileDistribution@{FileDistribution}!eu.baltrad.beast.net.FileDistribution@{eu.baltrad.beast.net.FileDistribution}}
+\doxysubsubsection{\texorpdfstring{FileDistribution()}{FileDistribution()}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+net.\+File\+Distribution.\+File\+Distribution (\begin{DoxyParamCaption}\item[{File}]{src,  }\item[{URI}]{destination,  }\item[{String}]{entry\+Name,  }\item[{File\+Distribution\+State\+Container}]{state }\end{DoxyParamCaption}) throws Unknown\+Service\+Exception\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & \\
+\hline
+{\em destination} & \\
+\hline
+{\em entry\+Name} & \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Unknown\+Service\+Exception} & thrown if the scheme in the destination URI is invalid/unknown \\
+\hline
+\end{DoxyExceptions}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a1abeaed0f567bf673329db0250e08192}\label{classeu_1_1baltrad_1_1beast_1_1net_1_1FileDistribution_a1abeaed0f567bf673329db0250e08192}} 
+\index{eu.baltrad.beast.net.FileDistribution@{eu.baltrad.beast.net.FileDistribution}!appendPath@{appendPath}}
+\index{appendPath@{appendPath}!eu.baltrad.beast.net.FileDistribution@{eu.baltrad.beast.net.FileDistribution}}
+\doxysubsubsection{\texorpdfstring{appendPath()}{appendPath()}}
+{\footnotesize\ttfamily URI eu.\+baltrad.\+beast.\+net.\+File\+Distribution.\+append\+Path (\begin{DoxyParamCaption}\item[{URI}]{uri,  }\item[{String}]{path }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Append a path to an URI. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em uri} & the URI to append to \\
+\hline
+{\em path} & the path to append \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a new URI with the path appended 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/net/File\+Distribution.\+java\end{DoxyCompactItemize}

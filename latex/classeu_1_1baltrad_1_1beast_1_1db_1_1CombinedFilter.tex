@@ -1,0 +1,124 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter}{}\doxysection{eu.\+baltrad.\+beast.\+db.\+Combined\+Filter Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter}\index{eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}}
+
+
+Combine different filters.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+db.\+Combined\+Filter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_1_1MatchType}{Match\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_adf8fe9052bef00727061319aa42d0eaa}{get\+Type}} ()
+\item 
+Integer \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a9ce66761b784ef5e8c5d593606320706}{get\+Id}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_ab2f0576c83305ecd50c0e3097fa6b03f}{set\+Id}} (Integer id)
+\item 
+Expression \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a251569bc2b160af0b06857d06ed13cba}{get\+Expression}} ()
+\item 
+boolean \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a4794607b5f966b8a1f3c81653966b90c}{is\+Valid}} ()
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a428bf5a2fb4a46e54ce145c56069c1ab}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a428bf5a2fb4a46e54ce145c56069c1ab}} 
+\mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_1_1MatchType}{Match\+Type}} {\bfseries get\+Match\+Type} ()
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a2349c343854c2f1346ff991934d953fe}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a2349c343854c2f1346ff991934d953fe}} 
+void {\bfseries set\+Match\+Type} (\mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_1_1MatchType}{Match\+Type}} type)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a473ce2e211d35e366ff55e27836c4bed}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a473ce2e211d35e366ff55e27836c4bed}} 
+List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ {\bfseries get\+Child\+Filters} ()
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a641d39002caae510d8d877efebb632a4}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a641d39002caae510d8d877efebb632a4}} 
+void {\bfseries add\+Child\+Filter} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a852f35dc8bf1f0c726af47c877d147bc}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a852f35dc8bf1f0c726af47c877d147bc}} 
+void {\bfseries set\+Child\+Filters} (List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ filters)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Combine different filters. 
+
+Persistance of child filters is managed through this filter. Child filters are explicitly owned by this filter and should not be shared. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a251569bc2b160af0b06857d06ed13cba}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a251569bc2b160af0b06857d06ed13cba}} 
+\index{eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}!getExpression@{getExpression}}
+\index{getExpression@{getExpression}!eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}}
+\doxysubsubsection{\texorpdfstring{getExpression()}{getExpression()}}
+{\footnotesize\ttfamily Expression eu.\+baltrad.\+beast.\+db.\+Combined\+Filter.\+get\+Expression (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_af5bfa9853d07ab4a5bd3b02e799003ea}{IFilter\+::get\+Expression()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_af5bfa9853d07ab4a5bd3b02e799003ea}{eu.\+baltrad.\+beast.\+db.\+IFilter}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a9ce66761b784ef5e8c5d593606320706}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a9ce66761b784ef5e8c5d593606320706}} 
+\index{eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}!getId@{getId}}
+\index{getId@{getId}!eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}}
+\doxysubsubsection{\texorpdfstring{getId()}{getId()}}
+{\footnotesize\ttfamily Integer eu.\+baltrad.\+beast.\+db.\+Combined\+Filter.\+get\+Id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_a96d53202adb8b50179e5492cb8c58dec}{IFilter\+::get\+Id()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_a96d53202adb8b50179e5492cb8c58dec}{eu.\+baltrad.\+beast.\+db.\+IFilter}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_adf8fe9052bef00727061319aa42d0eaa}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_adf8fe9052bef00727061319aa42d0eaa}} 
+\index{eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}!getType@{getType}}
+\index{getType@{getType}!eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}}
+\doxysubsubsection{\texorpdfstring{getType()}{getType()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+db.\+Combined\+Filter.\+get\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_a7d818964be393f5634fbaa031f9beaaf}{IFilter\+::get\+Type()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_a7d818964be393f5634fbaa031f9beaaf}{eu.\+baltrad.\+beast.\+db.\+IFilter}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a4794607b5f966b8a1f3c81653966b90c}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_a4794607b5f966b8a1f3c81653966b90c}} 
+\index{eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}!isValid@{isValid}}
+\index{isValid@{isValid}!eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}}
+\doxysubsubsection{\texorpdfstring{isValid()}{isValid()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+db.\+Combined\+Filter.\+is\+Valid (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_af30874b21d1d426ffe0969c7f8770319}{IFilter\+::is\+Valid()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_af30874b21d1d426ffe0969c7f8770319}{eu.\+baltrad.\+beast.\+db.\+IFilter}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_ab2f0576c83305ecd50c0e3097fa6b03f}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1CombinedFilter_ab2f0576c83305ecd50c0e3097fa6b03f}} 
+\index{eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}!setId@{setId}}
+\index{setId@{setId}!eu.baltrad.beast.db.CombinedFilter@{eu.baltrad.beast.db.CombinedFilter}}
+\doxysubsubsection{\texorpdfstring{setId()}{setId()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+Combined\+Filter.\+set\+Id (\begin{DoxyParamCaption}\item[{Integer}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_ab52aa625ae248c1d62b0544ed5d6e655}{IFilter\+::set\+Id(\+Integer)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter_ab52aa625ae248c1d62b0544ed5d6e655}{eu.\+baltrad.\+beast.\+db.\+IFilter}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/db/Combined\+Filter.\+java\end{DoxyCompactItemize}

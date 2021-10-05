@@ -1,0 +1,74 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+timer.\+ITimeout\+Task\+Listener Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener}\index{eu.baltrad.beast.rules.timer.ITimeoutTaskListener@{eu.baltrad.beast.rules.timer.ITimeoutTaskListener}}
+
+
+A listener that can be placed on a \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutTask}{Timeout\+Task}} to be notified of events that has occured for the timeout.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+rules.\+timer.\+ITimeout\+Task\+Listener\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener_a155b9c9e0d7b90ddf39ab6ff91c7e513}{timeout\+Notification}} (long id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutRule}{ITimeout\+Rule}} rule, Object data)
+\begin{DoxyCompactList}\small\item\em Notification that a timeout occured. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener_a0b6b2739d3fabc91293bf7d2cf09493e}{cancel\+Notification}} (long id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutRule}{ITimeout\+Rule}} rule, Object data)
+\begin{DoxyCompactList}\small\item\em Notification that a timeout has been cancelled. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A listener that can be placed on a \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutTask}{Timeout\+Task}} to be notified of events that has occured for the timeout. 
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener_a0b6b2739d3fabc91293bf7d2cf09493e}\label{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener_a0b6b2739d3fabc91293bf7d2cf09493e}} 
+\index{eu.baltrad.beast.rules.timer.ITimeoutTaskListener@{eu.baltrad.beast.rules.timer.ITimeoutTaskListener}!cancelNotification@{cancelNotification}}
+\index{cancelNotification@{cancelNotification}!eu.baltrad.beast.rules.timer.ITimeoutTaskListener@{eu.baltrad.beast.rules.timer.ITimeoutTaskListener}}
+\doxysubsubsection{\texorpdfstring{cancelNotification()}{cancelNotification()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+timer.\+ITimeout\+Task\+Listener.\+cancel\+Notification (\begin{DoxyParamCaption}\item[{long}]{id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutRule}{ITimeout\+Rule}}}]{rule,  }\item[{Object}]{data }\end{DoxyParamCaption})}
+
+
+
+Notification that a timeout has been cancelled. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & the id \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutManager_a8fe36245becc803973a70c25c05ad538}{eu.\+baltrad.\+beast.\+rules.\+timer.\+Timeout\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener_a155b9c9e0d7b90ddf39ab6ff91c7e513}\label{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutTaskListener_a155b9c9e0d7b90ddf39ab6ff91c7e513}} 
+\index{eu.baltrad.beast.rules.timer.ITimeoutTaskListener@{eu.baltrad.beast.rules.timer.ITimeoutTaskListener}!timeoutNotification@{timeoutNotification}}
+\index{timeoutNotification@{timeoutNotification}!eu.baltrad.beast.rules.timer.ITimeoutTaskListener@{eu.baltrad.beast.rules.timer.ITimeoutTaskListener}}
+\doxysubsubsection{\texorpdfstring{timeoutNotification()}{timeoutNotification()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+timer.\+ITimeout\+Task\+Listener.\+timeout\+Notification (\begin{DoxyParamCaption}\item[{long}]{id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1ITimeoutRule}{ITimeout\+Rule}}}]{rule,  }\item[{Object}]{data }\end{DoxyParamCaption})}
+
+
+
+Notification that a timeout occured. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & the id \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutManager_a19d90ba7158c143ef912e069a0ed7af5}{eu.\+baltrad.\+beast.\+rules.\+timer.\+Timeout\+Manager}}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/timer/ITimeout\+Task\+Listener.\+java\end{DoxyCompactItemize}

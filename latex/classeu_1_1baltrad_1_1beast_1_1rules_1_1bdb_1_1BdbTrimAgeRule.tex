@@ -1,0 +1,235 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule}\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+
+
+Rule to keep the age of files in BDB above a limit.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.403509cm]{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3aa9653f4a9e6977e5093b9455522030}{get\+File\+Age\+Limit}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a48c03dd7bb91b64ee0b7878f900b38e4}{set\+File\+Age\+Limit}} (int limit)
+\item 
+Map$<$ String, String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a8e9197c4528813ce469dd24cb118543f}{get\+Properties}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ab85780f4e856c045d31b8d5fd827460f}{set\+Properties}} (Map$<$ String, String $>$ props)
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a0d9599bed6dc16f1314badeebbd02b0e}{get\+Type}} ()
+\item 
+boolean \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ac2060a70868dac6a1a1a7643a9068809}{is\+Valid}} ()
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a2759878182e78744e16913755d03b25f}{handle}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} message)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ac0378aeaacb86683c8d29e861daa26d3}{after\+Properties\+Set}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static final String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a41b3a1aa95c8afe38114ab5626376c9f}{TYPE}} = \char`\"{}bdb\+\_\+trim\+\_\+age\char`\"{}
+\begin{DoxyCompactList}\small\item\em The typename of this rule. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a7aedf558135d1d8fe3d08c623603f1e3}{Bdb\+Trim\+Age\+Rule}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor, however, use manager for creation. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3ccb31e1c33d8e469efaea94eeda346a}{set\+File\+Catalog}} (File\+Catalog catalog)
+\item 
+File\+Catalog \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3b6c7349b4b76539e85150178f55f9b7}{get\+File\+Catalog}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a19d76a63323a64e852807ef3995b0fb8}{execute}} ()
+\begin{DoxyCompactList}\small\item\em execute this rule \end{DoxyCompactList}\item 
+Date\+Time \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a33708b0eee1de8853e8cfc5c5da9d676}{get\+Age\+Limit\+Date\+Time}} ()
+\begin{DoxyCompactList}\small\item\em get age limit as a Date\+Time \end{DoxyCompactList}\item 
+Date\+Time \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a44d1cf11e755acfe6396eba09761fa31}{get\+Current\+Date\+Time}} ()
+\begin{DoxyCompactList}\small\item\em get current UTC Date\+Time \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Rule to keep the age of files in BDB above a limit. 
+
+NOTE! the nominal datetime (what/date + what/time) is used for file \char`\"{}age\char`\"{} 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a7aedf558135d1d8fe3d08c623603f1e3}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a7aedf558135d1d8fe3d08c623603f1e3}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!BdbTrimAgeRule@{BdbTrimAgeRule}}
+\index{BdbTrimAgeRule@{BdbTrimAgeRule}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{BdbTrimAgeRule()}{BdbTrimAgeRule()}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+Bdb\+Trim\+Age\+Rule (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Default constructor, however, use manager for creation. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ac0378aeaacb86683c8d29e861daa26d3}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ac0378aeaacb86683c8d29e861daa26d3}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!afterPropertiesSet@{afterPropertiesSet}}
+\index{afterPropertiesSet@{afterPropertiesSet}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{afterPropertiesSet()}{afterPropertiesSet()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+after\+Properties\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+org.\+springframework.\+beans.\+factory.\+Initializing\+Bean\+::after\+Properties\+Set() 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a19d76a63323a64e852807ef3995b0fb8}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a19d76a63323a64e852807ef3995b0fb8}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!execute@{execute}}
+\index{execute@{execute}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+execute (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+execute this rule 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a33708b0eee1de8853e8cfc5c5da9d676}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a33708b0eee1de8853e8cfc5c5da9d676}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!getAgeLimitDateTime@{getAgeLimitDateTime}}
+\index{getAgeLimitDateTime@{getAgeLimitDateTime}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{getAgeLimitDateTime()}{getAgeLimitDateTime()}}
+{\footnotesize\ttfamily Date\+Time eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+get\+Age\+Limit\+Date\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+get age limit as a Date\+Time 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a44d1cf11e755acfe6396eba09761fa31}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a44d1cf11e755acfe6396eba09761fa31}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!getCurrentDateTime@{getCurrentDateTime}}
+\index{getCurrentDateTime@{getCurrentDateTime}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{getCurrentDateTime()}{getCurrentDateTime()}}
+{\footnotesize\ttfamily Date\+Time eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+get\+Current\+Date\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+get current UTC Date\+Time 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3aa9653f4a9e6977e5093b9455522030}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3aa9653f4a9e6977e5093b9455522030}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!getFileAgeLimit@{getFileAgeLimit}}
+\index{getFileAgeLimit@{getFileAgeLimit}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{getFileAgeLimit()}{getFileAgeLimit()}}
+{\footnotesize\ttfamily int eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+get\+File\+Age\+Limit (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the file count limit, 0 if unlimited 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3b6c7349b4b76539e85150178f55f9b7}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3b6c7349b4b76539e85150178f55f9b7}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!getFileCatalog@{getFileCatalog}}
+\index{getFileCatalog@{getFileCatalog}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{getFileCatalog()}{getFileCatalog()}}
+{\footnotesize\ttfamily File\+Catalog eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+get\+File\+Catalog (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\begin{DoxyReturn}{Returns}
+the catalog 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a8e9197c4528813ce469dd24cb118543f}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a8e9197c4528813ce469dd24cb118543f}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!getProperties@{getProperties}}
+\index{getProperties@{getProperties}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{getProperties()}{getProperties()}}
+{\footnotesize\ttfamily Map$<$ String, String $>$ eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+get\+Properties (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRulePropertyAccess_a7786273049c751ae7d6ce59f56842ef0}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Property\+Access\+::get\+Properties()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRulePropertyAccess_a7786273049c751ae7d6ce59f56842ef0}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Property\+Access}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a0d9599bed6dc16f1314badeebbd02b0e}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a0d9599bed6dc16f1314badeebbd02b0e}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!getType@{getType}}
+\index{getType@{getType}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{getType()}{getType()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+get\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a3548a2f80701d77867c9f242dd96daf6}{eu.\+baltrad.\+beast.\+rules.\+IRule\+::get\+Type()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a3548a2f80701d77867c9f242dd96daf6}{eu.\+baltrad.\+beast.\+rules.\+IRule}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a2759878182e78744e16913755d03b25f}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a2759878182e78744e16913755d03b25f}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!handle@{handle}}
+\index{handle@{handle}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+handle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}}}]{message }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a3f785709fd381fab1dcf7a371a532a06}{eu.\+baltrad.\+beast.\+rules.\+IRule\+::handle}}(\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{eu.\+baltrad.\+beast.\+message.\+IBlt\+Message}}) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a3f785709fd381fab1dcf7a371a532a06}{eu.\+baltrad.\+beast.\+rules.\+IRule}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ac2060a70868dac6a1a1a7643a9068809}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ac2060a70868dac6a1a1a7643a9068809}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!isValid@{isValid}}
+\index{isValid@{isValid}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{isValid()}{isValid()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+is\+Valid (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a2f8673ed2dfdba4a7b8b6f82889a4847}{eu.\+baltrad.\+beast.\+rules.\+IRule\+::is\+Valid()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a2f8673ed2dfdba4a7b8b6f82889a4847}{eu.\+baltrad.\+beast.\+rules.\+IRule}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a48c03dd7bb91b64ee0b7878f900b38e4}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a48c03dd7bb91b64ee0b7878f900b38e4}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!setFileAgeLimit@{setFileAgeLimit}}
+\index{setFileAgeLimit@{setFileAgeLimit}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{setFileAgeLimit()}{setFileAgeLimit()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+set\+File\+Age\+Limit (\begin{DoxyParamCaption}\item[{int}]{limit }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em limit} & file count limit, 0 if unlimited \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3ccb31e1c33d8e469efaea94eeda346a}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a3ccb31e1c33d8e469efaea94eeda346a}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!setFileCatalog@{setFileCatalog}}
+\index{setFileCatalog@{setFileCatalog}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{setFileCatalog()}{setFileCatalog()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+set\+File\+Catalog (\begin{DoxyParamCaption}\item[{File\+Catalog}]{catalog }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em catalog} & the catalog to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ab85780f4e856c045d31b8d5fd827460f}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_ab85780f4e856c045d31b8d5fd827460f}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!setProperties@{setProperties}}
+\index{setProperties@{setProperties}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{setProperties()}{setProperties()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+set\+Properties (\begin{DoxyParamCaption}\item[{Map$<$ String, String $>$}]{props }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+eu.\+baltrad.\+beast.\+rules.\+IRule\+Property\+Access\+::set\+Properties(\+Map) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRulePropertyAccess_a57663074d1f6ddb87dcdaeaae3d33638}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Property\+Access}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a41b3a1aa95c8afe38114ab5626376c9f}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1bdb_1_1BdbTrimAgeRule_a41b3a1aa95c8afe38114ab5626376c9f}} 
+\index{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}!TYPE@{TYPE}}
+\index{TYPE@{TYPE}!eu.baltrad.beast.rules.bdb.BdbTrimAgeRule@{eu.baltrad.beast.rules.bdb.BdbTrimAgeRule}}
+\doxysubsubsection{\texorpdfstring{TYPE}{TYPE}}
+{\footnotesize\ttfamily final String eu.\+baltrad.\+beast.\+rules.\+bdb.\+Bdb\+Trim\+Age\+Rule.\+TYPE = \char`\"{}bdb\+\_\+trim\+\_\+age\char`\"{}\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The typename of this rule. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/bdb/Bdb\+Trim\+Age\+Rule.\+java\end{DoxyCompactItemize}

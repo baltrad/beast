@@ -1,0 +1,75 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1security_1_1keyczar_1_1KeyCompressor}{}\doxysection{eu.\+baltrad.\+beast.\+security.\+keyczar.\+Key\+Compressor Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1security_1_1keyczar_1_1KeyCompressor}\index{eu.baltrad.beast.security.keyczar.KeyCompressor@{eu.baltrad.beast.security.keyczar.KeyCompressor}}
+
+
+Utility for compressing and uncompressing keyczar keys.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1keyczar_1_1KeyCompressor_a62cf005db70ab4edf8dc57aa58d2fcfb}{unzip}} (File file, byte\mbox{[}$\,$\mbox{]} bytes)  throws IOException 
+\begin{DoxyCompactList}\small\item\em Unzips a byte array into a file structure. \end{DoxyCompactList}\item 
+byte\mbox{[}$\,$\mbox{]} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1keyczar_1_1KeyCompressor_a27447c61c8af5a4e751e6e5b4a0c06b3}{zip}} (File root\+Folder)  throws IOException 
+\begin{DoxyCompactList}\small\item\em Zips a keyczar key folder into a byte array. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Utility for compressing and uncompressing keyczar keys. 
+
+\begin{DoxyAuthor}{Author}
+anders 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1security_1_1keyczar_1_1KeyCompressor_a62cf005db70ab4edf8dc57aa58d2fcfb}\label{classeu_1_1baltrad_1_1beast_1_1security_1_1keyczar_1_1KeyCompressor_a62cf005db70ab4edf8dc57aa58d2fcfb}} 
+\index{eu.baltrad.beast.security.keyczar.KeyCompressor@{eu.baltrad.beast.security.keyczar.KeyCompressor}!unzip@{unzip}}
+\index{unzip@{unzip}!eu.baltrad.beast.security.keyczar.KeyCompressor@{eu.baltrad.beast.security.keyczar.KeyCompressor}}
+\doxysubsubsection{\texorpdfstring{unzip()}{unzip()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+security.\+keyczar.\+Key\+Compressor.\+unzip (\begin{DoxyParamCaption}\item[{File}]{file,  }\item[{byte\mbox{[}$\,$\mbox{]}}]{bytes }\end{DoxyParamCaption}) throws IOException\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Unzips a byte array into a file structure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & the root folder where the files should be extracted \\
+\hline
+{\em bytes} & the byte array \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1SecurityStorageException}{Security\+Storage\+Exception}}} & if something erroneous occurs during the unzip \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1security_1_1keyczar_1_1KeyCompressor_a27447c61c8af5a4e751e6e5b4a0c06b3}\label{classeu_1_1baltrad_1_1beast_1_1security_1_1keyczar_1_1KeyCompressor_a27447c61c8af5a4e751e6e5b4a0c06b3}} 
+\index{eu.baltrad.beast.security.keyczar.KeyCompressor@{eu.baltrad.beast.security.keyczar.KeyCompressor}!zip@{zip}}
+\index{zip@{zip}!eu.baltrad.beast.security.keyczar.KeyCompressor@{eu.baltrad.beast.security.keyczar.KeyCompressor}}
+\doxysubsubsection{\texorpdfstring{zip()}{zip()}}
+{\footnotesize\ttfamily byte\mbox{[}$\,$\mbox{]} eu.\+baltrad.\+beast.\+security.\+keyczar.\+Key\+Compressor.\+zip (\begin{DoxyParamCaption}\item[{File}]{root\+Folder }\end{DoxyParamCaption}) throws IOException\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Zips a keyczar key folder into a byte array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em root\+Folder} & the keyczar folder \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the byte array 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em IOException} & on IO error \\
+\hline
+\end{DoxyExceptions}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/security/keyczar/Key\+Compressor.\+java\end{DoxyCompactItemize}

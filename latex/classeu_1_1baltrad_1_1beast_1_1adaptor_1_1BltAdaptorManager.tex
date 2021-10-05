@@ -1,0 +1,407 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager}{}\doxysection{eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager}\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a2c06d45f1253e0814e90d2b04f18ae84}{Blt\+Adaptor\+Manager}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6fd9d66eb39cbb3ba144b1591d37a4c0}{set\+System\+Reporter}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1log_1_1ISystemReporter}{ISystem\+Reporter}} reporter)
+\begin{DoxyCompactList}\small\item\em Sets the reporter. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a8913f64899d53b6facbcb979ab53d211}{set\+Jdbc\+Template}} (Jdbc\+Operations template)
+\begin{DoxyCompactList}\small\item\em Sets the jdbc template to be used by this class. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6f50c4f23af9e74258335681d8a5c580}{set\+Types}} (List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfigurationManager}{IAdaptor\+Configuration\+Manager}} $>$ managers)
+\begin{DoxyCompactList}\small\item\em Sets the available types. \end{DoxyCompactList}\item 
+Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfigurationManager}{IAdaptor\+Configuration\+Manager}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_ac42b9194521baeac1e5a7832327be5d2}{get\+Type\+Registry}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_ab92627d1761fef405b507c0d52dbd18b}{set\+Adaptors}} (Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} $>$ adaptors)
+\begin{DoxyCompactList}\small\item\em Sets the adaptors. \end{DoxyCompactList}\item 
+synchronized \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a4adee8efcb4f90386e075161ff683ef7}{register}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}} configuration)
+\item 
+synchronized \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_abd4d7bed698f08d22c9e61b9103886cb}{reregister}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}} configuration)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a35102488eaf2d49b0e9d76e9818b110b}{unregister}} (String name)
+\item 
+List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5802cf5ef7bb469c3dac257187f1f72c}{get\+Registered\+Adaptors}} ()
+\item 
+List$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5d09ce832724521a59592b6114a7238b}{get\+Available\+Types}} ()
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a903781be14ea828e515e38e68d48f324}{create\+Configuration}} (String type, String name)
+\item 
+List$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a0e971d521746b1f022a860f52679a747}{get\+Adaptor\+Names}} ()
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6bcdbded5af120daaefc6822be4c7e7c}{get\+Adaptor}} (String name)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a1d1b2a9d693819ccfdbb43d1417e3521}{handle}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1router_1_1IMultiRoutedMessage}{IMulti\+Routed\+Message}} message)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a4e578c4a5a59bde476382393d5eb13b7}{handle}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1router_1_1IRoutedMessage}{IRouted\+Message}} message)
+\begin{DoxyCompactList}\small\item\em Sends a message to destination given by the message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a0df4a8d337c69128608059eb40a70236}{handle}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1router_1_1IRoutedMessage}{IRouted\+Message}} message, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorCallback}{IAdaptor\+Callback}} callback)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5ae6fdf976f5caab3f12a60204959fc6}{after\+Properties\+Set}} ()  throws Exception 
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a2c879fc3548d9292f0a706f2c457e926}{update\+Adaptor\+Configuration}} (int adaptor\+\_\+id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}} configuration)
+\begin{DoxyCompactList}\small\item\em Updates the adaptor specific configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a36cfcf164d340d987e0145de8cfa64eb}{redefine\+Adaptor\+Configuration}} (int adaptor\+\_\+id, String type, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}} configuration)
+\begin{DoxyCompactList}\small\item\em Will reregister the adaptor specific configuration for the new type of adaptor, then the old adaptor specific configuration will be removed. \end{DoxyCompactList}\item 
+Row\+Mapper$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a03a7c607dbadc6fc75893bbdddf38bb1}{get\+Adaptor\+Mapper}} ()
+\begin{DoxyCompactList}\small\item\em Creates a Parameterized\+Row\+Mapper instance for fetching the data from the database tables. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5881c6e58fca3798163318fd4a451be4}{do\+Map\+Adaptor\+Row}} (Result\+Set rs, int rownum)  throws SQLException 
+\begin{DoxyCompactList}\small\item\em Maps one adaptor row into an adaptor by using the types read function. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a2c06d45f1253e0814e90d2b04f18ae84}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a2c06d45f1253e0814e90d2b04f18ae84}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!BltAdaptorManager@{BltAdaptorManager}}
+\index{BltAdaptorManager@{BltAdaptorManager}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{BltAdaptorManager()}{BltAdaptorManager()}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+Blt\+Adaptor\+Manager (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Default constructor. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5ae6fdf976f5caab3f12a60204959fc6}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5ae6fdf976f5caab3f12a60204959fc6}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!afterPropertiesSet@{afterPropertiesSet}}
+\index{afterPropertiesSet@{afterPropertiesSet}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{afterPropertiesSet()}{afterPropertiesSet()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+after\+Properties\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) throws Exception\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+org.\+springframework.\+beans.\+factory.\+Initializing\+Bean\+::after\+Properties\+Set() 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a903781be14ea828e515e38e68d48f324}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a903781be14ea828e515e38e68d48f324}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!createConfiguration@{createConfiguration}}
+\index{createConfiguration@{createConfiguration}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{createConfiguration()}{createConfiguration()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}} eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+create\+Configuration (\begin{DoxyParamCaption}\item[{String}]{type,  }\item[{String}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_ac38ab691c4d320eadae052fb2b43982b}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::create\+Configuration(\+String, String)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_ac38ab691c4d320eadae052fb2b43982b}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5881c6e58fca3798163318fd4a451be4}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5881c6e58fca3798163318fd4a451be4}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!doMapAdaptorRow@{doMapAdaptorRow}}
+\index{doMapAdaptorRow@{doMapAdaptorRow}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{doMapAdaptorRow()}{doMapAdaptorRow()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+do\+Map\+Adaptor\+Row (\begin{DoxyParamCaption}\item[{Result\+Set}]{rs,  }\item[{int}]{rownum }\end{DoxyParamCaption}) throws SQLException\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Maps one adaptor row into an adaptor by using the types read function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rs} & the result set \\
+\hline
+{\em rownum} & the row number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the adaptor if found 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em SQLException} & on any SQL related exception \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6bcdbded5af120daaefc6822be4c7e7c}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6bcdbded5af120daaefc6822be4c7e7c}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!getAdaptor@{getAdaptor}}
+\index{getAdaptor@{getAdaptor}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{getAdaptor()}{getAdaptor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+get\+Adaptor (\begin{DoxyParamCaption}\item[{String}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_ad444f72a4d1883e76625cd399291b262}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::get\+Adaptor(\+String)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_ad444f72a4d1883e76625cd399291b262}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a03a7c607dbadc6fc75893bbdddf38bb1}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a03a7c607dbadc6fc75893bbdddf38bb1}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!getAdaptorMapper@{getAdaptorMapper}}
+\index{getAdaptorMapper@{getAdaptorMapper}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{getAdaptorMapper()}{getAdaptorMapper()}}
+{\footnotesize\ttfamily Row\+Mapper$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} $>$ eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+get\+Adaptor\+Mapper (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Creates a Parameterized\+Row\+Mapper instance for fetching the data from the database tables. 
+
+\begin{DoxyReturn}{Returns}
+the parameterized row mapper 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a0e971d521746b1f022a860f52679a747}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a0e971d521746b1f022a860f52679a747}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!getAdaptorNames@{getAdaptorNames}}
+\index{getAdaptorNames@{getAdaptorNames}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{getAdaptorNames()}{getAdaptorNames()}}
+{\footnotesize\ttfamily List$<$ String $>$ eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+get\+Adaptor\+Names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a8ca45e841cd321df090b4984f00fe956}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::get\+Adaptor\+Names()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a8ca45e841cd321df090b4984f00fe956}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5d09ce832724521a59592b6114a7238b}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5d09ce832724521a59592b6114a7238b}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!getAvailableTypes@{getAvailableTypes}}
+\index{getAvailableTypes@{getAvailableTypes}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{getAvailableTypes()}{getAvailableTypes()}}
+{\footnotesize\ttfamily List$<$ String $>$ eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+get\+Available\+Types (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a8e7bb5254e80b692d4898a57e3d85529}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::get\+Available\+Types()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a8e7bb5254e80b692d4898a57e3d85529}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5802cf5ef7bb469c3dac257187f1f72c}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a5802cf5ef7bb469c3dac257187f1f72c}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!getRegisteredAdaptors@{getRegisteredAdaptors}}
+\index{getRegisteredAdaptors@{getRegisteredAdaptors}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{getRegisteredAdaptors()}{getRegisteredAdaptors()}}
+{\footnotesize\ttfamily List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} $>$ eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+get\+Registered\+Adaptors (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a007497a4649d1b3a305e9b0da0adb605}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::get\+Registered\+Adaptors()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a007497a4649d1b3a305e9b0da0adb605}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_ac42b9194521baeac1e5a7832327be5d2}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_ac42b9194521baeac1e5a7832327be5d2}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!getTypeRegistry@{getTypeRegistry}}
+\index{getTypeRegistry@{getTypeRegistry}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{getTypeRegistry()}{getTypeRegistry()}}
+{\footnotesize\ttfamily Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfigurationManager}{IAdaptor\+Configuration\+Manager}} $>$ eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+get\+Type\+Registry (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the type registry 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a1d1b2a9d693819ccfdbb43d1417e3521}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a1d1b2a9d693819ccfdbb43d1417e3521}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!handle@{handle}}
+\index{handle@{handle}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+handle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1router_1_1IMultiRoutedMessage}{IMulti\+Routed\+Message}}}]{message }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a6af76a4494808e8fe8eed50d01e8cd3f}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::handle}}(\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1router_1_1IMultiRoutedMessage}{eu.\+baltrad.\+beast.\+router.\+IMulti\+Routed\+Message}}) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a6af76a4494808e8fe8eed50d01e8cd3f}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a4e578c4a5a59bde476382393d5eb13b7}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a4e578c4a5a59bde476382393d5eb13b7}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!handle@{handle}}
+\index{handle@{handle}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+handle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1router_1_1IRoutedMessage}{IRouted\+Message}}}]{message }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sends a message to destination given by the message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & the message \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1AdaptorException}{Adaptor\+Exception}}} & if the message not could be passed on to the adaptor \\
+\hline
+\end{DoxyExceptions}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a2d65c510434d783b97d486e91ba4043d}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a0df4a8d337c69128608059eb40a70236}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a0df4a8d337c69128608059eb40a70236}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!handle@{handle}}
+\index{handle@{handle}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+handle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1router_1_1IRoutedMessage}{IRouted\+Message}}}]{message,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorCallback}{IAdaptor\+Callback}}}]{callback }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a3d377b142ce86086d36b4a3001015eb2}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::handle(\+IRouted\+Message, IAdaptor\+Callback)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a3d377b142ce86086d36b4a3001015eb2}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a36cfcf164d340d987e0145de8cfa64eb}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a36cfcf164d340d987e0145de8cfa64eb}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!redefineAdaptorConfiguration@{redefineAdaptorConfiguration}}
+\index{redefineAdaptorConfiguration@{redefineAdaptorConfiguration}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{redefineAdaptorConfiguration()}{redefineAdaptorConfiguration()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+redefine\+Adaptor\+Configuration (\begin{DoxyParamCaption}\item[{int}]{adaptor\+\_\+id,  }\item[{String}]{type,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}}}]{configuration }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Will reregister the adaptor specific configuration for the new type of adaptor, then the old adaptor specific configuration will be removed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em adaptor\+\_\+id} & the adaptor id \\
+\hline
+{\em type} & the old type of adaptor configuration \\
+\hline
+{\em configuration} & the new adaptor configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an adaptor 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1AdaptorException}{Adaptor\+Exception}}} & on failure \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a4adee8efcb4f90386e075161ff683ef7}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a4adee8efcb4f90386e075161ff683ef7}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!register@{register}}
+\index{register@{register}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{register()}{register()}}
+{\footnotesize\ttfamily synchronized \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+register (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}}}]{configuration }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a3a941fc8ddf5149e2727f626c6846a31}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::register(\+IAdaptor\+Configuration)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a3a941fc8ddf5149e2727f626c6846a31}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_abd4d7bed698f08d22c9e61b9103886cb}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_abd4d7bed698f08d22c9e61b9103886cb}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!reregister@{reregister}}
+\index{reregister@{reregister}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{reregister()}{reregister()}}
+{\footnotesize\ttfamily synchronized \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+reregister (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}}}]{configuration }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a29d719106a4a459bb345ca763717f697}{IBlt\+Adaptor\+Manager\+::reregister(\+IAdaptor\+Configuration)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_a29d719106a4a459bb345ca763717f697}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_ab92627d1761fef405b507c0d52dbd18b}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_ab92627d1761fef405b507c0d52dbd18b}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!setAdaptors@{setAdaptors}}
+\index{setAdaptors@{setAdaptors}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{setAdaptors()}{setAdaptors()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+set\+Adaptors (\begin{DoxyParamCaption}\item[{Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} $>$}]{adaptors }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the adaptors. 
+
+Mostly used for test purposes otherwise this information is read from the database. 
+\begin{DoxyParams}{Parameters}
+{\em adaptors} & the adaptors \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a8913f64899d53b6facbcb979ab53d211}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a8913f64899d53b6facbcb979ab53d211}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!setJdbcTemplate@{setJdbcTemplate}}
+\index{setJdbcTemplate@{setJdbcTemplate}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{setJdbcTemplate()}{setJdbcTemplate()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+set\+Jdbc\+Template (\begin{DoxyParamCaption}\item[{Jdbc\+Operations}]{template }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the jdbc template to be used by this class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em template} & the template \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6fd9d66eb39cbb3ba144b1591d37a4c0}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6fd9d66eb39cbb3ba144b1591d37a4c0}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!setSystemReporter@{setSystemReporter}}
+\index{setSystemReporter@{setSystemReporter}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{setSystemReporter()}{setSystemReporter()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+set\+System\+Reporter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1log_1_1ISystemReporter}{ISystem\+Reporter}}}]{reporter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the reporter. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reporter} & the reporter to use, MAY not be null \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6f50c4f23af9e74258335681d8a5c580}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a6f50c4f23af9e74258335681d8a5c580}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!setTypes@{setTypes}}
+\index{setTypes@{setTypes}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{setTypes()}{setTypes()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+set\+Types (\begin{DoxyParamCaption}\item[{List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfigurationManager}{IAdaptor\+Configuration\+Manager}} $>$}]{managers }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the available types. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em managers} & a list of adaptor types that are supported by this manager \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a35102488eaf2d49b0e9d76e9818b110b}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a35102488eaf2d49b0e9d76e9818b110b}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!unregister@{unregister}}
+\index{unregister@{unregister}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{unregister()}{unregister()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+unregister (\begin{DoxyParamCaption}\item[{String}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_ae05b8a109293716a21e6c451635393ed}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager\+::unregister}}(java.\+lang.\+String) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IBltAdaptorManager_ae05b8a109293716a21e6c451635393ed}{eu.\+baltrad.\+beast.\+adaptor.\+IBlt\+Adaptor\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a2c879fc3548d9292f0a706f2c457e926}\label{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1BltAdaptorManager_a2c879fc3548d9292f0a706f2c457e926}} 
+\index{eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}!updateAdaptorConfiguration@{updateAdaptorConfiguration}}
+\index{updateAdaptorConfiguration@{updateAdaptorConfiguration}!eu.baltrad.beast.adaptor.BltAdaptorManager@{eu.baltrad.beast.adaptor.BltAdaptorManager}}
+\doxysubsubsection{\texorpdfstring{updateAdaptorConfiguration()}{updateAdaptorConfiguration()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptor}{IAdaptor}} eu.\+baltrad.\+beast.\+adaptor.\+Blt\+Adaptor\+Manager.\+update\+Adaptor\+Configuration (\begin{DoxyParamCaption}\item[{int}]{adaptor\+\_\+id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1adaptor_1_1IAdaptorConfiguration}{IAdaptor\+Configuration}}}]{configuration }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Updates the adaptor specific configuration. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em adaptor\+\_\+id} & the adaptor \\
+\hline
+{\em configuration} & the configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an adaptor 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1adaptor_1_1AdaptorException}{Adaptor\+Exception}}} & on failure \\
+\hline
+\end{DoxyExceptions}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/adaptor/Blt\+Adaptor\+Manager.\+java\end{DoxyCompactItemize}

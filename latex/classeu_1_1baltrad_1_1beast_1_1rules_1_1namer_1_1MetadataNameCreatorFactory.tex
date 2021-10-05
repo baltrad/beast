@@ -1,0 +1,105 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+namer.\+Metadata\+Name\+Creator\+Factory Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory}\index{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}}
+
+
+A metadata name creator provider.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a25b18d8280ac36dbbb623d917c45d85c}{Metadata\+Name\+Creator\+Factory}} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_afcfc01aebc8612103c43972cfa2e8ec1}{set\+Creators}} (List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreator}{Metadata\+Name\+Creator}} $>$ creators)
+\item 
+List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreator}{Metadata\+Name\+Creator}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_aec07359838b0fd47eb217ea8b8d98811}{get\+Creators}} ()
+\item 
+boolean \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a0ca80635ff8314da83164e18d4dd648e}{supports}} (String tag)
+\begin{DoxyCompactList}\small\item\em Returns if there are any namer that supports the provided tag. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreator}{Metadata\+Name\+Creator}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a8e7dcf472e6beb63b422e0ae3d51cc5c}{get}} (String tag)
+\begin{DoxyCompactList}\small\item\em Returns a metadata name creator that supports the provided tag. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A metadata name creator provider. 
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a25b18d8280ac36dbbb623d917c45d85c}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a25b18d8280ac36dbbb623d917c45d85c}} 
+\index{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}!MetadataNameCreatorFactory@{MetadataNameCreatorFactory}}
+\index{MetadataNameCreatorFactory@{MetadataNameCreatorFactory}!eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}}
+\doxysubsubsection{\texorpdfstring{MetadataNameCreatorFactory()}{MetadataNameCreatorFactory()}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+rules.\+namer.\+Metadata\+Name\+Creator\+Factory.\+Metadata\+Name\+Creator\+Factory (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a8e7dcf472e6beb63b422e0ae3d51cc5c}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a8e7dcf472e6beb63b422e0ae3d51cc5c}} 
+\index{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}!get@{get}}
+\index{get@{get}!eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreator}{Metadata\+Name\+Creator}} eu.\+baltrad.\+beast.\+rules.\+namer.\+Metadata\+Name\+Creator\+Factory.\+get (\begin{DoxyParamCaption}\item[{String}]{tag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a metadata name creator that supports the provided tag. 
+
+If more than one creator supports the provided tag, the first found is returned 
+\begin{DoxyParams}{Parameters}
+{\em tag} & the tag \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the creator or null if none is found 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_aec07359838b0fd47eb217ea8b8d98811}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_aec07359838b0fd47eb217ea8b8d98811}} 
+\index{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}!getCreators@{getCreators}}
+\index{getCreators@{getCreators}!eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}}
+\doxysubsubsection{\texorpdfstring{getCreators()}{getCreators()}}
+{\footnotesize\ttfamily List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreator}{Metadata\+Name\+Creator}} $>$ eu.\+baltrad.\+beast.\+rules.\+namer.\+Metadata\+Name\+Creator\+Factory.\+get\+Creators (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the metadata name creators 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_afcfc01aebc8612103c43972cfa2e8ec1}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_afcfc01aebc8612103c43972cfa2e8ec1}} 
+\index{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}!setCreators@{setCreators}}
+\index{setCreators@{setCreators}!eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}}
+\doxysubsubsection{\texorpdfstring{setCreators()}{setCreators()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+namer.\+Metadata\+Name\+Creator\+Factory.\+set\+Creators (\begin{DoxyParamCaption}\item[{List$<$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreator}{Metadata\+Name\+Creator}} $>$}]{creators }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em creators} & the list of metadata name creators to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a0ca80635ff8314da83164e18d4dd648e}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1namer_1_1MetadataNameCreatorFactory_a0ca80635ff8314da83164e18d4dd648e}} 
+\index{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}!supports@{supports}}
+\index{supports@{supports}!eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory@{eu.baltrad.beast.rules.namer.MetadataNameCreatorFactory}}
+\doxysubsubsection{\texorpdfstring{supports()}{supports()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+rules.\+namer.\+Metadata\+Name\+Creator\+Factory.\+supports (\begin{DoxyParamCaption}\item[{String}]{tag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns if there are any namer that supports the provided tag. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tag} & the tag \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+if there exist any name creator or not 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/namer/Metadata\+Name\+Creator\+Factory.\+java\end{DoxyCompactItemize}

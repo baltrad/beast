@@ -1,0 +1,238 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager}\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a47966602bbca9c962ca539facda65fbd}{set\+Jdbc\+Template}} (Jdbc\+Operations template)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a15bb8ec56142f346e1d92fcadef7d0aa}{set\+Catalog}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog}{Catalog}} catalog)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a8011ac59026f9d4e5b3ceb74c5e15451}{set\+Rule\+Utilities}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1util_1_1IRuleUtilities}{IRule\+Utilities}} utilities)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aa6b077a2b78bd5967a419d84143b24d0}{store}} (int rule\+\_\+id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}} rule)
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aff60e17dd692a224e8892250e986ac61}{load}} (int rule\+\_\+id)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aabeacffe65794ccfa49bbd21022d2f21}{update}} (int rule\+\_\+id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}} rule)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_ac0c657cb1bba2adfd6d28164492d5ed4}{delete}} (int rule\+\_\+id)
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRule}{Gra\+Rule}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a19f6222909ecbd07e36b83af42d06286}{create\+Rule}} ()
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{Rule\+Filter\+Manager}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a7408279ffd3ab84181a15d35dcee8267}{get\+Filter\+Manager}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_ae94df032c46e6b383009f619c3d0748a}{set\+Filter\+Manager}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{Rule\+Filter\+Manager}} filter\+Manager)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Row\+Mapper$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRule}{Gra\+Rule}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aa4cc66ee838ee11ef1fd52f1fffbbc52}{get\+Gra\+Rule\+Mapper}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a3f7b11fa11edd46c86dc7038a0ef508f}{store\+Filter}} (int rule\+\_\+id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\begin{DoxyCompactList}\small\item\em Stores the associated filter. \end{DoxyCompactList}\item 
+Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a9df512ef435a9f6efa6883c1fe2d3ee9}{create\+Match\+Filter}} (int rule\+\_\+id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\begin{DoxyCompactList}\small\item\em Creates a match filter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a7f7718099f0b33cf5d308a35aa251f9a}{load\+Filter}} (int rule\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Loads the filter for the rule. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a9df512ef435a9f6efa6883c1fe2d3ee9}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a9df512ef435a9f6efa6883c1fe2d3ee9}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!createMatchFilter@{createMatchFilter}}
+\index{createMatchFilter@{createMatchFilter}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{createMatchFilter()}{createMatchFilter()}}
+{\footnotesize\ttfamily Map$<$ String, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} $>$ eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+create\+Match\+Filter (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Creates a match filter. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & the rule id \\
+\hline
+{\em filter} & the filter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a map with match as filter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a19f6222909ecbd07e36b83af42d06286}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a19f6222909ecbd07e36b83af42d06286}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!createRule@{createRule}}
+\index{createRule@{createRule}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{createRule()}{createRule()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRule}{Gra\+Rule}} eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+create\+Rule (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a6bca7e8e072eb86b9f52861ef56996c3}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::create\+Rule()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a6bca7e8e072eb86b9f52861ef56996c3}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_ac0c657cb1bba2adfd6d28164492d5ed4}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_ac0c657cb1bba2adfd6d28164492d5ed4}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!delete@{delete}}
+\index{delete@{delete}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{delete()}{delete()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+delete (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a4e644a44e8cb074f8e9e5bd7199b8b3e}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::delete(int)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a4e644a44e8cb074f8e9e5bd7199b8b3e}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a7408279ffd3ab84181a15d35dcee8267}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a7408279ffd3ab84181a15d35dcee8267}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!getFilterManager@{getFilterManager}}
+\index{getFilterManager@{getFilterManager}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{getFilterManager()}{getFilterManager()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{Rule\+Filter\+Manager}} eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+get\+Filter\+Manager (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the filter manager 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aa4cc66ee838ee11ef1fd52f1fffbbc52}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aa4cc66ee838ee11ef1fd52f1fffbbc52}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!getGraRuleMapper@{getGraRuleMapper}}
+\index{getGraRuleMapper@{getGraRuleMapper}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{getGraRuleMapper()}{getGraRuleMapper()}}
+{\footnotesize\ttfamily Row\+Mapper$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRule}{Gra\+Rule}} $>$ eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+get\+Gra\+Rule\+Mapper (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\begin{DoxyReturn}{Returns}
+the gra rule mapper to use for creating a rule from the database result. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aff60e17dd692a224e8892250e986ac61}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aff60e17dd692a224e8892250e986ac61}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!load@{load}}
+\index{load@{load}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}} eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+load (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a3ab6e2cbbfba64395f840d2d30925fb1}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::load(int)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a3ab6e2cbbfba64395f840d2d30925fb1}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a7f7718099f0b33cf5d308a35aa251f9a}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a7f7718099f0b33cf5d308a35aa251f9a}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!loadFilter@{loadFilter}}
+\index{loadFilter@{loadFilter}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{loadFilter()}{loadFilter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+load\+Filter (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Loads the filter for the rule. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & the rule \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the filter if any otherwise null 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a15bb8ec56142f346e1d92fcadef7d0aa}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a15bb8ec56142f346e1d92fcadef7d0aa}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!setCatalog@{setCatalog}}
+\index{setCatalog@{setCatalog}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{setCatalog()}{setCatalog()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+set\+Catalog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog}{Catalog}}}]{catalog }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em catalog} & the catalog to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_ae94df032c46e6b383009f619c3d0748a}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_ae94df032c46e6b383009f619c3d0748a}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!setFilterManager@{setFilterManager}}
+\index{setFilterManager@{setFilterManager}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{setFilterManager()}{setFilterManager()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+set\+Filter\+Manager (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{Rule\+Filter\+Manager}}}]{filter\+Manager }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em filter\+Manager} & the filter manager \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a47966602bbca9c962ca539facda65fbd}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a47966602bbca9c962ca539facda65fbd}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!setJdbcTemplate@{setJdbcTemplate}}
+\index{setJdbcTemplate@{setJdbcTemplate}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{setJdbcTemplate()}{setJdbcTemplate()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+set\+Jdbc\+Template (\begin{DoxyParamCaption}\item[{Jdbc\+Operations}]{template }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em template} & the jdbc template to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a8011ac59026f9d4e5b3ceb74c5e15451}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a8011ac59026f9d4e5b3ceb74c5e15451}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!setRuleUtilities@{setRuleUtilities}}
+\index{setRuleUtilities@{setRuleUtilities}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{setRuleUtilities()}{setRuleUtilities()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+set\+Rule\+Utilities (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1util_1_1IRuleUtilities}{IRule\+Utilities}}}]{utilities }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em utilities} & the rule utilities to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aa6b077a2b78bd5967a419d84143b24d0}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aa6b077a2b78bd5967a419d84143b24d0}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!store@{store}}
+\index{store@{store}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{store()}{store()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+store (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}}}]{rule }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a35563b9e78d7db194bddcba23b9a4832}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::store}}(int, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{eu.\+baltrad.\+beast.\+rules.\+IRule}}) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a35563b9e78d7db194bddcba23b9a4832}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a3f7b11fa11edd46c86dc7038a0ef508f}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_a3f7b11fa11edd46c86dc7038a0ef508f}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!storeFilter@{storeFilter}}
+\index{storeFilter@{storeFilter}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{storeFilter()}{storeFilter()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+store\+Filter (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Stores the associated filter. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & the rule\+\_\+id \\
+\hline
+{\em filter} & the filter to store \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aabeacffe65794ccfa49bbd21022d2f21}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1gra_1_1GraRuleManager_aabeacffe65794ccfa49bbd21022d2f21}} 
+\index{eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}!update@{update}}
+\index{update@{update}!eu.baltrad.beast.rules.gra.GraRuleManager@{eu.baltrad.beast.rules.gra.GraRuleManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+gra.\+Gra\+Rule\+Manager.\+update (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}}}]{rule }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a5e127b54d9fb0ec8fa0ba2fcc9f7c1ec}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::update}}(int, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{eu.\+baltrad.\+beast.\+rules.\+IRule}}) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a5e127b54d9fb0ec8fa0ba2fcc9f7c1ec}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/gra/Gra\+Rule\+Manager.\+java\end{DoxyCompactItemize}

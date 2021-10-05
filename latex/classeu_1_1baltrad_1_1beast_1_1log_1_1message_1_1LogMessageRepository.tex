@@ -1,0 +1,272 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository}{}\doxysection{eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository}\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.728395cm]{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a1e001a332b368a4dbfa5e755504f819a}{Log\+Message\+Repository}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a9d561ebb78428de1c843802b0ae74049}{Log\+Message\+Repository}} (String\mbox{[}$\,$\mbox{]} filenames)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a80e99755da30b7f8db91dde8e675f9f2}{Log\+Message\+Repository}} (Map$<$ String, \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessage}{Log\+Message}} $>$ messages)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+synchronized \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessage}{Log\+Message}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a74ae4d9b1e276dea2e6c8054b52e061a}{get\+Message}} (String ecode)
+\begin{DoxyCompactList}\small\item\em Returns the message for this error code. \end{DoxyCompactList}\item 
+synchronized String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a2ec834ccf59550aeb4e14bc362981d4b}{get\+Module}} (String ecode)
+\begin{DoxyCompactList}\small\item\em Returns the module this error code belongs to. \end{DoxyCompactList}\item 
+synchronized List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessage}{Log\+Message}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_ae1f567f406fcbfb62243bd8a00b3eb45}{get\+Module\+Messages}} ()
+\begin{DoxyCompactList}\small\item\em Returns all messages belonging to a specific module type. \end{DoxyCompactList}\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a501f13696525aec141083ca7d1c3d5e0}{get\+Message}} (String code, String message, Object... args)
+\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a1503a13de13013f6bb4d05471d28c695}{add}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessage}{Log\+Message}} message)
+\begin{DoxyCompactList}\small\item\em Adds a log message to this repository. \end{DoxyCompactList}\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a4832233e1487f0d86688b011b42e9c4f}{remove}} (String ecode)
+\begin{DoxyCompactList}\small\item\em Removes the log message with specified error code. \end{DoxyCompactList}\item 
+String\mbox{[}$\,$\mbox{]} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_aebb45b0b9ed2a1d109c5168a0f9cdf60}{get\+Filenames}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a7e7d2dc3fe21c07d01b5feec8da3dcfb}{set\+Filenames}} (String\mbox{[}$\,$\mbox{]} filenames)
+\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a75b1fe9155a52ec624413cc5b3c86069}{after\+Properties\+Set}} ()  throws Exception 
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a16d5cb742b342ac5450df63e833d3d8d}{load}} (String filename)
+\begin{DoxyCompactList}\small\item\em Loads a message file. \end{DoxyCompactList}\item 
+synchronized void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a800baa2670bbc579c66c4e0d6b32ca12}{load}} (String\mbox{[}$\,$\mbox{]} filenames)
+\begin{DoxyCompactList}\small\item\em Loads several message files. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a77b1033a398e877da7df55e10dd906e4}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a77b1033a398e877da7df55e10dd906e4}} 
+\mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1MessageSeverity}{Message\+Severity}} {\bfseries str\+To\+Severity} (String str)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a1e001a332b368a4dbfa5e755504f819a}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a1e001a332b368a4dbfa5e755504f819a}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!LogMessageRepository@{LogMessageRepository}}
+\index{LogMessageRepository@{LogMessageRepository}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{LogMessageRepository()}{LogMessageRepository()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+Log\+Message\+Repository (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Default constructor. 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a9d561ebb78428de1c843802b0ae74049}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a9d561ebb78428de1c843802b0ae74049}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!LogMessageRepository@{LogMessageRepository}}
+\index{LogMessageRepository@{LogMessageRepository}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{LogMessageRepository()}{LogMessageRepository()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+Log\+Message\+Repository (\begin{DoxyParamCaption}\item[{String\mbox{[}$\,$\mbox{]}}]{filenames }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filenames} & a list of filenames containing log messages \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a80e99755da30b7f8db91dde8e675f9f2}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a80e99755da30b7f8db91dde8e675f9f2}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!LogMessageRepository@{LogMessageRepository}}
+\index{LogMessageRepository@{LogMessageRepository}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{LogMessageRepository()}{LogMessageRepository()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+Log\+Message\+Repository (\begin{DoxyParamCaption}\item[{Map$<$ String, \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessage}{Log\+Message}} $>$}]{messages }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em messages} & the log messages \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a1503a13de13013f6bb4d05471d28c695}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a1503a13de13013f6bb4d05471d28c695}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!add@{add}}
+\index{add@{add}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessage}{Log\+Message}}}]{message }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds a log message to this repository. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & the message to add \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a75b1fe9155a52ec624413cc5b3c86069}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a75b1fe9155a52ec624413cc5b3c86069}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!afterPropertiesSet@{afterPropertiesSet}}
+\index{afterPropertiesSet@{afterPropertiesSet}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{afterPropertiesSet()}{afterPropertiesSet()}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+after\+Properties\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) throws Exception\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+org.\+springframework.\+beans.\+factory.\+Initializing\+Bean\+::after\+Properties\+Set() 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_aebb45b0b9ed2a1d109c5168a0f9cdf60}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_aebb45b0b9ed2a1d109c5168a0f9cdf60}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!getFilenames@{getFilenames}}
+\index{getFilenames@{getFilenames}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{getFilenames()}{getFilenames()}}
+{\footnotesize\ttfamily String\mbox{[}$\,$\mbox{]} eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+get\+Filenames (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the filename 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a501f13696525aec141083ca7d1c3d5e0}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a501f13696525aec141083ca7d1c3d5e0}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!getMessage@{getMessage}}
+\index{getMessage@{getMessage}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{getMessage()}{getMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+get\+Message (\begin{DoxyParamCaption}\item[{String}]{code,  }\item[{String}]{message,  }\item[{Object...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+eu.\+baltrad.\+beast.\+log.\+ILog\+Message\+Repository\+::get\+Message(\+String, String, String, Object...) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1ILogMessageRepository_a074822edd6345eec1317e960c0c8d7ff}{eu.\+baltrad.\+beast.\+log.\+message.\+ILog\+Message\+Repository}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a74ae4d9b1e276dea2e6c8054b52e061a}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a74ae4d9b1e276dea2e6c8054b52e061a}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!getMessage@{getMessage}}
+\index{getMessage@{getMessage}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{getMessage()}{getMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily synchronized \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessage}{Log\+Message}} eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+get\+Message (\begin{DoxyParamCaption}\item[{String}]{ecode }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the message for this error code. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em module} & the module \\
+\hline
+{\em ecode} & the error code \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the log message 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1ILogMessageRepository_a45bc7a80c45ff0ec765005fbfcf54731}{eu.\+baltrad.\+beast.\+log.\+message.\+ILog\+Message\+Repository}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a2ec834ccf59550aeb4e14bc362981d4b}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a2ec834ccf59550aeb4e14bc362981d4b}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!getModule@{getModule}}
+\index{getModule@{getModule}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{getModule()}{getModule()}}
+{\footnotesize\ttfamily synchronized String eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+get\+Module (\begin{DoxyParamCaption}\item[{String}]{ecode }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the module this error code belongs to. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ecode} & the error code \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the module or null if error code not could be found 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1ILogMessageRepository_a76cefa60ed049f2a44aa1f0d4b1512ec}{eu.\+baltrad.\+beast.\+log.\+message.\+ILog\+Message\+Repository}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_ae1f567f406fcbfb62243bd8a00b3eb45}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_ae1f567f406fcbfb62243bd8a00b3eb45}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!getModuleMessages@{getModuleMessages}}
+\index{getModuleMessages@{getModuleMessages}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{getModuleMessages()}{getModuleMessages()}}
+{\footnotesize\ttfamily synchronized List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessage}{Log\+Message}} $>$ eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+get\+Module\+Messages (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns all messages belonging to a specific module type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em module} & the module name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the messages 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1ILogMessageRepository_af382cf0620678b301e46dabc617cf0ec}{eu.\+baltrad.\+beast.\+log.\+message.\+ILog\+Message\+Repository}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a16d5cb742b342ac5450df63e833d3d8d}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a16d5cb742b342ac5450df63e833d3d8d}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!load@{load}}
+\index{load@{load}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+load (\begin{DoxyParamCaption}\item[{String}]{filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Loads a message file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & the filename \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a800baa2670bbc579c66c4e0d6b32ca12}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a800baa2670bbc579c66c4e0d6b32ca12}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!load@{load}}
+\index{load@{load}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+load (\begin{DoxyParamCaption}\item[{String\mbox{[}$\,$\mbox{]}}]{filenames }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Loads several message files. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filenames} & the filenames \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a4832233e1487f0d86688b011b42e9c4f}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a4832233e1487f0d86688b011b42e9c4f}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!remove@{remove}}
+\index{remove@{remove}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily synchronized void eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+remove (\begin{DoxyParamCaption}\item[{String}]{ecode }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Removes the log message with specified error code. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ecode} & the error code \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a7e7d2dc3fe21c07d01b5feec8da3dcfb}\label{classeu_1_1baltrad_1_1beast_1_1log_1_1message_1_1LogMessageRepository_a7e7d2dc3fe21c07d01b5feec8da3dcfb}} 
+\index{eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}!setFilenames@{setFilenames}}
+\index{setFilenames@{setFilenames}!eu.baltrad.beast.log.message.LogMessageRepository@{eu.baltrad.beast.log.message.LogMessageRepository}}
+\doxysubsubsection{\texorpdfstring{setFilenames()}{setFilenames()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+log.\+message.\+Log\+Message\+Repository.\+set\+Filenames (\begin{DoxyParamCaption}\item[{String\mbox{[}$\,$\mbox{]}}]{filenames }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em filenames} & the filenames to set \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/log/message/Log\+Message\+Repository.\+java\end{DoxyCompactItemize}

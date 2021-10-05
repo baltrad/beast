@@ -1,0 +1,329 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager}\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a8bb81bb64d22fa8cd496fbde80742786}{set\+Jdbc\+Template}} (Jdbc\+Operations template)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_acf656f6240d0aa2949ec61647aa788f2}{set\+Catalog}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog}{Catalog}} catalog)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a1c04b4b13bdbbb575bceaee6b7d94183}{set\+Rule\+Utilities}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1util_1_1IRuleUtilities}{IRule\+Utilities}} utilities)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a0cd09ef87c3734d8545aa2d24042309b}{set\+Timeout\+Manager}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutManager}{Timeout\+Manager}} manager)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_afde58ef1abc4ee70272235588d3333e8}{delete}} (int rule\+Id)
+\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aee97c89da658e4968299f4fa62e088ec}{load}} (int rule\+Id)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a594fb97426a3460b56c3259c49fb734d}{store}} (int rule\+Id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}} rule)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a5b09d750cefe873bde928b095ef08601}{update}} (int rule\+Id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}} rule)
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRule}{Compositing\+Rule}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_af70e9542fe1681bf3fd918ba5d01479c}{create\+Rule}} ()
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{Rule\+Filter\+Manager}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a58bd6224fa75d83b0b643f97f6fd9e72}{get\+Filter\+Manager}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a3da554a38b0ed9fb5f84c9c1d7e91e01}{set\+Filter\+Manager}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{Rule\+Filter\+Manager}} filter\+Manager)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_afefce2fa15222e972fa68382eb0b09e5}{store\+Sources}} (int rule\+\_\+id, List$<$ String $>$ sources)
+\begin{DoxyCompactList}\small\item\em Stores the sources. \end{DoxyCompactList}\item 
+List$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a7328e3b51293d1acacabb54d2b213cb0}{get\+Sources}} (int rule\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Returns a list of sources connected to the rule\+\_\+id. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a0a8c0b3a4349aa5f979a648884f0a138}{store\+Detectors}} (int rule\+\_\+id, List$<$ String $>$ detectors)
+\begin{DoxyCompactList}\small\item\em Stores the detectors for this compositing rule. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_ad6d9b34cef9ee115a7079018a4394d03}{store\+Filter}} (int rule\+\_\+id, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} filter)
+\begin{DoxyCompactList}\small\item\em Stores the associated filter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a668ef938628433dc26c049f4a25d375f}{load\+Filter}} (int rule\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Loads the filter for the rule. \end{DoxyCompactList}\item 
+List$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aaebe7f9b84dc8b0aa637263f687eb181}{get\+Detectors}} (int rule\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Returns a list of sources connected to the rule\+\_\+id. \end{DoxyCompactList}\item 
+Row\+Mapper$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRule}{Compositing\+Rule}} $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a432a293a892e5f82977fc38dc0b88208}{get\+Compsite\+Rule\+Mapper}} ()
+\item 
+Row\+Mapper$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aba6e7ae45352c02bc378385c72035983}{get\+Source\+Mapper}} ()
+\item 
+Row\+Mapper$<$ String $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aeaf3946290b5367ec0ee24d2f4c05051}{get\+Detector\+Mapper}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_af70e9542fe1681bf3fd918ba5d01479c}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_af70e9542fe1681bf3fd918ba5d01479c}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!createRule@{createRule}}
+\index{createRule@{createRule}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{createRule()}{createRule()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRule}{Compositing\+Rule}} eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+create\+Rule (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a6bca7e8e072eb86b9f52861ef56996c3}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::create\+Rule()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a6bca7e8e072eb86b9f52861ef56996c3}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_afde58ef1abc4ee70272235588d3333e8}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_afde58ef1abc4ee70272235588d3333e8}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!delete@{delete}}
+\index{delete@{delete}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{delete()}{delete()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+delete (\begin{DoxyParamCaption}\item[{int}]{rule\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a4e644a44e8cb074f8e9e5bd7199b8b3e}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::delete(int)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a4e644a44e8cb074f8e9e5bd7199b8b3e}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a432a293a892e5f82977fc38dc0b88208}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a432a293a892e5f82977fc38dc0b88208}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!getCompsiteRuleMapper@{getCompsiteRuleMapper}}
+\index{getCompsiteRuleMapper@{getCompsiteRuleMapper}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{getCompsiteRuleMapper()}{getCompsiteRuleMapper()}}
+{\footnotesize\ttfamily Row\+Mapper$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRule}{Compositing\+Rule}} $>$ eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+get\+Compsite\+Rule\+Mapper (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\begin{DoxyReturn}{Returns}
+the \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRule}{Compositing\+Rule}} mapper 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aeaf3946290b5367ec0ee24d2f4c05051}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aeaf3946290b5367ec0ee24d2f4c05051}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!getDetectorMapper@{getDetectorMapper}}
+\index{getDetectorMapper@{getDetectorMapper}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{getDetectorMapper()}{getDetectorMapper()}}
+{\footnotesize\ttfamily Row\+Mapper$<$ String $>$ eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+get\+Detector\+Mapper (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\begin{DoxyReturn}{Returns}
+the detector mapper 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aaebe7f9b84dc8b0aa637263f687eb181}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aaebe7f9b84dc8b0aa637263f687eb181}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!getDetectors@{getDetectors}}
+\index{getDetectors@{getDetectors}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{getDetectors()}{getDetectors()}}
+{\footnotesize\ttfamily List$<$ String $>$ eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+get\+Detectors (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Returns a list of sources connected to the rule\+\_\+id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & the rule id \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a list of sources 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a58bd6224fa75d83b0b643f97f6fd9e72}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a58bd6224fa75d83b0b643f97f6fd9e72}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!getFilterManager@{getFilterManager}}
+\index{getFilterManager@{getFilterManager}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{getFilterManager()}{getFilterManager()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{Rule\+Filter\+Manager}} eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+get\+Filter\+Manager (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the filter manager 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aba6e7ae45352c02bc378385c72035983}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aba6e7ae45352c02bc378385c72035983}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!getSourceMapper@{getSourceMapper}}
+\index{getSourceMapper@{getSourceMapper}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{getSourceMapper()}{getSourceMapper()}}
+{\footnotesize\ttfamily Row\+Mapper$<$ String $>$ eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+get\+Source\+Mapper (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\begin{DoxyReturn}{Returns}
+the source mapper 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a7328e3b51293d1acacabb54d2b213cb0}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a7328e3b51293d1acacabb54d2b213cb0}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!getSources@{getSources}}
+\index{getSources@{getSources}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{getSources()}{getSources()}}
+{\footnotesize\ttfamily List$<$ String $>$ eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+get\+Sources (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Returns a list of sources connected to the rule\+\_\+id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & the rule id \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a list of sources 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aee97c89da658e4968299f4fa62e088ec}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_aee97c89da658e4968299f4fa62e088ec}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!load@{load}}
+\index{load@{load}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}} eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+load (\begin{DoxyParamCaption}\item[{int}]{rule\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a3ab6e2cbbfba64395f840d2d30925fb1}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::load(int)}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a3ab6e2cbbfba64395f840d2d30925fb1}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a668ef938628433dc26c049f4a25d375f}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a668ef938628433dc26c049f4a25d375f}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!loadFilter@{loadFilter}}
+\index{loadFilter@{loadFilter}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{loadFilter()}{loadFilter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}} eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+load\+Filter (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Loads the filter for the rule. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & the rule \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the filter if any otherwise null 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_acf656f6240d0aa2949ec61647aa788f2}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_acf656f6240d0aa2949ec61647aa788f2}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!setCatalog@{setCatalog}}
+\index{setCatalog@{setCatalog}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{setCatalog()}{setCatalog()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+set\+Catalog (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1Catalog}{Catalog}}}]{catalog }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em catalog} & the catalog to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a3da554a38b0ed9fb5f84c9c1d7e91e01}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a3da554a38b0ed9fb5f84c9c1d7e91e01}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!setFilterManager@{setFilterManager}}
+\index{setFilterManager@{setFilterManager}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{setFilterManager()}{setFilterManager()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+set\+Filter\+Manager (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager}{Rule\+Filter\+Manager}}}]{filter\+Manager }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em filter\+Manager} & the filter manager \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a8bb81bb64d22fa8cd496fbde80742786}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a8bb81bb64d22fa8cd496fbde80742786}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!setJdbcTemplate@{setJdbcTemplate}}
+\index{setJdbcTemplate@{setJdbcTemplate}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{setJdbcTemplate()}{setJdbcTemplate()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+set\+Jdbc\+Template (\begin{DoxyParamCaption}\item[{Jdbc\+Operations}]{template }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em template} & the jdbc template to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a1c04b4b13bdbbb575bceaee6b7d94183}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a1c04b4b13bdbbb575bceaee6b7d94183}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!setRuleUtilities@{setRuleUtilities}}
+\index{setRuleUtilities@{setRuleUtilities}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{setRuleUtilities()}{setRuleUtilities()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+set\+Rule\+Utilities (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1util_1_1IRuleUtilities}{IRule\+Utilities}}}]{utilities }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em utilities} & the rule utilities to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a0cd09ef87c3734d8545aa2d24042309b}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a0cd09ef87c3734d8545aa2d24042309b}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!setTimeoutManager@{setTimeoutManager}}
+\index{setTimeoutManager@{setTimeoutManager}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{setTimeoutManager()}{setTimeoutManager()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+set\+Timeout\+Manager (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1timer_1_1TimeoutManager}{Timeout\+Manager}}}]{manager }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em manager} & the timeout manager to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a594fb97426a3460b56c3259c49fb734d}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a594fb97426a3460b56c3259c49fb734d}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!store@{store}}
+\index{store@{store}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{store()}{store()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+store (\begin{DoxyParamCaption}\item[{int}]{rule\+Id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}}}]{rule }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a35563b9e78d7db194bddcba23b9a4832}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::store}}(int, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{eu.\+baltrad.\+beast.\+rules.\+IRule}}) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a35563b9e78d7db194bddcba23b9a4832}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a0a8c0b3a4349aa5f979a648884f0a138}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a0a8c0b3a4349aa5f979a648884f0a138}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!storeDetectors@{storeDetectors}}
+\index{storeDetectors@{storeDetectors}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{storeDetectors()}{storeDetectors()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+store\+Detectors (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id,  }\item[{List$<$ String $>$}]{detectors }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Stores the detectors for this compositing rule. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & the rule id these detectors should belong to \\
+\hline
+{\em detectors} & the detectors \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_ad6d9b34cef9ee115a7079018a4394d03}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_ad6d9b34cef9ee115a7079018a4394d03}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!storeFilter@{storeFilter}}
+\index{storeFilter@{storeFilter}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{storeFilter()}{storeFilter()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+store\+Filter (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter}{IFilter}}}]{filter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Stores the associated filter. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & the rule\+\_\+id \\
+\hline
+{\em filter} & the filter to store \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_afefce2fa15222e972fa68382eb0b09e5}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_afefce2fa15222e972fa68382eb0b09e5}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!storeSources@{storeSources}}
+\index{storeSources@{storeSources}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{storeSources()}{storeSources()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+store\+Sources (\begin{DoxyParamCaption}\item[{int}]{rule\+\_\+id,  }\item[{List$<$ String $>$}]{sources }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Stores the sources. 
+
+The previous sources will be removed before setting the new ones. 
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+id} & \\
+\hline
+{\em sources} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a5b09d750cefe873bde928b095ef08601}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1composite_1_1CompositingRuleManager_a5b09d750cefe873bde928b095ef08601}} 
+\index{eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}!update@{update}}
+\index{update@{update}!eu.baltrad.beast.rules.composite.CompositingRuleManager@{eu.baltrad.beast.rules.composite.CompositingRuleManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+composite.\+Compositing\+Rule\+Manager.\+update (\begin{DoxyParamCaption}\item[{int}]{rule\+Id,  }\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{IRule}}}]{rule }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a5e127b54d9fb0ec8fa0ba2fcc9f7c1ec}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager\+::update}}(int, \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule}{eu.\+baltrad.\+beast.\+rules.\+IRule}}) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager_a5e127b54d9fb0ec8fa0ba2fcc9f7c1ec}{eu.\+baltrad.\+beast.\+rules.\+IRule\+Manager}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/composite/Compositing\+Rule\+Manager.\+java\end{DoxyCompactItemize}

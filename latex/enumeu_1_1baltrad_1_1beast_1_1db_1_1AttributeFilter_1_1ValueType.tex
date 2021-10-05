@@ -1,0 +1,128 @@
+\hypertarget{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType}{}\doxysection{eu.\+baltrad.\+beast.\+db.\+Attribute\+Filter.\+Value\+Type Enum Reference}
+\label{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType}\index{eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}}
+
+
+value type  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+abstract Expression \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a35c4780eeff23083175c6f6b986e57dc}{parse\+String}} (String str)
+\begin{DoxyCompactList}\small\item\em parse BDB Expression from string \end{DoxyCompactList}\item 
+String \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a453117c41cb2e86d68dbc9c89f06bc32}{to\+Bdb\+Attribute\+Type}} ()
+\begin{DoxyCompactList}\small\item\em convert to BDB Attribute expression type \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a4d8523ef8a457b39f0e0a2bc99c6b8c8}{STRING}}
+\item 
+\mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a7d98417ab0158dd2a66120b1f1ba0f43}{LONG}}
+\item 
+\mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_ae5ac10d0d6e56ca54f819b2a40b327ad}{DOUBLE}}
+\item 
+\mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a492344a3e99a33e7850e050598aceb89}{BOOL}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+value type 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a35c4780eeff23083175c6f6b986e57dc}\label{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a35c4780eeff23083175c6f6b986e57dc}} 
+\index{eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}!parseString@{parseString}}
+\index{parseString@{parseString}!eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}}
+\doxysubsubsection{\texorpdfstring{parseString()}{parseString()}}
+{\footnotesize\ttfamily abstract Expression eu.\+baltrad.\+beast.\+db.\+Attribute\+Filter.\+Value\+Type.\+parse\+String (\begin{DoxyParamCaption}\item[{String}]{str }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+
+
+parse BDB Expression from string 
+
+\mbox{\Hypertarget{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a453117c41cb2e86d68dbc9c89f06bc32}\label{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a453117c41cb2e86d68dbc9c89f06bc32}} 
+\index{eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}!toBdbAttributeType@{toBdbAttributeType}}
+\index{toBdbAttributeType@{toBdbAttributeType}!eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}}
+\doxysubsubsection{\texorpdfstring{toBdbAttributeType()}{toBdbAttributeType()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+db.\+Attribute\+Filter.\+Value\+Type.\+to\+Bdb\+Attribute\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+convert to BDB Attribute expression type 
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a492344a3e99a33e7850e050598aceb89}\label{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a492344a3e99a33e7850e050598aceb89}} 
+\index{eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}!BOOL@{BOOL}}
+\index{BOOL@{BOOL}!eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}}
+\doxysubsubsection{\texorpdfstring{BOOL}{BOOL}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+db.\+Attribute\+Filter.\+Value\+Type.\+BOOL}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=() \{}
+\DoxyCodeLine{      @Override}
+\DoxyCodeLine{      \textcolor{keyword}{public} Expression \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a35c4780eeff23083175c6f6b986e57dc}{parseString}}(String str) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \textcolor{keyword}{new} BooleanExpression(Boolean.parseBoolean(str));}
+\DoxyCodeLine{      \}}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_ae5ac10d0d6e56ca54f819b2a40b327ad}\label{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_ae5ac10d0d6e56ca54f819b2a40b327ad}} 
+\index{eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}!DOUBLE@{DOUBLE}}
+\index{DOUBLE@{DOUBLE}!eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}}
+\doxysubsubsection{\texorpdfstring{DOUBLE}{DOUBLE}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+db.\+Attribute\+Filter.\+Value\+Type.\+DOUBLE}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=() \{}
+\DoxyCodeLine{      @Override}
+\DoxyCodeLine{      \textcolor{keyword}{public} Expression \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a35c4780eeff23083175c6f6b986e57dc}{parseString}}(String str) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \textcolor{keyword}{new} DoubleExpression(Double.parseDouble(str));}
+\DoxyCodeLine{      \}}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a7d98417ab0158dd2a66120b1f1ba0f43}\label{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a7d98417ab0158dd2a66120b1f1ba0f43}} 
+\index{eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}!LONG@{LONG}}
+\index{LONG@{LONG}!eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}}
+\doxysubsubsection{\texorpdfstring{LONG}{LONG}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+db.\+Attribute\+Filter.\+Value\+Type.\+LONG}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=() \{}
+\DoxyCodeLine{      @Override}
+\DoxyCodeLine{      \textcolor{keyword}{public} Expression \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a35c4780eeff23083175c6f6b986e57dc}{parseString}}(String str) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \textcolor{keyword}{new} LongExpression(Long.parseLong(str));}
+\DoxyCodeLine{      \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{      @Override}
+\DoxyCodeLine{      \textcolor{keyword}{public} String \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a453117c41cb2e86d68dbc9c89f06bc32}{toBdbAttributeType}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}long"{}};}
+\DoxyCodeLine{      \}}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a4d8523ef8a457b39f0e0a2bc99c6b8c8}\label{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a4d8523ef8a457b39f0e0a2bc99c6b8c8}} 
+\index{eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}!STRING@{STRING}}
+\index{STRING@{STRING}!eu.baltrad.beast.db.AttributeFilter.ValueType@{eu.baltrad.beast.db.AttributeFilter.ValueType}}
+\doxysubsubsection{\texorpdfstring{STRING}{STRING}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+db.\+Attribute\+Filter.\+Value\+Type.\+STRING}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=() \{}
+\DoxyCodeLine{      @Override}
+\DoxyCodeLine{      \textcolor{keyword}{public} Expression \mbox{\hyperlink{enumeu_1_1baltrad_1_1beast_1_1db_1_1AttributeFilter_1_1ValueType_a35c4780eeff23083175c6f6b986e57dc}{parseString}}(String str) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \textcolor{keyword}{new} StringExpression(str);}
+\DoxyCodeLine{      \}}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+
+
+The documentation for this enum was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/db/Attribute\+Filter.\+java\end{DoxyCompactItemize}

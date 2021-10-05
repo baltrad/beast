@@ -1,0 +1,282 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule}{}\doxysection{eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule}\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8d0db1721e2d5af30d4a812ef6b29a30}{get\+Type}} ()
+\item 
+boolean \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_acf555d4f7d2637e8aa271d16cfa18af0}{is\+Valid}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_af6e90f34db4ebd56f142fc1f6d493e75}{set\+Scriptable\+Rule}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule}{IScriptable\+Rule}} rule)
+\begin{DoxyCompactList}\small\item\em To be able to set a precompiled groovy rule. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_ae3f257660861d3f5cbf165048bffa746}{handle}} (\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} message)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8f116fe04dede87897fc3d91a834a8f2}{set\+Script}} (String script)
+\begin{DoxyCompactList}\small\item\em Creates an instance of the groovy script. \end{DoxyCompactList}\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a7e82d133bbbd6db59d9144f97bae355c}{get\+Script}} ()
+\item 
+int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_ac4c80352e0d82094843173e02e78c28b}{get\+State}} ()
+\item 
+Throwable \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a3c032e561283eb08145eb5ab6186e8e1}{get\+Throwable}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static final int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a9ed11baec6c3575d891a9a746a2053ed}{UNITIALIZED}} = -\/1
+\begin{DoxyCompactList}\small\item\em Rule has not got any script set. \end{DoxyCompactList}\item 
+static final int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a84447eca0f3d33d2c33bffdbf28bcfb2}{OK}} = 0
+\begin{DoxyCompactList}\small\item\em Rule is ok. \end{DoxyCompactList}\item 
+static final int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a3ede8dde8b5c03ddc97cc24949a49a11}{COMPILATION\+\_\+\+ERROR}} = 1
+\begin{DoxyCompactList}\small\item\em Rule could not be compiled. \end{DoxyCompactList}\item 
+static final int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a2a68416fb1680ba05320c5324a524445}{INSTANTIATION\+\_\+\+EXCEPTION}} = 2
+\begin{DoxyCompactList}\small\item\em Rule coult not be instantiated. \end{DoxyCompactList}\item 
+static final int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a6053b59f9a0c9457448ea67803a2a048}{ILLEGAL\+\_\+\+ACCESS\+\_\+\+EXCEPTION}} = 3
+\begin{DoxyCompactList}\small\item\em Access problems. \end{DoxyCompactList}\item 
+static final int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a81202f999bb6c32d100773d8da9b96d8}{CLASS\+\_\+\+CAST\+\_\+\+EXCEPTION}} = 4
+\begin{DoxyCompactList}\small\item\em Class cast exception, probably not implementing \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule}{IScriptable\+Rule}}. \end{DoxyCompactList}\item 
+static final int \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8d3a23fcd9584629c7a2ae612a003060}{THROWABLE}} = 5
+\begin{DoxyCompactList}\small\item\em Any type of throwable causing a failure. \end{DoxyCompactList}\item 
+static final String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_afe4e2766c8821fb739220fab5b6b6392}{TYPE}} = \char`\"{}groovy\char`\"{}
+\begin{DoxyCompactList}\small\item\em The type name of this rule. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a83459333837b1ace3d8f9e0672c77e04}{Groovy\+Rule}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor, however use manager for creation. \end{DoxyCompactList}\item 
+Class \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a0abed55b7f62df0838a6349a01569dec}{parse\+Class}} (String code)
+\begin{DoxyCompactList}\small\item\em Parses code into a class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a83459333837b1ace3d8f9e0672c77e04}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a83459333837b1ace3d8f9e0672c77e04}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!GroovyRule@{GroovyRule}}
+\index{GroovyRule@{GroovyRule}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{GroovyRule()}{GroovyRule()}}
+{\footnotesize\ttfamily eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+Groovy\+Rule (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Default constructor, however use manager for creation. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a7e82d133bbbd6db59d9144f97bae355c}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a7e82d133bbbd6db59d9144f97bae355c}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!getScript@{getScript}}
+\index{getScript@{getScript}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{getScript()}{getScript()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+get\+Script (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the groovy script as a string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_ac4c80352e0d82094843173e02e78c28b}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_ac4c80352e0d82094843173e02e78c28b}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!getState@{getState}}
+\index{getState@{getState}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{getState()}{getState()}}
+{\footnotesize\ttfamily int eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+get\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the state 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a3c032e561283eb08145eb5ab6186e8e1}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a3c032e561283eb08145eb5ab6186e8e1}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!getThrowable@{getThrowable}}
+\index{getThrowable@{getThrowable}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{getThrowable()}{getThrowable()}}
+{\footnotesize\ttfamily Throwable eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+get\+Throwable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the exception if any occured during compilation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8d0db1721e2d5af30d4a812ef6b29a30}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8d0db1721e2d5af30d4a812ef6b29a30}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!getType@{getType}}
+\index{getType@{getType}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{getType()}{getType()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+get\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a3548a2f80701d77867c9f242dd96daf6}{eu.\+baltrad.\+beast.\+rules.\+IRule\+::get\+Type()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a3548a2f80701d77867c9f242dd96daf6}{eu.\+baltrad.\+beast.\+rules.\+IRule}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_ae3f257660861d3f5cbf165048bffa746}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_ae3f257660861d3f5cbf165048bffa746}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!handle@{handle}}
+\index{handle@{handle}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}} eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+handle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{IBlt\+Message}}}]{message }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a3f785709fd381fab1dcf7a371a532a06}{eu.\+baltrad.\+beast.\+rules.\+IRule\+::handle}}(\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1message_1_1IBltMessage}{eu.\+baltrad.\+beast.\+message.\+IBlt\+Message}}) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a3f785709fd381fab1dcf7a371a532a06}{eu.\+baltrad.\+beast.\+rules.\+IRule}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_acf555d4f7d2637e8aa271d16cfa18af0}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_acf555d4f7d2637e8aa271d16cfa18af0}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!isValid@{isValid}}
+\index{isValid@{isValid}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{isValid()}{isValid()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+is\+Valid (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a2f8673ed2dfdba4a7b8b6f82889a4847}{eu.\+baltrad.\+beast.\+rules.\+IRule\+::is\+Valid()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule_a2f8673ed2dfdba4a7b8b6f82889a4847}{eu.\+baltrad.\+beast.\+rules.\+IRule}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a0abed55b7f62df0838a6349a01569dec}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a0abed55b7f62df0838a6349a01569dec}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!parseClass@{parseClass}}
+\index{parseClass@{parseClass}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{parseClass()}{parseClass()}}
+{\footnotesize\ttfamily Class eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+parse\+Class (\begin{DoxyParamCaption}\item[{String}]{code }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Parses code into a class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em code} & the code to parse \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a class 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8f116fe04dede87897fc3d91a834a8f2}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8f116fe04dede87897fc3d91a834a8f2}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!setScript@{setScript}}
+\index{setScript@{setScript}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{setScript()}{setScript()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+set\+Script (\begin{DoxyParamCaption}\item[{String}]{script }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates an instance of the groovy script. 
+
+Must be implementing the \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule}{IScriptable\+Rule}}. Will compile and validate the script. 
+\begin{DoxyParams}{Parameters}
+{\em script} & the script to set \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleException}{Rule\+Exception}}} & if the script could not be set \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_af6e90f34db4ebd56f142fc1f6d493e75}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_af6e90f34db4ebd56f142fc1f6d493e75}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!setScriptableRule@{setScriptableRule}}
+\index{setScriptableRule@{setScriptableRule}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{setScriptableRule()}{setScriptableRule()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+set\+Scriptable\+Rule (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule}{IScriptable\+Rule}}}]{rule }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+To be able to set a precompiled groovy rule. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule} & the rule to set \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a81202f999bb6c32d100773d8da9b96d8}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a81202f999bb6c32d100773d8da9b96d8}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!CLASS\_CAST\_EXCEPTION@{CLASS\_CAST\_EXCEPTION}}
+\index{CLASS\_CAST\_EXCEPTION@{CLASS\_CAST\_EXCEPTION}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{CLASS\_CAST\_EXCEPTION}{CLASS\_CAST\_EXCEPTION}}
+{\footnotesize\ttfamily final int eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+CLASS\+\_\+\+CAST\+\_\+\+EXCEPTION = 4\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Class cast exception, probably not implementing \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IScriptableRule}{IScriptable\+Rule}}. 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a3ede8dde8b5c03ddc97cc24949a49a11}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a3ede8dde8b5c03ddc97cc24949a49a11}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!COMPILATION\_ERROR@{COMPILATION\_ERROR}}
+\index{COMPILATION\_ERROR@{COMPILATION\_ERROR}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{COMPILATION\_ERROR}{COMPILATION\_ERROR}}
+{\footnotesize\ttfamily final int eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+COMPILATION\+\_\+\+ERROR = 1\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Rule could not be compiled. 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a6053b59f9a0c9457448ea67803a2a048}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a6053b59f9a0c9457448ea67803a2a048}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!ILLEGAL\_ACCESS\_EXCEPTION@{ILLEGAL\_ACCESS\_EXCEPTION}}
+\index{ILLEGAL\_ACCESS\_EXCEPTION@{ILLEGAL\_ACCESS\_EXCEPTION}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{ILLEGAL\_ACCESS\_EXCEPTION}{ILLEGAL\_ACCESS\_EXCEPTION}}
+{\footnotesize\ttfamily final int eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+ILLEGAL\+\_\+\+ACCESS\+\_\+\+EXCEPTION = 3\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Access problems. 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a2a68416fb1680ba05320c5324a524445}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a2a68416fb1680ba05320c5324a524445}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!INSTANTIATION\_EXCEPTION@{INSTANTIATION\_EXCEPTION}}
+\index{INSTANTIATION\_EXCEPTION@{INSTANTIATION\_EXCEPTION}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{INSTANTIATION\_EXCEPTION}{INSTANTIATION\_EXCEPTION}}
+{\footnotesize\ttfamily final int eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+INSTANTIATION\+\_\+\+EXCEPTION = 2\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Rule coult not be instantiated. 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a84447eca0f3d33d2c33bffdbf28bcfb2}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a84447eca0f3d33d2c33bffdbf28bcfb2}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!OK@{OK}}
+\index{OK@{OK}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{OK}{OK}}
+{\footnotesize\ttfamily final int eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+OK = 0\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Rule is ok. 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8d3a23fcd9584629c7a2ae612a003060}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a8d3a23fcd9584629c7a2ae612a003060}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!THROWABLE@{THROWABLE}}
+\index{THROWABLE@{THROWABLE}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{THROWABLE}{THROWABLE}}
+{\footnotesize\ttfamily final int eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+THROWABLE = 5\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Any type of throwable causing a failure. 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_afe4e2766c8821fb739220fab5b6b6392}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_afe4e2766c8821fb739220fab5b6b6392}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!TYPE@{TYPE}}
+\index{TYPE@{TYPE}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{TYPE}{TYPE}}
+{\footnotesize\ttfamily final String eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+TYPE = \char`\"{}groovy\char`\"{}\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The type name of this rule. 
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a9ed11baec6c3575d891a9a746a2053ed}\label{classeu_1_1baltrad_1_1beast_1_1rules_1_1groovy_1_1GroovyRule_a9ed11baec6c3575d891a9a746a2053ed}} 
+\index{eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}!UNITIALIZED@{UNITIALIZED}}
+\index{UNITIALIZED@{UNITIALIZED}!eu.baltrad.beast.rules.groovy.GroovyRule@{eu.baltrad.beast.rules.groovy.GroovyRule}}
+\doxysubsubsection{\texorpdfstring{UNITIALIZED}{UNITIALIZED}}
+{\footnotesize\ttfamily final int eu.\+baltrad.\+beast.\+rules.\+groovy.\+Groovy\+Rule.\+UNITIALIZED = -\/1\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Rule has not got any script set. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/rules/groovy/Groovy\+Rule.\+java\end{DoxyCompactItemize}

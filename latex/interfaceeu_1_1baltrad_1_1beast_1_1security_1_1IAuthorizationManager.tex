@@ -1,0 +1,226 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager}{}\doxysection{eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager}\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a8a463a734939d85a5b478cb24eea14a7}{add}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} auth)
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aa488443dbdba6e2f22cf4462750e1f56}{update}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} auth)
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a1385e048b7737933aef6fe4a8147959d}{delete}} (String uuid)
+\begin{DoxyCompactList}\small\item\em Removed the authorization with specified uuid. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aae9d5097e41f7610656b15015c65205c}{update\+By\+Node\+Name}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} auth)
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a925835bc6dcb7b0668c50c2bba042176}{get}} (String uuid)
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a82ab0629ed4356a5ddf0d210a818cf06}{get\+By\+Node\+Name}} (String node\+Name)
+\begin{DoxyCompactList}\small\item\em Returns the authorization based on node name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aedbe0c63990041b077d22ba8a639be2a}{get\+Local}} ()
+\item 
+List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} $>$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a9b705674a66aecba606dfe1a4716a9c5}{list}} ()
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a4e5e793da960318521982980a9a5f375}{create\+Authorization\+Request}} (String message)
+\begin{DoxyCompactList}\small\item\em Creates a request from the local authorization and the remote address. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aef727b73d4db4aac7c774d8e93df49b4}{to\+Authorization\+Request}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} authorization, String message)
+\begin{DoxyCompactList}\small\item\em Creates a request from an authorization (usually the local authorization) and the remote address. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+anders 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a8a463a734939d85a5b478cb24eea14a7}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a8a463a734939d85a5b478cb24eea14a7}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!add@{add}}
+\index{add@{add}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}}}]{auth }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em auth} & the authorization to be added \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_af9f07cf49f25933c816a2315000e186b}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a4e5e793da960318521982980a9a5f375}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a4e5e793da960318521982980a9a5f375}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!createAuthorizationRequest@{createAuthorizationRequest}}
+\index{createAuthorizationRequest@{createAuthorizationRequest}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{createAuthorizationRequest()}{createAuthorizationRequest()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}} eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+create\+Authorization\+Request (\begin{DoxyParamCaption}\item[{String}]{message }\end{DoxyParamCaption})}
+
+
+
+Creates a request from the local authorization and the remote address. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & the message to be passed to the target \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the authorization request 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_a5aa717c2e0a094ecb462a992a9100527}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a1385e048b7737933aef6fe4a8147959d}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a1385e048b7737933aef6fe4a8147959d}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!delete@{delete}}
+\index{delete@{delete}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{delete()}{delete()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+delete (\begin{DoxyParamCaption}\item[{String}]{uuid }\end{DoxyParamCaption})}
+
+
+
+Removed the authorization with specified uuid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em uuid} & the uuid of authorization to be removed \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_ab86142fc7b3c9f8bb5d8ade24d6a10dc}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a925835bc6dcb7b0668c50c2bba042176}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a925835bc6dcb7b0668c50c2bba042176}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!get@{get}}
+\index{get@{get}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+get (\begin{DoxyParamCaption}\item[{String}]{uuid }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em uuid} & the uuid of the authorization to be fetched \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the authorization if any found 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Data\+Access\+Exception} & upon error \\
+\hline
+\end{DoxyExceptions}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_a9c54b84a6f51c2dca50fb85906768708}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a82ab0629ed4356a5ddf0d210a818cf06}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a82ab0629ed4356a5ddf0d210a818cf06}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!getByNodeName@{getByNodeName}}
+\index{getByNodeName@{getByNodeName}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{getByNodeName()}{getByNodeName()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+get\+By\+Node\+Name (\begin{DoxyParamCaption}\item[{String}]{node\+Name }\end{DoxyParamCaption})}
+
+
+
+Returns the authorization based on node name. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node\+Name} & the node name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the authorization if found, otherwise null 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_a1120cdb986fc72eb951fe6bd2f7acd06}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aedbe0c63990041b077d22ba8a639be2a}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aedbe0c63990041b077d22ba8a639be2a}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!getLocal@{getLocal}}
+\index{getLocal@{getLocal}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{getLocal()}{getLocal()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+get\+Local (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+the local authorization entry if any 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_a79c74258108d0700ad53a488282ea186}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a9b705674a66aecba606dfe1a4716a9c5}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_a9b705674a66aecba606dfe1a4716a9c5}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!list@{list}}
+\index{list@{list}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{list()}{list()}}
+{\footnotesize\ttfamily List$<$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}} $>$ eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+list (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+a list of authorization entries 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_a06c258f4b4e67fabea35483d2dfd155e}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aef727b73d4db4aac7c774d8e93df49b4}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aef727b73d4db4aac7c774d8e93df49b4}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!toAuthorizationRequest@{toAuthorizationRequest}}
+\index{toAuthorizationRequest@{toAuthorizationRequest}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{toAuthorizationRequest()}{toAuthorizationRequest()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}} eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+to\+Authorization\+Request (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}}}]{authorization,  }\item[{String}]{message }\end{DoxyParamCaption})}
+
+
+
+Creates a request from an authorization (usually the local authorization) and the remote address. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em authorization} & the authorization to be used \\
+\hline
+{\em message} & the message to be passed to the target \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the authorization request 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_ad3875907ce71806a16cd0bb182b049b0}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aa488443dbdba6e2f22cf4462750e1f56}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aa488443dbdba6e2f22cf4462750e1f56}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!update@{update}}
+\index{update@{update}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+update (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}}}]{auth }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em auth} & the authorization to be updated. The connectionuuid is the primary identifier and will be updated accordingly. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_afc30f1344db04d527d4f99464cd49ac5}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aae9d5097e41f7610656b15015c65205c}\label{interfaceeu_1_1baltrad_1_1beast_1_1security_1_1IAuthorizationManager_aae9d5097e41f7610656b15015c65205c}} 
+\index{eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}!updateByNodeName@{updateByNodeName}}
+\index{updateByNodeName@{updateByNodeName}!eu.baltrad.beast.security.IAuthorizationManager@{eu.baltrad.beast.security.IAuthorizationManager}}
+\doxysubsubsection{\texorpdfstring{updateByNodeName()}{updateByNodeName()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+security.\+IAuthorization\+Manager.\+update\+By\+Node\+Name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1Authorization}{Authorization}}}]{auth }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em auth} & the authorization to be updated. The node name will be used as identifier. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationManager_a13b3fe995d9da125ad6aee7f7f97e8b5}{eu.\+baltrad.\+beast.\+security.\+Authorization\+Manager}}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/security/IAuthorization\+Manager.\+java\end{DoxyCompactItemize}

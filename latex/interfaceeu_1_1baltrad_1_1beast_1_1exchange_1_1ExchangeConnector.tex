@@ -1,0 +1,134 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector}{}\doxysection{eu.\+baltrad.\+beast.\+exchange.\+Exchange\+Connector Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector}\index{eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}}
+
+
+Interface that helps out when communicating with a remote node.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+exchange.\+Exchange\+Connector\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse}{Exchange\+Response}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_a6fd21b5fd635554bb64d7023651a3b84}{send}} (String remote\+Address, \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}} request)
+\begin{DoxyCompactList}\small\item\em Sends an authorization request to a remote host. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse}{Exchange\+Response}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_ab039f7291f2c23ff583b5086ff0782c6}{send\+Dex\+Style}} (String remote\+Address, \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}} request)
+\begin{DoxyCompactList}\small\item\em Uses \char`\"{}\+OLD\char`\"{} style DEX for sending an authorization request to a remote node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse}{Exchange\+Response}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_aca011237482b9b261a35d523258abe27}{send}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest}{Send\+File\+Request}} request)
+\begin{DoxyCompactList}\small\item\em Sends a file request to the remote node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeMessage}{Exchange\+Message}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_abc42446056afbcbc31f22f3afb6fcfb1}{parse}} (Input\+Stream json)
+\begin{DoxyCompactList}\small\item\em Parses an input stream (most likely formatted as a json object) and translates it into an object within the exchange message. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Interface that helps out when communicating with a remote node. 
+
+\begin{DoxyAuthor}{Author}
+anders 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_abc42446056afbcbc31f22f3afb6fcfb1}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_abc42446056afbcbc31f22f3afb6fcfb1}} 
+\index{eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}!parse@{parse}}
+\index{parse@{parse}!eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}}
+\doxysubsubsection{\texorpdfstring{parse()}{parse()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeMessage}{Exchange\+Message}} eu.\+baltrad.\+beast.\+exchange.\+Exchange\+Connector.\+parse (\begin{DoxyParamCaption}\item[{Input\+Stream}]{json }\end{DoxyParamCaption})}
+
+
+
+Parses an input stream (most likely formatted as a json object) and translates it into an object within the exchange message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em json} & the input stream \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the exchange message 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1HttpExchangeConnector_aac1a22efddda2f3a479509d112cb00a0}{eu.\+baltrad.\+beast.\+exchange.\+json.\+Http\+Exchange\+Connector}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_aca011237482b9b261a35d523258abe27}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_aca011237482b9b261a35d523258abe27}} 
+\index{eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}!send@{send}}
+\index{send@{send}!eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}}
+\doxysubsubsection{\texorpdfstring{send()}{send()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse}{Exchange\+Response}} eu.\+baltrad.\+beast.\+exchange.\+Exchange\+Connector.\+send (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest}{Send\+File\+Request}}}]{request }\end{DoxyParamCaption})}
+
+
+
+Sends a file request to the remote node. 
+
+Uses \char`\"{}\+OLD\char`\"{} style DEX protocol which currently is the only available. 
+\begin{DoxyParams}{Parameters}
+{\em request} & the request \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the response 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1HttpExchangeConnector_a9a87ae9ea1082e2f51c4d1e93e33bf00}{eu.\+baltrad.\+beast.\+exchange.\+json.\+Http\+Exchange\+Connector}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_a6fd21b5fd635554bb64d7023651a3b84}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_a6fd21b5fd635554bb64d7023651a3b84}} 
+\index{eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}!send@{send}}
+\index{send@{send}!eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}}
+\doxysubsubsection{\texorpdfstring{send()}{send()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse}{Exchange\+Response}} eu.\+baltrad.\+beast.\+exchange.\+Exchange\+Connector.\+send (\begin{DoxyParamCaption}\item[{String}]{remote\+Address,  }\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}}}]{request }\end{DoxyParamCaption})}
+
+
+
+Sends an authorization request to a remote host. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em remote\+Address} & the remote address \\
+\hline
+{\em request} & the request \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a response 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1HttpExchangeConnector_a7d8e68c8a926c69ae66d567575485854}{eu.\+baltrad.\+beast.\+exchange.\+json.\+Http\+Exchange\+Connector}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_ab039f7291f2c23ff583b5086ff0782c6}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_ab039f7291f2c23ff583b5086ff0782c6}} 
+\index{eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}!sendDexStyle@{sendDexStyle}}
+\index{sendDexStyle@{sendDexStyle}!eu.baltrad.beast.exchange.ExchangeConnector@{eu.baltrad.beast.exchange.ExchangeConnector}}
+\doxysubsubsection{\texorpdfstring{sendDexStyle()}{sendDexStyle()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse}{Exchange\+Response}} eu.\+baltrad.\+beast.\+exchange.\+Exchange\+Connector.\+send\+Dex\+Style (\begin{DoxyParamCaption}\item[{String}]{remote\+Address,  }\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}}}]{request }\end{DoxyParamCaption})}
+
+
+
+Uses \char`\"{}\+OLD\char`\"{} style DEX for sending an authorization request to a remote node. 
+
+If for example 404 is returned when using \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeConnector_a6fd21b5fd635554bb64d7023651a3b84}{send(\+String, Authorization\+Request)}} then a good idea can be to try this API. Note, since this is old style it is set to deprecated at creation. \begin{DoxyRefDesc}{Deprecated}
+\item[\mbox{\hyperlink{deprecated__deprecated000001}{Deprecated}}]\end{DoxyRefDesc}
+
+\begin{DoxyParams}{Parameters}
+{\em remote\+Address} & the remote address \\
+\hline
+{\em request} & the request \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the response 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1HttpExchangeConnector_a079d496138823f0aa53fe2bb42acd4e5}{eu.\+baltrad.\+beast.\+exchange.\+json.\+Http\+Exchange\+Connector}}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/exchange/Exchange\+Connector.\+java\end{DoxyCompactItemize}

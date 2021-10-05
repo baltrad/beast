@@ -1,0 +1,142 @@
+\hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter}{}\doxysection{eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter Class Reference}
+\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter}\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+Inheritance diagram for eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a6a7c4fc1262f117173068d287e86f560}{get\+Source}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a08a99b16afe1f470bb45f1786b95fdf9}{set\+Source}} (String source)
+\item 
+String \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a1ca24e62136da4e53451595338c225d1}{get\+Object\+Type}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a45ff297d15c2b8228a79dedd3b8f5773}{set\+Object\+Type}} (String object\+Type)
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_afb70934232c709c6dad7d2f1979d6a42}{add\+Date\+Time}} (Date\+Time dt)
+\item 
+List$<$ Date\+Time $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a65045161c706bc84a19edc09bf064463}{get\+Date\+Times}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_ad94477750227b7333cc9b9d2574a5548}{exclude}} (String attribute, List$<$ String $>$ values)
+\begin{DoxyCompactList}\small\item\em Adds a attribute to be excluded. \end{DoxyCompactList}\item 
+Map$<$ String, List$<$ String $>$ $>$ \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a395e18e4d08f05f526ca942aa4e11cc9}{get\+Excluded}} ()
+\item 
+void \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a565324eaa10a05a14f527134936dadf6}{apply}} (File\+Query query)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_afb70934232c709c6dad7d2f1979d6a42}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_afb70934232c709c6dad7d2f1979d6a42}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!addDateTime@{addDateTime}}
+\index{addDateTime@{addDateTime}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{addDateTime()}{addDateTime()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+add\+Date\+Time (\begin{DoxyParamCaption}\item[{Date\+Time}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & a datetime to use in the filter \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a565324eaa10a05a14f527134936dadf6}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a565324eaa10a05a14f527134936dadf6}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!apply@{apply}}
+\index{apply@{apply}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{apply()}{apply()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+apply (\begin{DoxyParamCaption}\item[{File\+Query}]{query }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1ICatalogFilter_aa1a2b84c5c5e9754a0cf33197dec485e}{eu.\+baltrad.\+beast.\+db.\+ICatalog\+Filter\+::apply}}(eu.\+baltrad.\+bdb.\+db.\+File\+Query) 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1db_1_1ICatalogFilter_aa1a2b84c5c5e9754a0cf33197dec485e}{eu.\+baltrad.\+beast.\+db.\+ICatalog\+Filter}}.
+
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_ad94477750227b7333cc9b9d2574a5548}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_ad94477750227b7333cc9b9d2574a5548}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!exclude@{exclude}}
+\index{exclude@{exclude}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{exclude()}{exclude()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+exclude (\begin{DoxyParamCaption}\item[{String}]{attribute,  }\item[{List$<$ String $>$}]{values }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds a attribute to be excluded. 
+
+For example \char`\"{}what/quantity\char`\"{}, \{\char`\"{}\+ACRR\char`\"{},...\} 
+\begin{DoxyParams}{Parameters}
+{\em attribute} & the attribute name \\
+\hline
+{\em values} & the list of values \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a65045161c706bc84a19edc09bf064463}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a65045161c706bc84a19edc09bf064463}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!getDateTimes@{getDateTimes}}
+\index{getDateTimes@{getDateTimes}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{getDateTimes()}{getDateTimes()}}
+{\footnotesize\ttfamily List$<$ Date\+Time $>$ eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+get\+Date\+Times (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the list of date times to use 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a395e18e4d08f05f526ca942aa4e11cc9}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a395e18e4d08f05f526ca942aa4e11cc9}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!getExcluded@{getExcluded}}
+\index{getExcluded@{getExcluded}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{getExcluded()}{getExcluded()}}
+{\footnotesize\ttfamily Map$<$ String, List$<$ String $>$ $>$ eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+get\+Excluded (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the map of exclusions 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a1ca24e62136da4e53451595338c225d1}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a1ca24e62136da4e53451595338c225d1}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!getObjectType@{getObjectType}}
+\index{getObjectType@{getObjectType}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{getObjectType()}{getObjectType()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+get\+Object\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the object\+Type 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a6a7c4fc1262f117173068d287e86f560}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a6a7c4fc1262f117173068d287e86f560}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!getSource@{getSource}}
+\index{getSource@{getSource}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{getSource()}{getSource()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+get\+Source (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+the source 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a45ff297d15c2b8228a79dedd3b8f5773}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a45ff297d15c2b8228a79dedd3b8f5773}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!setObjectType@{setObjectType}}
+\index{setObjectType@{setObjectType}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{setObjectType()}{setObjectType()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+set\+Object\+Type (\begin{DoxyParamCaption}\item[{String}]{object\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em object\+Type} & the object\+Type to set \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a08a99b16afe1f470bb45f1786b95fdf9}\label{classeu_1_1baltrad_1_1beast_1_1db_1_1filters_1_1TimeSelectionFilter_a08a99b16afe1f470bb45f1786b95fdf9}} 
+\index{eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}!setSource@{setSource}}
+\index{setSource@{setSource}!eu.baltrad.beast.db.filters.TimeSelectionFilter@{eu.baltrad.beast.db.filters.TimeSelectionFilter}}
+\doxysubsubsection{\texorpdfstring{setSource()}{setSource()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+db.\+filters.\+Time\+Selection\+Filter.\+set\+Source (\begin{DoxyParamCaption}\item[{String}]{source }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em source} & the source to set \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/db/filters/Time\+Selection\+Filter.\+java\end{DoxyCompactItemize}

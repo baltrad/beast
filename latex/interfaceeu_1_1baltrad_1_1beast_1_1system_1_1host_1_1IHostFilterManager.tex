@@ -1,0 +1,143 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager}{}\doxysection{eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager}\index{eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}}
+
+
+Host filter mechanism to verify if a specific ip address has been validated against the registered ip filters.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa24b5fcf78f05846214a956b02dcef76}{add}} (String ipfilter)
+\begin{DoxyCompactList}\small\item\em Registers a valid ipaddress as a filter pattern. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_ab13b795f98e0e491d7f7373fa868e0f8}{remove}} (String ipfilter)
+\begin{DoxyCompactList}\small\item\em Removes the pattern from the registry. \end{DoxyCompactList}\item 
+boolean \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa5abb595c0ba74a8a045453800578cb9}{accepted}} (String ip)
+\begin{DoxyCompactList}\small\item\em Verifies the ipaddress against the registered filters. \end{DoxyCompactList}\item 
+boolean \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aadd1182345fed67fcdc589c7ae1173da}{is\+Registered}} (String ipfilter)
+\begin{DoxyCompactList}\small\item\em Returns if the specified ipfilter already has been registered. \end{DoxyCompactList}\item 
+List$<$ String $>$ \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_a15cafe26cf4e94e407c44f0a61b7bdf2}{get\+Patterns}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Host filter mechanism to verify if a specific ip address has been validated against the registered ip filters. 
+
+\begin{DoxyAuthor}{Author}
+Anders Henja 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa5abb595c0ba74a8a045453800578cb9}\label{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa5abb595c0ba74a8a045453800578cb9}} 
+\index{eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}!accepted@{accepted}}
+\index{accepted@{accepted}!eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}}
+\doxysubsubsection{\texorpdfstring{accepted()}{accepted()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager.\+accepted (\begin{DoxyParamCaption}\item[{String}]{ip }\end{DoxyParamCaption})}
+
+
+
+Verifies the ipaddress against the registered filters. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ip} & the ip address to try \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+if the ip address is accepted by any of the patterns 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a05167bfe48eeed615563d5df95eb3a54}{eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa24b5fcf78f05846214a956b02dcef76}\label{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aa24b5fcf78f05846214a956b02dcef76}} 
+\index{eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}!add@{add}}
+\index{add@{add}!eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager.\+add (\begin{DoxyParamCaption}\item[{String}]{ipfilter }\end{DoxyParamCaption})}
+
+
+
+Registers a valid ipaddress as a filter pattern. 
+
+It is up to the implementing part to make sure that the registered filter is able to manage the pattern. ~\newline
+ 
+\begin{DoxyParams}{Parameters}
+{\em ipfilter} & the filter \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Illegal\+Argument\+Exception} & if the pattern not is supported. \\
+\hline
+\end{DoxyExceptions}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a2c200dede252b591b2ed98bbb62906c2}{eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_a15cafe26cf4e94e407c44f0a61b7bdf2}\label{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_a15cafe26cf4e94e407c44f0a61b7bdf2}} 
+\index{eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}!getPatterns@{getPatterns}}
+\index{getPatterns@{getPatterns}!eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}}
+\doxysubsubsection{\texorpdfstring{getPatterns()}{getPatterns()}}
+{\footnotesize\ttfamily List$<$ String $>$ eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager.\+get\+Patterns (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+the registered patterns 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_ad6f1f7078e6fe784ee6332fb1a90fd7d}{eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aadd1182345fed67fcdc589c7ae1173da}\label{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_aadd1182345fed67fcdc589c7ae1173da}} 
+\index{eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}!isRegistered@{isRegistered}}
+\index{isRegistered@{isRegistered}!eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}}
+\doxysubsubsection{\texorpdfstring{isRegistered()}{isRegistered()}}
+{\footnotesize\ttfamily boolean eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager.\+is\+Registered (\begin{DoxyParamCaption}\item[{String}]{ipfilter }\end{DoxyParamCaption})}
+
+
+
+Returns if the specified ipfilter already has been registered. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ipfilter} & the filter to be checked \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if it already is registered. 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a1a7f057a867a6fc9ef5bbd6a48c6a0ef}{eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_ab13b795f98e0e491d7f7373fa868e0f8}\label{interfaceeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1IHostFilterManager_ab13b795f98e0e491d7f7373fa868e0f8}} 
+\index{eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}!remove@{remove}}
+\index{remove@{remove}!eu.baltrad.beast.system.host.IHostFilterManager@{eu.baltrad.beast.system.host.IHostFilterManager}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily void eu.\+baltrad.\+beast.\+system.\+host.\+IHost\+Filter\+Manager.\+remove (\begin{DoxyParamCaption}\item[{String}]{ipfilter }\end{DoxyParamCaption})}
+
+
+
+Removes the pattern from the registry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ipfilter} & \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1system_1_1host_1_1HostFilterManager_a64b6f6700228a681fc2181bcb69f91e4}{eu.\+baltrad.\+beast.\+system.\+host.\+Host\+Filter\+Manager}}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/system/host/IHost\+Filter\+Manager.\+java\end{DoxyCompactItemize}

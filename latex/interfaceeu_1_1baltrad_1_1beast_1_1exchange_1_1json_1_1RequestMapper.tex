@@ -1,0 +1,104 @@
+\hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper}{}\doxysection{eu.\+baltrad.\+beast.\+exchange.\+json.\+Request\+Mapper Interface Reference}
+\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper}\index{eu.baltrad.beast.exchange.json.RequestMapper@{eu.baltrad.beast.exchange.json.RequestMapper}}
+
+
+Translates between json and objects used for exchange.  
+
+
+Inheritance diagram for eu.\+baltrad.\+beast.\+exchange.\+json.\+Request\+Mapper\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+String \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_a28c45ecbe7f50aabb7e86c88a83ae34b}{to\+Json}} (\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}} request)
+\begin{DoxyCompactList}\small\item\em Translates an authorization request into a json string. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeMessage}{Exchange\+Message}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_acd7832ea388c3914a3b977d57695a721}{parse}} (Input\+Stream json\+Stream)
+\begin{DoxyCompactList}\small\item\em Parses an input stream containing json. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeMessage}{Exchange\+Message}} \mbox{\hyperlink{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_a90e5b7dfc3545a493bea6ef075ca19c1}{parse}} (String json)
+\begin{DoxyCompactList}\small\item\em Parses a json string. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Translates between json and objects used for exchange. 
+
+\begin{DoxyAuthor}{Author}
+anders 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_acd7832ea388c3914a3b977d57695a721}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_acd7832ea388c3914a3b977d57695a721}} 
+\index{eu.baltrad.beast.exchange.json.RequestMapper@{eu.baltrad.beast.exchange.json.RequestMapper}!parse@{parse}}
+\index{parse@{parse}!eu.baltrad.beast.exchange.json.RequestMapper@{eu.baltrad.beast.exchange.json.RequestMapper}}
+\doxysubsubsection{\texorpdfstring{parse()}{parse()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeMessage}{Exchange\+Message}} eu.\+baltrad.\+beast.\+exchange.\+json.\+Request\+Mapper.\+parse (\begin{DoxyParamCaption}\item[{Input\+Stream}]{json\+Stream }\end{DoxyParamCaption})}
+
+
+
+Parses an input stream containing json. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em json\+Stream} & the json stream \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the exchange message 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapperImpl_a4b47036e1dc18b84c14750dc22ac795c}{eu.\+baltrad.\+beast.\+exchange.\+json.\+Request\+Mapper\+Impl}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_a90e5b7dfc3545a493bea6ef075ca19c1}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_a90e5b7dfc3545a493bea6ef075ca19c1}} 
+\index{eu.baltrad.beast.exchange.json.RequestMapper@{eu.baltrad.beast.exchange.json.RequestMapper}!parse@{parse}}
+\index{parse@{parse}!eu.baltrad.beast.exchange.json.RequestMapper@{eu.baltrad.beast.exchange.json.RequestMapper}}
+\doxysubsubsection{\texorpdfstring{parse()}{parse()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeMessage}{Exchange\+Message}} eu.\+baltrad.\+beast.\+exchange.\+json.\+Request\+Mapper.\+parse (\begin{DoxyParamCaption}\item[{String}]{json }\end{DoxyParamCaption})}
+
+
+
+Parses a json string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em json} & the json string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the exchange message 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapperImpl_a59979b19a908fc891925232204403c7a}{eu.\+baltrad.\+beast.\+exchange.\+json.\+Request\+Mapper\+Impl}}.
+
+\mbox{\Hypertarget{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_a28c45ecbe7f50aabb7e86c88a83ae34b}\label{interfaceeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapper_a28c45ecbe7f50aabb7e86c88a83ae34b}} 
+\index{eu.baltrad.beast.exchange.json.RequestMapper@{eu.baltrad.beast.exchange.json.RequestMapper}!toJson@{toJson}}
+\index{toJson@{toJson}!eu.baltrad.beast.exchange.json.RequestMapper@{eu.baltrad.beast.exchange.json.RequestMapper}}
+\doxysubsubsection{\texorpdfstring{toJson()}{toJson()}}
+{\footnotesize\ttfamily String eu.\+baltrad.\+beast.\+exchange.\+json.\+Request\+Mapper.\+to\+Json (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1security_1_1AuthorizationRequest}{Authorization\+Request}}}]{request }\end{DoxyParamCaption})}
+
+
+
+Translates an authorization request into a json string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em request} & the request \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the json string 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1RequestMapperImpl_ae70a8088be9dea4170e6ada836877fd1}{eu.\+baltrad.\+beast.\+exchange.\+json.\+Request\+Mapper\+Impl}}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/eu/baltrad/beast/exchange/json/Request\+Mapper.\+java\end{DoxyCompactItemize}
