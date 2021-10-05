@@ -1,5 +1,5 @@
 /** \page p_groovyrules Groovy
-\section groovyrules Groovy
+* \section groovyrules Groovy
 Beast comes delivered with support for creating scriptable rules by using the groovy
 language. Groovy is very similar to java so most of the things you can do in java you
 will be able to do in groovy as well. There are a few caveats to this as usual. One
@@ -277,6 +277,6 @@ class GMapRule implements IScriptableRule {
 }
 \endverbatim
 
-You can find more examples on groovy scripts in the <beast install prefix>/examples directory.
+You can find more examples on groovy scripts in the &lt;beast install prefix&gt;/examples directory.
 
 */
