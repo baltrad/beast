@@ -1,11 +1,12 @@
 /** \page p_groovyrules Groovy
-* \section groovyrules Groovy
+\section groovyrules Groovy
 Beast comes delivered with support for creating scriptable rules by using the groovy
 language. Groovy is very similar to java so most of the things you can do in java you
 will be able to do in groovy as well. There are a few caveats to this as usual. One
 of them is that it isn't possible to create arrays by writing new String[]{"a", "b}
 which might cause some problems when creating the \ref eu.baltrad.beast.message.mo.BltGenerateMessage.
 Instead, you should write ["a", "b"] as String[].
+
 
 \subsection groovyrules_why Why?
 Groovy is a scriptable language and it is similar to java which the beast library
