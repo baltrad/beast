@@ -44,112 +44,64 @@ $(function() {
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="groovyrules"></a>
 Groovy</h1>
-<p >Beast comes delivered with support for creating scriptable rules by using the groovy language. Groovy is very similar to java so most of the things you can do in java you will be able to do in groovy as well. There are a few caveats to this as usual. One of them is that it isn't possible to create arrays by writing new String[]{"a", "b}
-which might cause some problems when creating the \ref eu.baltrad.beast.message.mo.BltGenerateMessage.
-Instead, you should write ["a", "b"] as String[].
-
-
-@subsection groovyrules_why Why?
-Groovy is a scriptable language and it is similar to java which the beast library
-has been written in so it felt like the obvious choice.
-
-@subsection groovyrules_how How?
-This is a matter of programming and digging into the beast API documentation but
-in order to give you some ideas on how to progress the rest of this section will
-show you what can be done.
-
-@subsubsection groovyrules_how_setup Setup IDE
-I have used a groovy plugin for eclipse for editing but you can just as well write the
-code in any java editor and perform the changes necessary for getting the code
-groovy compatible.
-
-First of all, create a groovy project like with "File-&gt;New-&gt;Groovy Project".
-
-@image html new_groovy_project.jpg
-
-After that, you will have to create a groovy class which is done with
-"File-&gt;New-&gt;Groovy Class".
-
-@image html new_groovy_class.jpg
-
-Since you are going to use the beast API you need to setup the build path to include the
-beast.jar. Right click on your project and choose "Properties" and then
-"Java Build Path-&gt;Libraries-&gt;Add External JARs...". Navigate to your beast library,
-probably something like "/opt/baltrad/beast/bin".
-
-Hopefully everything should be setup correctly now and it is time to write your own
-rule.
-
-@subsubsection groovyrules_how_basics Basics
-
-All scripted rules should implement the IScriptableRule. So we start by importing
-the IScriptableRule interface. If you have managed to setup eclipse properly you
-should be able to tab complete by writing IScript and then hit Ctrl-&lt;Space&gt;.
-
-After that, you need to ensure that MyRule implements IScriptableRule and adding
-the handle method, this will in turn require you to import the IBltMessage
-interface as well. After this you should have a basic rule that is runnable but
-won't do anything.
-
-@verbatim 
-import eu.baltrad.beast.message.IBltMessage;
+<p >Beast comes delivered with support for creating scriptable rules by using the groovy language. Groovy is very similar to java so most of the things you can do in java you will be able to do in groovy as well. There are a few caveats to this as usual. One of them is that it isn't possible to create arrays by writing</p>
+<pre class="fragment">  new String[]{"a", "b}
+</pre><p >which might cause some problems when creating the <a class="el" href="classeu_1_1baltrad_1_1beast_1_1message_1_1mo_1_1BltGenerateMessage.html">eu.baltrad.beast.message.mo.BltGenerateMessage</a>. Instead, you should write</p>
+<pre class="fragment">  ["a", "b"] as String[]
+</pre><h2><a class="anchor" id="groovyrules_why"></a>
+Why?</h2>
+<p >Groovy is a scriptable language and it is similar to java which the beast library has been written in so it felt like the obvious choice.</p>
+<h2><a class="anchor" id="groovyrules_how"></a>
+How?</h2>
+<p >This is a matter of programming and digging into the beast API documentation but in order to give you some ideas on how to progress the rest of this section will show you what can be done.</p>
+<h3><a class="anchor" id="groovyrules_how_setup"></a>
+Setup IDE</h3>
+<p >I have used a groovy plugin for eclipse for editing but you can just as well write the code in any java editor and perform the changes necessary for getting the code groovy compatible.</p>
+<p >First of all, create a groovy project like with "File-&gt;New-&gt;Groovy Project".</p>
+<div class="image">
+<img src="new_groovy_project.jpg" alt=""/>
+</div>
+<p >After that, you will have to create a groovy class which is done with "File-&gt;New-&gt;Groovy Class".</p>
+<div class="image">
+<img src="new_groovy_class.jpg" alt=""/>
+</div>
+<p >Since you are going to use the beast API you need to setup the build path to include the beast.jar. Right click on your project and choose "Properties" and then "Java Build Path-&gt;Libraries-&gt;Add External JARs...". Navigate to your beast library, probably something like "/opt/baltrad/beast/bin".</p>
+<p >Hopefully everything should be setup correctly now and it is time to write your own rule.</p>
+<h3><a class="anchor" id="groovyrules_how_basics"></a>
+Basics</h3>
+<p >All scripted rules should implement the IScriptableRule. So we start by importing the IScriptableRule interface. If you have managed to setup eclipse properly you should be able to tab complete by writing IScript and then hit Ctrl-&lt;Space&gt;.</p>
+<p >After that, you need to ensure that MyRule implements IScriptableRule and adding the handle method, this will in turn require you to import the IBltMessage interface as well. After this you should have a basic rule that is runnable but won't do anything.</p>
+<pre class="fragment">import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.rules.IScriptableRule
 
-/**
- * Rule for forwarding a specific area to the google maps
- * generator plugin
- * @author Anders Henja
- */
+//
+// Rule for forwarding a specific area to the google maps
+// generator plugin
+// @author Anders Henja
+//
 class GMapRule implements IScriptableRule {
   @Override
   public IBltMessage handle(IBltMessage arg) {
     return null;
   }
 }
-\endverbatim
-
-All rules are built like this, you get a IBltMessage and you can return a IBltMessage but you are
-not required to. If you return a IBltMessage you are saying that the framework needs to pass a 
-message on to an adaptor (basically an interface to an external resource). This is not true for
-all message types but most of them.
-
-The currently supported messages can be found in the \ref p_message_ib "Message Information Model".
-
-@subsubsection groovyrules_how_messages Messages
-As it is, all messages that arrives to the router will be sent to all registered rules. This means
-that you should always be careful to handle when the in argument is null or some unknown class. Since
-we only want to do something when the message is a BltDataMessage we probably should filter those out.
-Import BltDataMessage and add a check.
-
-@verbatim 
-import eu.baltrad.beast.message.mo.BltDataMessage;
+</pre><p >All rules are built like this, you get a IBltMessage and you can return a IBltMessage but you are not required to. If you return a IBltMessage you are saying that the framework needs to pass a message on to an adaptor (basically an interface to an external resource). This is not true for all message types but most of them.</p>
+<p >The currently supported messages can be found in the <a class="el" href="p_message_ib.html">Message Information Model</a>.</p>
+<h3><a class="anchor" id="groovyrules_how_messages"></a>
+Messages</h3>
+<p >As it is, all messages that arrives to the router will be sent to all registered rules. This means that you should always be careful to handle when the in argument is null or some unknown class. Since we only want to do something when the message is a BltDataMessage we probably should filter those out. Import BltDataMessage and add a check.</p>
+<pre class="fragment">import eu.baltrad.beast.message.mo.BltDataMessage;
 ...
 
   if (arg != null &amp;&amp; arg instanceof BltDataMessage) {
     BltDataMessage msg = (BltDataMessage)arg;  
   }
-\endverbatim
-
-Next thing we want to do is to only process composites, i.e. /what/object == COMP and now it
-gets interesting since we are going to use the baltrad-db API for accessing meta data.
-
-@subsubsection groovyrules_how_bdb Baltrad DB API
-
-The Baltrad DB keeps track on all files and meta data. The Baltrad DB API tries to simplify the
-usage while also making sure that the db queries are optimized. The BltDataMessage has one
-method that returns a eu.baltrad.bdb.db.FileEntry instance. But before you do anything else,
-open up the project properties and navigate to "Java Build Path-&gt;Libraries-&gt;Add External JARs..."
-and add the baltrad-bdb-client.jar file. Usually placed in
-@verbatim 
- /opt/baltrad/baltrad-db/share/baltrad-bdb/java/baltrad-bdb-client.jar
-\endverbatim
-
-Now, you can add a check if the file is a composite by fetching the what/object information
-from the meta data and making sure that it is "COMP". Since we only want to execute the google 
-maps plugin for specific areas/sources. It probably is a good idea to add this check as well.
-
-@verbatim 
-import eu.baltrad.bdb.db.FileEntry;
+</pre><p >Next thing we want to do is to only process composites, i.e. /what/object == COMP and now it gets interesting since we are going to use the baltrad-db API for accessing meta data.</p>
+<h3><a class="anchor" id="groovyrules_how_bdb"></a>
+Baltrad DB API</h3>
+<p >The Baltrad DB keeps track on all files and meta data. The Baltrad DB API tries to simplify the usage while also making sure that the db queries are optimized. The BltDataMessage has one method that returns a eu.baltrad.bdb.db.FileEntry instance. But before you do anything else, open up the project properties and navigate to "Java Build Path-&gt;Libraries-&gt;Add External JARs..." and add the baltrad-bdb-client.jar file. Usually placed in </p><pre class="fragment"> /opt/baltrad/baltrad-db/share/baltrad-bdb/java/baltrad-bdb-client.jar
+</pre><p >Now, you can add a check if the file is a composite by fetching the what/object information from the meta data and making sure that it is "COMP". Since we only want to execute the google maps plugin for specific areas/sources. It probably is a good idea to add this check as well.</p>
+<pre class="fragment">import eu.baltrad.bdb.db.FileEntry;
 ...
   FileEntry entry = msg.getFileEntry();
   String object = entry.getMetadata().getWhatObject();
@@ -158,14 +110,8 @@ import eu.baltrad.bdb.db.FileEntry;
   if (object != null &amp;&amp; object.equals("COMP") &amp;&amp; area != null) {
 
   }
-\endverbatim
-
-If you are using a somewhat competent IDE, you probably have got a error saying that getSupportedArea is
-missing so you probably should implement this method. We only want to support swegmaps_2000
-and bltgmaps_4000.
-
-@verbatim 
-  public static String[] AREAS=["swegmaps_2000", "bltgmaps_4000"]; // Note difference from java by using [,] instead of {}
+</pre><p >If you are using a somewhat competent IDE, you probably have got a error saying that getSupportedArea is missing so you probably should implement this method. We only want to support swegmaps_2000 and bltgmaps_4000.</p>
+<pre class="fragment">  public static String[] AREAS=["swegmaps_2000", "bltgmaps_4000"]; // Note difference from java by using [,] instead of {}
   
   ....
   
@@ -178,20 +124,9 @@ and bltgmaps_4000.
       }
     }
     return null;
-  }
-
-\endverbatim
-
-According to the message information model the message to be used is
-\ref s_message_ib_generate. It requires files, arguments and what algorithm to use.
-By reading the documentation about the rave google maps plugin, it can be found that the
-registered algorithm is \b se.smhi.rave.creategmapimage and that the required arguments
-are ["outfile", &lt;filename&gt;] and a file.
-
-Create a function that can generate the proper filename for you.
-
-@verbatim 
-import eu.baltrad.bdb.util.Date;
+  }</pre><p >According to the message information model the message to be used is <a class="el" href="p_message_ib.html#s_message_ib_generate">Generate message</a>. It requires files, arguments and what algorithm to use. By reading the documentation about the rave google maps plugin, it can be found that the registered algorithm is <b>se.smhi.rave.creategmapimage</b> and that the required arguments are ["outfile", &lt;filename&gt;] and a file.</p>
+<p >Create a function that can generate the proper filename for you.</p>
+<pre class="fragment">import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.Time;
 ...
   public static String PATH="/opt/baltrad/rave_gmap/web/data";
@@ -201,14 +136,8 @@ import eu.baltrad.bdb.util.Time;
       sprintf("%04d/%02d/%02d/%04d%02d%02d%02d%02d", 
         [d.year(), d.month(), d.day(), d.year(), d.month(), d.day(), t.hour(), t.minute()] as int[]) + ".png";
   }
-\endverbatim
-
-We are almost there, now you only need to aquire the filename associated with the file entry, create the
-generate message and return it. In order to get the proper file name you will need to fetch a catalog instance
-from the manager context.
-
-@verbatim 
-import eu.baltrad.beast.ManagerContext;
+</pre><p >We are almost there, now you only need to aquire the filename associated with the file entry, create the generate message and return it. In order to get the proper file name you will need to fetch a catalog instance from the manager context.</p>
+<pre class="fragment">import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.db.Catalog;
 ...
   Catalog cat = ManagerContext.getCatalog();
@@ -219,30 +148,25 @@ import eu.baltrad.beast.db.Catalog;
   result.setAlgorithm("se.smhi.rave.creategmapimage");
   result.setFiles([cat.getFileCatalogPath(entry.getUuid().toString())] as String[]); // Notice usage of as String[]
   result.setArguments(["outfile", ofile] as String[]); // Notice usage of as String[]
-\endverbatim
-
-Then, we just has to ensure that result is returned and test it out. The final result should look something
-like this.
-
-@verbatim 
-/* --------------------------------------------------------------------
-Copyright (C) 2009-2011 Swedish Meteorological and Hydrological Institute, SMHI,
-
-This file is part of the Beast library.
-
-Beast library is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Beast library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with the Beast library library.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
-------------------------------------------------------------------------*/
+</pre><p >Then, we just has to ensure that result is returned and test it out. The final result should look something like this.</p>
+<pre class="fragment">//--------------------------------------------------------------------
+// Copyright (C) 2009-2011 Swedish Meteorological and Hydrological Institute, SMHI,
+//
+// This file is part of the Beast library.
+//
+// Beast library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Beast library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Beast library library.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// ------------------------------------------------------------------------
 package se.smhi
 
 import eu.baltrad.bdb.db.FileEntry;
@@ -255,34 +179,34 @@ import eu.baltrad.beast.rules.IScriptableRule
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
 
-/**
- * Rule for forwarding a specific area to the google maps
- * generator plugin.
- * @author Anders Henja
- */
+//
+// Rule for forwarding a specific area to the google maps
+// generator plugin.
+// @author Anders Henja
+//
 class GMapRule implements IScriptableRule {
   public static String[] AREAS=["swegmaps_2000", "bltgmaps_4000"]; // Note difference from java by using [,] instead of {}
   
   public static String PATH="/opt/baltrad/rave_gmap/web/data";
 
-  /**
-   * Creates a file name to use  
-   * @param d the date
-   * @param t the time
-   * @param area the area
-   * @return the full file name
-   */
+  //
+  // Creates a file name to use  
+  // @param d the date
+  // @param t the time
+  // @param area the area
+  // @return the full file name
+  //
   protected String createFilename(Date d, Time t, String area) {
     String oname = PATH + "/"+area+"/" + 
       sprintf("%04d/%02d/%02d/%04d%02d%02d%02d%02d", 
         [d.year(), d.month(), d.day(), d.year(), d.month(), d.day(), t.hour(), t.minute()] as int[]) + ".png";
   }
   
-  /**
-   * Checks the source if it contains one of the strings in AREAS.
-   * @param source the what/source string.
-   * @return the found area or null
-   */
+  //
+  // Checks the source if it contains one of the strings in AREAS.
+  // @param source the what/source string.
+  // @return the found area or null
+  //
   protected String getSupportedArea(String source) {
     if (source != null) {
       for (String s : AREAS) {
@@ -311,8 +235,13 @@ class GMapRule implements IScriptableRule {
         result = new BltGenerateMessage();
         result.setAlgorithm("se.smhi.rave.creategmapimage");
         result.setFiles([cat.getFileCatalogPath(entry.getUuid().toString())] as String[]); // Notice usage of as String[]
-        result.setArguments(["outfile", ofile] as String[]); // Notice usage of as String[] } } return result; } } </p>
-<p >You can find more examples on groovy scripts in the &lt;beast install prefix&gt;/examples directory. </p>
+        result.setArguments(["outfile", ofile] as String[]); // Notice usage of as String[]
+      }
+    }
+    return result;
+  }
+}
+</pre><p >You can find more examples on groovy scripts in the &lt;beast install prefix&gt;/examples directory. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
