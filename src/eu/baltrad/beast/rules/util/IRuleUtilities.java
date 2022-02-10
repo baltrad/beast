@@ -98,6 +98,13 @@ public interface IRuleUtilities {
   public List<String> getUuidStringsFromEntries(List<CatalogEntry> entries);
   
   /**
+   * Creates a list of elevation angles. It is assumed that each entry contains an elangle at /dataset1/where/elangle, otherwise unexpected behaviour
+   * @param entries a list of entries
+   * @return a list of doubles.
+   */
+  public List<Double> getElanglesFromEntries(List<CatalogEntry> entries);
+  
+  /**
    * Returns a list of sources from the provided entries
    * @param entries the entries
    * @return a list of sources

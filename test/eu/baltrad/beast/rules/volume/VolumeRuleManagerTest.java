@@ -145,6 +145,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setElevationMax(10.0);
     rule.setElevationMin(2.0);
     rule.setElevationAngles("1.0,2.0,3.0");
+    rule.setAdaptiveElevationAngles(true);
     rule.setInterval(6);
     rule.setTimeout(20);
     rule.setNominalTimeout(true);
@@ -153,7 +154,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setQualityControlMode(VolumeRule.QualityControlMode_ANALYZE);
     
     expect(jdbc.update("insert into beast_volume_rules (rule_id, interval, timeout, nominal_timeout, " +
-        "ascending, minelev, maxelev, elangles, qc_mode) values (?,?,?,?,?,?,?,?,?)", new Object[]{13, 6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0", 1})).andReturn(0);
+        "ascending, minelev, maxelev, elangles, adaptive_elangles, qc_mode) values (?,?,?,?,?,?,?,?,?,?)", new Object[]{13, 6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0", true, 1})).andReturn(0);
 
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
@@ -190,6 +191,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setElevationMax(10.0);
     rule.setElevationMin(2.0);
     rule.setElevationAngles("1.0,2.0,3.0");
+    rule.setAdaptiveElevationAngles(true);
     rule.setInterval(6);
     rule.setTimeout(20);
     rule.setNominalTimeout(true);
@@ -197,7 +199,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     rule.setDetectors(detectors);
     rule.setQualityControlMode(VolumeRule.QualityControlMode_ANALYZE);
     expect(jdbc.update("update beast_volume_rules set interval=?, timeout=?, nominal_timeout=?, " +
-        "ascending=?, minelev=?, maxelev=?, elangles=?, qc_mode=? where rule_id=?", new Object[]{6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0", 1, 13}))
+        "ascending=?, minelev=?, maxelev=?, elangles=?, adaptive_elangles=?, qc_mode=? where rule_id=?", new Object[]{6, 20, true, false, 2.0, 10.0, "1.0,2.0,3.0", true, 1, 13}))
         .andReturn(1);
     methods.storeSources(13, sources);
     methods.storeDetectors(13, detectors);
@@ -303,6 +305,7 @@ public class VolumeRuleManagerTest extends EasyMockSupport {
     expect(rs.getDouble("minelev")).andReturn(2.0);
     expect(rs.getDouble("maxelev")).andReturn(10.0);
     expect(rs.getString("elangles")).andReturn("1.0,2.0,3.0");
+    expect(rs.getBoolean("adaptive_elangles")).andReturn(true);
     expect(rs.getInt("qc_mode")).andReturn(1);
     expect(method.getSources(10)).andReturn(sources);
     expect(method.getDetectors(10)).andReturn(detectors);

@@ -126,6 +126,11 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   private boolean ascending = true;
   
   /**
+   * If elevation angle usage should be determined from the previous nominal times data set
+   */
+  private boolean adaptiveElevationAngles = false;
+  
+  /**
    * How the quality controls should be handled and used
    */
   private int qualityControlMode = QualityControlMode_ANALYZE_AND_APPLY;
@@ -369,11 +374,38 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
           ", file: " + file.getUuid());
       List<CatalogEntry> entries = fetchAllCurrentEntries(data.getDateTime(), data.getSource());
       TimeoutTask tt = timeoutManager.getRegisteredTask(data);
-      if (areCriteriasMet(entries, data.getDateTime(), data.getSource())) {
+      
+      boolean adaptiveCriteriasMet = false;
+      if (isAdaptiveElevationAngles() && areAdaptiveElevationAnglesMatching(entries, data.getDateTime(), data.getSource())) {
+        adaptiveCriteriasMet = true;
+      }
+      boolean criteriasMet = areCriteriasMet(entries, data.getDateTime(), data.getSource());
+      
+      if (adaptiveCriteriasMet || criteriasMet) {
         List<CatalogEntry> newentries = filterEntries(entries, data.getDateTime().getTime());
         result = createMessage(data.getDateTime(), newentries);
         if (tt != null) {
           timeoutManager.unregister(tt.getId());
+        }
+        
+        if (isAdaptiveElevationAngles()) {
+          // We update handled with a the previous periods elevation angles so that we know what to expect next
+          // period. The reason for using previous interval is that it is the only way we can recover from
+          // lost scans since we otherwise always assume that we expect the current number of scans to be the
+          // correct.
+          //
+          // This is not true if timeout occurs though, then it's all entries that exists at timeout
+          // that should be used instead.
+          //
+          // The major flaw with this approach is that if user has specified a too long timeout
+          // the timeout will result in an list of elevation angles that are not possible to complete.
+          //
+          if (!criteriasMet) {
+            DateTime prevDateTime = ruleUtilities.createPrevNominalTime(data.getDateTime(), interval);
+            List<CatalogEntry> prevEntries = fetchAllCurrentEntries(prevDateTime, data.getSource());
+            List<CatalogEntry> filteredPrevEntries = filterEntries(prevEntries, prevDateTime.getTime());
+            data.setAdaptiveElevationAngles(ruleUtilities.getElanglesFromEntries(filteredPrevEntries));
+          }
         }
       } else {
         if (tt == null) {
@@ -471,6 +503,14 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
       BltMultiRoutedMessage mrmsg = new BltMultiRoutedMessage();
       mrmsg.setDestinations(recipients);
       mrmsg.setMessage(msgtosend);
+      
+      if (isAdaptiveElevationAngles()) {
+        // When timeout is triggered we assume that the current data is what we want to wait for.
+        List<CatalogEntry> adaptiveEntries = fetchAllCurrentEntries(vtd.getDateTime(), vtd.getSource());
+        List<CatalogEntry> filteredAdaptiveEntries = filterEntries(adaptiveEntries, vtd.getDateTime().getTime());
+        vtd.setAdaptiveElevationAngles(ruleUtilities.getElanglesFromEntries(entries));
+      }
+      
       setHandled(vtd);
       return mrmsg;
     }
@@ -478,8 +518,32 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   }
 
   /**
-   * Verifies if the criterias has been met so that we can create
-   * the message.
+   * Checks if the adaptive elevation angles are matching or not
+   * @param entries the entries with current elevation angles
+   * @param dt the nominal time (Currently Not Used)
+   * @param source the radar source
+   * @return true if we have a matching situation, otherwise false
+   */
+  protected boolean areAdaptiveElevationAnglesMatching(List<CatalogEntry> entries, DateTime dt, String source) {
+    if (handledData.containsKey(source)) {
+      List<Double> adaptiveAngles = handledData.get(source).getAdaptiveElevationAngles();
+      List<Double> entriesAngles = ruleUtilities.getElanglesFromEntries(entries);
+      
+      if (adaptiveAngles.size() > 0) {
+        for (Double d: adaptiveAngles) {
+          if (!entriesAngles.contains(d)) {
+            return false;
+          }
+        }
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Verifies if the criterias has been met so that we can create the message.
    * @param entries a list of catalog entries
    * @return true if the criterias has been met.
    */
@@ -736,6 +800,21 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
     this.nominalTimeout = nominalTimeout;
   }
 
+
+  /**
+   * @return the adaptiveElevationAngles
+   */
+  public boolean isAdaptiveElevationAngles() {
+    return adaptiveElevationAngles;
+  }
+
+  /**
+   * @param adaptiveElevationAngles the adaptiveElevationAngles to set
+   */
+  public void setAdaptiveElevationAngles(boolean adaptiveElevationAngles) {
+    this.adaptiveElevationAngles = adaptiveElevationAngles;
+  }
+  
   public int getQualityControlMode() {
     return qualityControlMode;
   }

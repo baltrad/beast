@@ -304,6 +304,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_volume_rules_with_adaptive_elangles() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_volume_rules' AND column_name = 'adaptive_elangles';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_volume_rules ADD COLUMN adaptive_elangles boolean;
+    UPDATE beast_volume_rules SET adaptive_elangles='false';
+    ALTER TABLE beast_volume_rules ALTER COLUMN adaptive_elangles SET NOT NULL;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_qc_mode() RETURNS VOID AS $$
 BEGIN
   PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'qc_mode';
@@ -451,6 +462,7 @@ select update_beast_composite_rules_with_quantity();
 select update_beast_composite_rules_with_nominal_timeout();
 select update_beast_volume_rules_with_nominal_timeout();
 select update_beast_volume_rules_with_qc_mode();
+select update_beast_volume_rules_with_adaptive_elangles();
 select update_beast_composite_rules_with_qc_mode();
 select update_beast_site2d_rules_with_qc_mode();
 select update_beast_composite_rules_with_reprocess_quality();
@@ -478,6 +490,7 @@ drop function update_beast_composite_rules_with_quantity();
 drop function update_beast_composite_rules_with_nominal_timeout();
 drop function update_beast_volume_rules_with_nominal_timeout();
 drop function update_beast_volume_rules_with_qc_mode();
+drop function update_beast_volume_rules_with_adaptive_elangles();
 drop function update_beast_composite_rules_with_qc_mode();
 drop function update_beast_site2d_rules_with_qc_mode();
 drop function update_beast_composite_rules_with_reprocess_quality();

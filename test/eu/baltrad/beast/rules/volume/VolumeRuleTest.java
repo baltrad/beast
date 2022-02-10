@@ -26,6 +26,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -371,6 +372,102 @@ public class VolumeRuleTest extends EasyMockSupport {
     verifyAll();
     assertNull(result);
   }  
+  
+  @Test
+  public void test_areAdaptiveElevationAnglesMatching_emptyTimerData() {
+    DateTime now = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry(Double.valueOf(1.0)));
+    entries.add(createCatalogEntry(Double.valueOf(5.0)));
+    entries.add(createCatalogEntry(Double.valueOf(11.0)));
+    
+    replayAll();
+    
+    boolean result = classUnderTest.areAdaptiveElevationAnglesMatching(entries,  now,  "seang");
+    
+    verifyAll();
+    assertEquals(false, result);
+  }
+
+  @Test
+  public void test_areAdaptiveElevationAnglesMatching_emptyTimerData_2() {
+    DateTime now = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry(Double.valueOf(1.0)));
+    entries.add(createCatalogEntry(Double.valueOf(5.0)));
+    entries.add(createCatalogEntry(Double.valueOf(11.0)));
+    
+    VolumeTimerData timerData = new VolumeTimerData(1, now, "seang");
+    classUnderTest.setHandled(timerData);
+    
+    expect(utilities.getElanglesFromEntries(entries)).andReturn(Arrays.asList(new Double[] {}));
+    replayAll();
+    
+    boolean result = classUnderTest.areAdaptiveElevationAnglesMatching(entries,  now,  "seang");
+    
+    verifyAll();
+    assertEquals(false, result);
+  }
+  
+  @Test
+  public void test_areAdaptiveElevationAnglesMatching_timerData_withMoreElangles() {
+    DateTime now = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    
+    VolumeTimerData timerData = new VolumeTimerData(1, now, "seang");
+    timerData.setAdaptiveElevationAngles(Arrays.asList(new Double[] {1.0, 5.0, 11.0, 13.0}));
+    classUnderTest.setHandled(timerData);
+    
+    expect(utilities.getElanglesFromEntries(entries)).andReturn(Arrays.asList(new Double[] {1.0, 5.0, 11.0}));
+    replayAll();
+    
+    boolean result = classUnderTest.areAdaptiveElevationAnglesMatching(entries,  now,  "seang");
+    
+    verifyAll();
+    assertEquals(false, result);
+  }
+ 
+  @Test
+  public void test_areAdaptiveElevationAnglesMatching_timerData_withSameElangles() {
+    DateTime now = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry(Double.valueOf(1.0)));
+    entries.add(createCatalogEntry(Double.valueOf(5.0)));
+    entries.add(createCatalogEntry(Double.valueOf(11.0)));
+    
+    VolumeTimerData timerData = new VolumeTimerData(1, now, "seang");
+    timerData.setAdaptiveElevationAngles(Arrays.asList(new Double[] {1.0, 5.0, 11.0}));
+    classUnderTest.setHandled(timerData);
+    
+    expect(utilities.getElanglesFromEntries(entries)).andReturn(Arrays.asList(new Double[] {1.0, 5.0, 11.0}));
+    replayAll();
+    
+    boolean result = classUnderTest.areAdaptiveElevationAnglesMatching(entries,  now,  "seang");
+    
+    verifyAll();
+    assertEquals(true, result);
+  }
+  
+  @Test
+  public void test_areAdaptiveElevationAnglesMatching_timerData_withLessElangles() {
+    DateTime now = new DateTime();
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry(Double.valueOf(1.0)));
+    entries.add(createCatalogEntry(Double.valueOf(5.0)));
+    entries.add(createCatalogEntry(Double.valueOf(11.0)));
+    
+    VolumeTimerData timerData = new VolumeTimerData(1, now, "seang");
+    timerData.setAdaptiveElevationAngles(Arrays.asList(new Double[] {1.0, 5.0}));
+    classUnderTest.setHandled(timerData);
+    
+    expect(utilities.getElanglesFromEntries(entries)).andReturn(Arrays.asList(new Double[] {1.0, 5.0, 11.0}));
+    replayAll();
+    
+    boolean result = classUnderTest.areAdaptiveElevationAnglesMatching(entries,  now,  "seang");
+    
+    verifyAll();
+    assertEquals(true, result);
+  }
   
   @Test
   public void testAreCriteriasMet_hit() throws Exception {

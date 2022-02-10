@@ -18,6 +18,9 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 ------------------------------------------------------------------------*/
 package eu.baltrad.beast.rules.volume;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import eu.baltrad.bdb.util.DateTime;
 
 /**
@@ -39,6 +42,11 @@ public class VolumeTimerData {
    * The unique rule id
    */
   private int ruleid = -1;
+  
+  /**
+   * List of elevation angles used for adaptive control
+   */
+  private List<Double> adaptiveElevationAngles = new ArrayList<Double>();
   
   /**
    * Constructor
@@ -92,5 +100,24 @@ public class VolumeTimerData {
    */
   public String getSource() {
     return this.source;
+  }
+  
+
+  /**
+   * @return the elevationAngles
+   */
+  public List<Double> getAdaptiveElevationAngles() {
+    return adaptiveElevationAngles;
+  }
+
+  /**
+   * @param elevationAngles the elevationAngles to set
+   */
+  public void setAdaptiveElevationAngles(List<Double> elevationAngles) {
+    if (elevationAngles != null) {
+      this.adaptiveElevationAngles = elevationAngles;
+    } else {
+      this.adaptiveElevationAngles = new ArrayList<Double>();
+    }
   }
 }

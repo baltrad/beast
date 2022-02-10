@@ -142,6 +142,7 @@ create table beast_volume_rules (
   minelev decimal NOT NULL,
   maxelev decimal NOT NULL,
   elangles text,
+  adaptive_elangles boolean NOT NULL,
   qc_mode integer NOT NULL
 );
 

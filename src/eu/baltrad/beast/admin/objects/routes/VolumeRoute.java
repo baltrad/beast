@@ -63,6 +63,11 @@ public class VolumeRoute  extends Route {
   private List<Double> elevationAngles = new ArrayList<Double>();
   
   /**
+   * If adaptive elevation angle handling should be used or not
+   */
+  private boolean adaptiveElevationAngles = false;
+  
+  /**
    * How the quality controls should be handled and used
    */
   private String qualityControlMode = "ANALYZE_AND_APPLY";
@@ -169,6 +174,23 @@ public class VolumeRoute  extends Route {
     this.elevationAngles = elevationAngles;
   }
 
+
+  /**
+   * @return the adaptiveElevationAngles
+   */
+  @JsonProperty(value="adaptive_elevation_angles")
+  public boolean isAdaptiveElevationAngles() {
+    return adaptiveElevationAngles;
+  }
+
+  /**
+   * @param adaptiveElevationAngles the adaptiveElevationAngles to set
+   */
+  @JsonProperty(value="adaptive_elevation_angles")
+  public void setAdaptiveElevationAngles(boolean adaptiveElevationAngles) {
+    this.adaptiveElevationAngles = adaptiveElevationAngles;
+  }
+  
   /**
    * @return the qualityControlMode
    */
@@ -269,6 +291,7 @@ public class VolumeRoute  extends Route {
     this.setAscending(rule.isAscending());
     this.setDetectors(rule.getDetectors());
     this.setElevationAngles(rule.getElevationAnglesAsDoubles());
+    this.setAdaptiveElevationAngles(rule.isAdaptiveElevationAngles());
     this.setFilter(rule.getFilter());
     this.setInterval(rule.getInterval());
     this.setMaxElevation(rule.getElevationMax());
@@ -285,6 +308,7 @@ public class VolumeRoute  extends Route {
     rule.setAscending(this.isAscending());
     rule.setDetectors(this.getDetectors());
     rule.setElevationAngles(this.getElevationAngles());
+    rule.setAdaptiveElevationAngles(this.isAdaptiveElevationAngles());
     rule.setFilter(this.getFilter());
     rule.setInterval(this.getInterval());
     rule.setElevationMax(this.getMaxElevation());

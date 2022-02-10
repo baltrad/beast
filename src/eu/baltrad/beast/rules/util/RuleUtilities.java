@@ -241,6 +241,21 @@ public class RuleUtilities implements IRuleUtilities {
     return result;
   }
   
+
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#getElanglesFromEntries(java.util.List)
+   */
+  @Override
+  public List<Double> getElanglesFromEntries(List<CatalogEntry> entries) {
+    List<Double> result = new ArrayList<Double>();
+    for (CatalogEntry entry : entries) {
+      Double elangle = (Double)entry.getAttribute("/dataset1/where/elangle");
+      result.add(elangle);
+    }
+    return result;
+  }
+
+  
   /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#createCalendar(eu.baltrad.bdb.util.DateTime)
    */

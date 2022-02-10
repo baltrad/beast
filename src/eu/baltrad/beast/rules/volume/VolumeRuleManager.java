@@ -133,14 +133,15 @@ public class VolumeRuleManager implements IRuleManager {
     double minelev = vrule.getElevationMin();
     double maxelev = vrule.getElevationMax();
     String elangles = vrule.getElevationAngles();
+    boolean adaptive_elangles = vrule.isAdaptiveElevationAngles();
     int qc_mode = vrule.getQualityControlMode();
     List<String> sources = vrule.getSources();
     List<String> detectors = vrule.getDetectors();
     
     template.update("insert into beast_volume_rules" +
-                    " (rule_id, interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles, qc_mode) values" +
-                    " (?,?,?,?,?,?,?,?,?)", 
-                    new Object[]{ruleId, interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles, qc_mode});
+                    " (rule_id, interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles, adaptive_elangles, qc_mode) values" +
+                    " (?,?,?,?,?,?,?,?,?,?)", 
+                    new Object[]{ruleId, interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles, adaptive_elangles,  qc_mode});
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
@@ -162,13 +163,14 @@ public class VolumeRuleManager implements IRuleManager {
     double minelev = vrule.getElevationMin();
     double maxelev = vrule.getElevationMax();
     String elangles = vrule.getElevationAngles();
+    boolean adaptive_elangles = vrule.isAdaptiveElevationAngles();    
     int qc_mode = vrule.getQualityControlMode();
     List<String> sources = vrule.getSources();
     List<String> detectors = vrule.getDetectors();
     
     template.update("update beast_volume_rules set" +
-                    " interval=?, timeout=?, nominal_timeout=?, ascending=?, minelev=?, maxelev=?, elangles=?, qc_mode=? where rule_id=?", 
-                    new Object[]{interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles, qc_mode, ruleId});
+                    " interval=?, timeout=?, nominal_timeout=?, ascending=?, minelev=?, maxelev=?, elangles=?, adaptive_elangles=?, qc_mode=? where rule_id=?", 
+                    new Object[]{interval, timeout, nominal_timeout, ascending, minelev, maxelev, elangles, adaptive_elangles, qc_mode, ruleId});
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
@@ -277,6 +279,8 @@ public class VolumeRuleManager implements IRuleManager {
         double mine = rs.getDouble("minelev");
         double maxe = rs.getDouble("maxelev");
         String elangles = rs.getString("elangles");
+        boolean adaptive_elangles = rs.getBoolean("adaptive_elangles");
+        
         int qc_mode = rs.getInt("qc_mode");
         List<String> sources = getSources(rule_id);
         List<String> detectors = getDetectors(rule_id);
@@ -288,6 +292,7 @@ public class VolumeRuleManager implements IRuleManager {
         result.setElevationMin(mine);
         result.setElevationMax(maxe);
         result.setElevationAngles(elangles);
+        result.setAdaptiveElevationAngles(adaptive_elangles);
         result.setQualityControlMode(qc_mode);
         result.setSources(sources);
         result.setDetectors(detectors);
