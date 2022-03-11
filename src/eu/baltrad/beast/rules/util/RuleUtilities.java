@@ -165,6 +165,66 @@ public class RuleUtilities implements IRuleUtilities {
   }
   
   /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#findFirstStoredEntry(java.util.List)
+   */
+  @Override
+  public CatalogEntry findFirstStoredEntry(List<CatalogEntry> entries) {
+    CatalogEntry result = null;
+    DateTime currentDt = null;
+    for (CatalogEntry e : entries) {
+      if (currentDt == null) {
+        currentDt = createStorageDateTime(e);
+        result = e;
+        continue;
+      }
+      DateTime se = createStorageDateTime(e);
+      if (se.isBefore(currentDt)) {
+        currentDt = se;
+        result = e;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#findFirstStoredEntry(java.util.List)
+   */
+  @Override
+  public CatalogEntry findLastStoredEntry(List<CatalogEntry> entries) {
+    CatalogEntry result = null;
+    DateTime currentDt = null;
+    for (CatalogEntry e : entries) {
+      if (currentDt == null) {
+        currentDt = createStorageDateTime(e);
+        result = e;
+        continue;
+      }
+      DateTime se = createStorageDateTime(e);
+      if (se.isAfter(currentDt)) {
+        currentDt = se;
+        result = e;
+      }
+    }
+    return result;
+  }
+  
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#removeEntriesWithStorageTimeOlderThan(java.util.List, eu.baltrad.bdb.util.DateTime), 
+   */
+  @Override
+  public List<CatalogEntry> removeEntriesWithStorageTimeOlderThan(List<CatalogEntry> entries, DateTime limit) {
+    List<CatalogEntry> result = new ArrayList<CatalogEntry>();
+    for (CatalogEntry e: entries) {
+      DateTime se = createStorageDateTime(e);
+      if (!se.isAfter(limit)) {
+        result.add(e);
+      }
+    }
+    return result;
+  }
+
+  
+  /**
    * @see eu.baltrad.beast.rules.util.IRuleUtilities#getEntryBySource(java.lang.String, java.util.List)
    */
   @Override
@@ -314,6 +374,13 @@ public class RuleUtilities implements IRuleUtilities {
       }
     }
     return result;
+  }
+  
+  /**
+   * @see eu.baltrad.beast.rules.util.IRuleUtilities#createStorageDateTime(CatalogEntry)
+   */
+  public DateTime createStorageDateTime(CatalogEntry ce) {
+    return new DateTime(ce.getFileEntry().getStoredDate(), ce.getFileEntry().getStoredTime());
   }
 
   /**

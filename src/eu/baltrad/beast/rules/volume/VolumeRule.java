@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.joda.time.Period;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -35,6 +36,7 @@ import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
+import eu.baltrad.bdb.util.TimeDelta;
 import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.db.IFilter;
@@ -358,6 +360,19 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   public List<String> getDetectors() {
     return detectors;
   }
+
+  public String toStrFromDoubleList(List<Double> doubles) {
+    StringBuffer b = new StringBuffer();
+    for (Double d : doubles) {
+      b.append(d.toString());
+      b.append(",");
+    }
+    String s = b.toString();
+    if (s.length() > 0) {
+      s = s.substring(0, s.length() - 1);
+    }
+    return s;
+  }
   
   /**
    * @see eu.baltrad.beast.rules.IRule#handle(eu.baltrad.beast.message.IBltMessage)
@@ -404,7 +419,24 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
             DateTime prevDateTime = ruleUtilities.createPrevNominalTime(data.getDateTime(), interval);
             List<CatalogEntry> prevEntries = fetchAllCurrentEntries(prevDateTime, data.getSource());
             List<CatalogEntry> filteredPrevEntries = filterEntries(prevEntries, prevDateTime.getTime());
-            data.setAdaptiveElevationAngles(ruleUtilities.getElanglesFromEntries(filteredPrevEntries));
+            if (nominalTimeout) {
+              // If we have nominal timeout we use prevDateTime + timeout on stored times as filter
+              TimeDelta td = new TimeDelta().addSeconds(timeout);
+              DateTime dtLimit = prevDateTime.add(td);
+              filteredPrevEntries = ruleUtilities.removeEntriesWithStorageTimeOlderThan(filteredPrevEntries, dtLimit);
+            } else {
+              // Otherwise we use first entries storage time + timeout as filter 
+              CatalogEntry firstEntry = ruleUtilities.findFirstStoredEntry(filteredPrevEntries);
+              DateTime dt = ruleUtilities.createStorageDateTime(firstEntry);
+              TimeDelta td = new TimeDelta().addSeconds(timeout);
+              DateTime dtLimit = dt.add(td);
+              filteredPrevEntries = ruleUtilities.removeEntriesWithStorageTimeOlderThan(filteredPrevEntries, dtLimit);
+            }
+            List<Double> newElangles = ruleUtilities.getElanglesFromEntries(filteredPrevEntries);
+            logger.info("Adaptive elevation angles for '" + data.getSource() + "' set to " + toStrFromDoubleList(newElangles));
+            data.setAdaptiveElevationAngles(newElangles);
+          } else {
+            logger.info("Adaptive elevation angles reset for '" + data.getSource() + "'");
           }
         }
       } else {
@@ -489,7 +521,7 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
   protected List<CatalogEntry> createCatalogEntryList() {
     return new ArrayList<CatalogEntry>();
   }
-  
+
   /**
    * @see eu.baltrad.beast.rules.timer.ITimeoutRule#timeout(long, int, java.lang.Object)
    */
@@ -506,9 +538,9 @@ public class VolumeRule implements IRule, ITimeoutRule, InitializingBean {
       
       if (isAdaptiveElevationAngles()) {
         // When timeout is triggered we assume that the current data is what we want to wait for.
-        List<CatalogEntry> adaptiveEntries = fetchAllCurrentEntries(vtd.getDateTime(), vtd.getSource());
-        List<CatalogEntry> filteredAdaptiveEntries = filterEntries(adaptiveEntries, vtd.getDateTime().getTime());
-        vtd.setAdaptiveElevationAngles(ruleUtilities.getElanglesFromEntries(entries));
+        List<Double> newElangles = ruleUtilities.getElanglesFromEntries(newentries);        
+        logger.info("Timeout caused Adaptive elevation angles to be set for '" + vtd.getSource() + "' angles are: " + toStrFromDoubleList(newElangles));
+        vtd.setAdaptiveElevationAngles(ruleUtilities.getElanglesFromEntries(newentries));
       }
       
       setHandled(vtd);

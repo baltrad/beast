@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import eu.baltrad.beast.db.CatalogEntry;
+import eu.baltrad.bdb.db.FileEntry;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.DateTime;
 import eu.baltrad.bdb.util.Time;
@@ -55,6 +56,28 @@ public interface IRuleUtilities {
    */
   public Map<String, Double> fetchLowestSourceElevationAngle(DateTime startDT, DateTime stopDT, List<String> sources, String quantity);
 
+  /**
+   * Returns the catalog entry that was stored first among the provided entries
+   * @param entries the entries
+   * @return the first stored entry
+   */
+  public CatalogEntry findFirstStoredEntry(List<CatalogEntry> entries);
+
+  /**
+   * Returns the catalog entry that was stored last among the provided entries
+   * @param entries the entries
+   * @return the first stored entry
+   */
+  public CatalogEntry findLastStoredEntry(List<CatalogEntry> entries);
+  
+  /**
+   * Removes all entries that have a storage time older than limit.
+   * @param entries The entries to filter
+   * @param limit the date time limit
+   * @return the filtered list
+   */
+  public List<CatalogEntry> removeEntriesWithStorageTimeOlderThan(List<CatalogEntry> entries, DateTime limit);
+  
   /**
    * Returns an entry with the specified name. Note, it will always be the first match so
    * if there are more than one entry with the specified source name you will not be aware
@@ -112,6 +135,13 @@ public interface IRuleUtilities {
   public List<String> getSourcesFromEntries(List<CatalogEntry> entries);
   
   /**
+   * Creates the storage DateTime from a catalog entry
+   * @param ce the catalog entry
+   * @return the date time
+   */
+  public DateTime createStorageDateTime(CatalogEntry ce);
+  
+  /**
    * Creates a gregorian calendar with the specified date/time
    * @param dt the date time
    * @return a gregorian calendar
@@ -153,7 +183,7 @@ public interface IRuleUtilities {
    * @return the date time
    */
   public DateTime createDateTime(java.util.Date date);
-  
+
   /**
    * Creates the nominal time from current time and an interval.
    * 
