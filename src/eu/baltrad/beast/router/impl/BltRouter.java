@@ -32,6 +32,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.log.ISystemReporter;
 import eu.baltrad.beast.log.NullReporter;
 import eu.baltrad.beast.message.IBltMessage;
@@ -79,6 +80,11 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    * The reporter to use for reporting system messages
    */
   private ISystemReporter reporter = null;
+  
+  /**
+   * Not used here but must be initialized in order for rule managers to be able to access the static context.
+   */
+  private ManagerContext context = null;
   
   /**
    * The logger
@@ -495,6 +501,9 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
    */
   @Override
   public synchronized void afterPropertiesSet() throws Exception {
+    if (context == null) {
+      logger.error("Context could not be aquired. Might affect rule behaviour");
+    }
     RowMapper<RouteDefinition> mapper = getRouteDefinitionMapper();
     definitions = template.query(
         "select rule_id, name,type,author,description,active from beast_router_rules",
@@ -580,5 +589,12 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
   public IRule createRule(String type) {
     IRuleManager manager = ruleManagers.get(type);
     return manager.createRule();
+  }
+
+  /**
+   * @param context the context to set
+   */
+  public void setContext(ManagerContext context) {
+    this.context = context;
   }
 }
