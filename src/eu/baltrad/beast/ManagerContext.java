@@ -22,6 +22,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.exchange.ExchangeManager;
 import eu.baltrad.beast.rules.timer.TimeoutManager;
 import eu.baltrad.beast.rules.util.IRuleUtilities;
 
@@ -45,6 +46,11 @@ public class ManagerContext implements InitializingBean {
    * The utilities
    */
   protected static IRuleUtilities utilities = null;
+  
+  /**
+   * The exchange manager
+   */
+  protected static ExchangeManager exchangeManager = null;
   
   /**
    * @param manager the timeout manager to set
@@ -87,6 +93,20 @@ public class ManagerContext implements InitializingBean {
   public static IRuleUtilities getUtilities() {
     return utilities;
   }
+
+  /**
+   * @param manager the exchange manager to set to set
+   */
+  public void setExchangeManager(ExchangeManager manager) {
+    exchangeManager = manager;
+  }
+  
+  /**
+   * @return the utilities
+   */
+  public static ExchangeManager getExchangeManager() {
+    return exchangeManager;
+  }
   
   /**
    * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -101,6 +121,9 @@ public class ManagerContext implements InitializingBean {
     }
     if (utilities == null) {
       throw new BeanCreationException("utilities not set");
+    }
+    if (exchangeManager == null) {
+      throw new BeanCreationException("exchange manager not set");
     }
   }
 }
