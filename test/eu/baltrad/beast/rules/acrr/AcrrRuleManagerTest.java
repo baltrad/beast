@@ -88,11 +88,11 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     rule.setZrA(100.0);
     rule.setZrB(0.5);
     rule.setApplyGRA(true);
-    
+    rule.setProductId("pn151");
     expect(jdbc.update(
-        "INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra) " +
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-        new Object[]{3,"nrd_swe","eu.d.field",6,2,10,"COMP","DBZH",100.0,0.5,true})).andReturn(0);
+        "INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra, productid) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        new Object[]{3,"nrd_swe","eu.d.field",6,2,10,"COMP","DBZH",100.0,0.5,true,"pn151"})).andReturn(0);
     filterManager.deleteFilters(3);
     
     replayAll();
@@ -120,12 +120,13 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     rule.setZrA(100.0);
     rule.setZrB(0.5);
     rule.setApplyGRA(true);
+    rule.setProductId("pn151");
     rule.setFilter(filter);
     
     expect(jdbc.update(
-        "INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra) " +
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-        new Object[]{3,"nrd_swe","eu.d.field",6,2,10,"COMP","DBZH",100.0,0.5,true})).andReturn(0);
+        "INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra, productid) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        new Object[]{3,"nrd_swe","eu.d.field",6,2,10,"COMP","DBZH",100.0,0.5,true,"pn151"})).andReturn(0);
     expect(methodsMock.createMatchFilter(3, filter)).andReturn(filters);
     filterManager.updateFilters(3, filters);
 
@@ -193,10 +194,11 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     rule.setZrA(100.0);
     rule.setZrB(0.5);
     rule.setApplyGRA(true);
+    rule.setProductId("pn151");
     
     expect(jdbc.update("UPDATE beast_acrr_rules SET "+
-      "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=? WHERE rule_id=?", 
-        new Object[]{"nrd_swe", "eu.d.field", 6, 2, 10, "COMP", "DBZH", 100.0, 0.5, true, 3})).andReturn(0);
+      "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=?, productid=? WHERE rule_id=?", 
+        new Object[]{"nrd_swe", "eu.d.field", 6, 2, 10, "COMP", "DBZH", 100.0, 0.5, true, "pn151", 3})).andReturn(0);
     filterManager.deleteFilters(3);
     
     replayAll();
@@ -224,11 +226,12 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     rule.setZrA(100.0);
     rule.setZrB(0.5);
     rule.setApplyGRA(true);
+    rule.setProductId("pn151");
     rule.setFilter(filter);
     
     expect(jdbc.update("UPDATE beast_acrr_rules SET "+
-      "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=? WHERE rule_id=?", 
-        new Object[]{"nrd_swe", "eu.d.field", 6, 2, 10, "COMP", "DBZH", 100.0, 0.5, true, 3})).andReturn(0);
+      "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=?, productid=? WHERE rule_id=?", 
+        new Object[]{"nrd_swe", "eu.d.field", 6, 2, 10, "COMP", "DBZH", 100.0, 0.5, true, "pn151", 3})).andReturn(0);
     expect(methodsMock.createMatchFilter(3, filter)).andReturn(filters);
     filterManager.updateFilters(3, filters);
     
@@ -292,6 +295,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     expect(rs.getDouble("zra")).andReturn(100.0);
     expect(rs.getDouble("zrb")).andReturn(0.5);
     expect(rs.getBoolean("applygra")).andReturn(true);
+    expect(rs.getString("productid")).andReturn("pn151");
     classUnderTest.setRuleUtilities(utils);
     classUnderTest.setCatalog(cat);
     
@@ -313,6 +317,7 @@ public class AcrrRuleManagerTest extends EasyMockSupport {
     assertEquals(100.0, result.getZrA(), 4);
     assertEquals(0.5, result.getZrB(), 4);
     assertEquals(true, result.isApplyGRA());
+    assertEquals("pn151", result.getProductId());
     assertSame(utils, result.getRuleUtilities());
     assertSame(cat, result.getCatalog());
   }

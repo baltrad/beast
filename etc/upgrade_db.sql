@@ -57,7 +57,8 @@ BEGIN
       quantity TEXT NOT NULL,
       zra decimal NOT NULL,
       zrb decimal NOT NULL,
-      applygra boolean NOT NULL
+      applygra boolean NOT NULL,
+      productid TEXT
     );
   ELSE
     RAISE NOTICE 'Table beast_acrr_rules already exists';
@@ -261,6 +262,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_acrr_rules_with_product() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_acrr_rules' AND column_name = 'productid';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_acrr_rules ADD COLUMN productid TEXT;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_quantity() RETURNS VOID AS $$
 BEGIN
   PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'quantity';
@@ -458,6 +469,7 @@ select update_beast_composite_rules_with_qitotal_field();
 select create_beast_site2d_rules();
 select update_beast_volume_rules_with_elangles_field();
 select update_beast_acrr_rules_with_applygra();
+select update_beast_acrr_rules_with_product();
 select update_beast_composite_rules_with_quantity();
 select update_beast_composite_rules_with_nominal_timeout();
 select update_beast_volume_rules_with_nominal_timeout();
@@ -486,6 +498,7 @@ drop function update_beast_composite_rules_with_qitotal_field();
 drop function create_beast_site2d_rules();
 drop function update_beast_volume_rules_with_elangles_field();
 drop function update_beast_acrr_rules_with_applygra();
+drop function update_beast_acrr_rules_with_product();
 drop function update_beast_composite_rules_with_quantity();
 drop function update_beast_composite_rules_with_nominal_timeout();
 drop function update_beast_volume_rules_with_nominal_timeout();

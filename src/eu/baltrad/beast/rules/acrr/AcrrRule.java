@@ -126,6 +126,12 @@ public class AcrrRule implements IRule, InitializingBean {
    */
   private boolean applyGRA = false;
   
+  /**'
+   * The product id that should be passed on to the pgf if you need to identify different ACRR-products
+   * when area is the same
+   */
+  private String productId = null;
+  
   /**
    * The filter used for matching files
    */
@@ -409,10 +415,13 @@ public class AcrrRule implements IRule, InitializingBean {
         if (isApplyGRA()) {
           args.add("--applygra=true");
         }
+        String prodid = getProductId();
+        if (getProductId() != null && !getProductId().equals("")) {
+          args.add("--productid=" + prodid);
+        }
         result.setArguments(args.toArray(new String[0]));
         
-        logger.debug("AcrrRule createMessage - entries: " +
-            StringUtils.collectionToDelimitedString(uuids, " "));
+        logger.debug("AcrrRule createMessage - entries: " + StringUtils.collectionToDelimitedString(uuids, " "));
         
         logger.info("EXIT: execute AcrrRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName());
         
@@ -576,7 +585,20 @@ public class AcrrRule implements IRule, InitializingBean {
     this.applyGRA = applyGRA;
   }
   
+  /**
+   * @return the product id. Default is null
+   */
+  public String getProductId() {
+	return productId;
+  }
 
+  /**
+   * @param productId the product id
+   */
+  public void setProductId(String productId) {
+	this.productId = productId;
+  }
+  
   /**
    * @returns the filter to use when trying out if files are matching
    */
@@ -604,4 +626,5 @@ public class AcrrRule implements IRule, InitializingBean {
   public void setMatcher(MetadataMatcher matcher) {
     this.matcher = matcher;
   }
+
 }
