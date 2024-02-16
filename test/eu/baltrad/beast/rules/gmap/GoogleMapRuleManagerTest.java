@@ -172,7 +172,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     rule.setPath("pth");
     rule.setUseAreaInPath(false);
     
-    expect(template.update("update beast_gmap_rules set area=?, path=?, use_area_in_path where rule_id=?",
+    expect(template.update("update beast_gmap_rules set area=?, path=?, use_area_in_path=? where rule_id=?",
         new Object[]{"swe", "pth", false, 10})).andReturn(1);
     filterManager.deleteFilters(10);
   
@@ -220,7 +220,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     verifyAll();
     assertEquals("sswe", result.getArea());
     assertEquals("/tmp/path", result.getPath());
-    assertEquals(true, result.isUseAreaInPath());
+    assertEquals(false, result.isUseAreaInPath());
     assertSame(catalog, result.getCatalog());
     assertEquals(10, result.getRuleId());
   }
