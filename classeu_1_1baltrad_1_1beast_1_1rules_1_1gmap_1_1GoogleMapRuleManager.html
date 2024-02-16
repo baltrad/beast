@@ -80,18 +80,70 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aaa0c0f4467b57c91504522f38544caa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a145a1babdebc5d81ab9ea0b78788556d" id="r_a145a1babdebc5d81ab9ea0b78788556d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule.html">IRule</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a145a1babdebc5d81ab9ea0b78788556d">createRule</a> ()</td></tr>
 <tr class="separator:a145a1babdebc5d81ab9ea0b78788556d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18587e745a520544c9f56f27a79c09da" id="r_a18587e745a520544c9f56f27a79c09da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager.html">RuleFilterManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18587e745a520544c9f56f27a79c09da">getFilterManager</a> ()</td></tr>
+<tr class="separator:a18587e745a520544c9f56f27a79c09da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c8f55f25cb7ff81149f8f1516b3c63b" id="r_a4c8f55f25cb7ff81149f8f1516b3c63b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c8f55f25cb7ff81149f8f1516b3c63b">setFilterManager</a> (<a class="el" href="classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager.html">RuleFilterManager</a> filterManager)</td></tr>
+<tr class="separator:a4c8f55f25cb7ff81149f8f1516b3c63b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a83e3a2ab410a432aed259883b7cea42a" id="r_a83e3a2ab410a432aed259883b7cea42a"><td class="memItemLeft" align="right" valign="top">RowMapper&lt; <a class="el" href="classeu_1_1baltrad_1_1beast_1_1rules_1_1gmap_1_1GoogleMapRule.html">GoogleMapRule</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83e3a2ab410a432aed259883b7cea42a">getGmapRuleMapper</a> ()</td></tr>
 <tr class="memdesc:a83e3a2ab410a432aed259883b7cea42a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a db mapper for the google map rule.  <br /></td></tr>
 <tr class="separator:a83e3a2ab410a432aed259883b7cea42a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84bd3e4466abaecdef42be8b5d07907" id="r_af84bd3e4466abaecdef42be8b5d07907"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af84bd3e4466abaecdef42be8b5d07907">storeFilter</a> (int rule_id, <a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter.html">IFilter</a> filter)</td></tr>
+<tr class="memdesc:af84bd3e4466abaecdef42be8b5d07907"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores the associated filter.  <br /></td></tr>
+<tr class="separator:af84bd3e4466abaecdef42be8b5d07907"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc490618781ec119b96221fe45f5285e" id="r_adc490618781ec119b96221fe45f5285e"><td class="memItemLeft" align="right" valign="top">Map&lt; String, <a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter.html">IFilter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc490618781ec119b96221fe45f5285e">createMatchFilter</a> (int rule_id, <a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter.html">IFilter</a> filter)</td></tr>
+<tr class="memdesc:adc490618781ec119b96221fe45f5285e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a match filter.  <br /></td></tr>
+<tr class="separator:adc490618781ec119b96221fe45f5285e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca0d303f93306dd5b530ee2a13ab3b6d" id="r_aca0d303f93306dd5b530ee2a13ab3b6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter.html">IFilter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca0d303f93306dd5b530ee2a13ab3b6d">loadFilter</a> (int rule_id)</td></tr>
+<tr class="memdesc:aca0d303f93306dd5b530ee2a13ab3b6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the filter for the rule.  <br /></td></tr>
+<tr class="separator:aca0d303f93306dd5b530ee2a13ab3b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manager for keeping track of the google map rules. </p>
 <dl class="section author"><dt>Author</dt><dd>Anders Henja </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2012-03-21 </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="adc490618781ec119b96221fe45f5285e" name="adc490618781ec119b96221fe45f5285e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc490618781ec119b96221fe45f5285e">&#9670;&#160;</a></span>createMatchFilter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Map&lt; String, <a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter.html">IFilter</a> &gt; eu.baltrad.beast.rules.gmap.GoogleMapRuleManager.createMatchFilter </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rule_id</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter.html">IFilter</a></td>          <td class="paramname"><span class="paramname"><em>filter</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a match filter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rule_id</td><td>the rule id </td></tr>
+    <tr><td class="paramname">filter</td><td>the filter </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a map with match as filter </dd></dl>
+
+</div>
+</div>
 <a id="a145a1babdebc5d81ab9ea0b78788556d" name="a145a1babdebc5d81ab9ea0b78788556d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a145a1babdebc5d81ab9ea0b78788556d">&#9670;&#160;</a></span>createRule()</h2>
 
@@ -145,6 +197,32 @@ Protected Member Functions</h2></td></tr>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager.html#a4e644a44e8cb074f8e9e5bd7199b8b3e" title="Deletes the rule with the specified id.">eu.baltrad.beast.rules.IRuleManager::delete(int)</a> </dd></dl>
 
 <p>Implements <a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager.html#a4e644a44e8cb074f8e9e5bd7199b8b3e">eu.baltrad.beast.rules.IRuleManager</a>.</p>
+
+</div>
+</div>
+<a id="a18587e745a520544c9f56f27a79c09da" name="a18587e745a520544c9f56f27a79c09da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18587e745a520544c9f56f27a79c09da">&#9670;&#160;</a></span>getFilterManager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager.html">RuleFilterManager</a> eu.baltrad.beast.rules.gmap.GoogleMapRuleManager.getFilterManager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the filter manager </dd></dl>
 
 </div>
 </div>
@@ -204,6 +282,40 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="aca0d303f93306dd5b530ee2a13ab3b6d" name="aca0d303f93306dd5b530ee2a13ab3b6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca0d303f93306dd5b530ee2a13ab3b6d">&#9670;&#160;</a></span>loadFilter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter.html">IFilter</a> eu.baltrad.beast.rules.gmap.GoogleMapRuleManager.loadFilter </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rule_id</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Loads the filter for the rule. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rule_id</td><td>the rule </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the filter if any otherwise null </dd></dl>
+
+</div>
+</div>
 <a id="abedfa830780a5130bed0405683b14ac7" name="abedfa830780a5130bed0405683b14ac7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abedfa830780a5130bed0405683b14ac7">&#9670;&#160;</a></span>setCatalog()</h2>
 
@@ -229,6 +341,37 @@ Protected Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">catalog</td><td>the catalog to set </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4c8f55f25cb7ff81149f8f1516b3c63b" name="a4c8f55f25cb7ff81149f8f1516b3c63b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c8f55f25cb7ff81149f8f1516b3c63b">&#9670;&#160;</a></span>setFilterManager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eu.baltrad.beast.rules.gmap.GoogleMapRuleManager.setFilterManager </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeu_1_1baltrad_1_1beast_1_1rules_1_1RuleFilterManager.html">RuleFilterManager</a></td>          <td class="paramname"><span class="paramname"><em>filterManager</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filterManager</td><td>the filter manager </td></tr>
   </table>
   </dd>
 </dl>
@@ -295,6 +438,44 @@ Protected Member Functions</h2></td></tr>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager.html#a35563b9e78d7db194bddcba23b9a4832" title="Persists the rule if there is any reason to do so.">eu.baltrad.beast.rules.IRuleManager::store</a>(int, <a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRule.html" title="All rules that are used for routing purpose should implement this interface regardless if it is a scr...">eu.baltrad.beast.rules.IRule</a>) </dd></dl>
 
 <p>Implements <a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1rules_1_1IRuleManager.html#a35563b9e78d7db194bddcba23b9a4832">eu.baltrad.beast.rules.IRuleManager</a>.</p>
+
+</div>
+</div>
+<a id="af84bd3e4466abaecdef42be8b5d07907" name="af84bd3e4466abaecdef42be8b5d07907"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84bd3e4466abaecdef42be8b5d07907">&#9670;&#160;</a></span>storeFilter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eu.baltrad.beast.rules.gmap.GoogleMapRuleManager.storeFilter </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rule_id</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1db_1_1IFilter.html">IFilter</a></td>          <td class="paramname"><span class="paramname"><em>filter</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stores the associated filter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rule_id</td><td>the rule_id </td></tr>
+    <tr><td class="paramname">filter</td><td>the filter to store </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
