@@ -90,6 +90,11 @@ public class AcrrRoute extends Route {
   private double zrb = 1.6;
   
   /**
+   * The product id
+   */
+  private String productId = null;
+  
+  /**
    * The matching filter for doing more fine-grained selections
    */
   private IFilter filter = null;
@@ -263,6 +268,20 @@ public class AcrrRoute extends Route {
   }
 
   /**
+   * @return the product id. Default is null
+   */
+  public String getProductId() {
+    return productId;
+  }
+
+  /**
+   * @param productId the product id
+   */
+  public void setProductId(String productId) {
+    this.productId = productId;
+  }
+  
+  /**
    * @return the filter
    */
   public IFilter getFilter() {
@@ -300,6 +319,7 @@ public class AcrrRoute extends Route {
     this.setQuantity(rule.getQuantity());
     this.setZrA(rule.getZrA());
     this.setZrb(rule.getZrB());
+    this.setProductId(rule.getProductId());
   }
   
   /**
@@ -320,6 +340,7 @@ public class AcrrRoute extends Route {
     rule.setQuantity(this.getQuantity());
     rule.setZrA(this.getZrA());
     rule.setZrB(this.getZrb());
+    rule.setProductId(this.getProductId());
 
     return rule;
   }

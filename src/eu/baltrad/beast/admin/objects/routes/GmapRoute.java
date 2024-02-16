@@ -21,6 +21,7 @@ package eu.baltrad.beast.admin.objects.routes;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.router.IRouterManager;
 import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.rules.IRule;
@@ -36,12 +37,23 @@ public class GmapRoute extends Route {
    * The path where files should be stored
    */
   private String path = null;
+
+  /**
+   * If area name should be used in the path or not
+   */
+  private boolean useAreaInPath = true;
+  
   
   /**
    * The area for this gmap rule
    */
   private String area = null;
   
+  /**
+   * The matching filter for doing more fine-grained selections
+   */
+  private IFilter filter = null;
+
   /**
    * @return the path
    */
@@ -57,6 +69,20 @@ public class GmapRoute extends Route {
   }
 
   /**
+   * @return the useAreaInPath
+   */
+  public boolean isUseAreaInPath() {
+    return useAreaInPath;
+  }
+
+  /**
+   * @param useAreaInPath the useAreaInPath to set
+   */
+  public void setUseAreaInPath(boolean useAreaInPath) {
+    this.useAreaInPath = useAreaInPath;
+  }
+  
+  /**
    * @return the area
    */
   public String getArea() {
@@ -68,6 +94,20 @@ public class GmapRoute extends Route {
    */
   public void setArea(String area) {
     this.area = area;
+  }
+  
+  /**
+   * @return the filter
+   */
+  public IFilter getFilter() {
+    return filter;
+  }
+
+  /**
+   * @param filter the filter to set
+   */
+  public void setFilter(IFilter filter) {
+    this.filter = filter;
   }
   
   /**
@@ -84,7 +124,9 @@ public class GmapRoute extends Route {
     this.setActive(def.isActive());
     
     this.setArea(rule.getArea());
+    this.setUseAreaInPath(rule.isUseAreaInPath());
     this.setPath(rule.getPath());
+    this.setFilter(rule.getFilter());
   }
 
   /**
@@ -96,7 +138,9 @@ public class GmapRoute extends Route {
     GoogleMapRule rule = (GoogleMapRule)routerManager.createRule(GoogleMapRule.TYPE);
 
     rule.setArea(this.getArea());
+    rule.setUseAreaInPath(this.isUseAreaInPath());
     rule.setPath(this.getPath());
+    rule.setFilter(this.getFilter());
     
     return rule;
   }

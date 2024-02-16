@@ -21,13 +21,17 @@ package eu.baltrad.beast.rules.gmap;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.RuleFilterManager;
 
 /**
  * Manager for keeping track of the google map rules
@@ -44,6 +48,11 @@ public class GoogleMapRuleManager implements IRuleManager {
    * The catalog for database access
    */
   private Catalog catalog = null;
+  
+  /**
+   * filter manager
+   */
+  private RuleFilterManager filterManager;
   
   /**
    * @param template the jdbc template to set
@@ -67,8 +76,12 @@ public class GoogleMapRuleManager implements IRuleManager {
     GoogleMapRule grule = (GoogleMapRule)rule;
     String area = grule.getArea();
     String path = grule.getPath();
-    template.update("insert into beast_gmap_rules (rule_id, area, path) values (?,?,?)",
-        new Object[]{rule_id, area, path});
+    boolean useAreaInPath = grule.isUseAreaInPath();
+    
+    template.update("insert into beast_gmap_rules (rule_id, area, path, use_area_in_path) values (?,?,?,?)",
+        new Object[]{rule_id, area, path, useAreaInPath});
+    
+    storeFilter(rule_id, grule.getFilter());
     grule.setRuleId(rule_id);    
   }
 
@@ -77,10 +90,12 @@ public class GoogleMapRuleManager implements IRuleManager {
    */
   @Override
   public IRule load(int rule_id) {
-    return template.queryForObject(
+    GoogleMapRule rule = template.queryForObject(
         "select * from beast_gmap_rules where rule_id=?",
         getGmapRuleMapper(),
         new Object[]{rule_id});
+    rule.setFilter(loadFilter(rule_id));
+    return rule;
   }
 
   /**
@@ -89,8 +104,9 @@ public class GoogleMapRuleManager implements IRuleManager {
   @Override
   public void update(int rule_id, IRule rule) {
     GoogleMapRule grule = (GoogleMapRule)rule;
-    template.update("update beast_gmap_rules set area=?, path=? where rule_id=?",
-        new Object[]{grule.getArea(), grule.getPath(), rule_id});
+    template.update("update beast_gmap_rules set area=?, path=?, use_area_in_path=? where rule_id=?",
+        new Object[]{grule.getArea(), grule.getPath(), grule.isUseAreaInPath(), rule_id});
+    storeFilter(rule_id, grule.getFilter());    
     grule.setRuleId(rule_id);    
   }
 
@@ -101,6 +117,7 @@ public class GoogleMapRuleManager implements IRuleManager {
   public void delete(int rule_id) {
     template.update("delete from beast_gmap_rules where rule_id=?",
         new Object[]{rule_id});
+    storeFilter(rule_id, null);
   }
 
   /**
@@ -125,8 +142,63 @@ public class GoogleMapRuleManager implements IRuleManager {
         result.setRuleId(rs.getInt("rule_id"));
         result.setArea(rs.getString("area"));
         result.setPath(rs.getString("path"));
+        result.setUseAreaInPath(rs.getBoolean("use_area_in_path"));
         return result;
       }
     };
+  }
+  
+  
+  /**
+   * Stores the associated filter
+   * @param rule_id the rule_id
+   * @param filter the filter to store
+   */
+  protected void storeFilter(int rule_id, IFilter filter) {
+    if (filter != null) {
+      filterManager.updateFilters(rule_id, createMatchFilter(rule_id, filter));
+    } else {
+      filterManager.deleteFilters(rule_id);
+    }
+  }
+
+  /**
+   * Creates a match filter
+   * @param rule_id the rule id
+   * @param filter the filter
+   * @return a map with match as filter
+   */
+  protected Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter) {
+    Map<String, IFilter> filters = new HashMap<String, IFilter>();
+    filters.put("match", filter);
+    return filters;
+  }
+  
+  /**
+   * Loads the filter for the rule
+   * @param rule_id the rule
+   * @return the filter if any otherwise null
+   */
+  protected IFilter loadFilter(int rule_id) {
+    IFilter result = null;
+    Map<String, IFilter> filters = filterManager.loadFilters(rule_id);
+    if (filters.containsKey("match")) {
+      result = filters.get("match");
+    }
+    return result;
+  }
+  
+  /**
+   * @return the filter manager
+   */
+  public RuleFilterManager getFilterManager() {
+    return filterManager;
+  }
+
+  /**
+   * @param filterManager the filter manager
+   */
+  public void setFilterManager(RuleFilterManager filterManager) {
+    this.filterManager = filterManager;
   }
 }

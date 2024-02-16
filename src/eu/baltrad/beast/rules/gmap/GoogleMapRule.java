@@ -28,9 +28,11 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.MetadataMatcher;
 import eu.baltrad.bdb.util.Date;
 import eu.baltrad.bdb.util.Time;
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataMessage;
 import eu.baltrad.beast.message.mo.BltGenerateMessage;
@@ -61,6 +63,11 @@ public class GoogleMapRule implements IRule, InitializingBean {
   private String area = null;
 
   /**
+   * If area name should be used in the path or not
+   */
+  private boolean useAreaInPath = true;
+  
+  /**
    * The catalog for database access
    */
   private Catalog catalog = null;
@@ -71,10 +78,27 @@ public class GoogleMapRule implements IRule, InitializingBean {
   private int ruleid = -1;
   
   /**
+   * The filter used for matching files
+   */
+  private IFilter filter = null;
+
+  /**
+   * The matcher used for verifying the filter
+   */
+  private MetadataMatcher matcher;
+  
+  /**
    * The logger
    */
   private static Logger logger = LogManager.getLogger(GoogleMapRule.class);
 
+  /**
+   * Constructor
+   */
+  public GoogleMapRule() {
+    matcher = new MetadataMatcher();
+  }
+  
 	/**
 	 *  @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
@@ -112,7 +136,7 @@ public class GoogleMapRule implements IRule, InitializingBean {
 	      logger.debug("ENTER: execute GoogleMapRule with ruleId: " + getRuleId() + ", thread: " + Thread.currentThread().getName() + 
             ", file: " + fe.getUuid());
 	      String object = fe.getMetadata().getWhatObject();
-	      if (object != null && object.equals("COMP")) {
+	      if (object != null && object.equals("COMP") && (filter == null || matcher.match(fe.getMetadata(), filter.getExpression()))) {
 	        String source = fe.getMetadata().getWhatSource();
 	        Date d = fe.getMetadata().getWhatDate();
 	        Time t = fe.getMetadata().getWhatTime();
@@ -187,6 +211,48 @@ public class GoogleMapRule implements IRule, InitializingBean {
   }
 
   /**
+   * @return the useAreaInPath
+   */
+  public boolean isUseAreaInPath() {
+    return useAreaInPath;
+  }
+
+  /**
+   * @param useAreaInPath the useAreaInPath to set
+   */
+  public void setUseAreaInPath(boolean useAreaInPath) {
+    this.useAreaInPath = useAreaInPath;
+  }
+  
+  /**
+   * @returns the filter to use when trying out if files are matching
+   */
+  public IFilter getFilter() {
+    return filter;
+  }
+
+  /**
+   * @param filter the filter to use
+   */
+  public void setFilter(IFilter filter) {
+    this.filter = filter;
+  }
+
+  /**
+   * @return the metadata matcher
+   */
+  public MetadataMatcher getMatcher() {
+    return matcher;
+  }
+
+  /**
+   * @param matcher the metadata matcher
+   */
+  public void setMatcher(MetadataMatcher matcher) {
+    this.matcher = matcher;
+  }
+  
+  /**
    * @param catalog the catalog to set
    */
   public void setCatalog(Catalog catalog) {
@@ -225,7 +291,12 @@ public class GoogleMapRule implements IRule, InitializingBean {
     if (path != null) {
       pp = path;
     }
-    return String.format("%s/%s/%04d/%02d/%02d/%04d%02d%02d%02d%02d.png",
-        pp, area, d.year(), d.month(), d.day(), d.year(), d.month(), d.day(), t.hour(), t.minute());
+    if (useAreaInPath) {
+      return String.format("%s/%s/%04d/%02d/%02d/%04d%02d%02d%02d%02d.png",
+          pp, area, d.year(), d.month(), d.day(), d.year(), d.month(), d.day(), t.hour(), t.minute());
+    } else {
+      return String.format("%s/%04d/%02d/%02d/%04d%02d%02d%02d%02d.png",
+          pp, d.year(), d.month(), d.day(), d.year(), d.month(), d.day(), t.hour(), t.minute());
+    }
   }
 }

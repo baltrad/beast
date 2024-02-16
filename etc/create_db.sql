@@ -159,7 +159,8 @@ create table beast_volume_detectors (
 create table beast_gmap_rules (
   rule_id integer PRIMARY KEY REFERENCES beast_router_rules(rule_id),
   area TEXT NOT NULL,
-  path TEXT
+  path TEXT,
+  use_area_in_path BOOLEAN NOT NULL
 );
 
 create table beast_scansun_sources (

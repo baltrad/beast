@@ -25,6 +25,8 @@ import static org.junit.Assert.assertSame;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -34,6 +36,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import eu.baltrad.beast.db.Catalog;
+import eu.baltrad.beast.db.IFilter;
+import eu.baltrad.beast.rules.RuleFilterManager;
 
 /**
  *
@@ -44,20 +48,30 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
   private JdbcOperations template = null;
   private Catalog catalog = null;
   private GoogleMapRuleManager classUnderTest = null;
+  private RuleFilterManager filterManager = null;
+  
+  private interface Methods {
+    public Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter);
+  };
+
   
   @Before
   public void setUp() throws Exception {
     template = createMock(JdbcOperations.class);
     catalog = createMock(Catalog.class);
+    filterManager = createMock(RuleFilterManager.class);
+
     classUnderTest = new GoogleMapRuleManager();
     classUnderTest.setCatalog(catalog);
     classUnderTest.setJdbcTemplate(template);
+    classUnderTest.setFilterManager(filterManager);
   }
   
   @After
   public void tearDown() throws Exception {
     template = null;
     catalog = null;
+    filterManager = null;
     classUnderTest = null;
   }
   
@@ -66,9 +80,47 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     GoogleMapRule rule = new GoogleMapRule();
     rule.setArea("swe");
     rule.setPath("pth");
+    rule.setUseAreaInPath(false);
     
-    expect(template.update("insert into beast_gmap_rules (rule_id, area, path) values (?,?,?)",
-        new Object[]{10, "swe", "pth"})).andReturn(1);
+    expect(template.update("insert into beast_gmap_rules (rule_id, area, path, use_area_in_path) values (?,?,?,?)",
+        new Object[]{10, "swe", "pth", false})).andReturn(1);
+    
+    filterManager.deleteFilters(10);
+    
+    replayAll();
+    
+    classUnderTest.store(10, rule);
+    
+    verifyAll();
+    assertEquals(10, rule.getRuleId());
+  }
+
+  @Test
+  public void testStore_withFilter() throws Exception {
+    GoogleMapRule rule = new GoogleMapRule();
+    IFilter filter = createMock(IFilter.class);
+    final Methods methodsMock = createMock(Methods.class);
+    final Map<String, IFilter> filters = new HashMap<String, IFilter>();
+
+    
+    rule.setArea("swe");
+    rule.setPath("pth");
+    rule.setUseAreaInPath(true);
+    rule.setFilter(filter);
+    
+    expect(template.update("insert into beast_gmap_rules (rule_id, area, path, use_area_in_path) values (?,?,?,?)",
+        new Object[]{10, "swe", "pth", true})).andReturn(1);
+    expect(methodsMock.createMatchFilter(10, filter)).andReturn(filters);
+    filterManager.updateFilters(10, filters);
+    
+    classUnderTest = new GoogleMapRuleManager() {
+      protected Map<String, IFilter> createMatchFilter(int rule_id, IFilter filter) {
+        return methodsMock.createMatchFilter(rule_id, filter);
+      };
+    };
+    classUnderTest.setCatalog(catalog);
+    classUnderTest.setJdbcTemplate(template);
+    classUnderTest.setFilterManager(filterManager);
     
     replayAll();
     
@@ -81,6 +133,10 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
   @Test
   public void testLoad() throws Exception {
     GoogleMapRule rule = new GoogleMapRule();
+
+    HashMap<String, IFilter> filters = new HashMap<String, IFilter>();
+    IFilter filter = createMock(IFilter.class);
+    filters.put("match", filter);
     
     final RowMapper<GoogleMapRule> mapper = new RowMapper<GoogleMapRule>() {
       @Override
@@ -94,9 +150,11 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
       }
     };
     classUnderTest.setJdbcTemplate(template);
+    classUnderTest.setFilterManager(filterManager);
     
     expect(template.queryForObject("select * from beast_gmap_rules where rule_id=?", 
         mapper, new Object[]{10})).andReturn(rule);
+    expect(filterManager.loadFilters(10)).andReturn(filters);
     
     replayAll();
     
@@ -104,6 +162,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     
     verifyAll();
     assertSame(rule, result);
+    assertSame(filter, result.getFilter());
   }
   
   @Test
@@ -111,10 +170,12 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     GoogleMapRule rule = new GoogleMapRule();
     rule.setArea("swe");
     rule.setPath("pth");
+    rule.setUseAreaInPath(false);
     
-    expect(template.update("update beast_gmap_rules set area=?, path=? where rule_id=?",
-        new Object[]{"swe", "pth", 10})).andReturn(1);
-    
+    expect(template.update("update beast_gmap_rules set area=?, path=?, use_area_in_path where rule_id=?",
+        new Object[]{"swe", "pth", false, 10})).andReturn(1);
+    filterManager.deleteFilters(10);
+  
     replayAll();
     
     classUnderTest.update(10, rule);
@@ -127,7 +188,8 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
   public void testDelete() throws Exception {
     expect(template.update("delete from beast_gmap_rules where rule_id=?", 
         new Object[]{10})).andReturn(1);
-    
+    filterManager.deleteFilters(10);
+
     replayAll();
     
     classUnderTest.delete(10);
@@ -149,6 +211,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     expect(rs.getInt("rule_id")).andReturn(10);
     expect(rs.getString("area")).andReturn("sswe");
     expect(rs.getString("path")).andReturn("/tmp/path");
+    expect(rs.getBoolean("use_area_in_path")).andReturn(false);
     
     replayAll();
     
@@ -157,6 +220,7 @@ public class GoogleMapRuleManagerTest extends EasyMockSupport {
     verifyAll();
     assertEquals("sswe", result.getArea());
     assertEquals("/tmp/path", result.getPath());
+    assertEquals(true, result.isUseAreaInPath());
     assertSame(catalog, result.getCatalog());
     assertEquals(10, result.getRuleId());
   }

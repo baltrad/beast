@@ -73,6 +73,7 @@ public class GoogleMapRuleManagerITest {
     GoogleMapRule rule = (GoogleMapRule)classUnderTest.load(1);
     assertEquals("sswe", rule.getArea());
     assertEquals("/tmp/path", rule.getPath());
+    assertEquals(true, rule.isUseAreaInPath());
   }
   
   @Test
@@ -80,6 +81,7 @@ public class GoogleMapRuleManagerITest {
     GoogleMapRule rule = (GoogleMapRule)classUnderTest.load(2);
     assertEquals("sswe_map", rule.getArea());
     assertEquals(null, rule.getPath());
+    assertEquals(false, rule.isUseAreaInPath());
   }
   
   @Test
@@ -87,7 +89,7 @@ public class GoogleMapRuleManagerITest {
     GoogleMapRule rule = new GoogleMapRule();
     rule.setArea("nswe_map");
     rule.setPath("/tmp");
-    
+    rule.setUseAreaInPath(false);
     classUnderTest.store(4, rule);
     
     verifyDatabaseTables("store");
@@ -130,6 +132,7 @@ public class GoogleMapRuleManagerITest {
     GoogleMapRule rule = new GoogleMapRule();
     rule.setArea("nswe_map");
     rule.setPath("/tmp");
+    rule.setUseAreaInPath(false);
     
     classUnderTest.update(1, rule);
     

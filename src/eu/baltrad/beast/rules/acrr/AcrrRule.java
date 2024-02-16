@@ -589,14 +589,14 @@ public class AcrrRule implements IRule, InitializingBean {
    * @return the product id. Default is null
    */
   public String getProductId() {
-	return productId;
+    return productId;
   }
 
   /**
    * @param productId the product id
    */
   public void setProductId(String productId) {
-	this.productId = productId;
+    this.productId = productId;
   }
   
   /**

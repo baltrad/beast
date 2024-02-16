@@ -136,6 +136,34 @@ public class GoogleMapRuleTest extends EasyMockSupport {
   }  
 
   @Test
+  public void testCreateOutputName_useAreaInPath_false() throws Exception {
+    classUnderTest.setPath("/tmp/path");
+    classUnderTest.setArea("ar");
+    classUnderTest.setUseAreaInPath(false);
+    
+    assertEquals("/tmp/path/2010/01/01/201001010215.png",
+        classUnderTest.createOutputName(new Date(2010,1,1), new Time(2,15,0)));
+
+    classUnderTest.setArea("arar");
+    assertEquals("/tmp/path/2011/01/01/201101010215.png",
+        classUnderTest.createOutputName(new Date(2011,1,1), new Time(2,15,0)));
+  }  
+  
+  @Test
+  public void testCreateOutputName_nullPath_useAreaInPath_false() throws Exception {
+    classUnderTest.setPath(null);
+    classUnderTest.setArea("ar");
+    classUnderTest.setUseAreaInPath(false);
+
+    assertEquals("/2010/01/01/201001010215.png",
+        classUnderTest.createOutputName(new Date(2010,1,1), new Time(2,15,0)));
+
+    classUnderTest.setArea("arar");
+    assertEquals("/2011/01/01/201101010215.png",
+        classUnderTest.createOutputName(new Date(2011,1,1), new Time(2,15,0)));
+  }  
+
+  @Test
   public void testType() throws Exception {
     assertEquals("blt_gmap", GoogleMapRule.TYPE);
     assertEquals(GoogleMapRule.TYPE, classUnderTest.getType());

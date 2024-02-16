@@ -456,6 +456,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_gmap_rules_with_use_area_in_path() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_gmap_rules' AND column_name = 'use_area_in_path';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_gmap_rules ADD COLUMN use_area_in_path boolean;
+    UPDATE beast_gmap_rules SET use_area_in_path='true';
+    ALTER TABLE beast_gmap_rules ALTER COLUMN use_area_in_path SET NOT NULL;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -484,6 +495,7 @@ select create_beast_authorization();
 select create_beast_authorization_request();
 select update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
 select update_beast_wrwp_with_capital_dbzh();
+select update_beast_gmap_rules_with_use_area_in_path();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -513,3 +525,5 @@ drop function create_beast_authorization();
 drop function create_beast_authorization_request();
 drop function update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
 drop function update_beast_wrwp_with_capital_dbzh();
+drop function update_beast_gmap_rules_with_use_area_in_path();
+
