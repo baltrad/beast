@@ -127,6 +127,80 @@ public class RuleUtilitiesTest extends EasyMockSupport {
   }
 
   @Test
+  public void testGetEntriesByClosestTime_2() {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,9,58,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,9,58,2)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,9,59,59)));
+    
+    replayAll();
+    
+    List<CatalogEntry> result = classUnderTest.getEntriesByClosestTime(new DateTime(2010,1,1,10,1,1), entries);
+    
+    verifyAll();
+    assertEquals(1, result.size());
+    assertTrue(result.contains(entries.get(2)));
+  }
+
+  @Test
+  public void testGetEntriesByClosestTime_3() {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,9,58,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,9,58,2)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,9,59,59)));
+    
+    replayAll();
+    
+    List<CatalogEntry> result = classUnderTest.getEntriesByClosestTime(new DateTime(2010,1,1,9,57,1), entries);
+    
+    verifyAll();
+    assertEquals(1, result.size());
+    assertTrue(result.contains(entries.get(0)));
+  }
+
+  @Test
+  public void testGetEntriesByClosestTime_4() {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,9,59,59)));
+    entries.add(createCatalogEntry("sehud", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
+    
+    replayAll();
+    
+    List<CatalogEntry> result = classUnderTest.getEntriesByClosestTime(new DateTime(2010,1,1,10,1,1), entries);
+    
+    verifyAll();
+    assertEquals(3, result.size());
+    assertTrue(result.contains(entries.get(0)));
+    assertTrue(result.contains(entries.get(3)));
+    assertTrue(result.contains(entries.get(4)));
+  }
+
+  @Test
+  public void testGetEntriesByClosestTime_5() {
+    List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,9,59,59)));
+    entries.add(createCatalogEntry("sehud", new DateTime(2010,1,1,10,1,1)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
+    entries.add(createCatalogEntry("seosu", new DateTime(2010,1,1,10,1,2)));
+    
+    replayAll();
+    
+    List<CatalogEntry> result = classUnderTest.getEntriesByClosestTime(new DateTime(2010,1,1,10,1,2), entries);
+    
+    verifyAll();
+    assertEquals(3, result.size());
+    assertTrue(result.contains(entries.get(1)));
+    assertTrue(result.contains(entries.get(3)));
+    assertTrue(result.contains(entries.get(4)));
+  }
+
+  @Test
   public void testGetEntriesBySources() {
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
     entries.add(createCatalogEntry("seang", new DateTime(2010,1,1,10,1,1)));

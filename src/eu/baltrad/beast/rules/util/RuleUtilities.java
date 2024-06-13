@@ -41,6 +41,7 @@ import eu.baltrad.beast.db.Catalog;
 import eu.baltrad.beast.db.CatalogEntry;
 import eu.baltrad.beast.system.RadarConnectionStatusReporter;
 import eu.baltrad.beast.system.SystemStatus;
+import eu.baltrad.beast.rules.RuleUtils;
 
 /**
  * @author Anders Henja
@@ -245,7 +246,8 @@ public class RuleUtilities implements IRuleUtilities {
   public List<CatalogEntry> getEntriesByClosestTime(DateTime nominalDT, List<CatalogEntry> entries) {
     Map<String, CatalogEntry> entryMap = new HashMap<String, CatalogEntry>();
     Calendar nominalTimeCalendar = createCalendar(nominalDT);
-    
+    long nominalTimeMS = nominalTimeCalendar.getTimeInMillis();
+
     for (CatalogEntry entry: entries) {
       String src = entry.getSource();
       if (!entryMap.containsKey(src)) {
@@ -256,7 +258,10 @@ public class RuleUtilities implements IRuleUtilities {
         Calendar mapEntryCalendar = createCalendar(mapEntry.getDateTime());
       
         // If the entrys time is closer to the nominal time than the existing one, replace it
-        if (Math.abs(entryCalendar.compareTo(nominalTimeCalendar)) < Math.abs(mapEntryCalendar.compareTo(nominalTimeCalendar))) {
+        long entryTimeMS = Math.abs(entryCalendar.getTimeInMillis() - nominalTimeMS);
+        long mapEntryTimeMS = Math.abs(mapEntryCalendar.getTimeInMillis() - nominalTimeMS);
+
+        if (entryTimeMS < mapEntryTimeMS) {
           entryMap.put(src, entry);
         }
       }
