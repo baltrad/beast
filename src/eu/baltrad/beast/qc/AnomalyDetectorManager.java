@@ -115,8 +115,8 @@ public class AnomalyDetectorManager implements IAnomalyDetectorManager {
    * @param name the name to validate
    */
   protected void validateName(String name) {
-    if (name == null || !name.matches("[A-Za-z0-9_.-]+")) {
-      throw new AnomalyException("Valid names are in the format [A-Za-z0-9_.-]+");
+    if (name == null || !name.matches("[A-Za-z0-9_.:-]+")) {
+      throw new AnomalyException("Valid names are in the format [A-Za-z0-9_.:-]+");
     }   
   }
   

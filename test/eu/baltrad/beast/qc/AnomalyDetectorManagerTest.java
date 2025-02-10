@@ -297,7 +297,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
   @Test
   public void testValidateName() throws Exception {
     String[] validNames = new String[]{
-      "abc.123", "abc_123", "ABCabc123___..."  
+      "abc.123", "abc_123", "ABCabc123___...", "ABCabc123___...:::"   
     };
     for (String name : validNames) {
       try {
@@ -311,7 +311,7 @@ public class AnomalyDetectorManagerTest extends EasyMockSupport {
   @Test
   public void testValidateName_invalid() throws Exception {
     String[] validNames = new String[]{
-      "abc£123", "abc _123", "!@,$&*+", "abcABZ?\\_-!*+:;%"  
+      "abc£123", "abc _123", "!@,$&*+", "abcABZ?\\_-!*+;%"  
     };
     for (String name : validNames) {
       try {
