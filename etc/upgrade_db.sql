@@ -282,6 +282,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_options() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'options';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_composite_rules ADD COLUMN options text;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION update_beast_composite_rules_with_nominal_timeout() RETURNS VOID AS $$
 BEGIN
   PERFORM true FROM information_schema.columns WHERE table_name = 'beast_composite_rules' AND column_name = 'nominal_timeout';
@@ -344,6 +353,15 @@ BEGIN
     ALTER TABLE beast_site2d_rules ADD COLUMN qc_mode integer;
     UPDATE beast_site2d_rules SET qc_mode=0;
     ALTER TABLE beast_site2d_rules ALTER COLUMN qc_mode SET NOT NULL;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_beast_site2d_rules_with_options() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_site2d_rules' AND column_name = 'options';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_site2d_rules ADD COLUMN options text;
   END IF;
 END;
 $$ LANGUAGE plpgsql;
@@ -482,6 +500,7 @@ select update_beast_volume_rules_with_elangles_field();
 select update_beast_acrr_rules_with_applygra();
 select update_beast_acrr_rules_with_product();
 select update_beast_composite_rules_with_quantity();
+select update_beast_composite_rules_with_options();
 select update_beast_composite_rules_with_nominal_timeout();
 select update_beast_volume_rules_with_nominal_timeout();
 select update_beast_volume_rules_with_qc_mode();
@@ -496,6 +515,7 @@ select create_beast_authorization_request();
 select update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
 select update_beast_wrwp_with_capital_dbzh();
 select update_beast_gmap_rules_with_use_area_in_path();
+select update_beast_site2d_rules_with_options();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -512,6 +532,7 @@ drop function update_beast_volume_rules_with_elangles_field();
 drop function update_beast_acrr_rules_with_applygra();
 drop function update_beast_acrr_rules_with_product();
 drop function update_beast_composite_rules_with_quantity();
+drop function update_beast_composite_rules_with_options();
 drop function update_beast_composite_rules_with_nominal_timeout();
 drop function update_beast_volume_rules_with_nominal_timeout();
 drop function update_beast_volume_rules_with_qc_mode();
@@ -526,4 +547,4 @@ drop function create_beast_authorization_request();
 drop function update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
 drop function update_beast_wrwp_with_capital_dbzh();
 drop function update_beast_gmap_rules_with_use_area_in_path();
-
+drop function update_beast_site2d_rules_with_options();

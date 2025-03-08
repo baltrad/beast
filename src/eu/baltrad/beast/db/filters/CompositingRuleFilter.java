@@ -199,8 +199,13 @@ public class CompositingRuleFilter implements ICatalogFilter {
       }
     }
     
-    if (quantity != null) {
-      filters.add(xprFactory.eq(xprFactory.attribute("what/quantity"), xprFactory.literal(quantity)));
+    if (quantity != null && !quantity.equals("")) {
+      if (quantity.equals("RATE")) {
+        // We assume that composite route is calculating RATE from DBZH.
+        filters.add(xprFactory.eq(xprFactory.attribute("what/quantity"), xprFactory.literal("DBZH")));
+      } else {
+        filters.add(xprFactory.eq(xprFactory.attribute("what/quantity"), xprFactory.literal(quantity)));
+      }
     }
     
     return xprFactory.and(filters);

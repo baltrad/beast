@@ -127,6 +127,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     assertEquals(true, ((CompositingRule)def.getRule()).isCtFilter());
     assertEquals("se.baltrad.something", ((CompositingRule)def.getRule()).getQitotalField());
     assertEquals("VRAD", ((CompositingRule)def.getRule()).getQuantity());
+    assertEquals("factory:any", ((CompositingRule)def.getRule()).getOptions());
     assertEquals(true, ((CompositingRule)def.getRule()).isNominalTimeout());
     assertEquals(CompositingRule.QualityControlMode_ANALYZE, ((CompositingRule)def.getRule()).getQualityControlMode());
     assertEquals(1, ((CompositingRule)def.getRule()).getDetectors().size());
@@ -161,6 +162,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     ((CompositingRule)def.getRule()).setCtFilter(false);
     ((CompositingRule)def.getRule()).setQitotalField("se.smhi.something");
     ((CompositingRule)def.getRule()).setQuantity("TH");
+    ((CompositingRule)def.getRule()).setOptions("factory:legacy");
     ((CompositingRule)def.getRule()).setNominalTimeout(false);
     ((CompositingRule)def.getRule()).setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE_AND_APPLY);
     ((CompositingRule)def.getRule()).setDetectors(detectors);
@@ -223,6 +225,7 @@ public class BltRouterCompositeDBITest extends TestCase {
     rule.setCtFilter(false);
     rule.setQitotalField("se.someone.somewhere");
     rule.setQuantity("NOOP");
+    rule.setOptions("factory:legacy");
     rule.setNominalTimeout(false);
     rule.setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE);
     rule.setDetectors(detectors);

@@ -76,6 +76,7 @@ create table beast_composite_rules (
   ctfilter boolean NOT NULL,
   qitotal_field text,
   quantity text,
+  options text,
   qc_mode integer NOT NULL,
   reprocess_quality boolean NOT NULL,
   max_age_limit integer NOT NULL
@@ -106,6 +107,7 @@ create table beast_site2d_rules (
   pcsid text,
   xscale decimal NOT NULL,
   yscale decimal NOT NULL,
+  options text,
   qc_mode integer NOT NULL  
 );
 

@@ -99,6 +99,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     classUnderTest.setArea("gnom_area");
     classUnderTest.setSources(sources);
     classUnderTest.setApplyGRA(true);
+    classUnderTest.setOptions("factory:legacy");
     classUnderTest.setDetectors(detectors);
     classUnderTest.setRuleId(10);
     classUnderTest.setQualityControlMode(Site2DRule.QualityControlMode_ANALYZE);
@@ -119,7 +120,7 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertNotNull(result);
     assertEquals(1, result.getFiles().length);
     assertEquals(ruid.toString(), result.getFiles()[0]);
-    assertEquals(14, result.getArguments().length);
+    assertEquals(15, result.getArguments().length);
     assertEquals("--area=gnom_area", result.getArguments()[0]);
     assertEquals("--anomaly-qc=piff,puff", result.getArguments()[1]);
     assertEquals("--qc-mode=ANALYZE", result.getArguments()[2]);
@@ -133,7 +134,8 @@ public class Site2DRuleTest extends EasyMockSupport {
     assertEquals("--yscale=2000.0", result.getArguments()[10]);
     assertEquals("--date=20150203", result.getArguments()[11]);
     assertEquals("--time=111500", result.getArguments()[12]);
-    assertEquals("--algorithm_id=10", result.getArguments()[13]);
+    assertEquals("--options=factory:legacy", result.getArguments()[13]);
+    assertEquals("--algorithm_id=10", result.getArguments()[14]);
   }
 
   @Test

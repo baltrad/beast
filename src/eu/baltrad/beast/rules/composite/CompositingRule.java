@@ -225,6 +225,12 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   private String quantity = "DBZH";
   
   /**
+   * Will send wanted options to the plugin. The plugin should support the format
+   * name:value[,name:value]* E.g. factory:any,productname:fancyproduct
+   */
+  private String options = null;
+  
+  /**
    * Incoming data exceeding this age threshold will not be handled 
    * by this rule. In minutes. -1 indicates that no max age limit 
    * will be applied.
@@ -634,6 +640,10 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
     if (getQuantity() != null && !getQuantity().equals("")) {
       args.add("--quantity="+getQuantity());
     }
+    logger.info("OPTIONS: " + getOptions());
+    if (getOptions() != null && !getOptions().equals("")) {
+      args.add("--options="+getOptions());
+    }    
     if (isReprocessQuality()) {
       args.add("--reprocess_qfields=True");
     }
@@ -893,6 +903,20 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   }
 
   /**
+   * @return the production options
+   */
+  public String getOptions() {
+    return options;
+  }
+
+  /**
+   * @param options the production options to set
+   */
+  public void setOptions(String options) {
+    this.options = options;
+  }
+  
+  /**
    * @return the maximum age limit in minutes
    */
   public int getMaxAgeLimit() {
@@ -956,4 +980,5 @@ public class CompositingRule implements IRule, ITimeoutRule, InitializingBean {
   public boolean isReprocessQuality() {
     return this.reprocessQuality;
   }
+
 }

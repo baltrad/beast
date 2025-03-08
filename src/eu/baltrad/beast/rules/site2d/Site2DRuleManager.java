@@ -81,11 +81,12 @@ public class Site2DRuleManager implements IRuleManager {
     String pcsid = srule.getPcsid();
     double xscale = srule.getXscale();
     double yscale = srule.getYscale();
+    String options = srule.getOptions();
     int qualityControlMode = srule.getQualityControlMode();
     
     template.update(
-        "INSERT INTO beast_site2d_rules (rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale, qc_mode)"+
-        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale, qualityControlMode});
+        "INSERT INTO beast_site2d_rules (rule_id, area, interval, byscan, method, prodpar, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, pcsid, xscale, yscale, options, qc_mode)"+
+        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{ruleId, area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale, options, qualityControlMode});
     
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
@@ -128,11 +129,12 @@ public class Site2DRuleManager implements IRuleManager {
     String pcsid = srule.getPcsid();
     double xscale = srule.getXscale();
     double yscale = srule.getYscale();
+    String options = srule.getOptions();
     int qualityControlMode = srule.getQualityControlMode();
     
     template.update("UPDATE beast_site2d_rules" +
-        " SET area=?, interval=?, byscan=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, pcsid=?, xscale=?, yscale=?, qc_mode=?" +
-        " WHERE rule_id=?", new Object[]{area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale, qualityControlMode, ruleId});
+        " SET area=?, interval=?, byscan=?, method=?, prodpar=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, pcsid=?, xscale=?, yscale=?, options=?, qc_mode=?" +
+        " WHERE rule_id=?", new Object[]{area, interval, byscan, method, prodpar, applygra, zrA, zrb, ignoremalfunc, ctfilter, pcsid, xscale, yscale, options, qualityControlMode, ruleId});
     storeSources(ruleId, sources);
     storeDetectors(ruleId, detectors);
     storeFilter(ruleId, srule.getFilter());
@@ -297,6 +299,7 @@ public class Site2DRuleManager implements IRuleManager {
         result.setPcsid(rs.getString("pcsid"));
         result.setXscale(rs.getDouble("xscale"));
         result.setYscale(rs.getDouble("yscale"));
+        result.setOptions(rs.getString("options"));
         result.setQualityControlMode(rs.getInt("qc_mode"));
         result.setSources(getSources(ruleId));
         result.setDetectors(getDetectors(ruleId));

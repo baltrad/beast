@@ -183,6 +183,12 @@ public class Site2DRule implements IRule, InitializingBean {
    * The yscale in meters to use for the best-fit area approach
    */
   private double yscale = 2000.0;
+
+  /**
+   * Will send wanted options to the plugin. The plugin should support the format
+   * name:value[,name:value]* E.g. factory:any,productname:fancyproduct
+   */
+  private String options = null;
   
   /**
    * the rule id
@@ -349,6 +355,9 @@ public class Site2DRule implements IRule, InitializingBean {
     }
     args.add("--date="+RuleUtils.getFormattedDate(date));
     args.add("--time="+RuleUtils.getFormattedTime(time));
+    if (getOptions() != null && !getOptions().equals("")) {
+      args.add("--options="+getOptions());
+    }        
     args.add("--algorithm_id="+getRuleId());
     result.setArguments(args.toArray(new String[0]));
     
@@ -632,6 +641,20 @@ public class Site2DRule implements IRule, InitializingBean {
   public void setYscale(double yscale) {
     this.yscale = yscale;
   }
+
+  /**
+   * @return the options
+   */
+  public String getOptions() {
+    return options;
+  }
+
+  /**
+   * @param options the options to set
+   */
+  public void setOptions(String options) {
+    this.options = options;
+  }
   
   public IFilter getFilter() {
     return filter;
@@ -675,4 +698,5 @@ public class Site2DRule implements IRule, InitializingBean {
       throw new IllegalArgumentException("Unknown quality control mode string " + qualityControlMode);
     }
   }
+
 }

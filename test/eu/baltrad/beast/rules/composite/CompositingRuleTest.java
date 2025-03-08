@@ -488,7 +488,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     
     classUnderTest.setMethod(CompositingRule.PPI);
     classUnderTest.setProdpar("0.5");
-    
+    classUnderTest.setOptions("factory:any");
     replayAll();
     
     IBltMessage result = classUnderTest.createMessage(nominalTime, entries);
@@ -504,7 +504,7 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertTrue(arrayContains(files, "uuid-2"));
     assertTrue(arrayContains(files, "uuid-3"));
     String[] arguments = msg.getArguments();
-    assertEquals(11, arguments.length);
+    assertEquals(12, arguments.length);
     assertEquals("--area=blt_composite", arguments[0]);
     assertEquals("--date=20100201", arguments[1]);
     assertEquals("--time=010000", arguments[2]);
@@ -514,8 +514,9 @@ public class CompositingRuleTest extends EasyMockSupport {
     assertEquals("--method=ppi", arguments[6]);
     assertEquals("--prodpar=0.5", arguments[7]);
     assertEquals("--quantity=DBZH", arguments[8]);
-    assertEquals("--algorithm_id=10", arguments[9]);
-    assertEquals("--merge=true", arguments[10]);
+    assertEquals("--options=factory:any", arguments[9]);
+    assertEquals("--algorithm_id=10", arguments[10]);
+    assertEquals("--merge=true", arguments[11]);
   }
 
   @Test

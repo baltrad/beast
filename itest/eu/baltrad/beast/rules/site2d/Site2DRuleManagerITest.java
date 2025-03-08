@@ -115,6 +115,7 @@ public class Site2DRuleManagerITest extends TestCase {
     rule.setPcsid("abc");
     rule.setXscale(3000.0);
     rule.setYscale(4000.0);
+    rule.setOptions("factory:legacy");
     rule.setQualityControlMode(Site2DRule.QualityControlMode_ANALYZE);
     classUnderTest.store(5, rule);
     
@@ -144,6 +145,7 @@ public class Site2DRuleManagerITest extends TestCase {
     rule.setPcsid("abc");
     rule.setXscale(3000.0);
     rule.setYscale(4000.0);
+    rule.setOptions("factory:legacy");
     rule.setQualityControlMode(Site2DRule.QualityControlMode_ANALYZE_AND_APPLY);
     
     classUnderTest.update(3, rule);
@@ -179,6 +181,7 @@ public class Site2DRuleManagerITest extends TestCase {
     assertEquals("pcs1", rule.getPcsid());
     assertEquals(1000.0, rule.getXscale(), 4);
     assertEquals(1000.0, rule.getYscale(), 4);
+    assertEquals("factory:any", rule.getOptions());
     assertEquals(1, rule.getQualityControlMode());
   }
 
