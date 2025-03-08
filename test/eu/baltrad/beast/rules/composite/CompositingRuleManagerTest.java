@@ -158,13 +158,14 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setCtFilter(true);
     rule.setQitotalField("se.baltrad.something");
     rule.setQuantity("VRAD");
+    rule.setOptions("factory:any");
     rule.setNominalTimeout(true);
     rule.setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE);
     rule.setReprocessQuality(false);
     
     expect(jdbc.update(
-        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, max_age_limit, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field, quantity, nominal_timeout, qc_mode, reprocess_quality)"+
-        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", 1440, true, 10.0, 5.0, true, true, "se.baltrad.something", "VRAD", true, CompositingRule.QualityControlMode_ANALYZE, false}))
+        "insert into beast_composite_rules (rule_id, area, interval, timeout, byscan, selection_method, method, prodpar, max_age_limit, applygra, ZR_A, ZR_b, ignore_malfunc, ctfilter, qitotal_field, quantity, options, nominal_timeout, qc_mode, reprocess_quality)"+
+        " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Object[]{13, "seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", 1440, true, 10.0, 5.0, true, true, "se.baltrad.something", "VRAD", "factory:any", true, CompositingRule.QualityControlMode_ANALYZE, false}))
           .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -214,12 +215,13 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     rule.setCtFilter(true);
     rule.setQitotalField("se.baltrad.something");
     rule.setQuantity("NOOP");
+    rule.setOptions("factory:any");
     rule.setNominalTimeout(true);
     rule.setQualityControlMode(CompositingRule.QualityControlMode_ANALYZE);
     rule.setReprocessQuality(true);
     
-    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, max_age_limit=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=?, quantity=?, nominal_timeout=?, qc_mode=?, reprocess_quality=? where rule_id=?",
-        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", 60, true, 10.0, 5.0, true, true, "se.baltrad.something", "NOOP", true, CompositingRule.QualityControlMode_ANALYZE, true, 13}))
+    expect(jdbc.update("update beast_composite_rules set area=?, interval=?, timeout=?, byscan=?, selection_method=?, method=?, prodpar=?, max_age_limit=?, applygra=?, ZR_A=?, ZR_b=?, ignore_malfunc=?, ctfilter=?, qitotal_field=?, quantity=?, options=?, nominal_timeout=?, qc_mode=?, reprocess_quality=? where rule_id=?",
+        new Object[]{"seang", 12, 20, true, CompositingRule.SelectionMethod_HEIGHT_ABOVE_SEALEVEL, CompositingRule.PPI, "0.5", 60, true, 10.0, 5.0, true, true, "se.baltrad.something", "NOOP", "factory:any", true, CompositingRule.QualityControlMode_ANALYZE, true, 13}))
         .andReturn(0);
     
     methods.storeSources(13, sources);
@@ -400,6 +402,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     expect(rs.getBoolean("ctfilter")).andReturn(true);
     expect(rs.getString("qitotal_field")).andReturn("se.baltrad.something");
     expect(rs.getString("quantity")).andReturn("VRAD");
+    expect(rs.getString("options")).andReturn("factory:any");
     expect(rs.getBoolean("nominal_timeout")).andReturn(true);
     expect(rs.getInt("qc_mode")).andReturn(1);
     expect(rs.getBoolean("reprocess_quality")).andReturn(true);
@@ -443,6 +446,7 @@ public class CompositingRuleManagerTest extends EasyMockSupport {
     assertEquals(true, result.isCtFilter());
     assertEquals("se.baltrad.something", result.getQitotalField());
     assertEquals("VRAD", result.getQuantity());
+    assertEquals("factory:any", result.getOptions());
     assertEquals(true, result.isNominalTimeout());
     assertEquals(CompositingRule.QualityControlMode_ANALYZE, result.getQualityControlMode());
     assertEquals(true, result.isReprocessQuality());
