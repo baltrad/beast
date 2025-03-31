@@ -74,6 +74,11 @@ public class Site2DRoute extends Route {
    * The yscale to use if specifying pcs id
    */
   private double yscale = 2000.0;
+
+  /**
+   * The options
+   */
+  private String options = null;
   
   /**
    * Interval
@@ -411,6 +416,21 @@ public class Site2DRoute extends Route {
     this.yscale = yscale;
   }
   
+
+  /**
+   * @return the options
+   */
+  public String getOptions() {
+    return options;
+  }
+
+  /**
+   * @param options the options to set
+   */
+  public void setOptions(String options) {
+    this.options = options;
+  }
+  
   @Override
   public void fromRouteDefinition(RouteDefinition def) {
     Site2DRule rule = (Site2DRule)def.getRule();
@@ -435,6 +455,7 @@ public class Site2DRoute extends Route {
     this.setSources(rule.getSources());
     this.setXscale(rule.getXscale());
     this.setYscale(rule.getYscale());
+    this.setOptions(rule.getOptions());
     this.setZR_A(rule.getZR_A());
     this.setZR_b(rule.getZR_b());
   }
@@ -462,6 +483,7 @@ public class Site2DRoute extends Route {
     rule.setSources(this.getSources());
     rule.setXscale(this.getXscale());
     rule.setYscale(this.getYscale());
+    rule.setOptions(this.getOptions());
     rule.setZR_A(this.getZR_A());
     rule.setZR_b(this.getZR_b());
     
@@ -479,5 +501,6 @@ public class Site2DRoute extends Route {
     }
     return false;
   }
+
 
 }

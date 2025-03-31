@@ -120,5 +120,4 @@ public class Site2DRouteTest extends EasyMockSupport {
     
     assertEquals(false, result);
   }
-
 }

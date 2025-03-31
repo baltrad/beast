@@ -170,6 +170,11 @@ public class CompositeRoute extends Route {
   private String quantity = "DBZH";
   
   /**
+   * The options
+   */
+  private String options = null;
+  
+  /**
    * Incoming data exceeding this age threshold will not be handled 
    * by this rule. In minutes. -1 indicates that no max age limit 
    * will be applied.
@@ -550,6 +555,7 @@ public class CompositeRoute extends Route {
     this.setQitotalField(rule.getQitotalField());
     this.setQualityControlMode(rule.getQualityControlModeAsString());
     this.setQuantity(rule.getQuantity());
+    this.setOptions(rule.getOptions());
     this.setReprocessQuality(rule.isReprocessQuality());
     this.setScanBased(rule.isScanBased());
     this.setSelectionMethod(rule.getSelectionMethodAsString());
@@ -577,6 +583,7 @@ public class CompositeRoute extends Route {
     rule.setQitotalField(this.getQitotalField());
     rule.setQualityControlMode(this.getQualityControlMode());
     rule.setQuantity(this.getQuantity());
+    rule.setOptions(this.getOptions());
     rule.setReprocessQuality(this.isReprocessQuality());
     rule.setScanBased(this.isScanBased());
     rule.setSelectionMethod(this.getSelectionMethod());
@@ -624,5 +631,19 @@ public class CompositeRoute extends Route {
       }
     }
     return result;
+  }
+
+  /**
+   * @return the options
+   */
+  public String getOptions() {
+    return options;
+  }
+
+  /**
+   * @param options the options to set
+   */
+  public void setOptions(String options) {
+    this.options = options;
   }
 }
