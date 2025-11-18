@@ -460,6 +460,14 @@ BEGIN
     UPDATE beast_wrwp_rules SET maxvelocitythresh=60.0;
     UPDATE beast_wrwp_rules SET minsamplesizereflectivity=40;
     UPDATE beast_wrwp_rules SET minsamplesizewind=40;
+    UPDATE beast_wrwp_rules SET mincondelangle=9.5;
+    UPDATE beast_wrwp_rules SET heightthres=2000.0;
+    UPDATE beast_wrwp_rules SET minnyquistinterval=10.0;
+    UPDATE beast_wrwp_rules SET ngapbins=8;
+    UPDATE beast_wrwp_rules SET minngap=5;
+    UPDATE beast_wrwp_rules SET maxnstd=0;
+    UPDATE beast_wrwp_rules SET maxvdiff=10.0;
+    UPDATE beast_wrwp_rules SET wrwpmethod='SMHI';
     ALTER TABLE beast_wrwp_rules ALTER COLUMN maxelangle SET NOT NULL;
     ALTER TABLE beast_wrwp_rules ALTER COLUMN maxvelocitythresh SET NOT NULL;
     ALTER TABLE beast_wrwp_rules ALTER COLUMN minsamplesizereflectivity SET NOT NULL;
