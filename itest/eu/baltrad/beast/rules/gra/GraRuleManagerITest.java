@@ -97,6 +97,7 @@ public class GraRuleManagerITest extends TestCase {
     rule.setZrB(1.0);
     rule.setFirstTermUTC(9);
     rule.setInterval(12);
+    rule.setOptions("gra_id:123");
     
     classUnderTest.store(4, rule);
     
@@ -117,6 +118,7 @@ public class GraRuleManagerITest extends TestCase {
     assertEquals(0.6, result.getZrB(), 4);
     assertEquals(7, result.getFirstTermUTC());
     assertEquals(4, result.getInterval());
+    assertEquals("gra_id:123", result.getOptions());
   }
   
   public void test_update() throws Exception {
@@ -132,6 +134,7 @@ public class GraRuleManagerITest extends TestCase {
     rule.setZrB(2.0);
     rule.setFirstTermUTC(12);
     rule.setInterval(6);
+    rule.setOptions("gra_id:123,id:99");
     classUnderTest.update(2, rule);
     
     verifyDatabaseTables("update");

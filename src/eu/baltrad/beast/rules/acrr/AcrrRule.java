@@ -133,6 +133,13 @@ public class AcrrRule implements IRule, InitializingBean {
   private String productId = null;
   
   /**
+   * Will send wanted options to the plugin. The plugin should support the format
+   * name:value[,name:value]* E.g. identifier:someid
+   */
+  private String options = null;
+
+
+  /**
    * The filter used for matching files
    */
   private IFilter filter = null;
@@ -419,6 +426,11 @@ public class AcrrRule implements IRule, InitializingBean {
         if (getProductId() != null && !getProductId().equals("")) {
           args.add("--productid=" + prodid);
         }
+        
+        if (getOptions() != null && !getOptions().equals("")) {
+          args.add("--options="+getOptions());
+        }    
+        
         result.setArguments(args.toArray(new String[0]));
         
         logger.debug("AcrrRule createMessage - entries: " + StringUtils.collectionToDelimitedString(uuids, " "));
@@ -598,7 +610,21 @@ public class AcrrRule implements IRule, InitializingBean {
   public void setProductId(String productId) {
     this.productId = productId;
   }
-  
+
+  /**
+   * @return the production options
+   */
+  public String getOptions() {
+    return options;
+  }
+
+  /**
+   * @param options the production options to set
+   */
+  public void setOptions(String options) {
+    this.options = options;
+  }
+
   /**
    * @returns the filter to use when trying out if files are matching
    */

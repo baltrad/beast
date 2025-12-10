@@ -97,6 +97,7 @@ public class AcrrRuleManagerITest extends TestCase {
     rule.setZrB(1.0);
     rule.setApplyGRA(true);
     rule.setProductId("pn151");
+    rule.setOptions("gra_id:123");
     
     classUnderTest.store(4, rule);
     
@@ -117,6 +118,8 @@ public class AcrrRuleManagerITest extends TestCase {
     assertEquals(0.6, result.getZrB(), 4);
     assertEquals(false, result.isApplyGRA());
     assertEquals("pn152", result.getProductId());
+    assertEquals("gra_id:123", result.getOptions());
+    
   }
   
   public void test_update() throws Exception {
@@ -132,6 +135,7 @@ public class AcrrRuleManagerITest extends TestCase {
     rule.setZrB(2.0);
     rule.setApplyGRA(true);
     rule.setProductId("pn154");
+    rule.setOptions("gra_id:123,ni:9");
     
     classUnderTest.update(2, rule);
     

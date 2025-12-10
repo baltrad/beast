@@ -96,9 +96,10 @@ public class GraRuleManager implements IRuleManager {
     double zrB = arule.getZrB();
     int firstTermUTC = arule.getFirstTermUTC();
     int interval = arule.getInterval();
-    
-    template.update("INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) VALUES (?,?,?,?,?,?,?,?,?,?,?)", 
-        new Object[]{rule_id, area, dfield, fhours, aloss, otype, quantity, zrA, zrB, firstTermUTC, interval});
+    String options = arule.getOptions();
+
+    template.update("INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval, options) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
+        new Object[]{rule_id, area, dfield, fhours, aloss, otype, quantity, zrA, zrB, firstTermUTC, interval, options});
     
     storeFilter(rule_id, arule.getFilter());
     arule.setRuleId(rule_id);
@@ -132,10 +133,11 @@ public class GraRuleManager implements IRuleManager {
     double zrb = arule.getZrB();
     int firstTermUTC = arule.getFirstTermUTC();
     int interval = arule.getInterval();
+    String options = arule.getOptions();
     
     template.update("UPDATE beast_gra_rules SET " +
-        "area=?, distancefield=?, files_per_hour=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=? WHERE rule_id=?",
-        new Object[]{area, dfield, fhours, acceptable_loss, otype, quantity, zra, zrb, firstTermUTC, interval, rule_id});
+        "area=?, distancefield=?, files_per_hour=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=?, options=? WHERE rule_id=?",
+        new Object[]{area, dfield, fhours, acceptable_loss, otype, quantity, zra, zrb, firstTermUTC, interval, options, rule_id});
     
     storeFilter(rule_id, arule.getFilter());    
     arule.setRuleId(rule_id);
@@ -182,6 +184,7 @@ public class GraRuleManager implements IRuleManager {
         result.setZrB(rs.getDouble("zrb"));
         result.setFirstTermUTC(rs.getInt("first_term_utc"));
         result.setInterval(rs.getInt("interval"));
+        result.setOptions(rs.getString("options"));
         return result;
       }
     };

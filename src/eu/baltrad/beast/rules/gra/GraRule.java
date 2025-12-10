@@ -68,7 +68,7 @@ public class GraRule extends AcrrRule {
    * Number of hours / calculation.
    */
   private int interval = DEFAULT_INTERVAL;
-  
+
   /**
    * First term of the calculation. For example, if interval is 12 and firstTermUTC = 6 it means
    * that the first gra calculation will be performed between 18:00 - 06:00 and the next one between 06:00 and 18:00.
@@ -121,7 +121,11 @@ public class GraRule extends AcrrRule {
         args.add("--accept="+ getAcceptableLoss());
         args.add("--quantity="+getQuantity());
         args.add("--distancefield=" + getDistancefield());
-        
+
+        if (getOptions() != null && !getOptions().equals("")) {
+          args.add("--options="+getOptions());
+        }    
+
         result.setArguments(args.toArray(new String[0]));
         
         logger.debug("GraRule createMessage - entries: " +
@@ -187,7 +191,7 @@ public class GraRule extends AcrrRule {
       throw new IllegalArgumentException("Interval not valid (should be 1,2,3,4,6,8,12 or 24)"); 
     }
   }
-  
+
   /**
    * Same definition as {@link #setInterval(int)}
    */

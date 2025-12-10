@@ -97,9 +97,10 @@ public class AcrrRuleManager implements IRuleManager {
     double zrB = arule.getZrB();
     boolean applygra = arule.isApplyGRA();
     String productid = arule.getProductId();
+    String options = arule.getOptions();
     
-    template.update("INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra, productid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
-        new Object[]{rule_id, area, dfield, fhours, hours, aloss, otype, quantity, zrA, zrB, applygra, productid});
+    template.update("INSERT INTO beast_acrr_rules (rule_id, area, distancefield, files_per_hour, hours, acceptable_loss, object_type, quantity, zra, zrb, applygra, productid, options) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", 
+        new Object[]{rule_id, area, dfield, fhours, hours, aloss, otype, quantity, zrA, zrB, applygra, productid, options});
     
     storeFilter(rule_id, arule.getFilter());
     arule.setRuleId(rule_id);
@@ -134,10 +135,11 @@ public class AcrrRuleManager implements IRuleManager {
     double zrb = arule.getZrB();
     boolean applygra = arule.isApplyGRA();
     String productid = arule.getProductId();
+    String options = arule.getOptions();
     
     template.update("UPDATE beast_acrr_rules SET " +
-        "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=?, productid=? WHERE rule_id=?",
-        new Object[]{area, dfield, fhours, hours, acceptable_loss, otype, quantity, zra, zrb, applygra, productid, rule_id});
+        "area=?, distancefield=?, files_per_hour=?, hours=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, applygra=?, productid=?, options=? WHERE rule_id=?",
+        new Object[]{area, dfield, fhours, hours, acceptable_loss, otype, quantity, zra, zrb, applygra, productid, options, rule_id});
     
     storeFilter(rule_id, arule.getFilter());    
     arule.setRuleId(rule_id);
@@ -185,6 +187,7 @@ public class AcrrRuleManager implements IRuleManager {
         result.setZrB(rs.getDouble("zrb"));
         result.setApplyGRA(rs.getBoolean("applygra"));
         result.setProductId(rs.getString("productid"));
+        result.setOptions(rs.getString("options"));
         return result;
       }
     };

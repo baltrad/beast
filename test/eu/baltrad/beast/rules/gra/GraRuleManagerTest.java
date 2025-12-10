@@ -88,11 +88,11 @@ public class GraRuleManagerTest extends EasyMockSupport {
     rule.setZrB(0.5);
     rule.setFirstTermUTC(10);
     rule.setInterval(12);
-    
+    rule.setOptions("gra_id:123");    
     expect(jdbc.update(
-        "INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval) " +
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-        new Object[]{3,"nrd_swe","eu.d.field",6,10,"COMP","DBZH",100.0,0.5,10,12})).andReturn(0);
+        "INSERT INTO beast_gra_rules (rule_id, area, distancefield, files_per_hour, acceptable_loss, object_type, quantity, zra, zrb, first_term_utc, interval, options) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        new Object[]{3,"nrd_swe","eu.d.field",6,10,"COMP","DBZH",100.0,0.5,10,12,"gra_id:123"})).andReturn(0);
     filterManager.deleteFilters(3);
     
     replayAll();
@@ -151,10 +151,11 @@ public class GraRuleManagerTest extends EasyMockSupport {
     rule.setZrB(0.5);
     rule.setFirstTermUTC(12);
     rule.setInterval(8);
-
+    rule.setOptions("gra_id:123");
+    
     expect(jdbc.update("UPDATE beast_gra_rules SET "+
-      "area=?, distancefield=?, files_per_hour=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=? WHERE rule_id=?", 
-        new Object[]{"nrd_swe", "eu.d.field", 6, 10, "COMP", "DBZH", 100.0, 0.5, 12, 8, 3})).andReturn(0);
+      "area=?, distancefield=?, files_per_hour=?, acceptable_loss=?, object_type=?, quantity=?, zra=?, zrb=?, first_term_utc=?, interval=?, options=? WHERE rule_id=?", 
+        new Object[]{"nrd_swe", "eu.d.field", 6, 10, "COMP", "DBZH", 100.0, 0.5, 12, 8, "gra_id:123", 3})).andReturn(0);
     filterManager.deleteFilters(3);
     
     replayAll();
@@ -208,6 +209,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
     expect(rs.getDouble("zrb")).andReturn(0.5);
     expect(rs.getInt("first_term_utc")).andReturn(2);
     expect(rs.getInt("interval")).andReturn(4);
+    expect(rs.getString("options")).andReturn("gra_id:123");
     
     
     classUnderTest.setRuleUtilities(utils);
@@ -231,6 +233,7 @@ public class GraRuleManagerTest extends EasyMockSupport {
     assertEquals(0.5, result.getZrB(), 4);
     assertEquals(2, result.getFirstTermUTC());
     assertEquals(4, result.getInterval());
+    assertEquals("gra_id:123", result.getOptions());
     assertSame(utils, result.getRuleUtilities());
     assertSame(cat, result.getCatalog());
   }

@@ -192,7 +192,8 @@ create table beast_acrr_rules (
   zra decimal NOT NULL,
   zrb decimal NOT NULL,
   applygra boolean NOT NULL,
-  productid TEXT
+  productid TEXT,
+  options TEXT
 );
 
 create table beast_gra_rules (
@@ -206,7 +207,8 @@ create table beast_gra_rules (
   zra decimal NOT NULL,
   zrb decimal NOT NULL,
   first_term_utc INTEGER NOT NULL,
-  interval INTEGER NOT NULL
+  interval INTEGER NOT NULL,
+  options TEXT  
 );
 
 create table beast_wrwp_rules (

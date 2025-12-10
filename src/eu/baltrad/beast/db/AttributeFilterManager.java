@@ -74,8 +74,7 @@ public class AttributeFilterManager implements IFilterManager {
     AttributeFilter flt = (AttributeFilter)filter;
 
     template.update(
-      "update beast_attr_filters set attr=?, op=?, value_type=?, value=?, negated=?" +
-        "where filter_id=?",
+      "update beast_attr_filters set attr=?, op=?, value_type=?, value=?, negated=? where filter_id=?",
       flt.getAttribute(),
       flt.getOperator().toString(),
       flt.getValueType().toString(),
