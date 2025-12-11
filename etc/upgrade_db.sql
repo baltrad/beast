@@ -58,7 +58,8 @@ BEGIN
       zra decimal NOT NULL,
       zrb decimal NOT NULL,
       applygra boolean NOT NULL,
-      productid TEXT
+      productid TEXT,
+      optiones TEXT
     );
   ELSE
     RAISE NOTICE 'Table beast_acrr_rules already exists';
@@ -81,7 +82,8 @@ BEGIN
       zra decimal NOT NULL,
       zrb decimal NOT NULL,
       first_term_utc INTEGER NOT NULL,
-      interval INTEGER NOT NULL
+      interval INTEGER NOT NULL,
+      options TEXT
     );
   ELSE
     RAISE NOTICE 'Table beast_gra_rules already exists';
@@ -485,6 +487,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_beast_acrr_rules_with_options() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_acrr_rules' AND column_name = 'options';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_acrr_rules ADD COLUMN options TEXT;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_beast_gra_rules_with_options() RETURNS VOID AS $$
+BEGIN
+  PERFORM true FROM information_schema.columns WHERE table_name = 'beast_gra_rules' AND column_name = 'options';
+  IF NOT FOUND THEN
+    ALTER TABLE beast_gra_rules ADD COLUMN options TEXT;
+  END IF; 
+END;
+$$ LANGUAGE plpgsql;
+
+
 select create_beast_gmap_rules();
 select create_beast_host_filter();
 select create_beast_acrr_rules();
@@ -516,6 +537,8 @@ select update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
 select update_beast_wrwp_with_capital_dbzh();
 select update_beast_gmap_rules_with_use_area_in_path();
 select update_beast_site2d_rules_with_options();
+select update_beast_acrr_rules_with_options();
+select update_beast_gra_rules_with_options();
 
 drop function create_beast_gmap_rules();
 drop function create_beast_host_filter();
@@ -548,3 +571,5 @@ drop function update_beast_wrwp_rules_with_maxelangle_and_more_attributes();
 drop function update_beast_wrwp_with_capital_dbzh();
 drop function update_beast_gmap_rules_with_use_area_in_path();
 drop function update_beast_site2d_rules_with_options();
+drop function update_beast_acrr_rules_with_options();
+drop function update_beast_gra_rules_with_options();
