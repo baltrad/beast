@@ -252,7 +252,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="execute.test" depends="prepare.test">
 	<mkdir dir="${dist.dir}/junit-reports" />
 	<junit dir="${build.test.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
-	  <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m -noverify"/>
+	  <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxMetaspaceSize=512m --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED"/>
 	  <formatter type="xml"/> 
 	  <formatter type="brief" usefile="false" if="test.format.brief" />
 	  <classpath refid="test.lib.path"/>
@@ -359,7 +359,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 	
   <target name="execute.itest" depends="prepare.itest,start-baltrad-bdb-server">
     <junit dir="${build.itest.dir}" showoutput="true" forkmode="perBatch" printsummary="no" >
-      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=512m -noverify"/>
+      <jvmarg line="-Djava.awt.headless=true -Xmx512m -XX:MaxMetaspaceSize=512m --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED"/>
       <formatter type="xml"/> 
       <formatter type="brief" usefile="false" if="test.format.brief" />
       <classpath refid="test.lib.path"/>

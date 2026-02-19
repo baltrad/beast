@@ -148,12 +148,12 @@ public class CompositingRuleFilterTest extends EasyMockSupport{
 
     expect(methods.getFilterExpression(true)).andReturn(filterExpression);
     
-    Capture<Expression> capturedElangleOrderXpr = new Capture<Expression>();
+    Capture<Expression> capturedElangleOrderXpr = EasyMock.newCapture();
     if (isScanBased) {
       query.appendOrderClause(EasyMock.capture(capturedElangleOrderXpr));      
     }
     
-    Capture<Expression> capturedDateOrderXpr = new Capture<Expression>();
+    Capture<Expression> capturedDateOrderXpr = EasyMock.newCapture();
     query.appendOrderClause(EasyMock.capture(capturedDateOrderXpr));
     
     query.setFilter(filterExpression);
@@ -189,8 +189,8 @@ public class CompositingRuleFilterTest extends EasyMockSupport{
 
     expect(file.getMetadata()).andReturn(metadata);
     
-    Capture<Expression> capturedExpression = new Capture<Expression>();
-    Capture<Metadata> capturedMeta = new Capture<Metadata>();
+    Capture<Expression> capturedExpression = EasyMock.newCapture();
+    Capture<Metadata> capturedMeta = EasyMock.newCapture();
     expect(matcher.match(EasyMock.capture(capturedMeta), EasyMock.capture(capturedExpression))).andReturn(fileMatching);
 
     if (useAdditionalFilter) {

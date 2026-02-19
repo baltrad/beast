@@ -168,7 +168,7 @@ public class FileDistributionTest extends EasyMockSupport {
     
     expectLastCall().andThrow(new IOException(exceptionMsg));
     
-    Capture<LoggingEvent> capturedArgument = new Capture<LoggingEvent>();
+    Capture<LoggingEvent> capturedArgument = EasyMock.newCapture();
     mockAppender.doAppend(EasyMock.capture(capturedArgument));
     
     replayAll();

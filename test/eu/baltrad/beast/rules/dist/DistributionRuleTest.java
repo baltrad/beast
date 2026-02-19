@@ -176,7 +176,7 @@ public class DistributionRuleTest extends EasyMockSupport {
     expect(namer.name(entry)).andReturn(dstEntryName);
     expect(distributionExecutor.isShutdown()).andReturn(false);
 
-    Capture<FileDistribution> capturedArgument = new Capture<FileDistribution>();
+    Capture<FileDistribution> capturedArgument = EasyMock.newCapture();
     distributionExecutor.execute(EasyMock.capture(capturedArgument));
     
     replayAll();
@@ -218,7 +218,7 @@ public class DistributionRuleTest extends EasyMockSupport {
     expect(namer.name(entry)).andReturn(dstEntryName);
     expect(distributionExecutor.isShutdown()).andReturn(false);
 
-    Capture<FileDistribution> capturedArgument = new Capture<FileDistribution>();
+    Capture<FileDistribution> capturedArgument = EasyMock.newCapture();
     distributionExecutor.execute(EasyMock.capture(capturedArgument));
     
     EasyMock.expectLastCall().andThrow(new RejectedExecutionException());
