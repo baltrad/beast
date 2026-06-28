@@ -247,9 +247,9 @@ public class VolumeRuleTest extends EasyMockSupport {
   public void testAreCriteriasMet_noHit() throws Exception {
     DateTime now = new DateTime();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry(new Double(1.0)));
-    entries.add(createCatalogEntry(new Double(5.0)));
-    entries.add(createCatalogEntry(new Double(10.0)));
+    entries.add(createCatalogEntry(Double.valueOf(1.0)));
+    entries.add(createCatalogEntry(Double.valueOf(5.0)));
+    entries.add(createCatalogEntry(Double.valueOf(10.0)));
     
     classUnderTest.setElevationMax(11.0);
     classUnderTest.setAscending(true);
@@ -473,9 +473,9 @@ public class VolumeRuleTest extends EasyMockSupport {
   public void testAreCriteriasMet_hit() throws Exception {
     DateTime now = new DateTime();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry(new Double(1.0)));
-    entries.add(createCatalogEntry(new Double(5.0)));
-    entries.add(createCatalogEntry(new Double(11.0)));
+    entries.add(createCatalogEntry(Double.valueOf(1.0)));
+    entries.add(createCatalogEntry(Double.valueOf(5.0)));
+    entries.add(createCatalogEntry(Double.valueOf(11.0)));
 
     classUnderTest.setElevationMax(11.0);
     classUnderTest.setAscending(true);
@@ -492,10 +492,10 @@ public class VolumeRuleTest extends EasyMockSupport {
   public void testAreCriteriasMet_withElevationAngles_hit() throws Exception {
     DateTime now = new DateTime();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry(new Double(1.0)));
-    entries.add(createCatalogEntry(new Double(5.0)));
-    entries.add(createCatalogEntry(new Double(10.0)));
-    entries.add(createCatalogEntry(new Double(11.0)));
+    entries.add(createCatalogEntry(Double.valueOf(1.0)));
+    entries.add(createCatalogEntry(Double.valueOf(5.0)));
+    entries.add(createCatalogEntry(Double.valueOf(10.0)));
+    entries.add(createCatalogEntry(Double.valueOf(11.0)));
 
     classUnderTest.setElevationMax(12.0);
     classUnderTest.setAscending(true);
@@ -513,9 +513,9 @@ public class VolumeRuleTest extends EasyMockSupport {
   public void testAreCriteriasMet_withElevationAngles_nohit() throws Exception {
     DateTime now = new DateTime();
     List<CatalogEntry> entries = new ArrayList<CatalogEntry>();
-    entries.add(createCatalogEntry(new Double(1.0)));
-    entries.add(createCatalogEntry(new Double(5.0)));
-    entries.add(createCatalogEntry(new Double(11.0)));
+    entries.add(createCatalogEntry(Double.valueOf(1.0)));
+    entries.add(createCatalogEntry(Double.valueOf(5.0)));
+    entries.add(createCatalogEntry(Double.valueOf(11.0)));
 
     classUnderTest.setElevationMax(11.0);
     classUnderTest.setAscending(true);
@@ -736,9 +736,9 @@ public class VolumeRuleTest extends EasyMockSupport {
     entries.add(e3);
     
     expect(entry.getAttribute("/dataset1/what/starttime")).andReturn("100005");
-    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
-    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
-    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(0.5));
+    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(1.0));
+    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(0.5));
     expect(e2.getAttribute("/dataset1/what/starttime")).andReturn("100006");
 
     replayAll();
@@ -765,9 +765,9 @@ public class VolumeRuleTest extends EasyMockSupport {
     entries.add(e3);
     
     expect(entry.getAttribute("/dataset1/what/starttime")).andReturn("100005");
-    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
-    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
-    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
+    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(0.5));
+    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(1.0));
+    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(0.5));
     expect(e2.getAttribute("/dataset1/what/starttime")).andReturn("100004");
     
     replayAll();
@@ -794,10 +794,10 @@ public class VolumeRuleTest extends EasyMockSupport {
     entries.add(e3);
     
     expect(entry.getAttribute("/dataset1/what/starttime")).andReturn("100005");
-    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
-    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
-    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.5));
-    expect(e3.getAttribute("/dataset1/where/elangle")).andReturn(new Double(2.5));
+    expect(entry.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(0.5));
+    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(1.0));
+    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(1.5));
+    expect(e3.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(2.5));
     
     replayAll();
     
@@ -828,11 +828,11 @@ public class VolumeRuleTest extends EasyMockSupport {
     entries.add(e4);
 
     expect(methods.createCatalogEntryList()).andReturn(filtered);
-    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(new Double(0.5));
-    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
+    expect(e1.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(0.5));
+    expect(e2.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(1.0));
     expect(methods.replaceScanElevation(filtered, e2, nominalTime)).andReturn(false);
-    expect(e3.getAttribute("/dataset1/where/elangle")).andReturn(new Double(2.0));
-    expect(e4.getAttribute("/dataset1/where/elangle")).andReturn(new Double(1.0));
+    expect(e3.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(2.0));
+    expect(e4.getAttribute("/dataset1/where/elangle")).andReturn(Double.valueOf(1.0));
     expect(methods.replaceScanElevation(filtered, e4, nominalTime)).andReturn(true);
     
     replayAll();

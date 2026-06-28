@@ -5,9 +5,9 @@ package eu.baltrad.beast.exchange;
 
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 
 import eu.baltrad.beast.security.AuthorizationRequest;
 
@@ -34,6 +34,7 @@ public interface ExchangeConnector {
    * @param request the request
    * @return the response
    */
+  @Deprecated
   public ExchangeResponse sendDexStyle(String remoteAddress, AuthorizationRequest request);
   
   /**

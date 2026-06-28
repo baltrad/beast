@@ -50,7 +50,7 @@ public class BaltradXmlRpcAlertHandler implements XmlRpcHandler {
         t.printStackTrace();
       }
     }
-    return new Integer(0);
+    return Integer.valueOf(0);
   }
   
   /**

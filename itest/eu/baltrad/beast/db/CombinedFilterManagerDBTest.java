@@ -90,9 +90,9 @@ public class CombinedFilterManagerDBTest extends TestCase {
     f.setId(8);
     f.setMatchType(CombinedFilter.MatchType.ANY);
 
-    expect(filter1.getId()).andReturn(new Integer(1));
+    expect(filter1.getId()).andReturn(Integer.valueOf(1));
     childManager.store(filter1);
-    expect(filter2.getId()).andReturn(new Integer(2));
+    expect(filter2.getId()).andReturn(Integer.valueOf(2));
     childManager.store(filter2);
     replay();
     
@@ -125,8 +125,8 @@ public class CombinedFilterManagerDBTest extends TestCase {
     children.add(filter2);
     f.setChildFilters(children);
 
-    expect(filter1.getId()).andReturn(new Integer(4));
-    expect(filter2.getId()).andReturn(new Integer(5));
+    expect(filter1.getId()).andReturn(Integer.valueOf(4));
+    expect(filter2.getId()).andReturn(Integer.valueOf(5));
 
     replay();
 

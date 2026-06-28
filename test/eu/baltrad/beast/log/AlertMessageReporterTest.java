@@ -20,7 +20,7 @@ along with the Beast library library.  If not, see <http://www.gnu.org/licenses/
 package eu.baltrad.beast.log;
 
 import static org.easymock.EasyMock.expect;
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -145,10 +145,10 @@ public class AlertMessageReporterTest extends EasyMockSupport {
     
     verifyAll();
     
-    Assert.assertEquals(BltAlertMessage.ERROR, result.getSeverity());
-    Assert.assertEquals("00001", result.getCode());
-    Assert.assertEquals("MYMODULE", result.getModule());
-    Assert.assertEquals("another message for nisse", result.getMessage());
+    assertEquals(BltAlertMessage.ERROR, result.getSeverity());
+    assertEquals("00001", result.getCode());
+    assertEquals("MYMODULE", result.getModule());
+    assertEquals("another message for nisse", result.getMessage());
   }
   
   @Test
@@ -162,10 +162,10 @@ public class AlertMessageReporterTest extends EasyMockSupport {
     
     verifyAll();
     
-    Assert.assertEquals(BltAlertMessage.ERROR, result.getSeverity());
-    Assert.assertEquals("00001", result.getCode());
-    Assert.assertEquals("BEAST", result.getModule());
-    Assert.assertEquals("a message for nisse", result.getMessage());
+    assertEquals(BltAlertMessage.ERROR, result.getSeverity());
+    assertEquals("00001", result.getCode());
+    assertEquals("BEAST", result.getModule());
+    assertEquals("a message for nisse", result.getMessage());
   }
   
   @Test
@@ -183,10 +183,10 @@ public class AlertMessageReporterTest extends EasyMockSupport {
     
     verifyAll();
     
-    Assert.assertEquals(BltAlertMessage.ERROR, result.getSeverity());
-    Assert.assertEquals("00001", result.getCode());
-    Assert.assertEquals("BEAST", result.getModule());
-    Assert.assertEquals("a message for nisse", result.getMessage());
+    assertEquals(BltAlertMessage.ERROR, result.getSeverity());
+    assertEquals("00001", result.getCode());
+    assertEquals("BEAST", result.getModule());
+    assertEquals("a message for nisse", result.getMessage());
   }
   
   @Test
@@ -204,9 +204,9 @@ public class AlertMessageReporterTest extends EasyMockSupport {
     
     verifyAll();
     
-    Assert.assertEquals(BltAlertMessage.WARNING, result.getSeverity());
-    Assert.assertEquals("00001", result.getCode());
-    Assert.assertEquals("MYMODULE", result.getModule());
-    Assert.assertEquals("another message for nisse", result.getMessage());
+    assertEquals(BltAlertMessage.WARNING, result.getSeverity());
+    assertEquals("00001", result.getCode());
+    assertEquals("MYMODULE", result.getModule());
+    assertEquals("another message for nisse", result.getMessage());
   }
 }

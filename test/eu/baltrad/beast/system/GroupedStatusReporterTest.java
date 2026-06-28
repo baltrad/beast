@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -67,7 +67,7 @@ public class GroupedStatusReporterTest extends EasyMockSupport  {
   @Test
   public void testGetName() {
     classUnderTest = new GroupedStatusReporter("nisse");
-    Assert.assertEquals("nisse", classUnderTest.getName());
+    assertEquals("nisse", classUnderTest.getName());
   }
   
   @Test
@@ -88,10 +88,10 @@ public class GroupedStatusReporterTest extends EasyMockSupport  {
     Set<String> result = classUnderTest.getSupportedAttributes();
     
     verifyAll();
-    Assert.assertEquals(3, result.size());
-    Assert.assertTrue(result.contains("abc"));
-    Assert.assertTrue(result.contains("def"));
-    Assert.assertTrue(result.contains("ghi"));
+    assertEquals(3, result.size());
+    assertTrue(result.contains("abc"));
+    assertTrue(result.contains("def"));
+    assertTrue(result.contains("ghi"));
   }
   
   @Test
@@ -112,8 +112,8 @@ public class GroupedStatusReporterTest extends EasyMockSupport  {
     
     verifyAll();
     
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
+    assertEquals(1, result.size());
+    assertTrue(result.contains(SystemStatus.OK));
   }
 
   @Test
@@ -132,11 +132,11 @@ public class GroupedStatusReporterTest extends EasyMockSupport  {
     
     verifyAll();
     
-    Assert.assertEquals(4, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
-    Assert.assertTrue(result.contains(SystemStatus.MEMORY_PROBLEM));
-    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
-    Assert.assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
+    assertEquals(4, result.size());
+    assertTrue(result.contains(SystemStatus.OK));
+    assertTrue(result.contains(SystemStatus.MEMORY_PROBLEM));
+    assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+    assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
   }
 
 }

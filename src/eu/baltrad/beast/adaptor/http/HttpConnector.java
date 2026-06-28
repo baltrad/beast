@@ -23,15 +23,13 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 import eu.baltrad.beast.message.IBltMessage;
 import eu.baltrad.beast.message.mo.BltDataFrameMessage;
@@ -55,27 +53,35 @@ public class HttpConnector implements IHttpConnector {
   public void send(IBltMessage message) {
     if (message.getClass() == BltDataFrameMessage.class) {
       BltDataFrameMessage msg = (BltDataFrameMessage)message;
-      HttpClient httpClient = new DefaultHttpClient();
-      HttpPost httpPost = createPost( getUrl() );
-      HttpEntity entity = generateHttpEntity(msg);
-      httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-      httpPost.setEntity(entity);
-      Iterator<String> keys = msg.getHeaders();
-
-      while (keys.hasNext()) {
-        String key = keys.next();
-        httpPost.addHeader(key, msg.getHeader(key));
-      }
+      CloseableHttpClient httpClient = HttpClients.createDefault();
       try {
-        HttpResponse response = httpClient.execute( httpPost );
-        HttpEntity resEntity = response.getEntity();
-        if( resEntity != null ) {
-          EntityUtils.consume(resEntity);
+        HttpPost httpPost = createPost( getUrl() );
+        HttpEntity entity = generateHttpEntity(msg);
+        httpPost.setEntity(entity);
+        Iterator<String> keys = msg.getHeaders();
+
+        while (keys.hasNext()) {
+          String key = keys.next();
+          httpPost.addHeader(key, msg.getHeader(key));
+        }
+        
+        ClassicHttpResponse response = (ClassicHttpResponse) httpClient.executeOpen(null, httpPost, null);
+        try {
+          HttpEntity resEntity = response.getEntity();
+          if( resEntity != null ) {
+            EntityUtils.consume(resEntity);
+          }
+        } finally {
+          response.close();
         }
       } catch (Exception e) {
         throw new HttpConnectorException(e);
       } finally {
-        httpClient.getConnectionManager().shutdown();    
+        try {
+          httpClient.close();
+        } catch (IOException e) {
+          throw new HttpConnectorException(e);
+        }
       }
     }
   }
@@ -105,9 +111,8 @@ public class HttpConnector implements IHttpConnector {
    * @return the http entity
    */
   protected HttpEntity generateHttpEntity(BltDataFrameMessage message) {
-    try {
-      FileInputStream fis = new FileInputStream(message.getFilename());
-      ByteArrayEntity entity = new ByteArrayEntity(IOUtils.toByteArray(fis));
+    try (FileInputStream fis = new FileInputStream(message.getFilename())) {
+      ByteArrayEntity entity = new ByteArrayEntity(IOUtils.toByteArray(fis), null);
       return entity;
     } catch (IOException e) {
       throw new HttpConnectorException();

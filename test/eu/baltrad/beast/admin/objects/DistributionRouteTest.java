@@ -5,7 +5,7 @@ package eu.baltrad.beast.admin.objects;
 
 import static org.junit.Assert.assertEquals;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;

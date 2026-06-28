@@ -23,10 +23,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.JsonNodeFactory;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -196,7 +196,7 @@ public class AttributeFilterTest {
     
     classUnderTest = (AttributeFilter)jsonMapper.treeToValue(json, IFilter.class);
 
-    assertEquals(new Integer(5), classUnderTest.getId());
+    assertEquals(Integer.valueOf(5), classUnderTest.getId());
     assertEquals("where/object", classUnderTest.getAttribute());
     assertEquals(AttributeFilter.Operator.IN, classUnderTest.getOperator());
     assertEquals(AttributeFilter.ValueType.STRING, classUnderTest.getValueType());

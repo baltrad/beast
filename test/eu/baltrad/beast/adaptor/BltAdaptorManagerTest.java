@@ -430,7 +430,7 @@ public class BltAdaptorManagerTest extends EasyMockSupport {
   public void testUnregister() {
     Map<String, Object> found = new HashMap<String, Object>();
     found.put("type", "XYZ");
-    found.put("adaptor_id", new Integer(10));
+    found.put("adaptor_id", Integer.valueOf(10));
     
     Map<String, IAdaptor> adaptors = new HashMap<String, IAdaptor>();
     adaptors.put("SA1", new IAdaptor() {

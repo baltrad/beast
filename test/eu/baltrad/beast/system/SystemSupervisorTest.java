@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -66,7 +66,7 @@ public class SystemSupervisorTest extends EasyMockSupport {
     Set<SystemStatus> result = classUnderTest.getStatus("radar", values);
 
     verifyAll();
-    Assert.assertSame(rcstatus, result);
+    assertSame(rcstatus, result);
   }
   
   @Test
@@ -79,8 +79,8 @@ public class SystemSupervisorTest extends EasyMockSupport {
     Set<SystemStatus> result = classUnderTest.getStatus("radar", values);
 
     verifyAll();
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.UNDEFINED));
+    assertEquals(1, result.size());
+    assertTrue(result.contains(SystemStatus.UNDEFINED));
   }
 
   @Test
@@ -99,7 +99,7 @@ public class SystemSupervisorTest extends EasyMockSupport {
     Set<SystemStatus> result = classUnderTest.getStatus("system", values);
     
     verifyAll();
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+    assertEquals(1, result.size());
+    assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
   }
 }

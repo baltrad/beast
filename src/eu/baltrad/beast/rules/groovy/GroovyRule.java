@@ -25,6 +25,7 @@ import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IScriptableRule;
 import eu.baltrad.beast.rules.RuleException;
 import groovy.lang.GroovyClassLoader;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Anders Henja
@@ -146,7 +147,7 @@ public class GroovyRule implements IRule {
     this.throwable = null;
     try {
       Class c = parseClass(script);
-      rule = (IScriptableRule)c.newInstance();
+      rule = (IScriptableRule)c.getDeclaredConstructor().newInstance();
       state = OK;
     } catch (CompilationFailedException e) {
       state = COMPILATION_ERROR;
@@ -157,6 +158,23 @@ public class GroovyRule implements IRule {
     } catch (IllegalAccessException e) {
       state = ILLEGAL_ACCESS_EXCEPTION;
       this.throwable = e;
+    } catch (NoSuchMethodException e) {
+      state = INSTANTIATION_EXCEPTION;
+      InstantiationException ie = new InstantiationException(e.getMessage());
+      ie.initCause(e);
+      this.throwable = ie;
+    } catch (InvocationTargetException e) {
+      Throwable cause = e.getCause();
+      if (cause instanceof InstantiationException) {
+        state = INSTANTIATION_EXCEPTION;
+        this.throwable = cause;
+      } else if (cause instanceof IllegalAccessException) {
+        state = ILLEGAL_ACCESS_EXCEPTION;
+        this.throwable = cause;
+      } else {
+        state = INSTANTIATION_EXCEPTION;
+        this.throwable = e;
+      }
     } catch (ClassCastException e) {
       state = CLASS_CAST_EXCEPTION;
       this.throwable = e;

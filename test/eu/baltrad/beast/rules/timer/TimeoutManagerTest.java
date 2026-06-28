@@ -74,9 +74,9 @@ public class TimeoutManagerTest extends EasyMockSupport {
     t2.setData(new String("DEF"));
     TimeoutTask t3 = new TimeoutTask();
     t3.setData(new String("GHI"));
-    classUnderTest.tasks.put(new Long(1), t1);
-    classUnderTest.tasks.put(new Long(2), t2);
-    classUnderTest.tasks.put(new Long(3), t3);
+    classUnderTest.tasks.put(Long.valueOf(1), t1);
+    classUnderTest.tasks.put(Long.valueOf(2), t2);
+    classUnderTest.tasks.put(Long.valueOf(3), t3);
     
     assertEquals(false, classUnderTest.isRegistered(new String("ADE")));
     assertEquals(true, classUnderTest.isRegistered(new String("ABC")));
@@ -91,9 +91,9 @@ public class TimeoutManagerTest extends EasyMockSupport {
     t2.setData(null);
     TimeoutTask t3 = new TimeoutTask();
     t3.setData(new String("GHI"));
-    classUnderTest.tasks.put(new Long(1), t1);
-    classUnderTest.tasks.put(new Long(2), t2);
-    classUnderTest.tasks.put(new Long(3), t3);
+    classUnderTest.tasks.put(Long.valueOf(1), t1);
+    classUnderTest.tasks.put(Long.valueOf(2), t2);
+    classUnderTest.tasks.put(Long.valueOf(3), t3);
     
     assertEquals(false, classUnderTest.isRegistered(new String("ADE")));
   }
@@ -106,9 +106,9 @@ public class TimeoutManagerTest extends EasyMockSupport {
     t2.setData(new String("DEF"));
     TimeoutTask t3 = new TimeoutTask();
     t3.setData(new String("GHI"));
-    classUnderTest.tasks.put(new Long(1), t1);
-    classUnderTest.tasks.put(new Long(2), t2);
-    classUnderTest.tasks.put(new Long(3), t3);
+    classUnderTest.tasks.put(Long.valueOf(1), t1);
+    classUnderTest.tasks.put(Long.valueOf(2), t2);
+    classUnderTest.tasks.put(Long.valueOf(3), t3);
     
     assertEquals(false, classUnderTest.isRegistered(null));
   }
@@ -121,9 +121,9 @@ public class TimeoutManagerTest extends EasyMockSupport {
     t2.setData(new String("DEF"));
     TimeoutTask t3 = new TimeoutTask();
     t3.setData(new String("GHI"));
-    classUnderTest.tasks.put(new Long(1), t1);
-    classUnderTest.tasks.put(new Long(2), t2);
-    classUnderTest.tasks.put(new Long(3), t3);
+    classUnderTest.tasks.put(Long.valueOf(1), t1);
+    classUnderTest.tasks.put(Long.valueOf(2), t2);
+    classUnderTest.tasks.put(Long.valueOf(3), t3);
 
     TimeoutTask r1 = classUnderTest.getRegisteredTask("ABC");
     TimeoutTask r2 = classUnderTest.getRegisteredTask("DEF");
@@ -143,9 +143,9 @@ public class TimeoutManagerTest extends EasyMockSupport {
     TimeoutTask t2 = new TimeoutTask();
     TimeoutTask t3 = new TimeoutTask();
     t3.setData(new String("GHI"));
-    classUnderTest.tasks.put(new Long(1), t1);
-    classUnderTest.tasks.put(new Long(2), t2);
-    classUnderTest.tasks.put(new Long(3), t3);
+    classUnderTest.tasks.put(Long.valueOf(1), t1);
+    classUnderTest.tasks.put(Long.valueOf(2), t2);
+    classUnderTest.tasks.put(Long.valueOf(3), t3);
 
     TimeoutTask r1 = classUnderTest.getRegisteredTask("ABC");
     TimeoutTask r2 = classUnderTest.getRegisteredTask("DEF");
@@ -166,9 +166,9 @@ public class TimeoutManagerTest extends EasyMockSupport {
     t2.setData(new String("DEF"));
     TimeoutTask t3 = new TimeoutTask();
     t3.setData(new String("GHI"));
-    classUnderTest.tasks.put(new Long(1), t1);
-    classUnderTest.tasks.put(new Long(2), t2);
-    classUnderTest.tasks.put(new Long(3), t3);
+    classUnderTest.tasks.put(Long.valueOf(1), t1);
+    classUnderTest.tasks.put(Long.valueOf(2), t2);
+    classUnderTest.tasks.put(Long.valueOf(3), t3);
     TimeoutTask r1 = classUnderTest.getRegisteredTask(null);
     assertSame(null, r1);
   }

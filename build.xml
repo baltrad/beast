@@ -34,7 +34,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <property name="build.instrument.dir" value="${build.dir}/instrument" />
   <property name="dist.dir" value="${basedir}/dist" />
   <property name="source.dir" value="${basedir}/src" />
-  <property name="lib.dir" value="${basedir}/lib" />	
+  <property name="lib.dir" value="${basedir}/lib/maven/libs/runtime" />
+  <property name="test.lib.dir" value="${basedir}/lib/maven/libs/test" />
   <property name="etc.dir" value="${basedir}/etc" />
   <property name="examples.dir" value="${basedir}/examples" />
   <property name="compile.debug" value="true" />
@@ -47,9 +48,9 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 
 
   <!-- override this with -Dbaltraddb.path= -->
-  <property name="baltraddb.path" value="/opt/baltrad/db-devel"/>
-  <property name="baltraddb.bin.path" value="${baltraddb.path}/bin"/>
-  <property name="baltraddb.java.path" value="${baltraddb.path}/share/baltrad-bdb/java" />
+  <property name="baltraddb.path" value="/usr/share/baltrad/baltrad-db"/>
+  <property name="baltraddb.bin.path" value="/usr/bin"/>
+  <property name="baltraddb.java.path" value="${baltraddb.path}/java" />
 
   <available file="${baltraddb.path}" type="dir" property="baltraddb.available"/>
   <available file="${baltraddb.java.path}/baltrad-bdb-client.jar" property="baltrad-bdb-client.jar.available"/>
@@ -63,40 +64,82 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <!--<echoproperties/>-->
   <path id="lib.path">
     <fileset dir="${lib.dir}">
-      <include name="**/*.jar"/>
-      <exclude name="ant/*.jar" />
-      <exclude name="junit/*.jar"/>
-      <exclude name="easymock/*.jar"/>
-      <exclude name="jacoco/*.jar"/>
-      <exclude name="cglib/*.jar"/>
+      <include name="*.jar"/>
+      <exclude name="*doxygen*.jar"/>
     </fileset>
+
     <fileset dir="${baltraddb.java.path}/">
       <include name="baltrad-bdb-client.jar"/>
     </fileset>
+
     <fileset dir="${baltraddb.java.path}/">
       <include name="libs/*.jar"/>
     </fileset>
-  </path>
 
-  <path id="test.lib.path">
-    <fileset dir="${lib.dir}">
-      <include name="junit/*.jar"/>
-      <include name="ant-junit/*.jar"/>
-      <include name="easymock/*.jar"/>
-      <include name="cglib/*.jar"/>
-    </fileset>
-  </path>
-
-  <path id="doxygen.classpath">
-    <fileset dir="${lib.dir}/doxygen">
+    <fileset dir="${basedir}/lib/keyczar">
       <include name="*.jar"/>
     </fileset>
   </path>
 
-  <path id="jacoco.classpath" >
-    <pathelement location="${lib.dir}/jacoco/jacocoant.jar" />
+  <path id="test.lib.path">
+    <path refid="lib.path"/>
+    <fileset dir="${test.lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
   </path>
-  <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.classpath"/>
+
+
+  <!-- Fetch Maven dependencies -->
+  <target name="fetch-jars" description="Download all Maven dependencies (runtime and test separated)">
+    <echo message="Fetching dependencies via Maven..."/>
+    <exec executable="mvn" dir="${basedir}/lib/maven" failonerror="true">
+      <arg value="package"/>
+    </exec>
+    
+    <!-- Remove runtime JARs from test directory to keep only test-specific JARs -->
+    <delete>
+      <fileset dir="${test.lib.dir}">
+        <present present="both" targetdir="${lib.dir}"/>
+      </fileset>
+    </delete>
+    
+    <echo message="Runtime dependencies in: lib/maven/libs/runtime/"/>
+    <echo message="Test-only dependencies in: lib/maven/libs/test/"/>
+  </target>
+
+  <!-- Generate third-party license information -->
+  <target name="third-party-licenses" description="Generate third-party license information file">
+    <echo message="Generating third-party license information..."/>
+    <exec executable="mvn" dir="${basedir}/lib/maven" failonerror="true">
+      <arg value="license:add-third-party"/>
+      <arg value="-DskipPomPackaging=false"/>
+    </exec>
+    <echo message="License file created at: lib/maven/libs/THIRD-PARTY-LICENSES.txt"/>
+  </target>
+
+  <!-- Check if dependencies need to be fetched -->
+  <target name="check-jars">
+    <condition property="jars.present">
+      <and>
+        <available file="${lib.dir}" type="dir"/>
+        <available file="${test.lib.dir}" type="dir"/>
+        <resourcecount when="gt" count="0">
+          <fileset dir="${lib.dir}" includes="*.jar"/>
+        </resourcecount>
+      </and>
+    </condition>
+  </target>
+
+  <!-- Fetch dependencies only if needed -->
+  <target name="ensure-jars" depends="check-jars" unless="jars.present">
+    <antcall target="fetch-jars"/>
+  </target>
+
+  <path id="doxygen.classpath">
+    <fileset dir="${lib.dir}/">
+      <include name="*doxygen*.jar"/>
+    </fileset>
+  </path>
 
   <!-- Generates the deliverables -->
   <target name="build" depends="clean,compile">
@@ -127,13 +170,6 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   	<copy todir="${prefix}/${app.dist.dir.name}/libs" flatten="true">
       <fileset dir="${lib.dir}">
         <include name="**/*.jar"/>
-        <exclude name="ant/*.jar" />
-        <exclude name="junit/*.jar"/>
-        <exclude name="easymock/*.jar"/>
-        <exclude name="jacoco/*.jar"/>
-      	<exclude name="poi/*.jar"/>
-      	<exclude name="dbunit/*.jar"/>
-      	<exclude name="spring/spring-test.jar"/>
       </fileset>
   	</copy>
   	<copy todir="${prefix}/${app.dist.dir.name}/etc">
@@ -203,7 +239,7 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   <target name="test" depends="build,execute.test" />
 	
   <!-- Compile the code -->
-  <target name="compile" depends="prepare">
+  <target name="compile" depends="ensure-jars,prepare">
     <mkdir dir="${build.classes.dir}"/>
     <javac srcdir="${source.dir}"
            encoding="8859_1"
@@ -389,7 +425,20 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
   </target>
 
   <!-- CODE COVERAGE -->
-  <target name="instrument.coverage">
+  <target name="init-jacoco" depends="ensure-jars">
+    <path id="jacoco.classpath">
+      <fileset dir="${test.lib.dir}">
+        <include name="org.jacoco.ant-0.8.12.jar" />
+        <include name="org.jacoco.agent-0.8.12.jar" />
+        <include name="org.jacoco.core-0.8.12.jar" />
+        <include name="org.jacoco.report-0.8.12.jar" />
+        <include name="asm-*.jar" />
+      </fileset>
+    </path>
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.classpath"/>
+  </target>
+
+  <target name="instrument.coverage" depends="init-jacoco">
     <delete dir="${build.instrument.dir}" />
     <delete file="${build.coverage.dir}/jacoco.exec" />
     <mkdir dir="${build.instrument.dir}" />

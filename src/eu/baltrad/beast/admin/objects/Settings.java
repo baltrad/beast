@@ -6,7 +6,7 @@ package eu.baltrad.beast.admin.objects;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.map.annotate.JsonRootName;
+import com.fasterxml.jackson.annotation.JsonRootName;
 
 /**
  * @author anders

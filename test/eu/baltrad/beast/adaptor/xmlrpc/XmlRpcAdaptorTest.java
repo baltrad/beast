@@ -142,7 +142,7 @@ public class XmlRpcAdaptorTest extends EasyMockSupport {
     cmd.setMethod("command");
     cmd.setObjects(rpcArgs);
     
-    Integer cbReturnCode = new Integer(0);
+    Integer cbReturnCode = Integer.valueOf(0);
     expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", rpcArgs, timeoutCB);
     expect(timeoutCB.waitForResponse()).andReturn(cbReturnCode);
@@ -165,7 +165,7 @@ public class XmlRpcAdaptorTest extends EasyMockSupport {
     cmd.setMethod("command");
     cmd.setObjects(rpcArgs);
     
-    Integer cbReturnCode = new Integer(0);
+    Integer cbReturnCode = Integer.valueOf(0);
     expect(generator.generate(message)).andReturn(cmd);
     rpcClient.executeAsync("command", rpcArgs, timeoutCB);
     expect(timeoutCB.waitForResponse()).andReturn(cbReturnCode);
@@ -298,7 +298,7 @@ public class XmlRpcAdaptorTest extends EasyMockSupport {
   @Test
   public void testSetUrl() throws Exception {
     final XmlRpcClientConfigImpl xmlRpcConfig = createMock(XmlRpcClientConfigImpl.class);
-    final URL url = new URL("http://localhost");
+    final URL url = new java.net.URI("http://localhost").toURL();
     
     XmlRpcClient client = new XmlRpcClient();
     

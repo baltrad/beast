@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -69,10 +69,10 @@ public class HostFilterManagerTest extends EasyMockSupport {
     List<String> result = classUnderTest.getPatterns();
     
     verifyAll();
-    Assert.assertEquals(3, result.size());
-    Assert.assertEquals("127.0.0.1", result.get(0));
-    Assert.assertEquals("192.168.2.*", result.get(1));
-    Assert.assertEquals("192.168.*.*", result.get(2));
+    assertEquals(3, result.size());
+    assertEquals("127.0.0.1", result.get(0));
+    assertEquals("192.168.2.*", result.get(1));
+    assertEquals("192.168.*.*", result.get(2));
   }
   
   @Test
@@ -85,7 +85,7 @@ public class HostFilterManagerTest extends EasyMockSupport {
     classUnderTest.add("127.0.0.1");
     try {
       classUnderTest.add("192.168.*");
-      Assert.fail("Expected IllegalArgumentException");
+      fail("Expected IllegalArgumentException");
     } catch (IllegalArgumentException e) {
       //pass
     }
@@ -94,9 +94,9 @@ public class HostFilterManagerTest extends EasyMockSupport {
     List<String> result = classUnderTest.getPatterns();
     
     verifyAll();
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals("127.0.0.1", result.get(0));
-    Assert.assertEquals("192.168.*.*", result.get(1));
+    assertEquals(2, result.size());
+    assertEquals("127.0.0.1", result.get(0));
+    assertEquals("192.168.*.*", result.get(1));
   }
   
   @Test
@@ -105,13 +105,13 @@ public class HostFilterManagerTest extends EasyMockSupport {
 
     try {
       classUnderTest.add(null);
-      Assert.fail("Expected NullPointerException");
+      fail("Expected NullPointerException");
     } catch (NullPointerException e) {
       //pass
     }
     
     verifyAll();
-    Assert.assertEquals(0, classUnderTest.getPatterns().size());
+    assertEquals(0, classUnderTest.getPatterns().size());
   }
 
   
@@ -135,8 +135,8 @@ public class HostFilterManagerTest extends EasyMockSupport {
     List<String> result = classUnderTest.getPatterns();
     
     verifyAll();
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals("127.0.0.1", result.get(0));
+    assertEquals(1, result.size());
+    assertEquals("127.0.0.1", result.get(0));
   }
 
   @Test
@@ -159,9 +159,9 @@ public class HostFilterManagerTest extends EasyMockSupport {
     List<String> result = classUnderTest.getPatterns();
     
     verifyAll();
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals("127.0.0.1", result.get(0));
-    Assert.assertEquals("192.168.*.*", result.get(1));
+    assertEquals(2, result.size());
+    assertEquals("127.0.0.1", result.get(0));
+    assertEquals("192.168.*.*", result.get(1));
   }
   
   @Test
@@ -170,7 +170,7 @@ public class HostFilterManagerTest extends EasyMockSupport {
     
     try {
       classUnderTest.remove(null);
-      Assert.fail("Expected NullPointerException");
+      fail("Expected NullPointerException");
     } catch (NullPointerException e) {
       // pass
     }
@@ -199,7 +199,7 @@ public class HostFilterManagerTest extends EasyMockSupport {
 
     for (String s : ipaddresses) {
       boolean result = classUnderTest.accepted(s);
-      Assert.assertEquals(true, result);
+      assertEquals(true, result);
     }
     
     verifyAll();
@@ -221,11 +221,11 @@ public class HostFilterManagerTest extends EasyMockSupport {
     boolean t4 = classUnderTest.isRegistered("*");
     boolean t5 = classUnderTest.isRegistered(null);
     
-    Assert.assertEquals(true, t1);
-    Assert.assertEquals(true, t2);
-    Assert.assertEquals(false, t3);
-    Assert.assertEquals(false, t4);
-    Assert.assertEquals(false, t5);
+    assertEquals(true, t1);
+    assertEquals(true, t2);
+    assertEquals(false, t3);
+    assertEquals(false, t4);
+    assertEquals(false, t5);
     
   }
   
@@ -256,9 +256,9 @@ public class HostFilterManagerTest extends EasyMockSupport {
     
     verifyAll();
     List<String> result = classUnderTest.getPatterns();
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals("192.168.1.1", result.get(0));
-    Assert.assertEquals("192.168.1.2", result.get(1));
+    assertEquals(2, result.size());
+    assertEquals("192.168.1.1", result.get(0));
+    assertEquals("192.168.1.2", result.get(1));
   }
 
   @Test
@@ -289,9 +289,9 @@ public class HostFilterManagerTest extends EasyMockSupport {
     
     verifyAll();
     List<String> result = classUnderTest.getPatterns();
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals("192.168.1.1", result.get(0));
-    Assert.assertEquals("192.168.1.2", result.get(1));
+    assertEquals(2, result.size());
+    assertEquals("192.168.1.1", result.get(0));
+    assertEquals("192.168.1.2", result.get(1));
   }
 
   @Test
@@ -315,7 +315,7 @@ public class HostFilterManagerTest extends EasyMockSupport {
 
     for (String s : ipaddresses) {
       boolean result = classUnderTest.accepted(s);
-      Assert.assertEquals(false, result);
+      assertEquals(false, result);
     }
     
     verifyAll();
@@ -335,7 +335,7 @@ public class HostFilterManagerTest extends EasyMockSupport {
     
     for (String s : validPatterns) {
         boolean result = classUnderTest.isValidPattern(s);
-        Assert.assertEquals(true, result);
+        assertEquals(true, result);
     }
     verifyAll();
   }
@@ -354,7 +354,7 @@ public class HostFilterManagerTest extends EasyMockSupport {
     
     for (String s : validPatterns) {
         boolean result = classUnderTest.isValidPattern(s);
-        Assert.assertEquals(false, result);
+        assertEquals(false, result);
     }
     verifyAll();
   }

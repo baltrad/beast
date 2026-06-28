@@ -18,8 +18,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;

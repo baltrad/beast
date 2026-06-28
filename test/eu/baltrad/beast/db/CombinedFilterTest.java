@@ -27,11 +27,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.JsonNodeFactory;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -187,18 +187,18 @@ public class CombinedFilterTest extends EasyMockSupport {
     child.put("type", "combined");
     child.put("id", 2);
     child.put("matchType", "ALL");
-    child.put("childFilters", JsonNodeFactory.instance.arrayNode());
+    child.set("childFilters", JsonNodeFactory.instance.arrayNode());
     ObjectNode json = JsonNodeFactory.instance.objectNode();
     json.put("type", "combined");
     json.put("id", 1);
     json.put("matchType", "ANY");
     ArrayNode children = JsonNodeFactory.instance.arrayNode();
     children.add(child);
-    json.put("childFilters", children);
+    json.set("childFilters", children);
 
     classUnderTest = (CombinedFilter)jsonMapper.treeToValue(json, IFilter.class);
 
-    assertEquals(new Integer(1), classUnderTest.getId());
+    assertEquals(Integer.valueOf(1), classUnderTest.getId());
     assertEquals(CombinedFilter.MatchType.ANY, classUnderTest.getMatchType());
     assertEquals(1, classUnderTest.getChildFilters().size());
   }

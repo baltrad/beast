@@ -122,7 +122,7 @@ public class CoreFilterManagerTest extends EasyMockSupport {
   @Test
   public void testRemove() {
     expect(filter.getType()).andReturn("mock");
-    expect(filter.getId()).andReturn(new Integer(1));
+    expect(filter.getId()).andReturn(Integer.valueOf(1));
     filterManager.remove(filter);
     methods.sqlDeleteFilter(1);
     filter.setId(null);

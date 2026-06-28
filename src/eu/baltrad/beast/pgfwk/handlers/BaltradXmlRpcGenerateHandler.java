@@ -64,7 +64,7 @@ public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationC
     String[] files = createStringArray(ofiles);
     String[] args = createStringArray(oargs);
 
-    Object result = new Integer(-1);
+    Object result = Integer.valueOf(-1);
 
     Object plugin = context.getBean(algorithm);
 
@@ -75,7 +75,7 @@ public class BaltradXmlRpcGenerateHandler implements XmlRpcHandler, ApplicationC
           BltDataFrameMessage message = factory.createMessage(output);
           connector.send(message);
         }
-        result = new Integer(0);
+        result = Integer.valueOf(0);
       } catch (RuntimeException t) {
         t.printStackTrace();
       }

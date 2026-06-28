@@ -1,2 +1,0 @@
-Jacoco is licensed under https://www.eclipse.org/legal/epl-2.0/.
-See https://www.jacoco.org/jacoco/trunk/doc/license.html

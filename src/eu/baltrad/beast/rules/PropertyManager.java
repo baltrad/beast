@@ -67,7 +67,7 @@ public class PropertyManager {
     };
 
     template.query("select * from beast_rule_properties where rule_id=?",
-              new Object[]{ruleId}, rch);
+              rch, new Object[]{ruleId});
     return props;
   }
   
