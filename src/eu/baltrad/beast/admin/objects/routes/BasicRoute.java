@@ -3,7 +3,7 @@
  */
 package eu.baltrad.beast.admin.objects.routes;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author anders

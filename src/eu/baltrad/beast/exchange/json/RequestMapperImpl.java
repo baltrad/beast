@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.JsonNodeFactory;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import eu.baltrad.beast.exchange.ExchangeMessage;
 import eu.baltrad.beast.security.AuthorizationRequest;
@@ -40,7 +40,7 @@ public class RequestMapperImpl implements RequestMapper {
     jsonRequest.put("MessageType", "DEX-Message");
     jsonRequest.put("MessageVersion", "2.2");
     jsonRequest.put("ObjectClass",  "AuthorizationRequest");
-    jsonRequest.put("Object", authorizationRequest);
+    jsonRequest.set("Object", authorizationRequest);
     try {
       return jsonMapper.writeValueAsString(jsonRequest);
     } catch (Exception e) {
@@ -55,7 +55,7 @@ public class RequestMapperImpl implements RequestMapper {
       return parse(node);
     } catch (JsonProcessingException e) {
       throw new RequestMapperException(e);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new RequestMapperException(e);
     }
   }
@@ -67,7 +67,7 @@ public class RequestMapperImpl implements RequestMapper {
       return parse(node);
     } catch (JsonProcessingException e) {
       throw new RequestMapperException(e);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new RequestMapperException(e);
     }
   }

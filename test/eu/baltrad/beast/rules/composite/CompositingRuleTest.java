@@ -1255,10 +1255,10 @@ public class CompositingRuleTest extends EasyMockSupport {
     
     for (String source : previousSources) {
       
-      Double previousAngle = new Double(0.5);
-      Double currentAngle = new Double(previousAngle);
+      Double previousAngle = Double.valueOf(0.5);
+      Double currentAngle = Double.valueOf(previousAngle);
       if (scanAngleMissing && source.equals("source2")) {
-        currentAngle = previousAngle + new Double(0.2);
+        currentAngle = previousAngle + Double.valueOf(0.2);
       }
       
       if (!noPreviousAngles) {

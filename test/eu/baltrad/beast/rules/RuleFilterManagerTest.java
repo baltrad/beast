@@ -102,8 +102,8 @@ public class RuleFilterManagerTest extends EasyMockSupport {
     IFilter filter1 = createMock(IFilter.class);
     IFilter filter2 = createMock(IFilter.class);
     HashMap<String, Integer> filterKeyIdMap = new HashMap<String, Integer>();
-    filterKeyIdMap.put("key1", new Integer(10));
-    filterKeyIdMap.put("key2", new Integer(20));
+    filterKeyIdMap.put("key1", Integer.valueOf(10));
+    filterKeyIdMap.put("key2", Integer.valueOf(20));
 
     expect(methods.getRuleFilterKeyIdMap(1)).andReturn(filterKeyIdMap);
     expect(filterManager.load(10)).andReturn(filter1);
@@ -126,8 +126,8 @@ public class RuleFilterManagerTest extends EasyMockSupport {
     filters.put("key1", filter1);
     filters.put("key2", filter2);
 
-    expect(filter1.getId()).andReturn(new Integer(1));
-    expect(filter2.getId()).andReturn(new Integer(2));
+    expect(filter1.getId()).andReturn(Integer.valueOf(1));
+    expect(filter2.getId()).andReturn(Integer.valueOf(2));
     filterManager.store(filter1);
     expect(jdbc.update(
         "insert into beast_rule_filters " +

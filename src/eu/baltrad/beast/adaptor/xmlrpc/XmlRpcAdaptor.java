@@ -257,8 +257,8 @@ public class XmlRpcAdaptor implements IAdaptor {
    */
   protected URL createUrl(String url) {
     try {
-      return new URL(url);
-    } catch (MalformedURLException t) {
+      return new java.net.URI(url).toURL();
+    } catch (java.net.URISyntaxException | MalformedURLException | IllegalArgumentException t) {
       logger.info("BAD URL: " + url);
       throw new AdaptorAddressException("bad url", t);
     }
@@ -277,7 +277,7 @@ public class XmlRpcAdaptor implements IAdaptor {
     XmlRpcClient client = new XmlRpcClient();
     XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
     TimingOutCallback tcb = new TimingOutCallback(1000);
-    config.setServerURL(new URL("http://localhost:8085/RAVE"));
+    config.setServerURL(new java.net.URI("http://localhost:8085/RAVE").toURL());
     client.setConfig(config);
     client.executeAsync("get_quality_controls", new Object[]{}, tcb);
     Object result = tcb.waitForResponse();

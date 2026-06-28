@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -59,13 +59,13 @@ public class BdbConnectionStatusReporterTest extends EasyMockSupport {
   
   @Test
   public void testGetName() {
-    Assert.assertEquals("bdb.status", classUnderTest.getName());
+    assertEquals("bdb.status", classUnderTest.getName());
   }
   
   @Test
   public void testGetSupportedAttributes() {
     Set<String> result = classUnderTest.getSupportedAttributes();
-    Assert.assertEquals(0, result.size());
+    assertEquals(0, result.size());
   }
   
   @Test
@@ -84,8 +84,8 @@ public class BdbConnectionStatusReporterTest extends EasyMockSupport {
     result = classUnderTest.getStatus(null);
     
     verifyAll();
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals(true, result.contains(SystemStatus.OK));
+    assertEquals(1, result.size());
+    assertEquals(true, result.contains(SystemStatus.OK));
   }
   
   @Test
@@ -101,8 +101,8 @@ public class BdbConnectionStatusReporterTest extends EasyMockSupport {
     result = classUnderTest.getStatus(null);
     
     verifyAll();
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals(true, result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+    assertEquals(1, result.size());
+    assertEquals(true, result.contains(SystemStatus.COMMUNICATION_PROBLEM));
   }
   
 }

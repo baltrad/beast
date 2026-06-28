@@ -21,9 +21,9 @@ package eu.baltrad.beast.admin.objects.routes;
 
 import java.net.URI;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 
 import eu.baltrad.beast.db.IFilter;
 import eu.baltrad.beast.router.IRouterManager;

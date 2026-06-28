@@ -19,7 +19,7 @@ along with Beast library.  If not, see <http://www.gnu.org/licenses/>.
 
 package eu.baltrad.beast.db;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import eu.baltrad.bdb.expr.Expression;
 import eu.baltrad.bdb.expr.BooleanExpression;

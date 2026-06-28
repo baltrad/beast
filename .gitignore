@@ -6,3 +6,7 @@ dist
 !itest/eu/baltrad/beast/rules/dist
 *.swp
 .ruby-version
+lib/maven/libs/test
+lib/maven/libs/runtime
+lib/maven/target
+lib/maven/libs/THIRD-PARTY-LICENSES.txt

@@ -1,5 +1,6 @@
 package eu.baltrad.beast.net;
 
+import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -161,17 +162,22 @@ public class FileDistributionTest extends EasyMockSupport {
     final String exceptionMsg = "Something terrible happened";
     
     Appender mockAppender = createMock(Appender.class);
-    LogManager.getRootLogger().addAppender(mockAppender);
-  
+    
+    // Add expectations for log4j-1.2-api bridge compatibility (BEFORE addAppender)
+    expect(mockAppender.getName()).andReturn("mockAppender").anyTimes();
+    expect(mockAppender.getFilter()).andReturn(null).anyTimes();
+    
+    Capture<LoggingEvent> capturedArgument = EasyMock.newCapture();
+    mockAppender.doAppend(EasyMock.capture(capturedArgument));
+    
     distributionState.uploadDone(false);
     uploadHandler.upload(defaultSrc, defaultFullDestination);
     
     expectLastCall().andThrow(new IOException(exceptionMsg));
     
-    Capture<LoggingEvent> capturedArgument = EasyMock.newCapture();
-    mockAppender.doAppend(EasyMock.capture(capturedArgument));
-    
     replayAll();
+    
+    LogManager.getRootLogger().addAppender(mockAppender);
   
     classUnderTest.run();
     

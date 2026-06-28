@@ -29,6 +29,7 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.InitializingBean;
@@ -189,8 +190,9 @@ public class LogMessageRepository implements ILogMessageRepository, Initializing
       
       XPath xpathSelector = DocumentHelper.createXPath("//log-messages/message");
       @SuppressWarnings("unchecked")
-      List<Element> nodes = xpathSelector.selectNodes(doc);
-      for (Element e : nodes) {
+      List<Node> nodes = xpathSelector.selectNodes(doc);
+      for (Node node : nodes) {
+        Element e = (Element)node;
         String module = e.attribute("module").getText();
         String code = e.attribute("id").getText();
         MessageSeverity severity = MessageSeverity.UNDEFINED;

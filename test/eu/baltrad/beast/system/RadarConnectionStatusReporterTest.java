@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -52,14 +52,14 @@ public class RadarConnectionStatusReporterTest {
 
   @Test
   public void testGetName() {
-    Assert.assertEquals("radar.connection.status", classUnderTest.getName());
+    assertEquals("radar.connection.status", classUnderTest.getName());
   }
   
   @Test
   public void testGetSupportedAttributes() {
     Set<String> result = classUnderTest.getSupportedAttributes();
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains("sources"));
+    assertEquals(1, result.size());
+    assertTrue(result.contains("sources"));
   }
   
   @Test
@@ -67,8 +67,8 @@ public class RadarConnectionStatusReporterTest {
     Map<String,Object> values = new HashMap<String, Object>();
     values.put("sources", "node1");
     Set<SystemStatus> result = classUnderTest.getStatus(values);
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
+    assertEquals(1, result.size());
+    assertTrue(result.contains(SystemStatus.OK));
   }
 
   @Test
@@ -76,9 +76,9 @@ public class RadarConnectionStatusReporterTest {
     Map<String,Object> values = new HashMap<String, Object>();
     values.put("sources", "node1,node3");    
     Set<SystemStatus> result = classUnderTest.getStatus(values);
-    Assert.assertEquals(2, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
-    Assert.assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
+    assertEquals(2, result.size());
+    assertTrue(result.contains(SystemStatus.OK));
+    assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
   }
 
   @Test
@@ -86,9 +86,9 @@ public class RadarConnectionStatusReporterTest {
     Map<String,Object> values = new HashMap<String, Object>();
     values.put("sources", "node1,node3,node4");
     Set<SystemStatus> result = classUnderTest.getStatus(values);
-    Assert.assertEquals(2, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
-    Assert.assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
+    assertEquals(2, result.size());
+    assertTrue(result.contains(SystemStatus.OK));
+    assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
   }
 
   @Test
@@ -96,9 +96,9 @@ public class RadarConnectionStatusReporterTest {
     Map<String,Object> values = new HashMap<String, Object>();
     values.put("sources", "node1,,node3");    
     Set<SystemStatus> result = classUnderTest.getStatus(values);
-    Assert.assertEquals(2, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
-    Assert.assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
+    assertEquals(2, result.size());
+    assertTrue(result.contains(SystemStatus.OK));
+    assertTrue(result.contains(SystemStatus.EXCHANGE_PROBLEM));
   }
   
   @Test
@@ -106,8 +106,8 @@ public class RadarConnectionStatusReporterTest {
     Map<String,Object> values = new HashMap<String, Object>();
     values.put("sources", "node5");    
     Set<SystemStatus> result = classUnderTest.getStatus(values);
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.UNDEFINED));
+    assertEquals(1, result.size());
+    assertTrue(result.contains(SystemStatus.UNDEFINED));
   }
   
   @Test
@@ -115,35 +115,35 @@ public class RadarConnectionStatusReporterTest {
     Map<String,Object> values = new HashMap<String, Object>();
     values.put("sources", "node1,node5");    
     Set<SystemStatus> result = classUnderTest.getStatus(values);
-    Assert.assertEquals(2, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
-    Assert.assertTrue(result.contains(SystemStatus.UNDEFINED));
+    assertEquals(2, result.size());
+    assertTrue(result.contains(SystemStatus.OK));
+    assertTrue(result.contains(SystemStatus.UNDEFINED));
   }
   
   @Test
   public void testTokenizeString() {
     String s1 = "abc,def";
     String[] tokens = classUnderTest.tokenizeString(s1);
-    Assert.assertEquals(2, tokens.length);
-    Assert.assertEquals("abc", tokens[0]);
-    Assert.assertEquals("def", tokens[1]);
+    assertEquals(2, tokens.length);
+    assertEquals("abc", tokens[0]);
+    assertEquals("def", tokens[1]);
   }
 
   @Test
   public void testTokenizeString_1() {
     String s1 = "abc,,def";
     String[] tokens = classUnderTest.tokenizeString(s1);
-    Assert.assertEquals(2, tokens.length);
-    Assert.assertEquals("abc", tokens[0]);
-    Assert.assertEquals("def", tokens[1]);
+    assertEquals(2, tokens.length);
+    assertEquals("abc", tokens[0]);
+    assertEquals("def", tokens[1]);
   }
 
   @Test
   public void testTokenizeString_2() {
     String s1 = ",def";
     String[] tokens = classUnderTest.tokenizeString(s1);
-    Assert.assertEquals(1, tokens.length);
-    Assert.assertEquals("def", tokens[0]);
+    assertEquals(1, tokens.length);
+    assertEquals("def", tokens[0]);
   }
 
 }

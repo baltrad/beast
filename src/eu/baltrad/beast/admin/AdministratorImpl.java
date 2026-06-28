@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import eu.baltrad.beast.adaptor.IAdaptor;
@@ -106,7 +106,7 @@ public class AdministratorImpl implements Administrator {
    */
   public AdministratorImpl() {
     objectMapper = new ObjectMapper();
-    objectMapper.configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, true);
+    objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
   }
   
   /**

@@ -165,7 +165,7 @@ public class BeastSchedulerTest extends EasyMockSupport {
     CronEntry entry = new CronEntry();
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     keyHolder.getKeyList().add(new HashMap());
-    keyHolder.getKeys().put("id", new Integer(10));
+    keyHolder.getKeys().put("id", Integer.valueOf(10));
     BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(entry);
     
     expect(methods.createCronEntry("0 * * * * ?", "ABC")).andReturn(entry);
@@ -192,7 +192,7 @@ public class BeastSchedulerTest extends EasyMockSupport {
     CronEntry entry = new CronEntry();
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     keyHolder.getKeyList().add(new HashMap());
-    keyHolder.getKeys().put("id", new Integer(10));
+    keyHolder.getKeys().put("id", Integer.valueOf(10));
     BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(entry);
     
     expect(methods.createCronEntry("0 * * * * ?", "ABC")).andReturn(entry);
@@ -223,7 +223,7 @@ public class BeastSchedulerTest extends EasyMockSupport {
     SchedulerException schedulerException = new SchedulerException();
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     keyHolder.getKeyList().add(new HashMap());
-    keyHolder.getKeys().put("id", new Integer(10));
+    keyHolder.getKeys().put("id", Integer.valueOf(10));
     BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(entry);
     
     expect(methods.createCronEntry("0 * * * * ?", "ABC")).andReturn(entry);

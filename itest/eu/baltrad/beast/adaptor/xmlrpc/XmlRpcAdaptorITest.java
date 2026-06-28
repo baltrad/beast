@@ -71,7 +71,7 @@ public class XmlRpcAdaptorITest extends TestCase {
   };
   
   public void setUp() throws Exception {
-    server = new XmlRpcTestServer(55555, new Integer(0));
+    server = new XmlRpcTestServer(55555, Integer.valueOf(0));
     server.start();
   }
   

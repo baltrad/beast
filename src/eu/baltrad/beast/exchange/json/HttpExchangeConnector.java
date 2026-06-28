@@ -19,31 +19,25 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,25 +120,33 @@ public class HttpExchangeConnector implements ExchangeConnector {
    * @return the status code
    */
   public ExchangeResponse send(String remoteAddress, String json) {
-    HttpClient httpClient = createClient();
-    HttpPost httpPost = createPost(remoteAddress);
-    httpPost.addHeader("content-type", "application/json; charset=utf-8");
-    httpPost.addHeader("Beast-Message-Type", "json");
+    CloseableHttpClient httpClient = createClient();
     try {
-      httpPost.setEntity(new StringEntity(json));
+      HttpPost httpPost = createPost(remoteAddress);
+      httpPost.addHeader("content-type", "application/json; charset=utf-8");
+      httpPost.addHeader("Beast-Message-Type", "json");
+      httpPost.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
       logger.info("Sending authorization request to: " + remoteAddress);
-      HttpResponse response = httpClient.execute(httpPost);
-      HttpEntity resEntity = response.getEntity();
-      if (resEntity != null) {
-        EntityUtils.consume(resEntity);
+      ClassicHttpResponse response = (ClassicHttpResponse) httpClient.executeOpen(null, httpPost, null);
+      try {
+        HttpEntity resEntity = response.getEntity();
+        if (resEntity != null) {
+          EntityUtils.consume(resEntity);
+        }
+        ExchangeResponse result = createResponse(response);
+        logger.info("response status code: " + result.statusCode());
+        return result;
+      } finally {
+        response.close();
       }
-      ExchangeResponse result = createResponse(response);
-      logger.info("response status code: " + result.statusCode());
-      return result;
     } catch (Exception e) {
       throw new RuntimeException(e);
     } finally {
-      shutdownClient(httpClient);
+      try {
+        httpClient.close();
+      } catch (IOException e) {
+        logger.error("Error closing HTTP client", e);
+      }
     }
   }
   
@@ -153,29 +155,37 @@ public class HttpExchangeConnector implements ExchangeConnector {
    */
   @Override
   public ExchangeResponse sendDexStyle(String remoteAddress, AuthorizationRequest request) {
-    HttpClient httpClient = createClient();
-    HttpPost httpPost = createPost(remoteAddress);
-    httpPost.setEntity(new ByteArrayEntity(request.getPublicKey()));
-    httpPost.addHeader("Content-MD5", DigestUtils.md5Hex(request.getPublicKey()));
-    httpPost.addHeader("Node-Name", securityManager.getLocalNodeName());
-    httpPost.addHeader("Content-Type", "application/zip");
-    httpPost.addHeader("DEX-Protocol-Version", "2.1");
-    httpPost.addHeader("Date", dateFormat.format(new Date()));
-    
+    CloseableHttpClient httpClient = createClient();
     try {
+      HttpPost httpPost = createPost(remoteAddress);
+      httpPost.setEntity(new ByteArrayEntity(request.getPublicKey(), ContentType.create("application/zip")));
+      httpPost.addHeader("Content-MD5", DigestUtils.md5Hex(request.getPublicKey()));
+      httpPost.addHeader("Node-Name", securityManager.getLocalNodeName());
+      httpPost.addHeader("Content-Type", "application/zip");
+      httpPost.addHeader("DEX-Protocol-Version", "2.1");
+      httpPost.addHeader("Date", dateFormat.format(new Date()));
+      
       logger.info("Sending old-style authorization request to: " + remoteAddress);
-      HttpResponse response = httpClient.execute(httpPost);
-      HttpEntity resEntity = response.getEntity();
-      if (resEntity != null) {
-        EntityUtils.consume(resEntity);
+      ClassicHttpResponse response = (ClassicHttpResponse) httpClient.executeOpen(null, httpPost, null);
+      try {
+        HttpEntity resEntity = response.getEntity();
+        if (resEntity != null) {
+          EntityUtils.consume(resEntity);
+        }
+        ExchangeResponse result = createResponse(response);
+        logger.info("response status code: " + result.statusCode());
+        return result;
+      } finally {
+        response.close();
       }
-      ExchangeResponse result = createResponse(response);
-      logger.info("response status code: " + result.statusCode());
-      return result;
     } catch (Exception e) {
       throw new RuntimeException(e);
     } finally {
-      shutdownClient(httpClient);
+      try {
+        httpClient.close();
+      } catch (IOException e) {
+        logger.error("Error closing HTTP client", e);
+      }
     }
   }
 
@@ -184,34 +194,42 @@ public class HttpExchangeConnector implements ExchangeConnector {
    */
   @Override
   public ExchangeResponse send(SendFileRequest request) {
-    HttpClient httpClient = createClient();
-    HttpPost httpPost = createPost(request.getAddress());
-    httpPost.addHeader("Content-Type", request.getContentType());
-    httpPost.addHeader("Node-Name", securityManager.getLocalNodeName());
-    httpPost.addHeader("Dex-Protocol-Version", "2.1");
-    httpPost.addHeader("Beast-Message-Type", "file");
-    httpPost.addHeader("Date", dateFormat.format(request.getDate()));
-    httpPost.addHeader("Content-MD5", DigestUtils.md5Hex(request.getData()));
-    String signedMessage=securityManager.createSignatureMessage(httpPost);
-    httpPost.addHeader("Authorization", securityManager.getLocalNodeName() + ":" + securityManager.createSignature(signedMessage));
-    
+    CloseableHttpClient httpClient = createClient();
     try {
+      HttpPost httpPost = createPost(request.getAddress());
+      httpPost.addHeader("Content-Type", request.getContentType());
+      httpPost.addHeader("Node-Name", securityManager.getLocalNodeName());
+      httpPost.addHeader("Dex-Protocol-Version", "2.1");
+      httpPost.addHeader("Beast-Message-Type", "file");
+      httpPost.addHeader("Date", dateFormat.format(request.getDate()));
+      httpPost.addHeader("Content-MD5", DigestUtils.md5Hex(request.getData()));
+      String signedMessage=securityManager.createSignatureMessage(httpPost);
+      httpPost.addHeader("Authorization", securityManager.getLocalNodeName() + ":" + securityManager.createSignature(signedMessage));
+      
       httpPost.setEntity(createByteArrayEntity(request.getData()));
       long st = System.currentTimeMillis();
       logger.info("Sending file data to: " + request.getAddress() + ", thread: " + Thread.currentThread().getName());
-      HttpResponse response = httpClient.execute(httpPost);
-      logger.info("File data sent to "  + request.getAddress() +  " in " + (System.currentTimeMillis() - st) + " ms, thread: " + Thread.currentThread().getName());
-      HttpEntity resEntity = response.getEntity();
-      if (resEntity != null) {
-        EntityUtils.consume(resEntity);
+      ClassicHttpResponse response = (ClassicHttpResponse) httpClient.executeOpen(null, httpPost, null);
+      try {
+        logger.info("File data sent to "  + request.getAddress() +  " in " + (System.currentTimeMillis() - st) + " ms, thread: " + Thread.currentThread().getName());
+        HttpEntity resEntity = response.getEntity();
+        if (resEntity != null) {
+          EntityUtils.consume(resEntity);
+        }
+        ExchangeResponse result = createResponse(response);
+        logger.info("response status code: " + result.statusCode());
+        return result;
+      } finally {
+        response.close();
       }
-      ExchangeResponse result = createResponse(response);
-      logger.info("response status code: " + result.statusCode());
-      return result;
     } catch (Exception e) {
       throw new RuntimeException(e);
     } finally {
-      shutdownClient(httpClient);
+      try {
+        httpClient.close();
+      } catch (IOException e) {
+        logger.error("Error closing HTTP client", e);
+      }
     }
   }
 
@@ -231,8 +249,8 @@ public class HttpExchangeConnector implements ExchangeConnector {
    * @param response the http response
    * @return the exchange response
    */
-  protected ExchangeResponse createResponse(HttpResponse response) {
-    ExchangeResponse result = new ExchangeResponse(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+  protected ExchangeResponse createResponse(ClassicHttpResponse response) {
+    ExchangeResponse result = new ExchangeResponse(response.getCode(), response.getReasonPhrase());
     if (isRedirected(response)) {
       result.setRedirected(true);
       result.setRedirectAddress(response.getFirstHeader("location").getValue());
@@ -246,7 +264,7 @@ public class HttpExchangeConnector implements ExchangeConnector {
    * @return the byte array entity
    */
   protected ByteArrayEntity createByteArrayEntity(byte[] arr) {
-    return new ByteArrayEntity(arr);
+    return new ByteArrayEntity(arr, null);
   }
 
   /**
@@ -254,8 +272,8 @@ public class HttpExchangeConnector implements ExchangeConnector {
    * @param response the response
    * @return true if there is an indication that address has been changed
    */
-  protected boolean isRedirected(HttpResponse response) {
-    int statusCode = response.getStatusLine().getStatusCode(); 
+  protected boolean isRedirected(ClassicHttpResponse response) {
+    int statusCode = response.getCode(); 
     return (statusCode == HttpStatus.SC_MOVED_TEMPORARILY || statusCode == HttpStatus.SC_MOVED_PERMANENTLY); 
   }
   
@@ -264,7 +282,7 @@ public class HttpExchangeConnector implements ExchangeConnector {
    * @param response the response 
    * @return the redirect URL if there is any
    */
-  protected String getRedirectURL(HttpResponse response) {
+  protected String getRedirectURL(ClassicHttpResponse response) {
     if (isRedirected(response)) {
       return response.getFirstHeader("location").getValue();
     }
@@ -292,71 +310,33 @@ public class HttpExchangeConnector implements ExchangeConnector {
    * Creates a http client with the relevant http parameters set
    * @return the http client
    */
-  protected HttpClient createClient() {
-    SchemeRegistry schemeRegistry = new SchemeRegistry();
-    registerHttpScheme(schemeRegistry);
-    registerHttpsScheme(schemeRegistry);
-    
-    ThreadSafeClientConnManager connMgr = new ThreadSafeClientConnManager(
-            schemeRegistry);
-    connMgr.setMaxTotal(200);
-    connMgr.setDefaultMaxPerRoute(20);
-    
-    HttpParams httpParams = new BasicHttpParams();
-    HttpConnectionParams.setConnectionTimeout(httpParams, 60000);
-    HttpConnectionParams.setSoTimeout(httpParams, 60000);
-    HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
-    HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8);
-    HttpProtocolParams.setHttpElementCharset(httpParams, HTTP.UTF_8);
-    httpParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-    return new DefaultHttpClient(connMgr, httpParams);
+  protected CloseableHttpClient createClient() {
+    try {
+      SSLContext sslContext = SSLContextBuilder.create()
+          .loadTrustMaterial(null, (chain, authType) -> true)
+          .build();
+      
+      DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(
+          sslContext,
+          NoopHostnameVerifier.INSTANCE);
+      
+      PoolingHttpClientConnectionManager connMgr = PoolingHttpClientConnectionManagerBuilder.create()
+          .setTlsSocketStrategy(tlsStrategy)
+          .setMaxConnTotal(200)
+          .setMaxConnPerRoute(20)
+          .build();
+      
+      RequestConfig requestConfig = RequestConfig.custom()
+          .setConnectionRequestTimeout(Timeout.ofMilliseconds(60000))
+          .setResponseTimeout(Timeout.ofMilliseconds(60000))
+          .build();
+      
+      return HttpClients.custom()
+          .setConnectionManager(connMgr)
+          .setDefaultRequestConfig(requestConfig)
+          .build();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to create HTTP client", e);
+    }
   }
-
-  /**
-   * @param httpClient
-   */
-  protected void shutdownClient(HttpClient httpClient) {
-    httpClient.getConnectionManager().shutdown();
-  }
-
-  /**
-   * Registers HTTP scheme.
-   * @param schemeReg Scheme registry
-   */
-  private void registerHttpScheme(SchemeRegistry schemeReg) {
-      Scheme http = new Scheme("http", 80, new PlainSocketFactory());
-      schemeReg.register(http);
-  }
-  /**
-   * Register https scheme handler so that we don't require remote site to have certificates
-   * @param schemeReg Scheme registry
-   */
-  private void registerHttpsScheme(SchemeRegistry schemeReg) {
-      try {
-          SSLContext sslContext = SSLContext.getInstance("SSL");
-          sslContext.init(
-              null,
-              new TrustManager[] {
-                  new X509TrustManager() {
-                    @Override
-                    public X509Certificate[] getAcceptedIssuers() {
-                      return null;
-                    }
-                    @Override
-                    public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                    }
-                    @Override
-                    public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                    }
-                  }
-              },
-              new SecureRandom()
-          );
-          Scheme https = new Scheme("https", 443, new SSLSocketFactory(
-              sslContext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER));
-          schemeReg.register(https);
-      } catch (Exception e) {
-          throw new RuntimeException("Failed to register https scheme", e);
-      }
-  } 
 }

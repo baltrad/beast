@@ -21,8 +21,8 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.keyczar.exceptions.KeyczarException;
@@ -303,7 +303,11 @@ public class SecurityManager implements ISecurityManager {
   public String createSignatureMessage(HttpUriRequest request) {
     List<String> result = new ArrayList<String>();
     result.add(request.getMethod());
-    result.add(request.getURI().toString());
+    try {
+      result.add(request.getUri().toString());
+    } catch (java.net.URISyntaxException e) {
+      throw new SecurityStorageException("Invalid URI in request", e);
+    }
     for (String headerName : SIGNING_HEADERS) {
       Header header = request.getFirstHeader(headerName);
       if (header != null) {

@@ -96,8 +96,8 @@ public class KeyCompressorTest  extends EasyMockSupport {
     assertEquals(true, file1.exists());
     assertEquals(true, fileMeta.exists());
     
-    String file1data = FileUtils.readFileToString(file1);
-    String fileMetaData = FileUtils.readFileToString(fileMeta);
+    String file1data = FileUtils.readFileToString(file1, java.nio.charset.StandardCharsets.UTF_8);
+    String fileMetaData = FileUtils.readFileToString(fileMeta, java.nio.charset.StandardCharsets.UTF_8);
 
     assertEquals("{\"p\": \"AIAAAAAAAAA83Gj325w7M34thouttR2iC-VJk_lYtjUO2d6o9BKZxC9ogS0CEMRnrXMQVyH36LOOW5mRJJqBZE037jq_DtVBqVMVvPdW_kLfuY30MZFK-M-n9VCW3jJzBSwmjyDSFk8Z6-JfW2rhlAX2txiV4EIl5k3PGb6WSmfz\", \"q\": \"AKn5" + 
         "bTyqQto1O0Lg2EDKvE122FTz\", \"g\": \"Ehy7Ch__j1BZ-NbHFKs6WCNAn6Syva4hdMVkSICZnMRPCOsWnOpD9pOWPvY22CZI9SIbjI0FGGGkmLkypR_rMLt0afcQA-n9n7Ujjveipy4IdPN2rthhdnxAl9wumYBfwgs0TSpYdpNPgD3eUJTYxDbFBiJBY_Z" + 
@@ -126,8 +126,8 @@ public class KeyCompressorTest  extends EasyMockSupport {
     assertEquals(true, file1.exists());
     assertEquals(true, fileMeta.exists());
     
-    String file1data = FileUtils.readFileToString(file1);
-    String fileMetaData = FileUtils.readFileToString(fileMeta);
+    String file1data = FileUtils.readFileToString(file1, java.nio.charset.StandardCharsets.UTF_8);
+    String fileMetaData = FileUtils.readFileToString(fileMeta, java.nio.charset.StandardCharsets.UTF_8);
 
     assertEquals("{\"p\": \"AIAAAAAAAAA83Gj325w7M34thouttR2iC-VJk_lYtjUO2d6o9BKZxC9ogS0CEMRnrXMQVyH36LOOW5mRJJqBZE037jq_DtVBqVMVvPdW_kLfuY30MZFK-M-n9VCW3jJzBSwmjyDSFk8Z6-JfW2rhlAX2txiV4EIl5k3PGb6WSmfz\", \"q\": \"AKn5" + 
         "bTyqQto1O0Lg2EDKvE122FTz\", \"g\": \"Ehy7Ch__j1BZ-NbHFKs6WCNAn6Syva4hdMVkSICZnMRPCOsWnOpD9pOWPvY22CZI9SIbjI0FGGGkmLkypR_rMLt0afcQA-n9n7Ujjveipy4IdPN2rthhdnxAl9wumYBfwgs0TSpYdpNPgD3eUJTYxDbFBiJBY_Z" + 
@@ -149,8 +149,8 @@ public class KeyCompressorTest  extends EasyMockSupport {
     assertEquals(true, file1.exists());
     assertEquals(true, fileMeta.exists());
     
-    String file1data = FileUtils.readFileToString(file1);
-    String fileMetaData = FileUtils.readFileToString(fileMeta);
+    String file1data = FileUtils.readFileToString(file1, java.nio.charset.StandardCharsets.UTF_8);
+    String fileMetaData = FileUtils.readFileToString(fileMeta, java.nio.charset.StandardCharsets.UTF_8);
 
     assertEquals("{\"publicKey\": {\"p\": \"AIAAAAAAAAA83Gj325w7M34thouttR2iC-VJk_lYtjUO2d6o9BKZxC9ogS0CEMRnrXMQVyH36LOOW5mRJJqBZE037jq_DtVBqVMVvPdW_kLfuY30MZFK-M-n9VCW3jJzBSwmjyDSFk8Z6-JfW2rhlAX2txiV4EIl5k3PGb6WSmfz\", \"q\": \"AKn5bTyqQto1O0Lg2EDKvE122FTz\", \"g\": \"Ehy7Ch__j1BZ-NbHFKs6WCNAn6Syva4hdMVkSICZnMRPCOsWnOpD9pOWPvY22CZI9SIbjI0FGGGkmLkypR_rMLt0afcQA-n9n7Ujjveipy4IdPN2rthhdnxAl9wumYBfwgs0TSpYdpNPgD3eUJTYxDbFBiJBY_Ze_F9A4xFSy6s\", \"y\": \"T0smX6RRMmcs79ffavbSwv9H3hF9jm9EPZ6BLU1dwnCzT0qCZHS5Gu84hifGFpQtjNDkX2os9yZHktOK0jd8WQNpXSppSzRsD5y4zqZYbnTzJVEJbJPGf5yCBoU2kZufQs2u3lD6HfKJY3TVhPB07yoHOBzoOKkYlGRzSf6Rb9U\", \"size\": 1024}, \"x\": \"Ui0Jy6pgegWnX1CvJxAcPEQlhj8\", \"size\": 1024}", file1data);
     assertEquals("{\"name\": \"anders-nzxt\", \"purpose\": \"SIGN_AND_VERIFY\", \"type\": \"DSA_PRIV\", \"encrypted\": false, \"versions\": [{\"versionNumber\": 1, \"status\": \"PRIMARY\", \"exportable\": false}]}", fileMetaData);
@@ -176,8 +176,8 @@ public class KeyCompressorTest  extends EasyMockSupport {
     assertEquals(true, file1.exists());
     assertEquals(true, fileMeta.exists());
     
-    String file1data = FileUtils.readFileToString(file1);
-    String fileMetaData = FileUtils.readFileToString(fileMeta);
+    String file1data = FileUtils.readFileToString(file1, java.nio.charset.StandardCharsets.UTF_8);
+    String fileMetaData = FileUtils.readFileToString(fileMeta, java.nio.charset.StandardCharsets.UTF_8);
 
     assertEquals("{\"publicKey\": {\"p\": \"AIAAAAAAAAA83Gj325w7M34thouttR2iC-VJk_lYtjUO2d6o9BKZxC9ogS0CEMRnrXMQVyH36LOOW5mRJJqBZE037jq_DtVBqVMVvPdW_kLfuY30MZFK-M-n9VCW3jJzBSwmjyDSFk8Z6-JfW2rhlAX2txiV4EIl5k3PGb6WSmfz\", \"q\": \"AKn5bTyqQto1O0Lg2EDKvE122FTz\", \"g\": \"Ehy7Ch__j1BZ-NbHFKs6WCNAn6Syva4hdMVkSICZnMRPCOsWnOpD9pOWPvY22CZI9SIbjI0FGGGkmLkypR_rMLt0afcQA-n9n7Ujjveipy4IdPN2rthhdnxAl9wumYBfwgs0TSpYdpNPgD3eUJTYxDbFBiJBY_Ze_F9A4xFSy6s\", \"y\": \"T0smX6RRMmcs79ffavbSwv9H3hF9jm9EPZ6BLU1dwnCzT0qCZHS5Gu84hifGFpQtjNDkX2os9yZHktOK0jd8WQNpXSppSzRsD5y4zqZYbnTzJVEJbJPGf5yCBoU2kZufQs2u3lD6HfKJY3TVhPB07yoHOBzoOKkYlGRzSf6Rb9U\", \"size\": 1024}, \"x\": \"Ui0Jy6pgegWnX1CvJxAcPEQlhj8\", \"size\": 1024}", file1data);
     assertEquals("{\"name\": \"anders-nzxt\", \"purpose\": \"SIGN_AND_VERIFY\", \"type\": \"DSA_PRIV\", \"encrypted\": false, \"versions\": [{\"versionNumber\": 1, \"status\": \"PRIMARY\", \"exportable\": false}]}", fileMetaData);

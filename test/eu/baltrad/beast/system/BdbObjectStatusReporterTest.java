@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.After;
@@ -75,20 +75,20 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
   @Test
   public void testGetName() {
     String result = classUnderTest.getName();
-    Assert.assertEquals("bdb.object.status", result);
+    assertEquals("bdb.object.status", result);
   }
   
   @Test
   public void testGetSupportedAttributes() {
     Set<String> result = classUnderTest.getSupportedAttributes();
-    Assert.assertEquals(7, result.size());
-    Assert.assertEquals(true, result.contains("objects"));
-    Assert.assertEquals(true, result.contains("sources"));
-    Assert.assertEquals(true, result.contains("areas"));
-    Assert.assertEquals(true, result.contains("minutes"));
-    Assert.assertEquals(true,  result.contains("what/*"));
-    Assert.assertEquals(true,  result.contains("where/*"));
-    Assert.assertEquals(true,  result.contains("how/*"));
+    assertEquals(7, result.size());
+    assertEquals(true, result.contains("objects"));
+    assertEquals(true, result.contains("sources"));
+    assertEquals(true, result.contains("areas"));
+    assertEquals(true, result.contains("minutes"));
+    assertEquals(true,  result.contains("what/*"));
+    assertEquals(true,  result.contains("where/*"));
+    assertEquals(true,  result.contains("how/*"));
   }
   
   @Test
@@ -130,8 +130,8 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     verifyAll();
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.OK));
+    assertEquals(1, result.size());
+    assertTrue(result.contains(SystemStatus.OK));
   }
   
   @Test
@@ -174,8 +174,8 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     Set<SystemStatus> result = classUnderTest.getStatus(values);
     
     verifyAll();
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
+    assertEquals(1, result.size());
+    assertTrue(result.contains(SystemStatus.COMMUNICATION_PROBLEM));
   }
   
   @Test
@@ -219,7 +219,7 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     Expression result = classUnderTest.createSearchFilter(values);
     
     verifyAll();
-    Assert.assertEquals(expected, result);
+    assertEquals(expected, result);
   }
 
   @Test
@@ -258,12 +258,12 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     Map<String,Object> values = new HashMap<String, Object>();
     values.put("objects", "SCAN,PVOL");
     values.put("sources", "searl");
-    values.put("minutes", new Long(10));
+    values.put("minutes", Long.valueOf(10));
     
     Expression result = classUnderTest.createSearchFilter(values);
     
     verifyAll();
-    Assert.assertEquals(expected, result);
+    assertEquals(expected, result);
   }
 
   @Test
@@ -307,7 +307,7 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     Expression result = classUnderTest.createSearchFilter(values);
     
     verifyAll();
-    Assert.assertEquals(expected, result);
+    assertEquals(expected, result);
   }
   
   @Test
@@ -329,12 +329,12 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     
     DateTime result = classUnderTest.createFromDateTime(5);
     
-    Assert.assertEquals(2013, result.getDate().year());
-    Assert.assertEquals(1, result.getDate().month());
-    Assert.assertEquals(5, result.getDate().day());
-    Assert.assertEquals(12, result.getTime().hour());
-    Assert.assertEquals(30, result.getTime().minute());
-    Assert.assertEquals(0, result.getTime().second());
+    assertEquals(2013, result.getDate().year());
+    assertEquals(1, result.getDate().month());
+    assertEquals(5, result.getDate().day());
+    assertEquals(12, result.getTime().hour());
+    assertEquals(30, result.getTime().minute());
+    assertEquals(0, result.getTime().second());
   }
   
   @Test
@@ -349,10 +349,10 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     
     List<Expression> result = classUnderTest.createSourceList("abc,def","ghi");
 
-    Assert.assertEquals(3, result.size());
-    Assert.assertEquals(e1, result.get(0));
-    Assert.assertEquals(e2, result.get(1));
-    Assert.assertEquals(e3, result.get(2));
+    assertEquals(3, result.size());
+    assertEquals(e1, result.get(0));
+    assertEquals(e2, result.get(1));
+    assertEquals(e3, result.get(2));
   }
   
   @Test
@@ -364,10 +364,10 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
     
     List<Expression> result = classUnderTest.createProductsList("SCAN,PVOL,COMP");
 
-    Assert.assertEquals(3, result.size());
-    Assert.assertEquals(e1, result.get(0));
-    Assert.assertEquals(e2, result.get(1));
-    Assert.assertEquals(e3, result.get(2));
+    assertEquals(3, result.size());
+    assertEquals(e1, result.get(0));
+    assertEquals(e2, result.get(1));
+    assertEquals(e3, result.get(2));
     
   }
   
@@ -375,6 +375,6 @@ public class BdbObjectStatusReporterTest extends EasyMockSupport {
   public void testCreateCalendar_isUTC() {
     BdbObjectStatusReporter classUnderTest = new BdbObjectStatusReporter();
     GregorianCalendar result = classUnderTest.createCalendar();
-    Assert.assertEquals(TimeZone.getTimeZone("UTC"), result.getTimeZone());
+    assertEquals(TimeZone.getTimeZone("UTC"), result.getTimeZone());
   }
 }

@@ -90,7 +90,7 @@ public class BaltradXmlRpcCommandHandler implements XmlRpcHandler {
     String command = (String)request.getParameter(0);
     Runtime rt = Runtime.getRuntime();
     Object[] result = new Object[3];
-    result[0] = new Integer(-1);
+    result[0] = Integer.valueOf(-1);
     try {
       Process proc = rt.exec(command);
       IOStreamPreemptier errreader = new IOStreamPreemptier(proc.getErrorStream()); 
@@ -100,7 +100,7 @@ public class BaltradXmlRpcCommandHandler implements XmlRpcHandler {
       outreader.start();
       
       int v = proc.waitFor();
-      result[0] = new Integer(v);
+      result[0] = Integer.valueOf(v);
       errreader.join();
       outreader.join();
       result[1] = outreader.getTrace();

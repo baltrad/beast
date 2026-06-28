@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import eu.baltrad.beast.admin.command_response.CommandResponseJsonObject;
 import eu.baltrad.beast.admin.command_response.CommandResponseStatus;
@@ -58,7 +58,7 @@ public class JsonGeneratorImpl implements JsonGenerator {
    */
   public JsonGeneratorImpl() {
     mapper = new ObjectMapper();
-    mapper.configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, true);
+    mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
   }
   
   /**
@@ -146,7 +146,7 @@ public class JsonGeneratorImpl implements JsonGenerator {
   public String toJson(CronEntry entry) {
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      org.codehaus.jackson.JsonGenerator g = new JsonFactory().createJsonGenerator(baos);
+      com.fasterxml.jackson.core.JsonGenerator g = new JsonFactory().createGenerator(baos);
       g.writeStartObject();
       g.writeObjectFieldStart("schedule");
       g.writeNumberField("identifier", entry.getId());

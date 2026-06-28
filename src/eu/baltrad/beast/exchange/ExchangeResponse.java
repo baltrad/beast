@@ -3,7 +3,7 @@
  */
 package eu.baltrad.beast.exchange;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The returned response when sending an exchange message

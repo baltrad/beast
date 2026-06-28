@@ -16,7 +16,7 @@
     </property>
   </bean>
   
-  <bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+  <bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp2.BasicDataSource">
     <property name="driverClassName" value="${db.driver}"/>
     <property name="url" value="${db.url}"/>
     <property name="username" value="${db.user}"/>

@@ -11,10 +11,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +29,7 @@ import eu.baltrad.beast.security.ISecurityManager;
 public class HttpExchangeConnectorTest extends EasyMockSupport {
   private HttpExchangeConnector classUnderTest = null;
   private HttpPost post = null;
-  private HttpClient client = null;
+  private CloseableHttpClient client = null;
   private RequestMapper requestMapper = null;
   static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
   private ISecurityManager securityManager = null;
@@ -37,36 +37,31 @@ public class HttpExchangeConnectorTest extends EasyMockSupport {
   interface MethodMock {
     public ExchangeResponse send(String remoteAddress, String json);
     public HttpPost createPost(String url);
-    public HttpClient createClient();
-    public void shutdownClient(HttpClient httpClient);
-    public ExchangeResponse createResponse(HttpResponse response);
+    public CloseableHttpClient createClient();
+    public ExchangeResponse createResponse(ClassicHttpResponse response);
     
   }
   private MethodMock methods;
   
   @Before
   public void setUp() throws Exception {
-    client = createMock(HttpClient.class);
+    client = createMock(CloseableHttpClient.class);
     requestMapper = createMock(RequestMapper.class);
     methods = createMock(MethodMock.class);
     securityManager = createMock(ISecurityManager.class);
     
-    post = new HttpPost();
+    post = new HttpPost("http://test");
     classUnderTest = new HttpExchangeConnector() {
       @Override
       protected HttpPost createPost(String url) {
         return methods.createPost(url);
       }
       @Override
-      protected HttpClient createClient() {
+      protected CloseableHttpClient createClient() {
         return methods.createClient();
       }
       @Override
-      protected void shutdownClient(HttpClient httpClient) {
-        methods.shutdownClient(httpClient);
-      }
-      @Override
-      protected ExchangeResponse createResponse(HttpResponse response) {
+      protected ExchangeResponse createResponse(ClassicHttpResponse response) {
         return methods.createResponse(response);
       }
     };
@@ -107,14 +102,15 @@ public class HttpExchangeConnectorTest extends EasyMockSupport {
   
   @Test
   public void test_send() throws Exception {
-    HttpResponse httpResponse = createMock(HttpResponse.class);
+    ClassicHttpResponse httpResponse = createMock(ClassicHttpResponse.class);
     ExchangeResponse exchangeResponse = new ExchangeResponse(0);
     expect(methods.createPost("http://localhost")).andReturn(post);
     expect(methods.createClient()).andReturn(client);
-    expect(client.execute(post)).andReturn(httpResponse);
+    expect(client.executeOpen(null, post, null)).andReturn(httpResponse);
     expect(httpResponse.getEntity()).andReturn(null);
     expect(methods.createResponse(httpResponse)).andReturn(exchangeResponse);
-    methods.shutdownClient(client);
+    httpResponse.close();
+    client.close();
     
     replayAll();
     
@@ -129,7 +125,7 @@ public class HttpExchangeConnectorTest extends EasyMockSupport {
   
   @Test
   public void test_send_FileRequest() throws Exception {
-    HttpResponse response = createMock(HttpResponse.class);
+    ClassicHttpResponse response = createMock(ClassicHttpResponse.class);
     ExchangeResponse exchangeResponse = new ExchangeResponse(HttpStatus.SC_OK);
 
     SendFileRequest request = new SendFileRequest();
@@ -144,10 +140,11 @@ public class HttpExchangeConnectorTest extends EasyMockSupport {
     expect(securityManager.getLocalNodeName()).andReturn("localname").anyTimes();
     expect(securityManager.createSignatureMessage(post)).andReturn("xyz");
     expect(securityManager.createSignature("xyz")).andReturn("abc");
-    expect(client.execute(post)).andReturn(response);
+    expect(client.executeOpen(null, post, null)).andReturn(response);
     expect(response.getEntity()).andReturn(null);
     expect(methods.createResponse(response)).andReturn(exchangeResponse);
-    methods.shutdownClient(client);
+    response.close();
+    client.close();
     replayAll();
     
     ExchangeResponse result = classUnderTest.send(request);

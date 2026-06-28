@@ -31,15 +31,15 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import eu.baltrad.beast.admin.command.AdaptorCommand;
@@ -167,7 +167,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       return command;
     } catch (JsonProcessingException e) {
       throw new AdministratorException(e);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new AdministratorException(e);
     }
   }
@@ -268,7 +268,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     if (operation.equals(AdaptorCommand.ADD) || operation.equals(AdaptorCommand.UPDATE)) {
       try {
         result = new AdaptorCommand(operation);
-        result.setAdaptor(jsonMapper.readValue(node.get("adaptor"), Adaptor.class));
+        result.setAdaptor(jsonMapper.treeToValue(node.get("adaptor"), Adaptor.class));
         return result;
       } catch (Exception e) {
         throw new AdministratorException(e);
@@ -277,12 +277,12 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       AdaptorCommand adaptorCommand = new AdaptorCommand(operation);
       if (node.has("adaptors")) {
         JsonNode adaptors = node.get("adaptors");
-        Iterator<JsonNode> nodes = adaptors.getElements();
+        Iterator<JsonNode> nodes = adaptors.elements();
         List<Adaptor> mappedAdaptors = new ArrayList<Adaptor>();
         while (nodes.hasNext()) {
           JsonNode nextNode = nodes.next();
           try {
-            mappedAdaptors.add(jsonMapper.readValue(nextNode.get("adaptor"), Adaptor.class));
+            mappedAdaptors.add(jsonMapper.treeToValue(nextNode.get("adaptor"), Adaptor.class));
           } catch (Exception e) {
             throw new AdministratorException(e);
           }
@@ -328,7 +328,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
         AnomalyDetector detector = null;
         if (detectorNode != null) {
           try {
-            detector = jsonMapper.readValue(detectorNode, AnomalyDetector.class);
+            detector = jsonMapper.treeToValue(detectorNode, AnomalyDetector.class);
           } catch (Exception e) {
             throw new AdministratorException(e);
           }
@@ -348,12 +348,12 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       AnomalyDetectorCommand detectorCommand = new AnomalyDetectorCommand(operation);
       if (node.has("anomaly-detectors")) {
         JsonNode detectors = node.get("anomaly-detectors");
-        Iterator<JsonNode> nodes = detectors.getElements();
+        Iterator<JsonNode> nodes = detectors.elements();
         List<AnomalyDetector> mappedDetectors = new ArrayList<AnomalyDetector>();
         while (nodes.hasNext()) {
           JsonNode nextNode = nodes.next();
           try {
-            mappedDetectors.add(jsonMapper.readValue(nextNode.get("anomaly-detector"), AnomalyDetector.class));
+            mappedDetectors.add(jsonMapper.treeToValue(nextNode.get("anomaly-detector"), AnomalyDetector.class));
           } catch (Exception e) {
             throw new AdministratorException(e);
           }
@@ -385,7 +385,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
         RouteCommand routeCommand = new RouteCommand(operation);
         for (String key : routeCommandHelper.getRouteTypes()) {
           if (node.has(key)) {
-            routeCommand.setRoute((Route)jsonMapper.readValue(node.get(key), routeCommandHelper.getRouteClass(key)));
+            routeCommand.setRoute((Route)jsonMapper.treeToValue(node.get(key), routeCommandHelper.getRouteClass(key)));
             break;
           }
         }
@@ -413,7 +413,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       try {
         RouteCommand routeCommand = new RouteCommand(operation);
         if (node.has("types")) {
-          List<String> data = jsonMapper.readValue(node.get("types"), new TypeReference<List<String>>() {});
+          List<String> data = jsonMapper.convertValue(node.get("types"), new TypeReference<List<String>>() {});
           routeCommand.setListRoutesTypes(data);
         }
         if (node.has("active")) {
@@ -442,14 +442,14 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       RouteCommand routeCommand = new RouteCommand(operation);
       if (node.has("routes")) {
         JsonNode routes = node.get("routes");
-        Iterator<JsonNode> nodes = routes.getElements();
+        Iterator<JsonNode> nodes = routes.elements();
         List<Route> mappedRoutes = new ArrayList<Route>();
         while (nodes.hasNext()) {
           JsonNode nextNode = nodes.next();
           for (String key : routeCommandHelper.getRouteTypes()) {
             if (nextNode.has(key)) {
               try {
-                mappedRoutes.add((Route)jsonMapper.readValue(nextNode.get(key), routeCommandHelper.getRouteClass(key)));
+                mappedRoutes.add((Route)jsonMapper.treeToValue(nextNode.get(key), routeCommandHelper.getRouteClass(key)));
               } catch (Exception e) {
                 throw new AdministratorException(e);
               }
@@ -481,7 +481,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       try {
         if (settingsNode != null) {
           command = new SettingCommand(operation);
-          command.setSettings(jsonMapper.readValue(settingsNode, Settings.class));
+          command.setSettings(jsonMapper.treeToValue(settingsNode, Settings.class));
         }
       } catch (Exception e) {
         throw new AdministratorException(e);
@@ -494,7 +494,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       try {
         if (settingsNode != null) {
           command = new SettingCommand(operation);
-          command.setSettings(jsonMapper.readValue(settingsNode, Settings.class));
+          command.setSettings(jsonMapper.treeToValue(settingsNode, Settings.class));
         }
       } catch (Exception e) {
         throw new AdministratorException(e);
@@ -515,7 +515,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     if (operation.equals(ScheduleCommand.ADD) || operation.equals(ScheduleCommand.UPDATE)) {
       JsonNode scheduleNode = node.get("schedule");
       try {
-        command = new ScheduleCommand(operation, jsonMapper.readValue(scheduleNode, CronEntry.class));
+        command = new ScheduleCommand(operation, jsonMapper.treeToValue(scheduleNode, CronEntry.class));
       } catch (Exception e) {
         throw new AdministratorException(e);
       }
@@ -547,12 +547,12 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       command = new ScheduleCommand(operation);
       if (node.has("entries")) {
         JsonNode entries = node.get("entries");
-        Iterator<JsonNode> nodes = entries.getElements();
+        Iterator<JsonNode> nodes = entries.elements();
         List<CronEntry> mappedEntries = new ArrayList<CronEntry>();
         while (nodes.hasNext()) {
           JsonNode nextNode = nodes.next();
           try {
-            mappedEntries.add(jsonMapper.readValue(nextNode.get("schedule"), CronEntry.class));
+            mappedEntries.add(jsonMapper.treeToValue(nextNode.get("schedule"), CronEntry.class));
           } catch (Exception e) {
             throw new AdministratorException(e);
           }
@@ -579,7 +579,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
       JsonNode userNode = arguments.get("user");
       try {
         if (userNode != null) {
-          command = new UserCommand(operation, jsonMapper.readValue(userNode, User.class));
+          command = new UserCommand(operation, jsonMapper.treeToValue(userNode, User.class));
         }
       } catch (Exception e) {
         throw new AdministratorException(e);
@@ -618,7 +618,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
   public String getHelp() {
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      JsonGenerator jsonGenerator = new JsonFactory().createJsonGenerator(baos);
+      JsonGenerator jsonGenerator = new JsonFactory().createGenerator(baos);
       jsonGenerator.writeStartObject();
       jsonGenerator.writeObjectFieldStart("help");
       jsonGenerator.writeStringField("description", 
@@ -651,7 +651,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
     }
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      JsonGenerator jsonGenerator = new JsonFactory().createJsonGenerator(baos);
+      JsonGenerator jsonGenerator = new JsonFactory().createGenerator(baos);
       jsonGenerator.writeStartObject();
       jsonGenerator.writeObjectFieldStart("help");
       jsonGenerator.writeStringField("description", getMethodHelp(method));
@@ -860,9 +860,9 @@ public class JsonCommandParserImpl implements JsonCommandParser {
    */
   public String createFullCommand(String method, Object object) throws Exception {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JsonGenerator jsonGenerator = new JsonFactory().createJsonGenerator(baos);
+    JsonGenerator jsonGenerator = new JsonFactory().createGenerator(baos);
     ObjectMapper jMapper = new ObjectMapper();
-    jMapper.configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, true);
+    jMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
     jsonGenerator.setCodec(jMapper);
     jsonGenerator.useDefaultPrettyPrinter();
     jsonGenerator.writeStartObject();
@@ -882,7 +882,7 @@ public class JsonCommandParserImpl implements JsonCommandParser {
    */
   public String createSimpleCommand(String method, Object[] objs) throws Exception {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JsonGenerator jsonGenerator = new JsonFactory().createJsonGenerator(baos);
+    JsonGenerator jsonGenerator = new JsonFactory().createGenerator(baos);
     jsonGenerator.useDefaultPrettyPrinter();
     jsonGenerator.writeStartObject();
     jsonGenerator.writeStringField("command", method);

@@ -1,6 +1,6 @@
 package eu.baltrad.beast.security;
 
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 
 import eu.baltrad.beast.admin.Command;
 import eu.baltrad.beast.security.crypto.Signer;

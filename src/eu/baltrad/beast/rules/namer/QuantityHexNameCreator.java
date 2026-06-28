@@ -224,8 +224,9 @@ public class QuantityHexNameCreator implements MetadataNameCreator {
   protected Map<String, Integer> parseMapping(Document doc) {
     Map<String, Integer> result = new HashMap<String, Integer>();
     @SuppressWarnings("unchecked")
-    List<Element> nodes = (List<Element>) doc.selectNodes("//quantity");
-    for (Element e : nodes) {
+    List<org.dom4j.Node> nodes = doc.selectNodes("//quantity");
+    for (org.dom4j.Node node : nodes) {
+      Element e = (Element)node;
       String v = e.getText();
       int index = Integer.parseInt(e.attribute("index").getValue());
       if (result.values().contains(index)) {

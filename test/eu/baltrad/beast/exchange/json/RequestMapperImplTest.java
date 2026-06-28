@@ -10,9 +10,9 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.Calendar;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
