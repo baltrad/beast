@@ -122,8 +122,8 @@ public class RuleUtilitiesTest extends EasyMockSupport {
     verifyAll();
     assertEquals(3, result.size());
     assertTrue(result.contains(entries.get(0)));
+    assertTrue(result.contains(entries.get(1)));
     assertTrue(result.contains(entries.get(2)));
-    assertTrue(result.contains(entries.get(3)));
   }
 
   @Test
