@@ -101,6 +101,41 @@ public class WrwpRule implements IRule, InitializingBean {
   private double maxelevationangle = 45.0;
   
   /**
+   * KNMI method: conditional minimum elevation angle [deg]
+   */
+  private double conditionalminelevationangle = 9.5;
+  
+  /**
+   * KNMI method: height threshold below which conditional minimum elevation is employed [m]
+   */
+  private double heightthreshold = 2000.0;
+  
+  /**
+   * KNMI method: minimum Nyquist interval for use of scan [m/s]
+   */
+  private double minnyquistinterval = 10.0;
+  
+  /**
+   * KNMI method: number of azimuth sector bins for detecting gaps
+   */
+  private int numbergapbins = 8;
+  
+  /**
+   * KNMI method: minimum number of samples within an azimuth sector bin
+   */
+  private int minnumbergapsamples = 5;
+  
+  /**
+   * KNMI method: maximum number standard deviations of residuals to include samples
+   */
+  private int maxnumberstandarddeviations = 0;
+  
+  /**
+   * KNMI method: maximum deviation of a samples to the fit [m/s]
+   */
+  private double maxvelocitydeviation = 10.0;
+  
+  /**
    * Radial velocity threshold [m/s]
    */
   private double velocitythreshold = 2.0;
@@ -119,6 +154,11 @@ public class WrwpRule implements IRule, InitializingBean {
    * Minimum sample size for wind
    */
   private int minsamplesizewind = 40;
+
+  /**
+   * Processing method (SMHI or KNMI)
+   */
+  private string wrwpprocessingmethod = "SMHI";
   
   /**
    * A list of fields to generate
@@ -259,6 +299,104 @@ public class WrwpRule implements IRule, InitializingBean {
   }
 
   /**
+   * @return Conditional minimum elevation angle [deg]
+   */
+  public double getConditionalminelevationangle() {
+    return conditionalminelevationangle;
+  }
+
+  /**
+   * @param conditionalminelevationangle the conditional minimum elevation angle [deg]
+   */
+  public void setConditionalminelevationangle(double conditionalminelevationangle) {
+    this.conditionalminelevationangle = conditionalminelevationangle;
+  }
+
+  /**
+   * @return Height threshold [m]
+   */
+  public double getHeightthreshold() {
+    return heightthreshold;
+  }
+
+  /**
+   * @param heightthreshold the height threshold [m]
+   */
+  public void setHeightthreshold(double heightthreshold) {
+    this.heightthreshold = heightthreshold;
+  }
+
+  /**
+   * @return Minimum Nyquist interval [m/s]
+   */
+  public double getMinnyquistinterval() {
+    return minnyquistinterval;
+  }
+
+  /**
+   * @param minnyquistinterval the minimum Nyquist interval [m/s]
+   */
+  public void setMinnyquistinterval(double minnyquistinterval) {
+    this.minnyquistinterval = minnyquistinterval;
+  }
+
+  /**
+   * @return Number of azimuth sector bins for detecting gaps
+   */
+  public int getNumbergapbins() {
+    return numbergapbins;
+  }
+
+  /**
+   * @param numbergapbins the number of azimuth sector bins for detecting gaps
+   */
+  public void setNumbergapbins(int numbergapbins) {
+    this.numbergapbins = numbergapbins;
+  }
+
+  /**
+   * @return Minimum number of samples within an azimuth sector bin
+   */
+  public int getMinnumbergapsamples() {
+    return minnumbergapsamples;
+  }
+
+  /**
+   * @param minnumbergapsamples the minimum number of samples within an azimuth sector bin
+   */
+  public void setMinnumbergapsamples(int minnumbergapsamples) {
+    this.minnumbergapsamples = minnumbergapsamples;
+  }
+
+  /**
+   * @return Maximum number standard deviations of residuals to include samples
+   */
+  public int getMaxnumberstandarddeviations() {
+    return maxnumberstandarddeviations;
+  }
+
+  /**
+   * @param maxnumberstandarddeviations the maximum number standard deviations of residuals to include samples
+   */
+  public void setMaxnumberstandarddeviations(int maxnumberstandarddeviations) {
+    this.maxnumberstandarddeviations = maxnumberstandarddeviations;
+  }
+
+  /**
+   * @return Maximum deviation of a samples to the fit [m/s]
+   */
+  public double getMaxvelocitydeviation() {
+    return maxvelocitydeviation;
+  }
+
+  /**
+   * @param maxvelocitydeviation the maximum deviation of a samples to the fit [m/s]
+   */
+  public void setMaxvelocitydeviation(double maxvelocitydeviation) {
+    this.maxvelocitydeviation = maxvelocitydeviation;
+  }
+
+  /**
    * @return Radial velocity threshold [m/s]
    */
   public double getMinvelocitythreshold() {
@@ -270,6 +408,20 @@ public class WrwpRule implements IRule, InitializingBean {
    */
   public void setMinvelocitythreshold(double velocitythreshold) {
     this.velocitythreshold = velocitythreshold;
+  }
+
+  /**
+   * @return WRWP extraction method (SMHI/KNMI)
+   */
+  public String getWrwpprocessingmethod() {
+    return wrwpprocessingmethod;
+  }
+
+  /**
+   * @param wrwpprocessingmethod the WRWP extraction method (SMHI/KNMI)
+   */
+  public void setWrwpprocessingmethod(String wrwpprocessingmethod) {
+    this.wrwpprocessingmethod = wrwpprocessingmethod;
   }
 
   /**
@@ -391,10 +543,18 @@ public class WrwpRule implements IRule, InitializingBean {
           args.add("--maxdistance="+maxdistance);
           args.add("--minelevationangle="+minelevationangle);
           args.add("--maxelevationangle="+maxelevationangle);
+          args.add("--conditionalminelevationangle="+conditionalminelevationangle);
+          args.add("--heightthreshold="+heightthreshold);
+          args.add("--minnyquistinterval="+minnyquistinterval);
+          args.add("--numbergapbins="+numbergapbins);
+          args.add("--minnumbergapsamples="+minnumbergapsamples);
+          args.add("--maxnumberstandarddeviations="+maxnumberstandarddeviations);
+          args.add("--maxvelocitydeviation="+maxvelocitydeviation);
           args.add("--velocitythreshold="+velocitythreshold);
           args.add("--maxvelocitythreshold="+maxvelocitythreshold);
           args.add("--minsamplesizereflectivity="+minsamplesizereflectivity);
           args.add("--minsamplesizewind="+minsamplesizewind);
+          args.add("--wrwpprocessingmethod="+wrwpprocessingmethod);
           if (fields.size() > 0)
             args.add("--fields="+getFieldsAsStr());
           result.setArguments(args.toArray(new String[0]));

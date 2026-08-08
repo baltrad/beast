@@ -68,6 +68,41 @@ public class WrwpRoute extends Route {
   private double maxElevationAngle = 45.0;
   
   /**
+   * KNMI method: conditional minimum elevation angle [deg]
+   */
+  private double conditionalMinElevationAngle = 9.5;
+  
+  /**
+   * KNMI method: height threshold below which conditional minimum elevation is employed [m]
+   */
+  private double heightThreshold = 2000.0;
+  
+  /**
+   * KNMI method: minimum Nyquist interval for use of scan [m/s]
+   */
+  private double minNyquistInterval = 10.0;
+  
+  /**
+   * KNMI method: number of azimuth sector bins for detecting gaps
+   */
+  private int numberGapBins = 8;
+  
+  /**
+   * KNMI method: minimum number of samples within an azimuth sector bin
+   */
+  private int minNumberGapSamples = 5;
+  
+  /**
+   * KNMI method: maximum number standard deviations of residuals to include samples
+   */
+  private int maxNumberStandardDeviations = 0;
+  
+  /**
+   * KNMI method: maximum deviation of a samples to the fit [m/s]
+   */
+  private double maxVelocityDeviation = 10.0;
+  
+  /**
    * Radial velocity threshold [m/s]
    */
   private double radialVelocityThreshold = 2.0;
@@ -86,6 +121,11 @@ public class WrwpRoute extends Route {
    * Min sample size for wind
    */
   private int minSampleSizeForWind = 40;
+
+  /**
+   * Processing method (SMHI or KNMI)
+   */
+  private string wrwpProcessingMethod = "SMHI";
   
   /**
    * Fields to be processed
@@ -199,6 +239,118 @@ public class WrwpRoute extends Route {
   }
 
   /**
+   * @return the conditionalMinElevationAngle
+   */
+  @JsonProperty(value="conditional_min_elevation_angle")
+  public double getConditionalMinElevationAngle() {
+    return conditionalMinElevationAngle;
+  }
+
+  /**
+   * @param conditionalMinElevationAngle the conditionalMinElevationAngle to set
+   */
+  @JsonProperty(value="conditional_min_elevation_angle")
+  public void setConditionalMinElevationAngle(double conditionalMinElevationAngle) {
+    this.conditionalMinElevationAngle = conditionalMinElevationAngle;
+  }
+
+  /**
+   * @return the heightThreshold
+   */
+  @JsonProperty(value="height_threshold")
+  public double getHeightThreshold() {
+    return heightThreshold;
+  }
+
+  /**
+   * @param heightThreshold the heightThreshold to set
+   */
+  @JsonProperty(value="height_threshold")
+  public void setHeightThreshold(double heightThreshold) {
+    this.heightThreshold = heightThreshold;
+  }
+
+  /**
+   * @return the minNyquistInterval
+   */
+  @JsonProperty(value="min_nyquist_interval")
+  public double getMinNyquistInterval() {
+    return minNyquistInterval;
+  }
+
+  /**
+   * @param minNyquistInterval the minNyquistInterval to set
+   */
+  @JsonProperty(value="min_nyquist_interval")
+  public void setMinNyquistInterval(double minNyquistInterval) {
+    this.minNyquistInterval = minNyquistInterval;
+  }
+
+  /**
+   * @return the numberGapBins
+   */
+  @JsonProperty(value="number_gap_bins")
+  public int getNumberGapBins() {
+    return numberGapBins;
+  }
+
+  /**
+   * @param numberGapBins the numberGapBins to set
+   */
+  @JsonProperty(value="number_gap_bins")
+  public void setNumberGapBins(int numberGapBins) {
+    this.numberGapBins = numberGapBins;
+  }
+
+  /**
+   * @return the minNumberGapSamples
+   */
+  @JsonProperty(value="min_number_gap_samples")
+  public int getMinNumberGapSamples() {
+    return minNumberGapSamples;
+  }
+
+  /**
+   * @param minNumberGapSamples the minNumberGapSamples to set
+   */
+  @JsonProperty(value="min_number_gap_samples")
+  public void setMinNumberGapSamples(int minNumberGapSamples) {
+    this.minNumberGapSamples = minNumberGapSamples;
+  }
+
+  /**
+   * @return the maxNumberStandardDeviations
+   */
+  @JsonProperty(value="max_number_standard_deviations")
+  public int getMaxNumberStandardDeviations() {
+    return maxNumberStandardDeviations;
+  }
+
+  /**
+   * @param maxNumberStandardDeviations the maxNumberStandardDeviations to set
+   */
+  @JsonProperty(value="max_number_standard_deviations")
+  public void setMaxNumberStandardDeviations(int maxNumberStandardDeviations) {
+    this.maxNumberStandardDeviations = maxNumberStandardDeviations;
+  }
+
+  /**
+   * @return the maxVelocityDeviation
+   */
+  @JsonProperty(value="max_velocity_deviation")
+  public double getMaxVelocityDeviation() {
+    return maxVelocityDeviation;
+  }
+
+  /**
+   * @param maxVelocityDeviation the maxVelocityDeviation to set
+   */
+  @JsonProperty(value="max_velocity_deviation")
+  public void setMaxVelocityDeviation(double maxVelocityDeviation) {
+    this.maxVelocityDeviation = maxVelocityDeviation;
+  }
+  
+  /**
    * @return the radialVelocityThreshold
    */
   @JsonProperty(value="radial_velocity_threshold")
@@ -263,6 +415,22 @@ public class WrwpRoute extends Route {
   }
 
   /**
+   * @return the wrwpProcessingMethod
+   */
+  @JsonProperty(value="wrwp_processing_method")
+  public String getWrwpProcessingMethod() {
+    return wrwpProcessingMethod;
+  }
+
+  /**
+   * @param wrwpProcessingMethod the wrwpProcessingMethod to set
+   */
+  @JsonProperty(value="wrwp_processing_method")
+  public void setWrwpProcessingMethod(String wrwpProcessingMethod) {
+    this.wrwpProcessingMethod = wrwpProcessingMethod;
+  }
+
+  /**
    * @return the fields
    */
   public List<String> getFields() {
@@ -321,9 +489,17 @@ public class WrwpRoute extends Route {
     this.setMaxProfileHeight(rule.getMaxheight());
     this.setMinDistance(rule.getMindistance());
     this.setMinElevationAngle(rule.getMinelevationangle());
+    this.setConditionalMinElevationAngle(rule.getConditionalminelevationangle());
+    this.setHeightThreshold(rule.getHeightthreshold());
+    this.setMinNyquistInterval(rule.getMinnyquistinterval());
+    this.setNumberGapBins(rule.getNumbergapbins());
+    this.setMinNumberGapSamples(rule.getMinnumbergapsamples());
+    this.setMaxNumberStandardDeviations(rule.getMaxnumberstandarddeviations());
+    this.setMaxVelocityDeviation(rule.getMaxvelocitydeviation());
     this.setMinSampleSizeForReflectivity(rule.getMinsamplesizereflectivity());
     this.setMinSampleSizeForWind(rule.getMinsamplesizewind());
     this.setRadialVelocityThreshold(rule.getMinvelocitythreshold());
+    this.setWrwpProcessingMethod(rule.getWrwpprocessingmethod());
     this.setSources(rule.getSources());
     this.setUpperThresholdForCalculatedVelocity(rule.getMaxvelocitythreshold());
   }
@@ -340,9 +516,17 @@ public class WrwpRoute extends Route {
     rule.setMaxheight(this.getMaxProfileHeight());
     rule.setMindistance(this.getMinDistance());
     rule.setMinelevationangle(this.getMinElevationAngle());
+    rule.setConditionalminelevationangle(this.getConditionalMinElevationAngle());
+    rule.setHeightthreshold(this.getHeightThreshold());
+    rule.setMinnyquistinterval(this.getMinNyquistInterval());
+    rule.setNumbergapbins(this.getNumberGapBins());
+    rule.setMinnumbergapsamples(this.getMinNumberGapSamples());
+    rule.setMaxnumberstandarddeviations(this.getMaxNumberStandardDeviations());
+    rule.setMaxvelocitydeviation(this.getMaxVelocityDeviation());
     rule.setMinsamplesizereflectivity(this.getMinSampleSizeForReflectivity());
     rule.setMinsamplesizewind(this.getMinSampleSizeForWind());
     rule.setMinvelocitythreshold(this.getRadialVelocityThreshold());
+    rule.setWrwpprocessingmethod(this.getWrwpProcessingMethod());
     rule.setSources(this.getSources());
     rule.setMaxvelocitythreshold(this.getUpperThresholdForCalculatedVelocity());
     

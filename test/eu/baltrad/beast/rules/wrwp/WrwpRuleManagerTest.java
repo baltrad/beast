@@ -107,6 +107,14 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     rule.setMaxdistance(10000);
     rule.setMinelevationangle(1.5);
     rule.setMaxelevationangle(43.0);
+    rule.setConditionalMinElevationAngle(11.5);
+    rule.setHeightThreshold(3000.0);
+    rule.setMinNyquistInterval(7.5);
+    rule.setNumberGapBins(9);
+    rule.setMinNumberGapSamples(7);
+    rule.setMaxNumberStandardDeviations(3);
+    rule.setMaxVelocityDeviation(12.0);
+    rule.setWrwpProcessingMethod("KNMI");
     rule.setMinvelocitythreshold(10.0);
     rule.setMaxvelocitythreshold(46.0);
     rule.setMinsamplesizereflectivity(30);
@@ -115,9 +123,9 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     rule.setFields("dd,aa");
 
     expect(jdbc.update("INSERT INTO beast_wrwp_rules " + 
-    		"(rule_id, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields) " +
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
-        new Object[]{10, 300, 5000, 1000, 10000, 1.5, 43.0, 10.0, 46.0, 30, 29, "dd,aa"})).andReturn(1);
+    		"(rule_id, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, mincondelangle, heightthres, minnyquistinterval, ngapbins, minngap, maxnstd, maxvdiff, wrwpmethod, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        new Object[]{10, 300, 5000, 1000, 10000, 1.5, 43.0, 11.5, 3000.0, 7.5, 9, 7, 3, 12.0, "KNMI", 10.0, 46.0, 30, 29, "dd,aa"})).andReturn(1);
     
     filterManager.deleteFilters(10);
     
@@ -179,6 +187,14 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     rule.setMaxdistance(10000);
     rule.setMinelevationangle(1.5);
     rule.setMaxelevationangle(43.0);
+    rule.setConditionalMinElevationAngle(11.5);
+    rule.setHeightThreshold(3000.0);
+    rule.setMinNyquistInterval(7.5);
+    rule.setNumberGapBins(9);
+    rule.setMinNumberGapSamples(7);
+    rule.setMaxNumberStandardDeviations(3);
+    rule.setMaxVelocityDeviation(12.0);
+    rule.setWrwpProcessingMethod("KNMI");
     rule.setMinvelocitythreshold(10.0);
     rule.setMaxvelocitythreshold(45.0);
     rule.setMinsamplesizereflectivity(30);
@@ -188,8 +204,8 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
 
     expect(jdbc.update(
         "UPDATE beast_wrwp_rules SET interval=?, maxheight=?, mindistance=?," +
-        " maxdistance=?, minelangle=?, maxelangle=?, minvelocitythresh=?, maxvelocitythresh=?, minsamplesizereflectivity=?, minsamplesizewind=?, fields=? WHERE rule_id=?",
-        new Object[]{300, 5000, 1000, 10000, 1.5, 43.0, 10.0, 45.0, 30, 29, "aa,dd", 12})).andReturn(1);
+        " maxdistance=?, minelangle=?, maxelangle=?, mincondelangle=?, heightthres=?, minnyquistinterval=?, ngapbins=?, minngap=?, maxnstd=?, maxvdiff=?, wrwpmethod=?, minvelocitythresh=?, maxvelocitythresh=?, minsamplesizereflectivity=?, minsamplesizewind=?, fields=? WHERE rule_id=?",
+        new Object[]{300, 5000, 1000, 10000, 1.5, 43.0, 11.5, 3000.0, 7.5, 9, 7, 3, 12.0, "KNMI", 10.0, 45.0, 30, 29, "aa,dd", 12})).andReturn(1);
     methods.updateSources(12, sources);
     
     filterManager.deleteFilters(12);
@@ -317,6 +333,14 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     expect(rs.getInt("maxdistance")).andReturn(10000);
     expect(rs.getDouble("minelangle")).andReturn(4.5);
     expect(rs.getDouble("maxelangle")).andReturn(43.0);
+    expect(rs.getDouble("mincondelangle")).andReturn(11.5);
+    expect(rs.getDouble("heightthres")).andReturn(3000.0);
+    expect(rs.getDouble("minnyquistinterval")).andReturn(7.5);
+    expect(rs.getInt("ngapbins")).andReturn(9);
+    expect(rs.getInt("minngap")).andReturn(7);
+    expect(rs.getInt("maxnstd")).andReturn(3);
+    expect(rs.getDouble("maxvdiff")).andReturn(12.0);
+    expect(rs.getString("wrwpmethod")).andReturn("KNMI");
     expect(rs.getDouble("minvelocitythresh")).andReturn(1.5);
     expect(rs.getDouble("maxvelocitythresh")).andReturn(50.0);
     expect(rs.getInt("minsamplesizereflectivity")).andReturn(30);
@@ -341,6 +365,14 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     assertEquals(10000, result.getMaxdistance());
     assertEquals(4.5, result.getMinelevationangle(), 4);
     assertEquals(43.0, result.getMaxelevationangle(), 4);
+    assertEquals(11.5, result.getConditionalMinElevationAngle(), 4);
+    assertEquals(3000.0, result.getHeightThreshold(), 4);
+    assertEquals(7.5, result.getMinNyquistInterval(), 4);
+    assertEquals(9, result.getNumberGapBins());
+    assertEquals(7, result.getMinNumberGapSamples());
+    assertEquals(3, result.getMaxNumberStandardDeviations());
+    assertEquals(12.0, result.getMaxVelocityDeviation(), 4);
+    assertEquals("KNMI", result.getWrwpProcessingMethod());
     assertEquals(1.5, result.getMinvelocitythreshold(), 4);
     assertEquals(50.0, result.getMaxvelocitythreshold(), 4);
     assertEquals(30, result.getMinsamplesizereflectivity());
@@ -366,6 +398,14 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     expect(rs.getInt("maxdistance")).andReturn(10000);
     expect(rs.getDouble("minelangle")).andReturn(4.5);
     expect(rs.getDouble("maxelangle")).andReturn(43.0);
+    expect(rs.getDouble("mincondelangle")).andReturn(11.5);
+    expect(rs.getDouble("heightthres")).andReturn(3000.0);
+    expect(rs.getDouble("minnyquistinterval")).andReturn(7.5);
+    expect(rs.getInt("ngapbins")).andReturn(9);
+    expect(rs.getInt("minngap")).andReturn(7);
+    expect(rs.getInt("maxnstd")).andReturn(3);
+    expect(rs.getDouble("maxvdiff")).andReturn(12.0);
+    expect(rs.getString("wrwpmethod")).andReturn("KNMI");
     expect(rs.getDouble("minvelocitythresh")).andReturn(1.5);
     expect(rs.getDouble("maxvelocitythresh")).andReturn(50.0);
     expect(rs.getInt("minsamplesizereflectivity")).andReturn(30);
@@ -389,6 +429,14 @@ public class WrwpRuleManagerTest extends EasyMockSupport {
     assertEquals(10000, result.getMaxdistance());
     assertEquals(4.5, result.getMinelevationangle(), 4);
     assertEquals(43.0, result.getMaxelevationangle(), 4);
+    assertEquals(11.5, result.getConditionalMinElevationAngle(), 4);
+    assertEquals(3000.0, result.getHeightThreshold(), 4);
+    assertEquals(7.5, result.getMinNyquistInterval(), 4);
+    assertEquals(9, result.getNumberGapBins());
+    assertEquals(7, result.getMinNumberGapSamples());
+    assertEquals(3, result.getMaxNumberStandardDeviations());
+    assertEquals(12.0, result.getMaxVelocityDeviation(), 4);
+    assertEquals("KNMI", result.getWrwpProcessingMethod());
     assertEquals(1.5, result.getMinvelocitythreshold(), 4);
     assertEquals(50.0, result.getMaxvelocitythreshold(), 4);
     assertEquals(30, result.getMinsamplesizereflectivity());
