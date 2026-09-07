@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,9 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -29,7 +26,8 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
-import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
@@ -37,6 +35,7 @@ import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.TrustStrategy;
 import org.apache.hc.core5.util.Timeout;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -81,6 +80,11 @@ public class HttpExchangeConnector implements ExchangeConnector {
    */
   static final String[] SIGNING_HEADERS = {"Content-Type", "Content-MD5", "Date"};
   
+  /**
+   * 
+   */
+  private List<String> sanBypassHosts = new ArrayList<String>();
+
   /**
    * Default constructor
    */
@@ -288,6 +292,21 @@ public class HttpExchangeConnector implements ExchangeConnector {
     }
     return null;
   }
+
+  /**
+   * @return the san bypass hosts
+   */
+  public List<String> getSanBypassHosts() {
+    return sanBypassHosts;
+  }
+
+  /**
+   * @param sanBypassHosts the san bypass hosts
+   */
+  public void setSanBypassHosts(List<String> sanBypassHosts) {
+    this.sanBypassHosts = sanBypassHosts;
+  }
+
   
   /**
    * Creates a HttpPost
@@ -305,7 +324,43 @@ public class HttpExchangeConnector implements ExchangeConnector {
   public void setSecurityManager(ISecurityManager securityManager) {
     this.securityManager = securityManager;
   }
-  
+
+  /**
+   * Trust strategy that accepts any server certificate.
+   */
+  private static final TrustStrategy TRUST_ALL_CERTIFICATES = new TrustStrategy() {
+    public boolean isTrusted(X509Certificate[] chain, String authType) {
+      return true;
+    }
+  };
+
+  /**
+   * Hostname verifier that does the normal TLS hostname verification but skips it for the hosts
+   * registered in {@link #getSanBypassHosts()}. Handles "No subject alternative names present".
+   */
+  static class SanBypassHostnameVerifier implements HostnameVerifier {
+    private final HostnameVerifier defaultVerifier;
+    private final List<String> sanBypassHosts;
+
+    SanBypassHostnameVerifier(List<String> sanBypassHosts) {
+      this(new DefaultHostnameVerifier(), sanBypassHosts);
+    }
+
+    SanBypassHostnameVerifier(HostnameVerifier defaultVerifier, List<String> sanBypassHosts) {
+      this.defaultVerifier = defaultVerifier;
+      this.sanBypassHosts = sanBypassHosts;
+    }
+
+    @Override
+    public boolean verify(String hostname, javax.net.ssl.SSLSession session) {
+      if (sanBypassHosts.contains(hostname)) {
+        logger.warn("Skipping TLS hostname verification for bypass host " + hostname);
+        return true;
+      }
+      return defaultVerifier.verify(hostname, session);
+    }
+  }
+
   /**
    * Creates a http client with the relevant http parameters set
    * @return the http client
@@ -313,13 +368,14 @@ public class HttpExchangeConnector implements ExchangeConnector {
   protected CloseableHttpClient createClient() {
     try {
       SSLContext sslContext = SSLContextBuilder.create()
-          .loadTrustMaterial(null, (chain, authType) -> true)
+          .loadTrustMaterial(null, TRUST_ALL_CERTIFICATES)
           .build();
-      
+
       DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(
           sslContext,
-          NoopHostnameVerifier.INSTANCE);
-      
+          HostnameVerificationPolicy.CLIENT,
+          new SanBypassHostnameVerifier(sanBypassHosts));
+
       PoolingHttpClientConnectionManager connMgr = PoolingHttpClientConnectionManagerBuilder.create()
           .setTlsSocketStrategy(tlsStrategy)
           .setMaxConnTotal(200)
