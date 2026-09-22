@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classeu_1_1baltrad_1_1beast_1_1exchange_1_1json_1_1HttpExchangeConnector-members.html">List of all members</a>  </div>
@@ -74,6 +75,11 @@ Inheritance diagram for eu.baltrad.beast.exchange.json.HttpExchangeConnector:</d
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:SanBypassHostnameVerifier" id="r_SanBypassHostnameVerifier"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><b>SanBypassHostnameVerifier</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hostname verifier that does the normal TLS hostname verification but skips it for the hosts registered in <code><a class="el" href="#a746578c7df4331351d71296884aa03bd">getSanBypassHosts()</a></code>. <br /></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac3373d495d2ff16648b99873662df495" id="r_ac3373d495d2ff16648b99873662df495"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ac3373d495d2ff16648b99873662df495">HttpExchangeConnector</a> ()</td></tr>
@@ -88,23 +94,24 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9a87ae9ea1082e2f51c4d1e93e33bf00" id="r_a9a87ae9ea1082e2f51c4d1e93e33bf00"><td class="memItemLeft"><a class="el" href="classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse.html">ExchangeResponse</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9a87ae9ea1082e2f51c4d1e93e33bf00">send</a> (<a class="el" href="classeu_1_1baltrad_1_1beast_1_1exchange_1_1SendFileRequest.html">SendFileRequest</a> request)</td></tr>
 <tr class="memitem:aac1a22efddda2f3a479509d112cb00a0" id="r_aac1a22efddda2f3a479509d112cb00a0"><td class="memItemLeft"><a class="el" href="classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeMessage.html">ExchangeMessage</a>&#160;</td><td class="memItemRight"><a class="el" href="#aac1a22efddda2f3a479509d112cb00a0">parse</a> (InputStream json)</td></tr>
 <tr class="memdesc:aac1a22efddda2f3a479509d112cb00a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses a http key authorization request according to protocol version 2.2.  <br /></td></tr>
+<tr class="memitem:a746578c7df4331351d71296884aa03bd" id="r_a746578c7df4331351d71296884aa03bd"><td class="memItemLeft">List&lt; String &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a746578c7df4331351d71296884aa03bd">getSanBypassHosts</a> ()</td></tr>
+<tr class="memitem:a2e570e2cd1f59d4e5876d2ad5dc8e3e2" id="r_a2e570e2cd1f59d4e5876d2ad5dc8e3e2"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2e570e2cd1f59d4e5876d2ad5dc8e3e2">setSanBypassHosts</a> (List&lt; String &gt; sanBypassHosts)</td></tr>
 <tr class="memitem:a239ea5983471a23ea8349e844f99a96a" id="r_a239ea5983471a23ea8349e844f99a96a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a239ea5983471a23ea8349e844f99a96a">setSecurityManager</a> (<a class="el" href="interfaceeu_1_1baltrad_1_1beast_1_1security_1_1ISecurityManager.html">ISecurityManager</a> securityManager)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a17711aaa1c2d56b519833aab10ce8ef8" id="r_a17711aaa1c2d56b519833aab10ce8ef8"><td class="memItemLeft"><a class="el" href="classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse.html">ExchangeResponse</a>&#160;</td><td class="memItemRight"><a class="el" href="#a17711aaa1c2d56b519833aab10ce8ef8">createResponse</a> (HttpResponse response)</td></tr>
-<tr class="memdesc:a17711aaa1c2d56b519833aab10ce8ef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an exchange response from a http response instance.  <br /></td></tr>
+<tr class="memitem:acbff550eaba89f5d3712176c13b9a944" id="r_acbff550eaba89f5d3712176c13b9a944"><td class="memItemLeft"><a class="el" href="classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse.html">ExchangeResponse</a>&#160;</td><td class="memItemRight"><a class="el" href="#acbff550eaba89f5d3712176c13b9a944">createResponse</a> (ClassicHttpResponse response)</td></tr>
+<tr class="memdesc:acbff550eaba89f5d3712176c13b9a944"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an exchange response from a http response instance.  <br /></td></tr>
 <tr class="memitem:a7777a4050b007249f5a30c13d62c4fdb" id="r_a7777a4050b007249f5a30c13d62c4fdb"><td class="memItemLeft">ByteArrayEntity&#160;</td><td class="memItemRight"><a class="el" href="#a7777a4050b007249f5a30c13d62c4fdb">createByteArrayEntity</a> (byte[] arr)</td></tr>
 <tr class="memdesc:a7777a4050b007249f5a30c13d62c4fdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a byte array entity for use in a http post.  <br /></td></tr>
-<tr class="memitem:a856c6c7f9857ac68c068d931173ecf22" id="r_a856c6c7f9857ac68c068d931173ecf22"><td class="memItemLeft">boolean&#160;</td><td class="memItemRight"><a class="el" href="#a856c6c7f9857ac68c068d931173ecf22">isRedirected</a> (HttpResponse response)</td></tr>
-<tr class="memdesc:a856c6c7f9857ac68c068d931173ecf22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if there is an indication that the http url has changed.  <br /></td></tr>
-<tr class="memitem:a0050b538665fecd250712eed5fb60c6f" id="r_a0050b538665fecd250712eed5fb60c6f"><td class="memItemLeft">String&#160;</td><td class="memItemRight"><a class="el" href="#a0050b538665fecd250712eed5fb60c6f">getRedirectURL</a> (HttpResponse response)</td></tr>
-<tr class="memdesc:a0050b538665fecd250712eed5fb60c6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the redirect URL from response if there is one, otherwise null.  <br /></td></tr>
+<tr class="memitem:a69b8a2cb1c8f6e2bd5665fdebe058dda" id="r_a69b8a2cb1c8f6e2bd5665fdebe058dda"><td class="memItemLeft">boolean&#160;</td><td class="memItemRight"><a class="el" href="#a69b8a2cb1c8f6e2bd5665fdebe058dda">isRedirected</a> (ClassicHttpResponse response)</td></tr>
+<tr class="memdesc:a69b8a2cb1c8f6e2bd5665fdebe058dda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if there is an indication that the http url has changed.  <br /></td></tr>
+<tr class="memitem:a20211d331283db1214e62a264b30a743" id="r_a20211d331283db1214e62a264b30a743"><td class="memItemLeft">String&#160;</td><td class="memItemRight"><a class="el" href="#a20211d331283db1214e62a264b30a743">getRedirectURL</a> (ClassicHttpResponse response)</td></tr>
+<tr class="memdesc:a20211d331283db1214e62a264b30a743"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the redirect URL from response if there is one, otherwise null.  <br /></td></tr>
 <tr class="memitem:a0045bed857f43d62fe901acdfe92779c" id="r_a0045bed857f43d62fe901acdfe92779c"><td class="memItemLeft">HttpPost&#160;</td><td class="memItemRight"><a class="el" href="#a0045bed857f43d62fe901acdfe92779c">createPost</a> (String url)</td></tr>
 <tr class="memdesc:a0045bed857f43d62fe901acdfe92779c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a HttpPost.  <br /></td></tr>
-<tr class="memitem:a69d6b0e48f46c12132a49853fd00a099" id="r_a69d6b0e48f46c12132a49853fd00a099"><td class="memItemLeft">HttpClient&#160;</td><td class="memItemRight"><a class="el" href="#a69d6b0e48f46c12132a49853fd00a099">createClient</a> ()</td></tr>
-<tr class="memdesc:a69d6b0e48f46c12132a49853fd00a099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a http client with the relevant http parameters set.  <br /></td></tr>
-<tr class="memitem:ad515bde446533cddafee6d15dff4d1bd" id="r_ad515bde446533cddafee6d15dff4d1bd"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad515bde446533cddafee6d15dff4d1bd">shutdownClient</a> (HttpClient httpClient)</td></tr>
+<tr class="memitem:ad38efe9cb34c0e8c6295d75ee930e4b9" id="r_ad38efe9cb34c0e8c6295d75ee930e4b9"><td class="memItemLeft">CloseableHttpClient&#160;</td><td class="memItemRight"><a class="el" href="#ad38efe9cb34c0e8c6295d75ee930e4b9">createClient</a> ()</td></tr>
+<tr class="memdesc:ad38efe9cb34c0e8c6295d75ee930e4b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a http client with the relevant http parameters set.  <br /></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac3373d495d2ff16648b99873662df495" name="ac3373d495d2ff16648b99873662df495"></a>
@@ -169,8 +176,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a69d6b0e48f46c12132a49853fd00a099" name="a69d6b0e48f46c12132a49853fd00a099"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a69d6b0e48f46c12132a49853fd00a099">&#9670;&#160;</a></span>createClient()</h2>
+<a id="ad38efe9cb34c0e8c6295d75ee930e4b9" name="ad38efe9cb34c0e8c6295d75ee930e4b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad38efe9cb34c0e8c6295d75ee930e4b9">&#9670;&#160;</a></span>createClient()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -179,7 +186,7 @@ Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">HttpClient eu.baltrad.beast.exchange.json.HttpExchangeConnector.createClient </td>
+          <td class="memname">CloseableHttpClient eu.baltrad.beast.exchange.json.HttpExchangeConnector.createClient </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -231,8 +238,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a17711aaa1c2d56b519833aab10ce8ef8" name="a17711aaa1c2d56b519833aab10ce8ef8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a17711aaa1c2d56b519833aab10ce8ef8">&#9670;&#160;</a></span>createResponse()</h2>
+<a id="acbff550eaba89f5d3712176c13b9a944" name="acbff550eaba89f5d3712176c13b9a944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbff550eaba89f5d3712176c13b9a944">&#9670;&#160;</a></span>createResponse()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -243,7 +250,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="classeu_1_1baltrad_1_1beast_1_1exchange_1_1ExchangeResponse.html">ExchangeResponse</a> eu.baltrad.beast.exchange.json.HttpExchangeConnector.createResponse </td>
           <td>(</td>
-          <td class="paramtype">HttpResponse</td>          <td class="paramname"><span class="paramname"><em>response</em></span></td><td>)</td>
+          <td class="paramtype">ClassicHttpResponse</td>          <td class="paramname"><span class="paramname"><em>response</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -265,8 +272,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0050b538665fecd250712eed5fb60c6f" name="a0050b538665fecd250712eed5fb60c6f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0050b538665fecd250712eed5fb60c6f">&#9670;&#160;</a></span>getRedirectURL()</h2>
+<a id="a20211d331283db1214e62a264b30a743" name="a20211d331283db1214e62a264b30a743"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20211d331283db1214e62a264b30a743">&#9670;&#160;</a></span>getRedirectURL()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -277,7 +284,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">String eu.baltrad.beast.exchange.json.HttpExchangeConnector.getRedirectURL </td>
           <td>(</td>
-          <td class="paramtype">HttpResponse</td>          <td class="paramname"><span class="paramname"><em>response</em></span></td><td>)</td>
+          <td class="paramtype">ClassicHttpResponse</td>          <td class="paramname"><span class="paramname"><em>response</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -325,8 +332,34 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a856c6c7f9857ac68c068d931173ecf22" name="a856c6c7f9857ac68c068d931173ecf22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a856c6c7f9857ac68c068d931173ecf22">&#9670;&#160;</a></span>isRedirected()</h2>
+<a id="a746578c7df4331351d71296884aa03bd" name="a746578c7df4331351d71296884aa03bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a746578c7df4331351d71296884aa03bd">&#9670;&#160;</a></span>getSanBypassHosts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">List&lt; String &gt; eu.baltrad.beast.exchange.json.HttpExchangeConnector.getSanBypassHosts </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the san bypass hosts </dd></dl>
+
+</div>
+</div>
+<a id="a69b8a2cb1c8f6e2bd5665fdebe058dda" name="a69b8a2cb1c8f6e2bd5665fdebe058dda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69b8a2cb1c8f6e2bd5665fdebe058dda">&#9670;&#160;</a></span>isRedirected()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -337,7 +370,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">boolean eu.baltrad.beast.exchange.json.HttpExchangeConnector.isRedirected </td>
           <td>(</td>
-          <td class="paramtype">HttpResponse</td>          <td class="paramname"><span class="paramname"><em>response</em></span></td><td>)</td>
+          <td class="paramtype">ClassicHttpResponse</td>          <td class="paramname"><span class="paramname"><em>response</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -565,6 +598,37 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a2e570e2cd1f59d4e5876d2ad5dc8e3e2" name="a2e570e2cd1f59d4e5876d2ad5dc8e3e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e570e2cd1f59d4e5876d2ad5dc8e3e2">&#9670;&#160;</a></span>setSanBypassHosts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eu.baltrad.beast.exchange.json.HttpExchangeConnector.setSanBypassHosts </td>
+          <td>(</td>
+          <td class="paramtype">List&lt; String &gt;</td>          <td class="paramname"><span class="paramname"><em>sanBypassHosts</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sanBypassHosts</td><td>the san bypass hosts </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a239ea5983471a23ea8349e844f99a96a" name="a239ea5983471a23ea8349e844f99a96a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a239ea5983471a23ea8349e844f99a96a">&#9670;&#160;</a></span>setSecurityManager()</h2>
 
@@ -590,37 +654,6 @@ Protected Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">securityManager</td><td>the security manager to be used </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ad515bde446533cddafee6d15dff4d1bd" name="ad515bde446533cddafee6d15dff4d1bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad515bde446533cddafee6d15dff4d1bd">&#9670;&#160;</a></span>shutdownClient()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void eu.baltrad.beast.exchange.json.HttpExchangeConnector.shutdownClient </td>
-          <td>(</td>
-          <td class="paramtype">HttpClient</td>          <td class="paramname"><span class="paramname"><em>httpClient</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">httpClient</td><td></td></tr>
   </table>
   </dd>
 </dl>
