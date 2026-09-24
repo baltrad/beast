@@ -28,7 +28,7 @@
         <slf4j.version>2.0.18</slf4j.version>
         <aopalliance.version>1.0</aopalliance.version>
         <xmlrpc.version>6.1.0</xmlrpc.version>
-        <bouncycastle.version>1.84</bouncycastle.version>
+        <bouncycastle.version>1.85</bouncycastle.version>
         <byte-buddy.version>1.18.10</byte-buddy.version>
         <dom4j.version>2.1.4</dom4j.version>
         <ecc-25519-java.version>1.0.3</ecc-25519-java.version>

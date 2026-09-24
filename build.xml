@@ -91,6 +91,10 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
 
   <!-- Fetch Maven dependencies -->
   <target name="fetch-jars" description="Download all Maven dependencies (runtime and test separated)">
+    <echo message="Cleaning up old downloaded dependencies..."/>
+    <delete dir="${basedir}/lib/maven/libs/runtime"/>
+    <delete dir="${basedir}/lib/maven/libs/test"/>
+    
     <echo message="Fetching dependencies via Maven..."/>
     <exec executable="mvn" dir="${basedir}/lib/maven" failonerror="true">
       <arg value="package"/>
@@ -117,21 +121,8 @@ along with the Beast library library.  If not, see http://www.gnu.org/licenses.
     <echo message="License file created at: lib/maven/libs/THIRD-PARTY-LICENSES.txt"/>
   </target>
 
-  <!-- Check if dependencies need to be fetched -->
-  <target name="check-jars">
-    <condition property="jars.present">
-      <and>
-        <available file="${lib.dir}" type="dir"/>
-        <available file="${test.lib.dir}" type="dir"/>
-        <resourcecount when="gt" count="0">
-          <fileset dir="${lib.dir}" includes="*.jar"/>
-        </resourcecount>
-      </and>
-    </condition>
-  </target>
-
   <!-- Fetch dependencies only if needed -->
-  <target name="ensure-jars" depends="check-jars" unless="jars.present">
+  <target name="ensure-jars">
     <antcall target="fetch-jars"/>
   </target>
 
