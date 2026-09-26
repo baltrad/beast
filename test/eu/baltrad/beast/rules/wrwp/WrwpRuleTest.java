@@ -117,6 +117,54 @@ public class WrwpRuleTest extends EasyMockSupport {
     assertEquals(35.0, classUnderTest.getMaxelevationangle(), 4);
   }
   
+  @Test
+  public void test_conditionalminelevationangle() {
+    assertEquals(9.5, classUnderTest.getConditionalminelevationangle(), 4);
+    classUnderTest.setConditionalminelevationangle(12.5);
+    assertEquals(12.5, classUnderTest.getConditionalminelevationangle(), 4);
+  }
+  
+  @Test
+  public void test_heightthreshold() {
+    assertEquals(2000.0, classUnderTest.getHeightthreshold(), 4);
+    classUnderTest.setHeightthreshold(3000.0);
+    assertEquals(3000.0, classUnderTest.getHeightthreshold(), 4);
+  }
+  
+  @Test
+  public void test_minnyquistinterval() {
+    assertEquals(10.0, classUnderTest.getMinnyquistinterval(), 4);
+    classUnderTest.setMinnyquistinterval(11.0);
+    assertEquals(11.0, classUnderTest.getMinnyquistinterval(), 4);
+  }
+  
+  @Test
+  public void test_numbergapbins() {
+    assertEquals(8, classUnderTest.getNumbergapbins());
+    classUnderTest.setNumbergapbins(9);
+    assertEquals(9, classUnderTest.getNumbergapbins());
+  }
+  
+  @Test
+  public void test_minnumbergapsamples() {
+    assertEquals(5, classUnderTest.getMinnumbergapsamples());
+    classUnderTest.setMinnumbergapsamples(7);
+    assertEquals(7, classUnderTest.getMinnumbergapsamples());
+  }
+  
+  @Test
+  public void test_maxnumberstandarddeviations() {
+    assertEquals(0, classUnderTest.getMaxnumberstandarddeviations());
+    classUnderTest.setMaxnumberstandarddeviations(2);
+    assertEquals(2, classUnderTest.getMaxnumberstandarddeviations());
+  }
+  
+  @Test
+  public void test_maxvelocitydeviation() {
+    assertEquals(10.0, classUnderTest.getMaxvelocitydeviation(), 4);
+    classUnderTest.setMaxvelocitydeviation(12.0);
+    assertEquals(12.0, classUnderTest.getMaxvelocitydeviation(), 4);
+  }
   
   @Test
   public void test_minvelocitythreshold() {
@@ -144,6 +192,13 @@ public class WrwpRuleTest extends EasyMockSupport {
     assertEquals(40, classUnderTest.getMinsamplesizewind());
     classUnderTest.setMinsamplesizewind(30);
     assertEquals(30, classUnderTest.getMinsamplesizewind());
+  }
+    
+  @Test
+  public void test_wrwpprocessingmethod()  {
+    assertEquals("SMHI", classUnderTest.getWrwpprocessingmethod());
+    classUnderTest.setWrwpprocessingmethod("KNMI");
+    assertEquals("KNMI", classUnderTest.getWrwpprocessingmethod());
   }
 
   @Test
@@ -221,6 +276,14 @@ public class WrwpRuleTest extends EasyMockSupport {
     classUnderTest.setMaxheight(10000);
     classUnderTest.setMinelevationangle(3.5);
     classUnderTest.setMaxelevationangle(43.5);
+    classUnderTest.setConditionalminelevationangle(8.5);
+    classUnderTest.setHeightthreshold(2500.0);
+    classUnderTest.setMinnyquistinterval(8.7);
+    classUnderTest.setNumbergapbins(11);
+    classUnderTest.setMinnumbergapsamples(8);
+    classUnderTest.setMaxnumberstandarddeviations(5);
+    classUnderTest.setMaxvelocitydeviation(11.5);
+    classUnderTest.setWrwpprocessingmethod("KNMI");
     classUnderTest.setMinvelocitythreshold(4.5);
     classUnderTest.setMaxvelocitythreshold(44.5);
     classUnderTest.setMinsamplesizereflectivity(30);
@@ -247,10 +310,18 @@ public class WrwpRuleTest extends EasyMockSupport {
     assertEquals("--maxdistance=10000", result.getArguments()[3]);
     assertEquals("--minelevationangle=3.5", result.getArguments()[4]);
     assertEquals("--maxelevationangle=43.5", result.getArguments()[5]);
-    assertEquals("--velocitythreshold=4.5", result.getArguments()[6]);
-    assertEquals("--maxvelocitythreshold=44.5", result.getArguments()[7]);
-    assertEquals("--minsamplesizereflectivity=30", result.getArguments()[8]);
-    assertEquals("--minsamplesizewind=29", result.getArguments()[9]);
+    assertEquals("--conditionalminelevationangle=8.5", result.getArguments()[6]);
+    assertEquals("--heightthreshold=2500.0", result.getArguments()[7]);
+    assertEquals("--minnyquistinterval=8.7", result.getArguments()[8]);
+    assertEquals("--numbergapbins=11", result.getArguments()[9]);
+    assertEquals("--minnumbergapsamples=8", result.getArguments()[10]);
+    assertEquals("--maxnumberstandarddeviations=5", result.getArguments()[11]);
+    assertEquals("--maxvelocitydeviation=11.5", result.getArguments()[12]);
+    assertEquals("--wrwpprocessingmethod=KNMI", result.getArguments()[13]);
+    assertEquals("--velocitythreshold=4.5", result.getArguments()[14]);
+    assertEquals("--maxvelocitythreshold=44.5", result.getArguments()[15]);
+    assertEquals("--minsamplesizereflectivity=30", result.getArguments()[16]);
+    assertEquals("--minsamplesizewind=29", result.getArguments()[17]);
   }
 
   @Test
@@ -273,6 +344,14 @@ public class WrwpRuleTest extends EasyMockSupport {
     classUnderTest.setMaxheight(10000);
     classUnderTest.setMinelevationangle(3.5);
     classUnderTest.setMaxelevationangle(43.5);
+    classUnderTest.setConditionalminelevationangle(8.5);
+    classUnderTest.setHeightthreshold(2500.0);
+    classUnderTest.setMinnyquistinterval(8.7);
+    classUnderTest.setNumbergapbins(11);
+    classUnderTest.setMinnumbergapsamples(8);
+    classUnderTest.setMaxnumberstandarddeviations(5);
+    classUnderTest.setMaxvelocitydeviation(11.5);
+    classUnderTest.setWrwpprocessingmethod("KNMI");
     classUnderTest.setMinvelocitythreshold(4.5);
     classUnderTest.setMaxvelocitythreshold(44.5);
     classUnderTest.setMinsamplesizereflectivity(30);
@@ -300,11 +379,19 @@ public class WrwpRuleTest extends EasyMockSupport {
     assertEquals("--maxdistance=10000", result.getArguments()[3]);
     assertEquals("--minelevationangle=3.5", result.getArguments()[4]);
     assertEquals("--maxelevationangle=43.5", result.getArguments()[5]);
-    assertEquals("--velocitythreshold=4.5", result.getArguments()[6]);
-    assertEquals("--maxvelocitythreshold=44.5", result.getArguments()[7]);
-    assertEquals("--minsamplesizereflectivity=30", result.getArguments()[8]);
-    assertEquals("--minsamplesizewind=29", result.getArguments()[9]);
-    assertEquals("--fields=ff,ff_dev,dd", result.getArguments()[10]);
+    assertEquals("--conditionalminelevationangle=8.5", result.getArguments()[6]);
+    assertEquals("--heightthreshold=2500.0", result.getArguments()[7]);
+    assertEquals("--minnyquistinterval=8.7", result.getArguments()[8]);
+    assertEquals("--numbergapbins=11", result.getArguments()[9]);
+    assertEquals("--minnumbergapsamples=8", result.getArguments()[10]);
+    assertEquals("--maxnumberstandarddeviations=5", result.getArguments()[11]);
+    assertEquals("--maxvelocitydeviation=11.5", result.getArguments()[12]);
+    assertEquals("--wrwpprocessingmethod=KNMI", result.getArguments()[13]);
+    assertEquals("--velocitythreshold=4.5", result.getArguments()[14]);
+    assertEquals("--maxvelocitythreshold=44.5", result.getArguments()[15]);
+    assertEquals("--minsamplesizereflectivity=30", result.getArguments()[16]);
+    assertEquals("--minsamplesizewind=29", result.getArguments()[17]);
+    assertEquals("--fields=ff,ff_dev,dd", result.getArguments()[18]);
   }
   
   @Test
