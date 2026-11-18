@@ -389,7 +389,6 @@ public class HttpExchangeConnector implements ExchangeConnector {
       
       return HttpClients.custom()
           .setConnectionManager(connMgr)
-          .setConnectionManagerShared(true)
           .setDefaultRequestConfig(requestConfig)
           .build();
     } catch (Exception e) {
