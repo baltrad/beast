@@ -32,10 +32,20 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+//
+import eu.baltrad.bdb.db.FileEntry;
+//
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.log.ISystemReporter;
 import eu.baltrad.beast.log.NullReporter;
 import eu.baltrad.beast.message.IBltMessage;
+//
+import eu.baltrad.beast.message.mo.BltAlertMessage;
+import eu.baltrad.beast.message.mo.BltCommandMessage;
+import eu.baltrad.beast.message.mo.BltDataFrameMessage;
+import eu.baltrad.beast.message.mo.BltDataMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
+//
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.message.mo.BltRoutedMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
@@ -194,7 +204,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	    try {
 	      nmsg = def.handle(msg);
 	    } catch (Exception e) {
-	      logger.info("Rule caused exception", e);
+	      logRuleFailure(msg, def, e);
 	    }
 	    if (nmsg != null) {
 	      if (nmsg instanceof IMultiRoutedMessage) {
@@ -275,7 +285,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	    try {
 	      nmsg = def.handle(msg);
 	    } catch (Exception e) {
-        logger.info("Rule caused exception", e);
+        logRuleFailure(msg, def, e);
 	    }
 	    if (nmsg != null) {
 	      if (nmsg instanceof IRoutedMessage) {
@@ -304,6 +314,49 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
 	}
 	
 	
+  private static String shortClassName(Object value) {
+    if (value == null) {
+      return "null";
+    }
+    String name = value.getClass().getName();
+    return name.substring(name.lastIndexOf('.') + 1);
+  }
+
+  private void logRuleFailure(IBltMessage msg, RouteDefinition def, Exception e) {
+    if (!logger.isInfoEnabled()) {
+      return;
+    }
+    String route = "";
+    String message = shortClassName(msg);
+    try {
+      route = " route='" + def.getName() + "'";
+      route += " rule=" + shortClassName(def.getRule());
+      if (msg instanceof BltDataMessage) {
+        FileEntry entry = ((BltDataMessage) msg).getFileEntry();
+        if (entry != null) {
+          message += " fileUuid=" + entry.getUuid();
+        }
+      } else if (msg instanceof BltTriggerJobMessage) {
+        BltTriggerJobMessage job = (BltTriggerJobMessage) msg;
+        message += " job=" + job.getName() + " jobId=" + job.getId();
+      } else if (msg instanceof BltDataFrameMessage) {
+        message += " file=" + ((BltDataFrameMessage) msg).getFileBasename();
+      } else if (msg instanceof BltGenerateMessage) {
+        message += " algorithm=" + ((BltGenerateMessage) msg).getAlgorithm();
+      } else if (msg instanceof BltCommandMessage) {
+        message += " command=" + ((BltCommandMessage) msg).getCommand();
+      } else if (msg instanceof BltAlertMessage) {
+        BltAlertMessage alert = (BltAlertMessage) msg;
+        message += " module=" + alert.getModule() + " code=" + alert.getCode()
+            + " severity=" + alert.getSeverity();
+      }
+    } catch (RuntimeException ignored) {
+      // Keep the original failure if a diagnostic getter fails.
+      message += " metadata=unavailable";
+    }
+    logger.info("Rule caused exception" + route + " message=" + message, e);
+  }
+
   /**
    * @see eu.baltrad.beast.router.IRouterManager#getNames()
    */
