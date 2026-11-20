@@ -92,6 +92,14 @@ public class WrwpRuleManager implements IRuleManager {
     int maxdistance = wrule.getMaxdistance();
     double minelangle = wrule.getMinelevationangle();
     double maxelangle = wrule.getMaxelevationangle();
+    double mincondelangle = wrule.getConditionalminelevationangle();
+    double heightthres = getHeightthreshold();
+    double minnyquistinterval = wrule.getMinnyquistinterval();
+    int ngapbins = wrule.getNumbergapbins();
+    int minngap = wrule.getMinnumbergapsamples();
+    int maxnstd = wrule.getMaxnumberstandarddeviations();
+    double maxvdiff = wrule.getMaxvelocitydeviation();
+    String wrwpmethod = wrule.getWrwpprocessingmethod();
     double minvelocitythresh = wrule.getMinvelocitythreshold();
     double maxvelocitythresh = wrule.getMaxvelocitythreshold();
     int minsamplesizereflectivity = wrule.getMinsamplesizereflectivity();
@@ -101,9 +109,9 @@ public class WrwpRuleManager implements IRuleManager {
     
     template.update(
         "INSERT INTO beast_wrwp_rules" +
-        " (rule_id, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields)" +
-        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
-        new Object[]{ruleId, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields});
+        " (rule_id, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, mincondelangle, heightthres, minnyquistinterval, ngapbins, minngap, maxnstd, maxvdiff, wrwpmethod, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields)" +
+        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        new Object[]{ruleId, interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, mincondelangle, heightthres, minnyquistinterval, ngapbins, minngap, maxnstd, maxvdiff, wrwpmethod, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields});
     
     updateSources(ruleId, wrule.getSources());
     
@@ -136,6 +144,14 @@ public class WrwpRuleManager implements IRuleManager {
     int maxdistance = wrule.getMaxdistance();
     double minelangle = wrule.getMinelevationangle();
     double maxelangle = wrule.getMaxelevationangle();
+    double mincondelangle = wrule.getConditionalminelevationangle();
+    double heightthres = getHeightthreshold();
+    double minnyquistinterval = wrule.getMinnyquistinterval();
+    int ngapbins = wrule.getNumbergapbins();
+    int minngap = wrule.getMinnumbergapsamples();
+    int maxnstd = wrule.getMaxnumberstandarddeviations();
+    double maxvdiff = wrule.getMaxvelocitydeviation();
+    String wrwpmethod = wrule.getWrwpprocessingmethod();
     double minvelocitythresh = wrule.getMinvelocitythreshold();
     double maxvelocitythresh = wrule.getMaxvelocitythreshold();
     int minsamplesizereflectivity = wrule.getMinsamplesizereflectivity();
@@ -144,8 +160,8 @@ public class WrwpRuleManager implements IRuleManager {
     
     template.update(
         "UPDATE beast_wrwp_rules SET interval=?, maxheight=?, mindistance=?," +
-        " maxdistance=?, minelangle=?, maxelangle=?, minvelocitythresh=?, maxvelocitythresh=?, minsamplesizereflectivity=?, minsamplesizewind=?, fields=? WHERE rule_id=?",
-        new Object[]{interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields, ruleId});
+        " maxdistance=?, minelangle=?, maxelangle=?, mincondelangle=?, heightthres=?, minnyquistinterval=?, ngapbins=?, minngap=?, maxnstd=?, maxvdiff=?, wrwpmethod=?, minvelocitythresh=?, maxvelocitythresh=?, minsamplesizereflectivity=?, minsamplesizewind=?, fields=? WHERE rule_id=?",
+        new Object[]{interval, maxheight, mindistance, maxdistance, minelangle, maxelangle, mincondelangle, heightthres, minnyquistinterval, ngapbins, minngap, maxnstd, maxvdiff, wrwpmethod, minvelocitythresh, maxvelocitythresh, minsamplesizereflectivity, minsamplesizewind, fields, ruleId});
     
     updateSources(ruleId, wrule.getSources());
     
@@ -216,10 +232,19 @@ public class WrwpRuleManager implements IRuleManager {
         result.setMaxdistance(rs.getInt("maxdistance"));
         result.setMinelevationangle(rs.getDouble("minelangle"));
         result.setMaxelevationangle(rs.getDouble("maxelangle"));
+        result.setConditionalminelevationangle(rs.getDouble("mincondelangle"));
+        result.setHeightthreshold(rs.getDouble("heightthres"));
+        result.setMinnyquistinterval(rs.getDouble("minnyquistinterval"));
+        result.setNumbergapbins(rs.getInt("ngapbins"));
+        result.setMinnumbergapsamples(rs.getInt("minngap"));
+        result.setMaxnumberstandarddeviations(rs.getInt("maxnstd"));
+        result.setMaxvelocitydeviation(rs.getDouble("maxvdiff"));
         result.setMinvelocitythreshold(rs.getDouble("minvelocitythresh"));
         result.setMaxvelocitythreshold(rs.getDouble("maxvelocitythresh"));
         result.setMinsamplesizereflectivity(rs.getInt("minsamplesizereflectivity"));
         result.setMinsamplesizewind(rs.getInt("minsamplesizewind"));
+        String wrwpmethod = rs.getString("wrwpmethod");
+        result.setWrwpprocessingmethod(wrwpmethod == null ? "" : wrwpmethod);
         String fields = rs.getString("fields");
         result.setFields(fields == null ? "" : fields);
 
