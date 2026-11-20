@@ -21,18 +21,38 @@ package eu.baltrad.beast.router.impl;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.rest.RestfulFileEntry;
+import eu.baltrad.bdb.oh5.Attribute;
+import eu.baltrad.bdb.oh5.Group;
+import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.oh5.Source;
 import eu.baltrad.beast.message.IBltMessage;
+import eu.baltrad.beast.message.mo.BltAlertMessage;
+import eu.baltrad.beast.message.mo.BltCommandMessage;
+import eu.baltrad.beast.message.mo.BltDataFrameMessage;
+import eu.baltrad.beast.message.mo.BltDataMessage;
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.message.mo.BltGetAreasMessage;
+import eu.baltrad.beast.message.mo.BltGetPcsDefinitionsMessage;
+import eu.baltrad.beast.message.mo.BltGetQualityControlsMessage;
 import eu.baltrad.beast.message.mo.BltMultiRoutedMessage;
 import eu.baltrad.beast.message.mo.BltRoutedMessage;
 import eu.baltrad.beast.message.mo.BltTriggerJobMessage;
@@ -42,6 +62,7 @@ import eu.baltrad.beast.router.RouteDefinition;
 import eu.baltrad.beast.router.SystemRulesDefinition;
 import eu.baltrad.beast.rules.IRule;
 import eu.baltrad.beast.rules.IRuleManager;
+import eu.baltrad.beast.rules.wrwp.WrwpRule;
 
 /**
  * @author Anders Henja
@@ -50,6 +71,7 @@ public class BltRouterTest extends EasyMockSupport {
   private static interface MockMethods {
     public List<IMultiRoutedMessage> getMultiRoutedMessages(IBltMessage msg, RouteDefinition def);
     public RouteDefinition getDefinition(String name);
+    public String logRuleFailure(IBltMessage msg, RouteDefinition def, Exception e);
   };
   
   private IRule rule = null;
@@ -814,4 +836,316 @@ public class BltRouterTest extends EasyMockSupport {
     verifyAll();
     assertSame(arule, result);
   }
+
+  @Test
+  public void testGetMultiRoutedMessages_logsRuleFailure() throws Exception {
+    final MockMethods methods = createMock(MockMethods.class);
+    RouteDefinition def = definitions.get(0);
+    IBltMessage msg = new BltDataMessage();
+    NullPointerException failure = new NullPointerException();
+    expect(rule.handle(msg)).andThrow(failure);
+    expect(methods.logRuleFailure(msg, def, failure)).andReturn("Rule caused exception");
+    BltRouter classUnderTest = new BltRouter() {
+      @Override
+      String logRuleFailure(IBltMessage msg, RouteDefinition def, Exception e) {
+        return methods.logRuleFailure(msg, def, e);
+      }
+    };
+
+    replayAll();
+    classUnderTest.getMultiRoutedMessages(msg, def);
+
+    verifyAll();
+  }
+
+  @Test
+  public void testGetRoutedMessages_logsRuleFailure() throws Exception {
+    final MockMethods methods = createMock(MockMethods.class);
+    RouteDefinition def = definitions.get(0);
+    IBltMessage msg = new BltDataMessage();
+    NullPointerException failure = new NullPointerException();
+    expect(rule.handle(msg)).andThrow(failure);
+    expect(methods.logRuleFailure(msg, def, failure)).andReturn("Rule caused exception");
+    BltRouter classUnderTest = new BltRouter() {
+      @Override
+      String logRuleFailure(IBltMessage msg, RouteDefinition def, Exception e) {
+        return methods.logRuleFailure(msg, def, e);
+      }
+    };
+
+    replayAll();
+    classUnderTest.getRoutedMessages(msg, def);
+
+    verifyAll();
+  }
+
+  private String loggedMessage(IBltMessage msg, RouteDefinition def) {
+    Logger logger = Logger.getLogger(BltRouter.class);
+    Level previous = logger.getLevel();
+    try {
+      logger.setLevel(Level.INFO);
+      return new BltRouter().logRuleFailure(msg, def, null);
+    } finally {
+      logger.setLevel(previous);
+    }
+  }
+
+  private void assertFields(String message, String... fields) {
+    assertTrue(message, message.startsWith("Rule caused exception "));
+    for (String field : fields) {
+      assertTrue("Missing " + field + " in " + message, (" " + message + " ").contains(" " + field + " "));
+    }
+  }
+
+  @Test
+  public void testLogRuleFailure_jobMetadata() {
+    RouteDefinition def = definitions.get(0);
+    def.setRule(new WrwpRule());
+
+    BltTriggerJobMessage job = new BltTriggerJobMessage();
+    job.setName("scheduled");
+    job.setId("17");
+    assertFields(loggedMessage(job, def), "message=BltTriggerJobMessage", "job=scheduled", "jobId=17");
+  }
+
+  @Test
+  public void testLogRuleFailure_frameMetadata() {
+    RouteDefinition def = definitions.get(0);
+    def.setRule(new WrwpRule());
+    BltDataFrameMessage frame = new BltDataFrameMessage();
+    frame.setFilename("/incoming/scan.h5");
+    assertFields(loggedMessage(frame, def), "message=BltDataFrameMessage", "file=scan.h5");
+  }
+
+  @Test
+  public void testLogRuleFailure_generateMetadata() {
+    RouteDefinition def = definitions.get(0);
+    def.setRule(new WrwpRule());
+    BltGenerateMessage generate = new BltGenerateMessage();
+    generate.setAlgorithm("generatecomposite");
+    assertFields(loggedMessage(generate, def), "message=BltGenerateMessage", "algorithm=generatecomposite");
+  }
+
+  @Test
+  public void testLogRuleFailure_commandMetadata() {
+    RouteDefinition def = definitions.get(0);
+    def.setRule(new WrwpRule());
+    BltCommandMessage command = new BltCommandMessage();
+    command.setCommand("refresh");
+    assertFields(loggedMessage(command, def), "message=BltCommandMessage", "command=refresh");
+  }
+
+  @Test
+  public void testLogRuleFailure_alertMetadata() {
+    RouteDefinition def = definitions.get(0);
+    def.setRule(new WrwpRule());
+    BltAlertMessage alert = new BltAlertMessage();
+    alert.setModule("receiver");
+    alert.setCode("00201");
+    alert.setSeverity("WARNING");
+    assertFields(loggedMessage(alert, def), "message=BltAlertMessage", "module=receiver", "code=00201", "severity=WARNING");
+  }
+
+  @Test
+  public void testLogRuleFailure_dataMessage() {
+    RouteDefinition def = definitions.get(0);
+    def.setRule(new WrwpRule());
+
+    UUID uuid = UUID.fromString("b39a906a-13fc-4151-b6b6-04c1c429e1bd");
+    FileEntry entry = createMock(FileEntry.class);
+    expect(entry.getSource()).andStubReturn(new Source("seang"));
+    expect(entry.getContentSize()).andStubThrow(new IllegalStateException("size unavailable"));
+    expect(entry.getUuid()).andReturn(null);
+    expect(entry.getUuid()).andReturn(uuid);
+    expect(entry.getUuid()).andThrow(new IllegalArgumentException("invalid UUID"));
+    replayAll();
+
+    BltDataMessage msg = new BltDataMessage();
+    String withoutEntry = loggedMessage(msg, def);
+    assertFields(withoutEntry, "message=BltDataMessage");
+    assertFalse(withoutEntry, withoutEntry.contains(" fileUuid="));
+    msg.setFileEntry(entry);
+    assertFalse(loggedMessage(msg, def).contains(" fileUuid="));
+    assertFields(loggedMessage(msg, def), "message=BltDataMessage", "fileUuid=" + uuid,
+        "source=seang", "fileBytes=<unavailable>");
+    assertFields(loggedMessage(msg, def), "message=BltDataMessage", "fileUuid=<unavailable>", "source=seang");
+    verifyAll();
+  }
+
+  @Test
+  public void testLogRuleFailure_unavailableRuleKeepsMessageDetails() {
+    RouteDefinition def = new RouteDefinition() {
+      @Override
+      public IRule getRule() {
+        throw new IllegalStateException("Rule unavailable");
+      }
+    };
+    def.setName("R1");
+    BltCommandMessage msg = new BltCommandMessage();
+    msg.setCommand("refresh");
+
+    assertFields(loggedMessage(msg, def), "route='R1'", "rule=<unavailable>",
+        "message=BltCommandMessage", "command=refresh");
+  }
+
+  @Test
+  public void testLogRuleFailure_routeDescription() {
+    RouteDefinition def = definitions.get(0);
+    def.setRule(new WrwpRule());
+    def.setDescription("Send scans\nto processor");
+    String message = loggedMessage(new BltDataMessage(), def);
+    assertFields(message, "route='R1'", "rule=WrwpRule", "description='Send scans to processor'");
+    def.setDescription(" ");
+    assertFalse(loggedMessage(null, def).contains(" description="));
+  }
+
+  @Test
+  public void testLogRuleFailure_unreadableDescriptionKeepsJobId() {
+    RouteDefinition def = new RouteDefinition() {
+      @Override
+      public String getDescription() {
+        throw new IllegalStateException("description unavailable");
+      }
+    };
+    BltTriggerJobMessage job = new BltTriggerJobMessage();
+    job.setId("17");
+    assertFields(loggedMessage(job, def), "description=<unavailable>", "jobId=17");
+  }
+
+  @Test
+  public void testLogRuleFailure_infoDisabledSkipsFileLookup() {
+    FileEntry entry = createMock(FileEntry.class);
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(entry);
+    replayAll();
+
+    Logger logger = Logger.getLogger(BltRouter.class);
+    Level previous = logger.getLevel();
+    try {
+      logger.setLevel(Level.WARN);
+      assertNull(new BltRouter().logRuleFailure(msg, definitions.get(0), new NullPointerException()));
+    } finally {
+      logger.setLevel(previous);
+    }
+    verifyAll();
+  }
+
+  @Test
+  public void testLogRuleFailure_messagesWithoutMetadata() {
+    RouteDefinition def = definitions.get(0);
+    def.setRule(null);
+
+    assertFields(loggedMessage(null, def), "rule=null", "message=null");
+    assertFields(loggedMessage(new BltGetAreasMessage(), def), "rule=null", "message=BltGetAreasMessage");
+    assertFields(loggedMessage(new BltGetPcsDefinitionsMessage(), def), "rule=null", "message=BltGetPcsDefinitionsMessage");
+    assertFields(loggedMessage(new BltGetQualityControlsMessage(), def), "rule=null", "message=BltGetQualityControlsMessage");
+  }
+  
+  @Test
+  public void testLogRuleFailure_malformedBdbUuidKeepsRadarSource() {
+    Metadata metadata = new Metadata();
+    metadata.addNode("/", new Group("_bdb"));
+    metadata.addNode("/_bdb", new Attribute("uuid", "invalid-uuid"));
+    metadata.addNode("/_bdb", new Attribute("source", "NOD:seang"));
+    metadata.addNode("/_bdb", new Attribute("source_name", "seang"));
+    metadata.addNode("/_bdb", new Attribute("file_size", 4096L));
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(new RestfulFileEntry(null, metadata));
+
+    String message = loggedMessage(msg, new RouteDefinition());
+    assertFields(message, "message=BltDataMessage", "fileUuid=<unavailable>", "source=seang", "fileBytes=4096");
+    assertFalse(message, message.contains(" route="));
+  }
+
+  @Test
+  public void testLogRuleFailure_unreadableFileEntryKeepsRoute() {
+    BltDataMessage msg = new BltDataMessage() {
+      @Override
+      public FileEntry getFileEntry() {
+        throw new IllegalStateException("entry unavailable");
+      }
+    };
+    RouteDefinition def = definitions.get(0);
+    def.setRule(new WrwpRule());
+    assertFields(loggedMessage(msg, def), "route='R1'", "fileEntry=<unavailable>");
+  }
+
+  @Test
+  public void testLogRuleFailure_unreadableAlertCodeKeepsSeverity() {
+    BltAlertMessage alert = new BltAlertMessage() {
+      @Override
+      public String getCode() {
+        throw new IllegalArgumentException("bad code");
+      }
+    };
+    alert.setSeverity("WARNING");
+    assertFields(loggedMessage(alert, null), "code=<unavailable>", "severity=WARNING");
+  }
+
+  @Test
+  public void testGetMultiRoutedMessages_twoMissingRulesStillDeliverThirdResult() {
+    definitions.get(0).setRule(null);
+    definitions.get(1).setRule(null);
+    BltDataMessage input = new BltDataMessage();
+    BltGenerateMessage output = new BltGenerateMessage();
+    expect(rule3.handle(input)).andReturn(output);
+    replayAll();
+
+    final List<String> failures = new ArrayList<String>();
+    BltRouter router = new BltRouter() {
+      @Override
+      String logRuleFailure(IBltMessage msg, RouteDefinition def, Exception e) {
+        assertTrue(e instanceof NullPointerException);
+        String message = super.logRuleFailure(msg, def, e);
+        failures.add(message);
+        return message;
+      }
+    };
+    router.setDefinitions(definitions);
+    Logger logger = Logger.getLogger(BltRouter.class);
+    Level previous = logger.getLevel();
+    List<IMultiRoutedMessage> result;
+    try {
+      logger.setLevel(Level.INFO);
+      result = router.getMultiRoutedMessages(input);
+    } finally {
+      logger.setLevel(previous);
+    }
+
+    verifyAll();
+    assertEquals(2, failures.size());
+    assertFields(failures.get(0), "route='R1'", "rule=null", "message=BltDataMessage");
+    assertFields(failures.get(1), "route='R2'", "rule=null", "message=BltDataMessage");
+    assertEquals(1, result.size());
+    assertSame(output, result.get(0).getMessage());
+    assertEquals(definitions.get(2).getRecipients(), result.get(0).getDestinations());
+  }
+
+  @Test
+  public void testLogRuleFailure_missingBdbSourceKeepsUuidAndZeroSize() {
+    String uuid = "b39a906a-13fc-4151-b6b6-04c1c429e1bd";
+    Metadata metadata = new Metadata();
+    metadata.addNode("/", new Group("_bdb"));
+    metadata.addNode("/_bdb", new Attribute("uuid", uuid));
+    metadata.addNode("/_bdb", new Attribute("file_size", 0L));
+    BltDataMessage msg = new BltDataMessage();
+    msg.setFileEntry(new RestfulFileEntry(null, metadata));
+
+    assertFields(loggedMessage(msg, definitions.get(0)), "fileUuid=" + uuid, "source=<unavailable>", "fileBytes=0");
+  }
+
+  @Test
+  public void testLogRuleFailure_multilineRouteAndCommandStayOnOneLine() {
+    RouteDefinition def = definitions.get(0);
+    def.setName("incoming\rscans");
+    BltCommandMessage msg = new BltCommandMessage();
+    msg.setCommand("refresh\r\nnow");
+
+    String message = loggedMessage(msg, def);
+    assertFields(message, "route='incoming scans'", "command=refresh  now");
+    assertFalse(message, message.contains("\r"));
+    assertFalse(message, message.contains("\n"));
+  }
+
 }
+
