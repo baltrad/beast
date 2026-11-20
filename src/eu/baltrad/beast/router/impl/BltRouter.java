@@ -23,6 +23,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 //
 import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.oh5.Source;
 //
 import eu.baltrad.beast.ManagerContext;
 import eu.baltrad.beast.log.ISystemReporter;
@@ -322,39 +325,79 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
     return name.substring(name.lastIndexOf('.') + 1);
   }
 
-  private void logRuleFailure(IBltMessage msg, RouteDefinition def, Exception e) {
-    if (!logger.isInfoEnabled()) {
+  private static void appendField(StringBuilder text, String name, Supplier<?> getter) {
+    String value;
+    try {
+      value = Objects.toString(getter.get(), null);
+    } catch (RuntimeException ignored) {
+      text.append(' ').append(name).append("=<unavailable>");
       return;
     }
-    String route = "";
-    String message = shortClassName(msg);
-    try {
-      route = " route='" + def.getName() + "'";
-      route += " rule=" + shortClassName(def.getRule());
-      if (msg instanceof BltDataMessage) {
-        FileEntry entry = ((BltDataMessage) msg).getFileEntry();
-        if (entry != null) {
-          message += " fileUuid=" + entry.getUuid();
-        }
-      } else if (msg instanceof BltTriggerJobMessage) {
-        BltTriggerJobMessage job = (BltTriggerJobMessage) msg;
-        message += " job=" + job.getName() + " jobId=" + job.getId();
-      } else if (msg instanceof BltDataFrameMessage) {
-        message += " file=" + ((BltDataFrameMessage) msg).getFileBasename();
-      } else if (msg instanceof BltGenerateMessage) {
-        message += " algorithm=" + ((BltGenerateMessage) msg).getAlgorithm();
-      } else if (msg instanceof BltCommandMessage) {
-        message += " command=" + ((BltCommandMessage) msg).getCommand();
-      } else if (msg instanceof BltAlertMessage) {
-        BltAlertMessage alert = (BltAlertMessage) msg;
-        message += " module=" + alert.getModule() + " code=" + alert.getCode()
-            + " severity=" + alert.getSeverity();
-      }
-    } catch (RuntimeException ignored) {
-      // Keep the original failure if a diagnostic getter fails.
-      message += " metadata=unavailable";
+    if (value != null) {
+      text.append(' ').append(name).append('=').append(value.replace('\r', ' ').replace('\n', ' '));
     }
-    logger.info("Rule caused exception" + route + " message=" + message, e);
+  }
+
+  private static String quoted(String value) {
+    return value == null || value.isBlank() ? null : "'" + value + "'";
+  }
+
+  private static void appendFileFields(StringBuilder line, BltDataMessage msg) {
+    FileEntry entry;
+    try {
+      entry = msg.getFileEntry();
+    } catch (RuntimeException ignored) {
+      line.append(" fileEntry=<unavailable>");
+      return;
+    }
+    if (entry == null) {
+      return;
+    }
+    appendField(line, "fileUuid", entry::getUuid);
+    appendField(line, "source", () -> {
+      Source source = entry.getSource();
+      return source == null ? null : source.getName();
+    });
+    appendField(line, "fileBytes", entry::getContentSize);
+  }
+
+  String logRuleFailure(IBltMessage msg, RouteDefinition def, Exception e) {
+    if (!logger.isInfoEnabled()) {
+      return null;
+    }
+
+    StringBuilder line = new StringBuilder(256);
+    line.append("Rule caused exception");
+    if (def != null) {
+      appendField(line, "route", () -> quoted(def.getName()));
+      appendField(line, "rule", () -> shortClassName(def.getRule()));
+      appendField(line, "description", () -> quoted(def.getDescription()));
+    }
+    line.append(" message=").append(shortClassName(msg));
+
+    if (msg instanceof BltDataMessage) {
+      appendFileFields(line, (BltDataMessage) msg);
+    } else if (msg instanceof BltTriggerJobMessage) {
+      BltTriggerJobMessage job = (BltTriggerJobMessage) msg;
+      appendField(line, "job", job::getName);
+      appendField(line, "jobId", job::getId);
+    } else if (msg instanceof BltDataFrameMessage) {
+      BltDataFrameMessage frame = (BltDataFrameMessage) msg;
+      appendField(line, "file", frame::getFileBasename);
+    } else if (msg instanceof BltGenerateMessage) {
+      BltGenerateMessage generate = (BltGenerateMessage) msg;
+      appendField(line, "algorithm", generate::getAlgorithm);
+    } else if (msg instanceof BltCommandMessage) {
+      appendField(line, "command", ((BltCommandMessage) msg)::getCommand);
+    } else if (msg instanceof BltAlertMessage) {
+      BltAlertMessage alert = (BltAlertMessage) msg;
+      appendField(line, "module", alert::getModule);
+      appendField(line, "code", alert::getCode);
+      appendField(line, "severity", alert::getSeverity);
+    }
+    String text = line.toString();
+    logger.info(text, e);
+    return text;
   }
 
   /**
@@ -608,7 +651,7 @@ public class BltRouter implements IRouter, IRouterManager, InitializingBean {
         String author = rs.getString("author");
         String descr = rs.getString("description");
         boolean active = rs.getBoolean("active");
-          
+        
         RouteDefinition rd = new RouteDefinition();
         rd.setName(name);
         rd.setAuthor(author);
